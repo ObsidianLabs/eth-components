@@ -99,9 +99,9 @@ export default class Header extends PureComponent {
         icon: network.icon,
         selected: network,
         dropdown: networkList,
-        onClickItem: networkId => {
+        onClickItem: (networkId, network) => {
           headerActions.updateNetwork(networkId)
-          networkManager.setNetwork(networkId)
+          networkManager.setNetwork(network)
         },
       },
     ]

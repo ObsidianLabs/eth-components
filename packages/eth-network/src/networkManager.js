@@ -4,11 +4,14 @@ import Sdk from '@obsidians/sdk'
 
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
-import networks from './networks'
-
 class NetworkManager {
   constructor () {
     this._sdk = null
+    this.network = undefined
+  }
+
+  get networkId () {
+    return this.network?.id
   }
 
   get sdk () {
@@ -32,18 +35,13 @@ class NetworkManager {
     this._sdk = new Sdk(params)
   }
 
-  async setNetwork (networkId) {
-    if (networkId === redux.getState().network) {
+  async setNetwork (network) {
+    if (!network || network.id === redux.getState().network) {
       return
     }
 
     const cachingKeys = getCachingKeys()
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
-
-    const network = networks.find(n => n.id === networkId)
-    if (!network) {
-      return
-    }
 
     this.network = network
     if (network.url) {
