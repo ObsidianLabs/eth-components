@@ -13,6 +13,11 @@ import AccountPage from './AccountPage'
 import TransferButton from './buttons/TransferButton'
 import FaucetButton from './buttons/FaucetButton'
 
+export { default as AccountTransactions } from './AccountTransactions'
+export { default as TransactionTransfer } from './AccountTransactions/TransactionTransfer'
+export { default as TransactionFee } from './AccountTransactions/TransactionFee'
+export { default as Address } from './AccountTransactions/Address'
+
 export default class Explorer extends PureComponent {
   constructor (props) {
     super(props)

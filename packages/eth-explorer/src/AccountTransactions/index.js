@@ -55,6 +55,7 @@ export default class AccountTransactions extends PureComponent {
   }
 
   renderTableBody = () => {
+    const TransactionRow = this.props.TransactionRow
     const rows = this.state.txs.map(tx => (
       <TransactionRow key={`tx-${tx.hash}`} tx={tx} owner={this.props.account.address} />
     ))
@@ -111,4 +112,8 @@ export default class AccountTransactions extends PureComponent {
       </TableCard>
     )
   }
+}
+
+AccountTransactions.defaultProps = {
+  TransactionRow,
 }
