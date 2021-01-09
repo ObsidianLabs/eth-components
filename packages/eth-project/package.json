@@ -58,7 +58,7 @@
     "monaco-ace-tokenizer": "^0.2.0",
     "monaco-editor": "^0.20.0",
     "prettier": "^2.0.5",
-    "prettier-plugin-solidity": "^1.0.0-alpha.54",
+    "prettier-plugin-solidity": "^1.0.0-beta.3",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-highlight": "^0.12.0",

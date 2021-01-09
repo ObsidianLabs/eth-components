@@ -84,9 +84,9 @@ export default class TransactionDetails extends PureComponent {
           {
             value &&
             <TableCardRow
-              name='CFX Transfered'
+              name={`${process.env.TOKEN_SYMBOL} Transfered`}
               icon='fas fa-coins'
-              badge={`${utils.unit.fromValue(value)} CFX`}
+              badge={`${utils.unit.fromValue(value)} ${process.env.TOKEN_SYMBOL}`}
             />
           }
           <TableCardRow

@@ -9,7 +9,7 @@ export default class TransactionFee extends PureComponent {
     let fee = ''
 
     if (amount > 0.001) {
-      fee = `${amount} CFX`
+      fee = `${amount} ${process.env.TOKEN_SYMBOL}`
     } else if (gvalue > 0.001) {
       fee = `${gvalue} Gdrip`
     } else {

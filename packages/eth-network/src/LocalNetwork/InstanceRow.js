@@ -55,7 +55,7 @@ export default class InstanceRow extends PureComponent {
 
   render () {
     const { data } = this.props
-    const name = data.Name.substr(8)
+    const name = data.Name.substr(process.env.PROJECT.length + 1)
     const labels = data.Labels
 
     return (

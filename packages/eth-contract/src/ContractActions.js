@@ -213,7 +213,7 @@ export default class ContractActions extends Component {
             {
               (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
               <FormGroup className='mb-2'>
-                <Label className='mb-1 small font-weight-bold'>CFX to Transfer</Label>
+                <Label className='mb-1 small font-weight-bold'>{process.env.TOKEN_SYMBOL} to Transfer</Label>
                 <ActionParamInput
                   size='sm'
                   type='name'

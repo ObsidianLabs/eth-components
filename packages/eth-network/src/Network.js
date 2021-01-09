@@ -6,7 +6,7 @@ import RemoteNetwork from './RemoteNetwork'
 export default props => {
   const { active, network = 'dev' } = props
   
-  if (network === 'dev') {
+  if (network === 'dev' || network === 'local') {
     return <LocalNetwork chain={network} active={active} />
   }
   return (

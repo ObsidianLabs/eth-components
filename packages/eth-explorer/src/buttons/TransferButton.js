@@ -126,7 +126,7 @@ export default class TransferButton extends PureComponent {
               this.setState({ assetId: event.target.value })
             }}
           >
-            <option value=''>CFX</option>
+            <option value=''>{process.env.TOKEN_SYMBOL}</option>
             {this.state.assetList.map(entry => {
               const [assetId, asset] = entry
               return <AssetOption key={`transfer-asset-${assetId}`} assetId={assetId} />

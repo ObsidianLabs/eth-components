@@ -15,7 +15,7 @@ export default class FaucetButton extends PureComponent {
       return
     }
 
-    this.notification = notification.info('Claiming CFX...', `Trying to claim CFX tokens for <b>${this.props.address}</b>`, 0)
+    this.notification = notification.info(`Claiming ${process.env.TOKEN_SYMBOL}...`, `Trying to claim ${process.env.TOKEN_SYMBOL} tokens for <b>${this.props.address}</b>`, 0)
     let result
     try {
       const res = await fetch(faucetUrl)
@@ -29,7 +29,7 @@ export default class FaucetButton extends PureComponent {
     if (result.code) {
       notification.error('Failed', result.message)
     } else {
-      notification.success('CFX Claimed', `Claimed 100 CFX for <b>${this.props.address}</b>`)
+      notification.success(`${process.env.TOKEN_SYMBOL} Claimed`, `Claimed 100 ${process.env.TOKEN_SYMBOL} for <b>${this.props.address}</b>`)
     }
   }
 

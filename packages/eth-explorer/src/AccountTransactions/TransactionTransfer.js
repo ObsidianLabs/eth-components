@@ -6,7 +6,7 @@ import { utils } from '@obsidians/sdk'
 import Address from './Address'
 
 export default function ({ tx, owner }) {
-  const amount = `${utils.unit.fromValue(tx.value)} CFX`
+  const amount = `${utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL}`
   return (
     <div className='d-flex flex-row align-items-center'>
       <div className='flex-1 overflow-hidden'>

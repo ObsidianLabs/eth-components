@@ -14,7 +14,7 @@ export default class AccountBalance extends PureComponent {
         <TableCardRow
           name='Total'
           icon='far fa-wallet'
-          badge={`${account.balance} CFX`}
+          badge={`${account.balance} ${process.env.TOKEN_SYMBOL}`}
           badgeColor='success'
         />
         {
