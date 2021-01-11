@@ -8,7 +8,7 @@ import { NodeTerminal } from '@obsidians/eth-node'
 import InstanceList from './InstanceList'
 
 export default function LocalNetwork (props) {
-  const { active, chain, miner } = props
+  const { active, chain, minerKey, minerTerminal } = props
   return (
     <SplitPane
       split='horizontal'
@@ -16,8 +16,8 @@ export default function LocalNetwork (props) {
       defaultSize={260}
       minSize={200}
     >
-      <InstanceList chain={chain} />
-      <NodeTerminal active={active} miner={miner} />
+      <InstanceList chain={chain} minerKey={minerKey} />
+      <NodeTerminal active={active} miner={minerTerminal} />
     </SplitPane>
   )
 }

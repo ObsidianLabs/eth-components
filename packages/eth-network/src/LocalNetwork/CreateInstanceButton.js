@@ -31,22 +31,25 @@ export default class CreateInstanceButton extends PureComponent {
   }
 
   onCreateInstance = async () => {
-    const keypairs = await keypairManager.loadAllKeypairs()
-
-    if (!keypairs || !keypairs.length) {
-      notification.error('Failed', 'Please create or import a keypair in the keypair manager first.')
-      return
+    let keys
+    if (this.props.minerKey) {
+      const keypairs = await keypairManager.loadAllKeypairs()
+  
+      if (!keypairs || !keypairs.length) {
+        notification.error('Failed', 'Please create or import a keypair in the keypair manager first.')
+        return
+      }
+      keys = await Promise.all(keypairs.map(k => keypairManager.getSecret(k.address)))
     }
 
     this.setState({ pending: 'Creating...' })
 
-    const genesis_secrets = await Promise.all(keypairs.map(k => keypairManager.getSecret(k.address)))
     await instanceChannel.invoke('create', {
       name: this.state.name,
       version: this.state.version,
       chain: this.props.chain,
       miner: this.state.miner,
-      genesis_secrets,
+      keys,
     })
     this.modal.current.closeModal()
     this.setState({ pending: false })
@@ -54,16 +57,16 @@ export default class CreateInstanceButton extends PureComponent {
   }
 
   renderMinerInput = () => {
-    if (this.props.chain !== 'dev') {
-      return null
+    if (this.props.minerKey) {
+      return (
+        <KeypairInputSelector
+          label='Miner'
+          value={this.state.miner}
+          onChange={miner => this.setState({ miner })}
+        />
+      )
     }
-    return (
-      <KeypairInputSelector
-        label='Miner'
-        value={this.state.miner}
-        onChange={miner => this.setState({ miner })}
-      />
-    )
+    return null
   }
 
   render () {

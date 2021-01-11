@@ -12,7 +12,7 @@ class InstanceManager extends IpcChannel {
     this.dockerChannel = new DockerImageChannel(process.env.DOCKER_IMAGE_NODE)
   }
 
-  async create ({ name, version, miner, genesis_secrets, chain = 'dev' }) {
+  async create ({ name, version, miner, keys, chain = 'dev' }) {
     const tmpdir = os.tmpdir()
     const configPath = path.join(tmpdir, `conflux.toml`)
     const logPath = path.join(tmpdir, `log.yaml`)
@@ -35,7 +35,7 @@ class InstanceManager extends IpcChannel {
     config.genesis_secrets = 'genesis_secrets.txt'
 
     fs.writeFileSync(configPath, TOML.stringify(config))
-    fs.writeFileSync(genesis, genesis_secrets.map(k => k.substr(2)).join('\n') + '\n')
+    fs.writeFileSync(genesis, keys.map(k => k.substr(2)).join('\n') + '\n')
 
     await this.exec(`docker cp ${configPath} ${PROJECT}-config-${name}:/${PROJECT}-node/default.toml`)
     await this.exec(`docker cp ${logPath} ${PROJECT}-config-${name}:/${PROJECT}-node/log.yaml`)

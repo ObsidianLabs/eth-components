@@ -108,6 +108,7 @@ export default class InstanceList extends PureComponent {
               <CreateInstanceButton
                 className='ml-2'
                 chain={this.props.chain}
+                minerKey={this.props.minerKey}
                 onRefresh={this.refreshInstances}
               />
             </>
