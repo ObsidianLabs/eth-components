@@ -32,7 +32,7 @@ class NetworkManager {
   }
 
   async updateSdk (params) {
-    this._sdk = new Sdk(params)
+    this._sdk = new Sdk({ ...this.network, ...params })
   }
 
   async setNetwork (network) {

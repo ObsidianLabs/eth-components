@@ -48,11 +48,7 @@ class NodeManager {
       resolveOnFirstLog: true,
       stopCommand: `docker stop ${process.env.PROJECT}-${name}-${version}`,
     })
-    return {
-      url: 'http://localhost:12537',
-      chainId: 0,
-      id: `local.${name}`,
-    }
+    return { id: `local.${name}` }
   }
 
   generateCommand ({ name, version }) {
