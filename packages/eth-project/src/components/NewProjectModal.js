@@ -34,7 +34,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         `-v "${projectDir}:/project/${name}"`,
         `-w "/project/${name}"`,
         `${process.env.DOCKER_IMAGE_TRUFFLE}:${truffleVersion}`,
-        `cfxtruffle unbox ${template}`,
+        `${process.env.COMPILER_EXECUTABLE_NAME} unbox ${template}`,
       ].join(' ')
 
       const result = await this.terminal.current.exec(cmd)
@@ -48,7 +48,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         main: './contracts/MetaCoin.sol',
         deploy: './build/contracts/MetaCoin.json',
         compilers: {
-          cfxtruffle: truffleVersion,
+          [process.env.COMPILER_VERSION_KEY]: truffleVersion,
           solc: 'default'
         }
       }

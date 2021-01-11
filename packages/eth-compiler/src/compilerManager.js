@@ -94,7 +94,7 @@ class Compiler {
       `-v "${projectDir}:${projectDir}"`,
       `-w "${projectDir}"`,
       `${process.env.DOCKER_IMAGE_TRUFFLE}:${config[process.env.COMPILER_VERSION_KEY]}`,
-      `cfxtruffle compile`,
+      `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
     
     if (config.solc !== 'default') {
