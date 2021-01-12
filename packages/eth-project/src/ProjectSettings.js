@@ -10,8 +10,8 @@ export default class ExtendedProjectSettings extends ProjectSettings {
   trimSettings = (rawSettings = {}) => {
     const compilers = rawSettings.compilers || {}
     return {
-      main: rawSettings.main || './contracts/MetaCoin.sol',
-      deploy: rawSettings.deploy || './build/contracts/MetaCoin.json',
+      main: rawSettings.main || './contracts/Contract.sol',
+      deploy: rawSettings.deploy || './build/contracts/Contract.json',
       compilers: {
         [process.env.COMPILER_VERSION_KEY]: compilers[process.env.COMPILER_VERSION_KEY] || '',
         solc: compilers.solc || '',
