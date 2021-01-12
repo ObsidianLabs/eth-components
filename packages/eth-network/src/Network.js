@@ -4,12 +4,12 @@ import LocalNetwork from './LocalNetwork'
 import RemoteNetwork from './RemoteNetwork'
 
 export default props => {
-  const { active, network = 'dev', minerKey, minerTerminal } = props
+  const { active, networkId = 'dev', minerKey, minerTerminal } = props
   
-  if (network === 'dev') {
-    return <LocalNetwork chain={network} active={active} minerKey={minerKey} minerTerminal={minerTerminal} />
+  if (networkId === 'dev') {
+    return <LocalNetwork networkId={networkId} active={active} minerKey={minerKey} minerTerminal={minerTerminal} />
   }
   return (
-    <RemoteNetwork chain={network} />
+    <RemoteNetwork networkId={networkId} />
   )
 }

@@ -47,7 +47,7 @@ export default class CreateInstanceButton extends PureComponent {
     await instanceChannel.invoke('create', {
       name: this.state.name,
       version: this.state.version,
-      chain: this.props.chain,
+      networkId: this.props.networkId,
       miner: this.state.miner,
       keys,
     })
@@ -84,7 +84,7 @@ export default class CreateInstanceButton extends PureComponent {
         <Modal
           ref={this.modal}
           overflow
-          title={`New Instance (${this.props.chain})`}
+          title={`New Instance (${this.props.networkId})`}
           textConfirm='Create'
           onConfirm={this.onCreateInstance}
           pending={this.state.pending}

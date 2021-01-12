@@ -15,7 +15,7 @@ import instanceChannel from './instanceChannel'
 
 export default class InstanceList extends PureComponent {
   static defaultProps = {
-    chain: 'dev',
+    networkId: 'dev',
   }
 
   constructor (props) {
@@ -35,13 +35,13 @@ export default class InstanceList extends PureComponent {
   }
   
   componentDidUpdate (prevProps) {
-    if (this.props.chain !== prevProps.chain) {
+    if (this.props.networkId !== prevProps.networkId) {
       this.refreshInstances()
     }
   }
 
   refreshInstances = async () => {
-    const instances = await instanceChannel.invoke('list', this.props.chain)
+    const instances = await instanceChannel.invoke('list', this.props.networkId)
     this.setState({ instances })
   }
 
@@ -85,6 +85,7 @@ export default class InstanceList extends PureComponent {
         lifecycle={this.state.lifecycle}
         onRefresh={this.refreshInstances}
         onNodeLifecycle={this.onNodeLifecycle}
+        configButton={this.props.configButton}
         onOpenConfig={data => this.configModal.current.openModal(data)}
       />
     ))
@@ -94,7 +95,7 @@ export default class InstanceList extends PureComponent {
     return (
       <>
         <Card
-          title={`${process.env.CHAIN_NAME} Instances (${this.props.chain})`}
+          title={`${process.env.CHAIN_NAME} Instances (${this.props.networkId})`}
           right={(
             <>
               <DockerImageButton
@@ -107,7 +108,7 @@ export default class InstanceList extends PureComponent {
               />
               <CreateInstanceButton
                 className='ml-2'
-                chain={this.props.chain}
+                networkId={this.props.networkId}
                 minerKey={this.props.minerKey}
                 onRefresh={this.refreshInstances}
               />

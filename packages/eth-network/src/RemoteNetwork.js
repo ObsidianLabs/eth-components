@@ -22,7 +22,7 @@ export default class RemoteNetwork extends PureComponent {
   }
 
   componentDidUpdate (prevProps) {
-    if (this.props.chain !== prevProps.chain) {
+    if (this.props.networkId !== prevProps.networkId) {
       this.refresh()
     }
   }
@@ -40,9 +40,9 @@ export default class RemoteNetwork extends PureComponent {
     if (!networkManager.sdk) {
       return
     }
-    const chain = this.props.chain
+    const networkId = this.props.networkId
     const trend = await networkManager.sdk?.trend()
-    if (this.props.chain === chain) {
+    if (this.props.networkId === networkId) {
       this.setState({ trend })
     }
   }
@@ -52,9 +52,9 @@ export default class RemoteNetwork extends PureComponent {
       return
     }
     try {
-      const chain = this.props.chain
+      const networkId = this.props.networkId
       const status = await networkManager.sdk?.getStatus()
-      if (this.props.chain === chain) {
+      if (this.props.networkId === networkId) {
         this.setState({ status })
       }
     } catch (error) {
@@ -63,14 +63,14 @@ export default class RemoteNetwork extends PureComponent {
   }
 
   render () {
-    const { chain } = this.props
+    const { networkId } = this.props
     const { status, trend } = this.state
 
     return (
       <div className='d-flex flex-1 flex-column overflow-auto'>
         <div className='d-flex'>
           <div className='col-6 p-0 border-right-black'>
-            <TableCard title={`${process.env.CHAIN_NAME} Network (${chain})`}>
+            <TableCard title={`${process.env.CHAIN_NAME} Network (${networkId})`}>
               <TableCardRow
                 name='Node URL'
                 badge={networkManager.sdk?.url}
