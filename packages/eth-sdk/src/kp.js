@@ -1,18 +1,22 @@
-import { Account } from 'web3'
+import { ethers } from 'ethers'
+import { IpcChannel } from '@obsidians/ipc'
+
+const channel = new IpcChannel('keypair')
 
 export default {
-  newKeypair () {
-    const key = Account.random()
+  async newKeypair () {
+    const secret = await channel.invoke('post', 'new-secret')
+    const address = ethers.utils.computeAddress(secret)
     return {
-      address: key.address,
-      secret: key.privateKey,
+      address,
+      secret,
     }
   },
   importKeypair (secret) {
-    const key = new Account(secret)
+    const address = ethers.utils.computeAddress(secret)
     return {
-      address: key.address,
-      secret: key.privateKey,
+      address,
+      secret,
     }
   },
 }
