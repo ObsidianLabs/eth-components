@@ -1,6 +1,6 @@
 import { ProjectSettings } from '@obsidians/workspace'
 
-export default class PlatONProjectSettings extends ProjectSettings {
+export default class ExtendedProjectSettings extends ProjectSettings {
   static configFileName = 'config.json'
 
   constructor (settingFilePath, channel) {
