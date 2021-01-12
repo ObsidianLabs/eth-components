@@ -1,12 +1,18 @@
-import { Conflux } from 'web3'
+import { ethers } from 'ethers'
 
 export default class Client {
-  constructor (url, chainId) {
-    this.cfx = new Conflux({
-      url,
-      defaultGasPrice: 100, // The default gas price of your following transactions
-      defaultGas: 1000000, // The default gas of your following transactions
-      // logger: console,
-    })
+  constructor (networkId, url) {
+    if (networkId !== 'dev') {
+      this.provider = ethers.getDefaultProvider(networkId, {
+        infura: process.env.INFURA_PROJECT_ID
+      })
+    } else {
+      this.provider = ethers.getDefaultProvider(url)
+    }
+  }
+
+  async getAccount (address) {
+    const balance = await this.provider.getBalance(address)
+    return { balance, code: '' }
   }
 }
