@@ -13,6 +13,11 @@ import compiler from '@obsidians/eth-compiler'
 import checkDependencies from './checkDependencies'
 
 export default class Welcome extends PureComponent {
+  static defaultProps = {
+    nodeSubtitle: `${process.env.CHAIN_NAME} node built into a docker image.`,
+    truffleSubtitle: `${process.env.CHAIN_NAME} version of truffle used to create and compile a project.`,
+  }
+
   constructor (props) {
     super(props)
     this.state = {
@@ -64,17 +69,17 @@ export default class Welcome extends PureComponent {
               <ListItemDockerImage
                 ref={this.listItemNode}
                 channel={instanceChannel.node}
-                title={`${process.env.CHAIN_NAME} Node in Docker`}
-                subtitle={`${process.env.CHAIN_NAME} node built into a docker image.`}
+                title={`${process.env.CHAIN_EXECUTABLE_NAME} in Docker`}
+                subtitle={this.props.nodeSubtitle}
                 link={`https://hub.docker.com/r/${process.env.DOCKER_IMAGE_NODE}`}
                 onInstalled={this.refresh}
-                downloadingTitle={`Downloading ${process.env.CHAIN_NAME}`}
+                downloadingTitle={`Downloading ${process.env.CHAIN_EXECUTABLE_NAME}`}
               />
               <ListItemDockerImage
                 ref={this.listItemCompiler}
                 channel={compiler.truffle}
                 title={`${process.env.COMPILER_NAME} in Docker`}
-                subtitle={`A ${process.env.CHAIN_NAME} version of truffle used to create and compile a project.`}
+                subtitle={this.props.truffleSubtitle}
                 link={`https://hub.docker.com/r/${process.env.DOCKER_IMAGE_TRUFFLE}`}
                 onInstalled={this.refresh}
                 downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}

@@ -5,20 +5,22 @@ import {
   TableCardRow,
 } from '@obsidians/ui-components'
 
+import moment from 'moment'
+
 import networkManager from './networkManager'
 
 export default class RemoteNetwork extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      trend: null,
+      info: null,
       status: null,
     }
   }
 
   componentDidMount () {
     this.refresh()
-    this.h = setInterval(() => this.refreshBlock(), 1000)
+    this.h = setInterval(() => this.refreshBlock(), 5000)
   }
 
   componentDidUpdate (prevProps) {
@@ -34,16 +36,17 @@ export default class RemoteNetwork extends PureComponent {
 
   async refresh () {
     this.setState({
-      trend: null,
+      info: null,
       status: null,
     })
     if (!networkManager.sdk) {
       return
     }
+    this.refreshBlock()
     const networkId = this.props.networkId
-    const trend = await networkManager.sdk?.trend()
+    const info = await networkManager.sdk?.networkInfo()
     if (this.props.networkId === networkId) {
-      this.setState({ trend })
+      this.setState({ info })
     }
   }
 
@@ -58,13 +61,14 @@ export default class RemoteNetwork extends PureComponent {
         this.setState({ status })
       }
     } catch (error) {
+      console.warn(error)
       this.setState({ status: null })
     }
   }
 
   render () {
     const { networkId } = this.props
-    const { status, trend } = this.state
+    const { status, info } = this.state
 
     return (
       <div className='d-flex flex-1 flex-column overflow-auto'>
@@ -72,41 +76,28 @@ export default class RemoteNetwork extends PureComponent {
           <div className='col-6 p-0 border-right-black'>
             <TableCard title={`${process.env.CHAIN_NAME} Network (${networkId})`}>
               <TableCardRow
-                name='Node URL'
-                badge={networkManager.sdk?.url}
-                badgeColor='primary'
-              />
-              <TableCardRow
                 name='Chain ID'
-                badge={status?.chainId}
+                badge={info?.chainId}
               />
               <TableCardRow
-                name='TPS'
-                badge={trend && Number(trend?.tps).toFixed(6)}
+                name='ENS'
+                badge={info?.ensAddress}
               />
             </TableCard>
           </div>
           <div className='col-6 p-0'>
             <TableCard title='Blocks'>
               <TableCardRow
-                name='Epoch'
-                badge={status?.epochNumber}
-              />
-              <TableCardRow
                 name='Block Number'
-                badge={status?.blockNumber}
+                badge={status?.number}
               />
               <TableCardRow
                 name='Block Time'
-                badge={trend ? `${Number(trend.blockTime).toFixed(2)} s` : ''}
+                badge={status ? moment(status.timestamp * 1000).format('MMMM Do, HH:mm:ss') : ''}
               />
               <TableCardRow
                 name='Difficulty'
-                badge={trend && Number(trend.difficulty).toFixed(0)}
-              />
-              <TableCardRow
-                name='Hash Rate'
-                badge={trend && Number(trend.hashRate).toFixed(0)}
+                badge={status && Number(status.difficulty).toFixed(0)}
               />
             </TableCard>
           </div>

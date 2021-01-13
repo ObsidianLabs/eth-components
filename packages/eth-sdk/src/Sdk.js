@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 
 import Client from './Client'
+import utils from './utils'
 
 export default class Sdk {
   constructor ({ url, chainId, explorer, id }) {
@@ -23,23 +24,17 @@ export default class Sdk {
     const account = await this.client.getAccount(address)
     return {
       address,
-      balance: account.balance.toString(),
+      balance: utils.unit.fromValue(account.balance),
       codeHash: account.code,
     }
   }
 
-  async trend () {
+  async networkInfo () {
     return await this.provider.getNetwork()
-    // console.log(network)
-    // return {}
-    // const ipc = new IpcChannel()
-    // const result = await ipc.invoke('fetch', `${this.explorer}/plot?interval=514&limit=7`)
-    // const json = JSON.parse(result)
-    // return json.list[json.total - 1]
   }
 
   async getStatus () {
-    return await this.provider.getBlock()
+    return await this.provider.getBlock('latest')
   }
 
   async getTransactionsCount (address) {

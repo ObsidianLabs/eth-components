@@ -39,7 +39,7 @@ class NodeManager {
 
     const versions = await instanceChannel.node.versions()
     if (!versions.find(v => v.Tag === version)) {
-      notification.error(`${process.env.CHAIN_NAME} Node ${version} not Installed`, `Please install the version in <b>${process.env.CHAIN_NAME} Version Manager</b>`)
+      notification.error(`${process.env.CHAIN_EXECUTABLE_NAME} ${version} not Installed`, `Please install the version in <b>${process.env.CHAIN_EXECUTABLE_NAME} Version Manager</b>`)
       throw new Error('Version not installed')
     }
 
@@ -48,7 +48,7 @@ class NodeManager {
       resolveOnFirstLog: true,
       stopCommand: `docker stop ${process.env.PROJECT}-${name}-${version}`,
     })
-    return { id: `local.${name}` }
+    return { id: `dev.${name}` }
   }
 
   generateCommand ({ name, version }) {
@@ -57,17 +57,13 @@ class NodeManager {
     return [
       'docker run -it --rm',
       `--name ${containerName}`,
-      `-p 12535:12535`,
-      `-p 12536:12536`,
-      `-p 12537:12537`,
-      `-v ${process.env.PROJECT}-${name}:/${process.env.PROJECT}-node`,
-      `-w /${process.env.PROJECT}-node`,
-      `--entrypoint conflux`,
+      `-p 8545:8545`,
+      `-v ${process.env.PROJECT}-${name}:/data`,
+      `-w /data`,
       `${process.env.DOCKER_IMAGE_NODE}:${version}`,
-      `--config default.toml`
+      `--datadir=/data --dev --dev.period=1 --nousb --http --http.addr=0.0.0.0 --http.corsdomain=* --password=pwd`
     ].join(' ')
   }
-
   updateLifecycle (lifecycle, params) {
     if (this._status) {
       this._status.setState({ lifecycle })
@@ -87,7 +83,7 @@ class NodeManager {
     const cachingKeys = getCachingKeys()
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
     if (this._terminal) {
-      const n = notification.info(`Stopping ${process.env.CHAIN_NAME} Node...`, '', 0)
+      const n = notification.info(`Stopping ${process.env.CHAIN_EXECUTABLE_NAME}...`, '', 0)
       await this._terminal.stop()
       n.dismiss()
     }

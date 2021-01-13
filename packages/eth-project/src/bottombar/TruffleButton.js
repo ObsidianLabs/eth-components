@@ -15,7 +15,7 @@ export default () => {
       disableAutoSelection
       size='sm'
       icon='fas fa-cookie'
-      title={`${process.env.CHAIN_SHORT_NAME} Truffle`}
+      title={`${process.env.COMPILER_NAME}`}
       noneName={`${process.env.COMPILER_NAME}`}
       modalTitle={`${process.env.COMPILER_NAME} Manager`}
       downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}

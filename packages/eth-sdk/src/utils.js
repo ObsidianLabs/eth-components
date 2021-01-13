@@ -1,14 +1,11 @@
+import { ethers } from 'ethers'
+
 const util = {
   sign: {
     sha3: () => ''
   },
   format: {
     bytes: () => ''
-  },
-  unit: {
-    fromDripToCFX: () => '',
-    fromCFXToDrip: () => '',
-    fromDripToGDrip: () => '',
   }
 }
 
@@ -20,8 +17,8 @@ export default {
     bytes: util.format.bytes
   },
   unit: {
-    fromValue: util.unit.fromDripToCFX,
-    toValue: util.unit.fromCFXToDrip,
-    valueToGvalue: util.unit.fromDripToGDrip
+    fromValue: ethers.utils.formatEther,
+    toValue: ethers.utils.parseEther,
+    valueToGvalue: v => ethers.utils.formatUnits(v, 'gwei')
   }
 }

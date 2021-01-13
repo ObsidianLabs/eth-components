@@ -54,10 +54,10 @@ export default class InstanceList extends PureComponent {
     this.setState(runningState)
     if (lifecycle === 'stopped') {
       redux.dispatch('UPDATE_UI_STATE', { localNetwork: '' })
-      notification.info(`${process.env.CHAIN_NAME} Instance Stopped`, `${process.env.CHAIN_NAME} instance <b>${name}</b> stops to run.`)
+      notification.info(`${process.env.CHAIN_NAME} Instance Stopped`, `<b>${name}</b> stops to run.`)
     } else if (lifecycle === 'started') {
       redux.dispatch('UPDATE_UI_STATE', { localNetwork: runningState })
-      notification.success(`${process.env.CHAIN_NAME} Instance Started`, `${process.env.CHAIN_NAME} instance <b>${name}</b> is running now.`)
+      notification.success(`${process.env.CHAIN_NAME} Instance Started`, `<b>${name}</b> is running now.`)
     }
   }
 
@@ -74,7 +74,7 @@ export default class InstanceList extends PureComponent {
 
   renderTableBody = () => {
     if (!this.state.instances.length) {
-      return <tr><td align='middle' colSpan={6}>(No {process.env.CHAIN_NAME} instance)</td></tr>
+      return <tr><td align='middle' colSpan={6}>(No {process.env.CHAIN_EXECUTABLE_NAME_IN_LABEL} instance)</td></tr>
     }
 
     return this.state.instances.map(data => (
@@ -101,10 +101,10 @@ export default class InstanceList extends PureComponent {
               <DockerImageButton
                 channel={instanceChannel.node}
                 icon='fas fa-server'
-                title={`${process.env.CHAIN_NAME} Version Manager`}
-                noneName={`${process.env.CHAIN_NAME} node`}
-                modalTitle={`${process.env.CHAIN_NAME} Version Manager`}
-                downloadingTitle={`Downloading ${process.env.CHAIN_NAME}`}
+                title={`${process.env.CHAIN_EXECUTABLE_NAME} Version Manager`}
+                noneName={process.env.CHAIN_EXECUTABLE_NAME_IN_LABEL}
+                modalTitle={`${process.env.CHAIN_EXECUTABLE_NAME} Version Manager`}
+                downloadingTitle={`Downloading ${process.env.CHAIN_EXECUTABLE_NAME}`}
               />
               <CreateInstanceButton
                 className='ml-2'

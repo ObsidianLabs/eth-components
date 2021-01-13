@@ -2,7 +2,7 @@
   "main": "./contracts/Coin.sol",
   "deploy": "./build/contracts/Coin.json",
   "compilers": {
-    "cfxtruffle": "0.0.8",
+    "truffle": "v5.1.61",
     "solc": "default"
   }
 }
