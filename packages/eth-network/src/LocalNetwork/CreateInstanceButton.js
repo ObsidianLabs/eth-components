@@ -32,6 +32,7 @@ export default class CreateInstanceButton extends PureComponent {
 
   onCreateInstance = async () => {
     let keys
+    let miner
     if (this.props.minerKey) {
       const keypairs = await keypairManager.loadAllKeypairs()
   
@@ -40,6 +41,9 @@ export default class CreateInstanceButton extends PureComponent {
         return
       }
       keys = await Promise.all(keypairs.map(k => keypairManager.getSecret(k.address)))
+
+      const secret = await keypairManager.getSecret(this.state.miner)
+      miner = { address: this.state.miner, secret }
     }
 
     this.setState({ pending: 'Creating...' })
@@ -48,7 +52,7 @@ export default class CreateInstanceButton extends PureComponent {
       name: this.state.name,
       version: this.state.version,
       networkId: this.props.networkId,
-      miner: this.state.miner,
+      miner,
       keys,
     })
     this.modal.current.closeModal()
@@ -99,10 +103,10 @@ export default class CreateInstanceButton extends PureComponent {
           />
           <DockerImageInputSelector
             channel={instanceChannel.node}
-            label={`${process.env.CHAIN_NAME} version`}
-            noneName={`${process.env.CHAIN_NAME} node`}
-            modalTitle={`${process.env.CHAIN_NAME} Version Manager`}
-            downloadingTitle={`Downloading ${process.env.CHAIN_NAME}`}
+            label={`${process.env.CHAIN_EXECUTABLE_NAME_IN_LABEL} version`}
+            noneName={process.env.CHAIN_EXECUTABLE_NAME_IN_LABEL}
+            modalTitle={`${process.env.CHAIN_EXECUTABLE_NAME} Version Manager`}
+            downloadingTitle={`Downloading ${process.env.CHAIN_EXECUTABLE_NAME}`}
             selected={this.state.version}
             onSelected={version => this.setState({ version })}
           />
