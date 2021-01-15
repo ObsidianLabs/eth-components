@@ -1,7 +1,9 @@
 import { ethers } from 'ethers'
 
-import Client from './Client'
 import utils from './utils'
+import Client from './Client'
+import Contract from './Contract'
+import signatureProvider from './signatureProvider'
 
 export default class Sdk {
   constructor ({ url, chainId, explorer, id }) {
@@ -20,21 +22,71 @@ export default class Sdk {
     return ethers.utils.isAddress(address)
   }
 
-  async accountFrom (address) {
-    const account = await this.client.getAccount(address)
-    return {
-      address,
-      balance: utils.unit.fromValue(account.balance),
-      codeHash: account.code,
-    }
-  }
-
   async networkInfo () {
     return await this.provider.getNetwork()
   }
 
   async getStatus () {
     return await this.provider.getBlock('latest')
+  }
+
+  async accountFrom (address) {
+    const account = await this.client.getAccount(address)
+    return {
+      address,
+      balance: utils.unit.fromValue(account.balance),
+      codeHash: account.codeHash,
+    }
+  }
+
+  contractFrom ({ address, abi }) {
+    return new Contract({ address, abi }, this.provider)
+  }
+
+  async getTransferTransaction ({ from, to, amount }) {
+    const value = utils.unit.toValue(amount)
+    const voidSigner = new ethers.VoidSigner(from, this.provider)
+    return await voidSigner.populateTransaction({ to, value })
+  }
+
+  async getDeployTransaction ({ abi, bytecode, parameters }, override) {
+    const factory = new ethers.ContractFactory(abi, bytecode)
+    const tx = await factory.getDeployTransaction(...parameters)
+    const voidSigner = new ethers.VoidSigner(override.from, this.provider)
+    return await voidSigner.populateTransaction(tx)
+  }
+
+  async estimate (tx) {
+    const result = await this.provider.estimateGas(tx)
+    return { gasUsed: result.toString() }
+  }
+
+  sendTransaction (tx) {
+    const sp = signatureProvider(tx.from)
+    const pendingTx = sp(tx).then(signedTx => this.provider.sendTransaction(signedTx))
+
+    return {
+      then: callback => pendingTx.then(res => callback(res.hash)),
+      mined: async () => {
+        const res = await pendingTx
+        await res.wait(1)
+        const tx = await this.provider.getTransaction(res.hash)
+        delete tx.confirmations
+        tx.value = tx.value.toString()
+        tx.gasPrice = tx.gasPrice.toString()
+        tx.gasLimit = tx.gasLimit.toString()
+        return tx
+      },
+      executed: async () => {
+        const res = await pendingTx
+        const tx = await this.provider.getTransactionReceipt(res.hash)
+        delete tx.confirmations
+        tx.gasUsed = tx.gasUsed.toString()
+        tx.cumulativeGasUsed = tx.cumulativeGasUsed.toString()
+        return tx
+      },
+      confirmed: () => pendingTx.then(res => res.wait(10)),
+    }
   }
 
   async getTransactionsCount (address) {
@@ -46,11 +98,5 @@ export default class Sdk {
       length: 0,
       list: []
     }
-  }
-
-  contractFrom (options) {
-  }
-
-  async contract (abi, method, ...args) {
   }
 }

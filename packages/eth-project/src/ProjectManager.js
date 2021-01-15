@@ -6,7 +6,7 @@ import { ProjectManager, BaseProjectManager } from '@obsidians/workspace'
 
 import { networkManager } from '@obsidians/eth-network'
 import compilerManager from '@obsidians/eth-compiler'
-import { signatureProvider, Account, utils } from '@obsidians/sdk'
+import { utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 import moment from 'moment'
@@ -111,15 +111,18 @@ function makeProjectManager (Base) {
         return
       }
   
-      const signer = new Account(allParameters.signer, signatureProvider)
-      const contractInstance = networkManager.sdk.contractFrom(contractObj)
       const { parameters } = allParameters
 
       let result
       try {
-        result = await contractInstance.constructor
-          .call(...parameters.array)
-          .estimateGasAndCollateral({ from: signer })
+        const tx = await networkManager.sdk.getDeployTransaction({
+          abi: contractObj.abi,
+          bytecode: contractObj.bytecode,
+          parameters: parameters.array
+        }, {
+          from: allParameters.signer,
+        })
+        result = await networkManager.sdk.estimate(tx)
       } catch (e) {
         notification.error('Estimate Error', e.message)
         return
@@ -149,22 +152,27 @@ function makeProjectManager (Base) {
       this.deployButton.setState({ pending: true, result: '' })
   
       const networkId = networkManager.sdk.networkId
-      const signer = new Account(allParameters.signer, signatureProvider)
-      const contractInstance = networkManager.sdk.contractFrom(contractObj)
       const { parameters, gas, gasPrice, storageLimit } = allParameters
-      const codeHash = utils.sign.sha3(Buffer.from(deployedBytecode.replace('0x', ''), 'hex')).toString('hex')
+      const codeHash = utils.sign.sha3(deployedBytecode)
   
       let result
       try {
+        const tx = await networkManager.sdk.getDeployTransaction({
+          abi: contractObj.abi,
+          bytecode: contractObj.bytecode,
+          parameters: parameters.array
+        }, {
+          from: allParameters.signer,
+          gas, gasPrice, storageLimit
+        })
+
         result = await new Promise((resolve, reject) => {
           queue.add(
-            () => contractInstance.constructor
-              .call(...parameters.array)
-              .sendTransaction({ from: signer, gas, gasPrice, storageLimit }),
+            () => networkManager.sdk.sendTransaction(tx),
             {
               name: 'Deploy',
               contractName,
-              signer: signer.address,
+              signer: allParameters.signer,
               abi: contractObj.abi,
               params: parameters.obj,
               gas, gasPrice, storageLimit,
@@ -175,8 +183,8 @@ function makeProjectManager (Base) {
               executed: ({ tx, receipt, abi }) => {
                 resolve({
                   network: networkId,
-                  contractCreated: receipt.contractCreated,
-                  codeHash: `0x${codeHash}`,
+                  contractCreated: receipt.contractAddress,
+                  codeHash,
                   ...parameters,
                   tx,
                   receipt,

@@ -1,9 +1,6 @@
 import { ethers } from 'ethers'
 
 const util = {
-  sign: {
-    sha3: () => ''
-  },
   format: {
     bytes: () => ''
   }
@@ -11,7 +8,7 @@ const util = {
 
 export default {
   sign: {
-    sha3: util.sign.sha3
+    sha3: ethers.utils.keccak256
   },
   format: {
     bytes: util.format.bytes

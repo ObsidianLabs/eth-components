@@ -37,8 +37,9 @@ class Queue extends BaseQueueManager {
       return
     } else {
       const gasUsed = receipt.gasUsed.toString()
-      const gasFee = receipt.gasFee.toString()
-      notification.info('Transaction Executed', `Gas used ${gasUsed}, gas fee ${gasFee}`)
+      // const gasFee = receipt.gasFee.toString()
+      notification.info('Transaction Executed', `Gas used ${gasUsed}.`)
+      // notification.info('Transaction Executed', `Gas used ${gasUsed}, gas fee ${gasFee}`)
     }
     this.updateStatus(txHash, 'EXECUTED', { receipt }, callbacks)
 

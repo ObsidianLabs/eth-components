@@ -13,10 +13,10 @@ import {
 } from '@obsidians/ui-components'
 
 import notification from '@obsidians/notification'
-import { signatureProvider, Account, utils } from '@obsidians/sdk'
+import { utils } from '@obsidians/sdk'
 import { KeypairInputSelector } from '@obsidians/keypair'
 import queue from '@obsidians/eth-queue'
-
+import { networkManager } from '@obsidians/eth-network'
 import Highlight from 'react-highlight'
 
 import DropdownCard from './DropdownCard'
@@ -55,15 +55,14 @@ export default class ContractActions extends Component {
       return
     }
 
-    const signer = new Account(this.state.signer, signatureProvider)
-    
-    const value = utils.unit.toValue(this.state.amount || 0)
-
     let result
     try {
-      result = await this.props.contract[actionName]
-        .call(...parameters.array)
-        .estimateGasAndCollateral({ from: signer, value })
+      const value = utils.unit.toValue(this.state.amount || '0')
+      const tx = await this.props.contract.execute(actionName, parameters.array, {
+        from: this.state.signer,
+        value,
+      })
+      result = await networkManager.sdk.estimate(tx)
     } catch (e) {
       notification.error('Estimate Error', e.message)
       return
@@ -95,25 +94,29 @@ export default class ContractActions extends Component {
     }
 
     this.setState({ executing: true, actionError: '', actionResult: '' })
-    // this.notification = notification.info(`Waiting`, `Waiting for transaction confirmation...`, 0)
 
-    const signer = new Account(this.state.signer, signatureProvider)
-    
-    let result = {}
-    const value = utils.unit.toValue(this.state.amount || 0)
+    const signer = this.state.signer
     const gas = this.state.gas || 1000000
     const gasPrice = this.state.gasPrice || 100
     const storageLimit = this.state.storage || undefined
+
+    let result = {}
     try {
+      const value = utils.unit.toValue(this.state.amount || '0')
+      const tx = await this.props.contract.execute(actionName, parameters.array, {
+        from: signer,
+        value,
+        // gas,
+        // gasPrice,
+        // storageLimit
+      })
       await queue.add(
-        () => this.props.contract[actionName]
-          .call(...parameters.array)
-          .sendTransaction({ from: signer, value, gas, gasPrice, storageLimit }),
+        () => networkManager.sdk.sendTransaction(tx),
         {
           contractAddress: this.props.contract.address,
           name: actionName,
           functionName: actionName,
-          signer: signer.address,
+          signer,
           params: parameters.obj,
           value, gas, gasPrice, storageLimit,
         }

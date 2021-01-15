@@ -23,7 +23,7 @@ export default class TransactionDetails extends PureComponent {
   renderContent = (tx, selected) => {
     const { txHash, status, data } = tx
     const {
-      contractAddress,
+      // contractAddress,
       functionName,
       contractName,
       signer, params,
@@ -33,6 +33,7 @@ export default class TransactionDetails extends PureComponent {
       receipt,
       abi,
     } = data || {}
+    const contractAddress = receipt?.contractAddress
 
     if (selected === 'basic') {
       return (

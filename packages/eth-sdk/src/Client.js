@@ -13,6 +13,8 @@ export default class Client {
 
   async getAccount (address) {
     const balance = await this.provider.getBalance(address)
-    return { balance, code: '' }
+    const code = await this.provider.getCode(address)
+    const codeHash = ethers.utils.keccak256(code)
+    return { balance, codeHash }
   }
 }

@@ -11,7 +11,6 @@ import {
 import { KeypairInputSelector } from '@obsidians/keypair'
 
 import { utils } from '@obsidians/sdk'
-import JSBI from 'jsbi'
 
 const optionItemFromValue = (value, type) => {
   let icon = null
@@ -258,14 +257,14 @@ export default class ContractForm extends PureComponent {
     if (type.startsWith('int') || type.startsWith('uint')) {
       let number
       try {
-        number = JSBI.BigInt(value)
+        number = BigInt(value)
       } catch (e) {
         throw new Error(`The entered value of <b>${name}</b> is not an integer number.`)
       }
-      if (type.startsWith('uint') && JSBI.LT(number, 0)) {
+      if (type.startsWith('uint') && number < BigInt(0)) {
         throw new Error(`The entered value of <b>${name}</b> is not a unsigned integer.`)
       }
-      return { display: number.toString(), raw: number }
+      return { display: number.toString(), raw: number.toString() }
     }
     
     return { display: value, raw: value }

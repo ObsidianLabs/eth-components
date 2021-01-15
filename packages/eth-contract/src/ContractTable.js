@@ -48,19 +48,13 @@ export default class ContractTable extends Component {
 
     let result
     try {
-      result = await this.props.contract[actionName].call(...parameters.array)
+      result = await this.props.contract.query(actionName, parameters.array)
     } catch (e) {
       console.warn(e)
-      // if (!this.state.executing) {
-      //   return
-      // }
       this.setState({ executing: false, actionError: e.message, actionResult: '' })
       return
     }
 
-    // if (!this.state.executing) {
-    //   return
-    // }
     this.setState({
       executing: false,
       actionError: '',

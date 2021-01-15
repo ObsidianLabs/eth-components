@@ -113,7 +113,10 @@ export default class Explorer extends PureComponent {
         onRefresh={this.onRefresh}
         onTabsUpdated={this.props.onTabsUpdated}
         NavbarButtons={(
-          this.props.network === 'testnet' && <FaucetButton address={value} network={this.props.network} />
+          <React.Fragment>
+            <TransferButton from={value} />
+            {this.props.network === 'testnet' && <FaucetButton address={value} network={this.props.network} />}
+          </React.Fragment>
         )}
       >
         <CacheRoute
