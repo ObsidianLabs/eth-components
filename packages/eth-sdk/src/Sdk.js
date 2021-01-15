@@ -58,7 +58,7 @@ export default class Sdk {
 
   async estimate (tx) {
     const result = await this.provider.estimateGas(tx)
-    return { gasUsed: result.toString() }
+    return { gasLimit: result.toString() }
   }
 
   sendTransaction (tx) {

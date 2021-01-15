@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react'
+import classnames from 'classnames'
+
 import {
   FormGroup,
   Label,
@@ -155,6 +157,22 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
       <DebouncedInput size={size} addon={children} {...props} />
     )
   }
+}
+
+export function ActionParamFormGroup ({ size, className, label, placeholder, value, onChange, icon }) {
+  return (
+    <FormGroup className={classnames(className, size === 'sm' && 'mb-2')}>
+      <Label className={size === 'sm' && 'mb-1 small font-weight-bold'}>{label}</Label>
+      <ActionParamInput
+        size={size}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+      >
+        <span><i className={icon} /></span>
+      </ActionParamInput>
+    </FormGroup>
+  )
 }
 
 const paramInputIcons = {

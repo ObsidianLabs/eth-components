@@ -4,14 +4,14 @@ import {
   Modal,
   Button,
   UncontrolledTooltip,
-  FormGroup,
   Label,
 } from '@obsidians/ui-components'
 
 import notification from '@obsidians/notification'
 import { KeypairInputSelector } from '@obsidians/keypair'
+import { txOptions } from '@obsidians/sdk'
 
-import { ContractForm, ActionParamInput } from '@obsidians/eth-contract'
+import { ContractForm, ActionParamFormGroup } from '@obsidians/eth-contract'
 
 export default class DeployerButton extends PureComponent {
   constructor (props) {
@@ -20,9 +20,6 @@ export default class DeployerButton extends PureComponent {
       pending: false,
       constructorAbi: null,
       contractName: '',
-      gas: '',
-      gasPrice: '',
-      storage: '',
       signer: '',
     }
     this.modal = React.createRef()
@@ -41,12 +38,12 @@ export default class DeployerButton extends PureComponent {
 
   getDeploymentParameters = (constructorAbi, contractName, callback, estimate) => {
     this.modal.current.openModal()
+    const options = {}
+    txOptions.list.forEach(opt => options[opt.name] = '')
     this.setState({
       constructorAbi,
       contractName,
-      gas: '',
-      gasPrice: '',
-      storage: '',
+      ...options,
     })
     this.callback = callback
     this.estimateCallback = estimate
@@ -62,19 +59,14 @@ export default class DeployerButton extends PureComponent {
       }
     }
 
-    const { signer, gas, gasPrice, storage } = this.state
-    const result = await this.estimateCallback({
-      parameters,
-      signer,
-      gas: gas || 1000000,
-      gasPrice: gasPrice || 100,
-      storageLimit: storage || undefined
-    })
+    const { signer } = this.state
+    const options = {}
+    txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+
+    const result = await this.estimateCallback({ parameters, signer, ...options })
 
     if (result) {
-      const gas = result.gasUsed?.toString() || ''
-      const storage = result.storageCollateralized?.toString() || ''
-      this.setState({ gas, storage })
+      this.setState(result)
     }
   }
 
@@ -88,14 +80,12 @@ export default class DeployerButton extends PureComponent {
         return
       }
     }
-    const { signer, gas, gasPrice, storage } = this.state
-    this.callback({
-      parameters,
-      signer,
-      gas: gas || 1000000,
-      gasPrice: gasPrice || 100,
-      storageLimit: storage || undefined
-    })
+
+    const { signer } = this.state
+    const options = {}
+    txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+
+    this.callback({ parameters, signer, ...options })
   }
 
   closeModal = () => {
@@ -153,38 +143,19 @@ export default class DeployerButton extends PureComponent {
           onChange={signer => this.setState({ signer })}
         />
         <div className='row'>
-          <FormGroup className='col-4'>
-            <Label>Gas Limit</Label>
-            <ActionParamInput
-              size='sm'
-              placeholder={`Default: 1,000,000`}
-              value={this.state.gas}
-              onChange={gas => this.setState({ gas })}
-            >
-              <span><i className='fas fa-burn' /></span>
-            </ActionParamInput>
-          </FormGroup>
-          <FormGroup className='col-4'>
-            <Label>Gas Price</Label>
-            <ActionParamInput
-              size='sm'
-              placeholder={`Default: 100 drip`}
-              value={this.state.gasPrice}
-              onChange={gasPrice => this.setState({ gasPrice })}
-            >
-              <span><i className='fas fa-dollar-sign' /></span>
-            </ActionParamInput>
-          </FormGroup>
-          <FormGroup className='col-4'>
-            <Label>Storage Limit</Label>
-            <ActionParamInput
-              size='sm'
-              value={this.state.storage}
-              onChange={storage => this.setState({ storage })}
-            >
-              <span><i className='fas fa-hdd' /></span>
-            </ActionParamInput>
-          </FormGroup>
+          {
+            txOptions.list.map(option => (
+              <ActionParamFormGroup
+                key={`deploy-param-${option.name}`}
+                className={option.className}
+                label={option.label}
+                icon={option.icon}
+                placeholder={option.placeholder}
+                value={this.state[option.name]}
+                onChange={value => this.setState({ [option.name]: value })}
+              />
+            ))
+          }
         </div>
       </Modal>
     </>

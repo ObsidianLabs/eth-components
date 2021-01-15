@@ -7,20 +7,18 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  FormGroup,
-  Label,
   Badge,
 } from '@obsidians/ui-components'
 
 import notification from '@obsidians/notification'
-import { utils } from '@obsidians/sdk'
+import { txOptions, utils } from '@obsidians/sdk'
 import { KeypairInputSelector } from '@obsidians/keypair'
 import queue from '@obsidians/eth-queue'
 import { networkManager } from '@obsidians/eth-network'
 import Highlight from 'react-highlight'
 
 import DropdownCard from './DropdownCard'
-import ContractForm, { ActionParamInput } from './ContractForm'
+import ContractForm, { ActionParamFormGroup } from './ContractForm'
 
 export default class ContractActions extends Component {
   state = {
@@ -69,9 +67,7 @@ export default class ContractActions extends Component {
     }
 
     if (result) {
-      const gas = result.gasUsed?.toString() || ''
-      const storage = result.storageCollateralized?.toString() || ''
-      this.setState({ gas, storage })
+      this.setState(result)
     }
   }
 
@@ -96,9 +92,9 @@ export default class ContractActions extends Component {
     this.setState({ executing: true, actionError: '', actionResult: '' })
 
     const signer = this.state.signer
-    const gas = this.state.gas || 1000000
-    const gasPrice = this.state.gasPrice || 100
-    const storageLimit = this.state.storage || undefined
+
+    const options = {}
+    txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
     let result = {}
     try {
@@ -106,9 +102,7 @@ export default class ContractActions extends Component {
       const tx = await this.props.contract.execute(actionName, parameters.array, {
         from: signer,
         value,
-        // gas,
-        // gasPrice,
-        // storageLimit
+        ...options,
       })
       await queue.add(
         () => networkManager.sdk.sendTransaction(tx),
@@ -118,7 +112,8 @@ export default class ContractActions extends Component {
           functionName: actionName,
           signer,
           params: parameters.obj,
-          value, gas, gasPrice, storageLimit,
+          value,
+          ...options,
         }
       )
     } catch (e) {
@@ -215,23 +210,19 @@ export default class ContractActions extends Component {
             />
             {
               (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
-              <FormGroup className='mb-2'>
-                <Label className='mb-1 small font-weight-bold'>{process.env.TOKEN_SYMBOL} to Transfer</Label>
-                <ActionParamInput
-                  size='sm'
-                  type='name'
-                  placeholder={`Default: 0`}
-                  value={this.state.amount}
-                  onChange={amount => this.setState({ amount })}
-                >
-                  <span><i className='fas fa-coins' /></span>
-                </ActionParamInput>
-              </FormGroup> : null
+              <ActionParamFormGroup
+                size='sm'
+                label={`${process.env.TOKEN_SYMBOL} to Transfer`}
+                placeholder='Default: 0'
+                value={this.state.amount}
+                onChange={amount => this.setState({ amount })}
+                icon='fas fa-coins'
+              /> : null
             }
           </DropdownCard>
           <DropdownCard
             isOpen
-            title={`Gas & Storage`}
+            title={txOptions.title}
             right={
               <Badge color='primary' onClick={evt => {
                 evt.stopPropagation()
@@ -239,38 +230,19 @@ export default class ContractActions extends Component {
               }}>Estimate</Badge>
             }
           >
-            <FormGroup className='mb-2'>
-              <Label className='mb-1 small font-weight-bold'>Gas Limit</Label>
-              <ActionParamInput
-                size='sm'
-                placeholder={`Default: 1,000,000`}
-                value={this.state.gas}
-                onChange={gas => this.setState({ gas })}
-              >
-                <span><i className='fas fa-burn' /></span>
-              </ActionParamInput>
-            </FormGroup>
-            <FormGroup className='mb-2'>
-              <Label className='mb-1 small font-weight-bold'>Gas Price</Label>
-              <ActionParamInput
-                size='sm'
-                placeholder={`Default: 100 drip`}
-                value={this.state.gasPrice}
-                onChange={gasPrice => this.setState({ gasPrice })}
-              >
-                <span><i className='fas fa-dollar-sign' /></span>
-              </ActionParamInput>
-            </FormGroup>
-            <FormGroup className='mb-2'>
-              <Label className='mb-1 small font-weight-bold'>Storage Limit</Label>
-              <ActionParamInput
-                size='sm'
-                value={this.state.storage}
-                onChange={storage => this.setState({ storage })}
-              >
-                <span><i className='fas fa-hdd' /></span>
-              </ActionParamInput>
-            </FormGroup>
+            {
+              txOptions.list.map(option => (
+                <ActionParamFormGroup
+                  size='sm'
+                  key={`param-${option.name}`}
+                  label={option.label}
+                  icon={option.icon}
+                  placeholder={option.placeholder}
+                  value={this.state[option.name]}
+                  onChange={value => this.setState({ [option.name]: value })}
+                />
+              ))
+            }
           </DropdownCard>
           <DropdownCard
             isOpen
