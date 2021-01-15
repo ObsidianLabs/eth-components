@@ -1,6 +1,6 @@
 import notification from '@obsidians/notification'
 import { BaseQueueManager } from '@obsidians/queue'
-import { abi } from '@obsidians/sdk'
+import { utils } from '@obsidians/sdk'
 
 class Queue extends BaseQueueManager {
   async process (pendingTransaction, txHash, data, callbacks) {
@@ -24,7 +24,7 @@ class Queue extends BaseQueueManager {
     const receipt = await pendingTransaction.executed()
     if (receipt.outcomeStatus) {
       pendingTransaction.cfx.call(tx, tx.epochHeight - 1).catch(err => {
-        const decoded = abi.errorCoder.decodeError({ data: err.data.replace(/\"/g, '') })
+        const decoded = utils.abi.errorCoder.decodeError({ data: err.data.replace(/\"/g, '') })
         notification.error('Transaction Failed', decoded.message)
 
         this.updateStatus(txHash, 'FAILED', { receipt, error: {
