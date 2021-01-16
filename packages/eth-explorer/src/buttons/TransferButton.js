@@ -48,10 +48,9 @@ export default class TransferButton extends PureComponent {
 
     const { recipient: to, amount } = this.state
     const from = this.props.from
-    
-    const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount })
 
     try {
+      const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount })
       await queue.add(
         () => networkManager.sdk.sendTransaction(tx),
         {

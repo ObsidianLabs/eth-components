@@ -1,3 +1,4 @@
+import platform from '@obsidians/platform'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 import Sdk from '@obsidians/sdk'
@@ -8,6 +9,10 @@ class NetworkManager {
   constructor () {
     this._sdk = null
     this.network = undefined
+
+    if (platform.isWeb && Sdk.InitBrowserExtension) {
+      this.browserExtension = Sdk.InitBrowserExtension(this)
+    }
   }
 
   get networkId () {
@@ -35,7 +40,13 @@ class NetworkManager {
     this._sdk = new Sdk({ ...this.network, ...params })
   }
 
-  async setNetwork (network) {
+  setNetwork (network, force) {
+    if (this.browserExtension && !force) {
+      if (redux.getState().network) {
+        notification.info(`Please use MetaMask to switch the network.`)
+      }
+      return
+    }
     if (!network || network.id === redux.getState().network) {
       return
     }
@@ -52,6 +63,7 @@ class NetworkManager {
 
     redux.dispatch('SELECT_NETWORK', network.id)
     notification.success(`Network`, network.notification)
+    return true
   }
 }
 

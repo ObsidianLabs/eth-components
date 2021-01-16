@@ -100,8 +100,10 @@ export default class Header extends PureComponent {
         selected: network,
         dropdown: networkList,
         onClickItem: (networkId, network) => {
-          headerActions.updateNetwork(networkId)
-          networkManager.setNetwork(network)
+          const success = networkManager.setNetwork(network)
+          if (success) {
+            headerActions.updateNetwork(networkId)
+          }
         },
       },
     ]

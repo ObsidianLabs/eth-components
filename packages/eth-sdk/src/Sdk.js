@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 
+import BrowserExtension from './BrowserExtension'
 import utils from './utils'
 import Client from './Client'
 import Contract from './Contract'
@@ -12,6 +13,12 @@ export default class Sdk {
     this.url = url
     this.chainId = chainId
     this.explorer = explorer
+  }
+
+  static InitBrowserExtension (networkManager) {
+    if (window.ethereum && window.ethereum.isMetaMask) {
+      return new BrowserExtension(networkManager, window.ethereum)
+    }
   }
 
   get provider () {
@@ -62,31 +69,40 @@ export default class Sdk {
   }
 
   sendTransaction (tx) {
-    const sp = signatureProvider(tx.from)
-    const pendingTx = sp(tx).then(signedTx => this.provider.sendTransaction(signedTx))
-
-    return {
-      then: callback => pendingTx.then(res => callback(res.hash)),
-      mined: async () => {
-        const res = await pendingTx
-        await res.wait(1)
-        const tx = await this.provider.getTransaction(res.hash)
-        delete tx.confirmations
-        tx.value = tx.value.toString()
-        tx.gasPrice = tx.gasPrice.toString()
-        tx.gasLimit = tx.gasLimit.toString()
-        return tx
-      },
-      executed: async () => {
-        const res = await pendingTx
-        const tx = await this.provider.getTransactionReceipt(res.hash)
-        delete tx.confirmations
-        tx.gasUsed = tx.gasUsed.toString()
-        tx.cumulativeGasUsed = tx.cumulativeGasUsed.toString()
-        return tx
-      },
-      confirmed: () => pendingTx.then(res => res.wait(10)),
+    let pendingTx
+    if (this.provider.isMetaMask) {
+      const signer = this.provider.getSigner(tx.from)
+      pendingTx = signer.sendTransaction(tx)
+    } else {
+      const sp = signatureProvider(tx.from)
+      pendingTx = sp(tx).then(signedTx => this.provider.sendTransaction(signedTx))
     }
+
+    const promise = pendingTx.then(res => resolve(res.hash))
+
+    promise.mined = async () => {
+      const res = await pendingTx
+      await res.wait(1)
+      const tx = await this.provider.getTransaction(res.hash)
+      delete tx.confirmations
+      tx.value = tx.value.toString()
+      tx.gasPrice = tx.gasPrice.toString()
+      tx.gasLimit = tx.gasLimit.toString()
+      return tx
+    }
+
+    promise.executed = async () => {
+      const res = await pendingTx
+      const tx = await this.provider.getTransactionReceipt(res.hash)
+      delete tx.confirmations
+      tx.gasUsed = tx.gasUsed.toString()
+      tx.cumulativeGasUsed = tx.cumulativeGasUsed.toString()
+      return tx
+    }
+
+    promise.confirmed = () => pendingTx.then(res => res.wait(10))
+
+    return promise
   }
 
   async getTransactionsCount (address) {
