@@ -78,7 +78,7 @@ export default class Sdk {
       pendingTx = sp(tx).then(signedTx => this.provider.sendTransaction(signedTx))
     }
 
-    const promise = pendingTx.then(res => resolve(res.hash))
+    const promise = pendingTx.then(res => res.hash)
 
     promise.mined = async () => {
       const res = await pendingTx
