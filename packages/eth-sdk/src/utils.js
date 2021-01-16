@@ -17,5 +17,6 @@ export default {
     fromValue: ethers.utils.formatEther,
     toValue: ethers.utils.parseEther,
     valueToGvalue: v => ethers.utils.formatUnits(v, 'gwei')
-  }
+  },
+  decodeError: () => ''
 }
