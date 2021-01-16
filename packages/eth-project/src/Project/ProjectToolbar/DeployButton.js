@@ -133,7 +133,7 @@ export default class DeployerButton extends PureComponent {
         title={<span>Deploy Contract <b>{this.state.contractName}</b></span>}
         textConfirm='Deploy'
         onConfirm={this.confirmDeploymentParameters}
-        textActions={['Estimate Gas & Collateral']}
+        textActions={[`Estimate ${txOptions.title}`]}
         onActions={[this.estimate]}
       >
         {constructorParameters}
