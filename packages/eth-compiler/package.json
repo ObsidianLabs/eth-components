@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@obsidians/docker": "^0.1.0",
+    "@obsidians/eth-network": "^0.1.0",
     "@obsidians/file-ops": "^0.1.0",
     "@obsidians/notification": "^0.1.0",
     "@obsidians/terminal": "^0.1.1",
