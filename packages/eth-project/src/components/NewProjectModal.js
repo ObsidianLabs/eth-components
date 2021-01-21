@@ -33,7 +33,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         `--name ${process.env.PROJECT}-create-project`,
         `-v "${projectDir}:/project/${name}"`,
         `-w "/project/${name}"`,
-        `${process.env.DOCKER_IMAGE_TRUFFLE}:${truffleVersion}`,
+        `${process.env.DOCKER_IMAGE_COMPILER}:${truffleVersion}`,
         `${process.env.COMPILER_EXECUTABLE_NAME} unbox ${template}`,
       ].join(' ')
 

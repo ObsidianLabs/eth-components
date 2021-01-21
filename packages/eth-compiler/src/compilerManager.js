@@ -5,17 +5,22 @@ import semver from 'semver'
 
 class Compiler {
   constructor () {
-    this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_TRUFFLE)
+    this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
     this.solc = new DockerImageChannel('ethereum/solc', {
       filter: v => semver.valid(v) && !v.endsWith('alpine')
     })
     this._terminal = null
+    this._truffleTerminal = null
     this._button = null
     this.notification = null
   }
 
   set terminal (v) {
     this._terminal = v
+  }
+
+  set truffleTerminal (v) {
+    this._truffleTerminal = v
   }
 
   set button (v) {
@@ -61,6 +66,7 @@ class Compiler {
     }
 
     this._button.setState({ building: true })
+    this.switchCompilerConsole('project')
     this.notification = notification.info(`Building Project`, `Building...`, 0)
 
     const cmd = this.generateBuildCmd({ projectRoot, config })
@@ -86,14 +92,13 @@ class Compiler {
   }
 
   generateBuildCmd({ projectRoot, config }) {
-    // const { base: name } = fileOps.current.path.parse(projectRoot)
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
       '-v /var/run/docker.sock:/var/run/docker.sock',
       `-v "${projectDir}:${projectDir}"`,
       `-w "${projectDir}"`,
-      `${process.env.DOCKER_IMAGE_TRUFFLE}:${config[process.env.COMPILER_VERSION_KEY]}`,
+      `${process.env.DOCKER_IMAGE_COMPILER}:${config[process.env.COMPILER_VERSION_KEY]}`,
       `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
     
