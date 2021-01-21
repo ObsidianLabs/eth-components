@@ -48,6 +48,20 @@ export default class InstanceRow extends PureComponent {
     return <NodeStatus />
   }
 
+  renderConfigButton = () => {
+    if (!this.props.configButton) {
+      return null
+    }
+    return (
+      <IconButton
+        color='transparent'
+        className='mr-1 text-muted'
+        onClick={() => this.props.onOpenConfig(data)}
+        icon='fas fa-cog'
+      />
+    )
+  }
+
   deleteInstance = async name => {
     await instanceChannel.invoke('delete', name)
     this.props.onRefresh()
@@ -71,12 +85,7 @@ export default class InstanceRow extends PureComponent {
         <td>{this.renderBlockNumber(name)}</td>
         <td align='right'>
           <div className='d-flex align-items-center justify-content-end'>
-            <IconButton
-              color='transparent'
-              className='mr-1 text-muted'
-              onClick={() => this.props.onOpenConfig(data)}
-              icon='fas fa-cog'
-            />
+            {this.renderConfigButton()}
             <DeleteButton onConfirm={() => this.deleteInstance(name)} />
           </div>
         </td>
