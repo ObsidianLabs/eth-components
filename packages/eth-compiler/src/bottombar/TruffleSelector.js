@@ -2,7 +2,7 @@ import React from 'react'
 
 import { DockerImageSelector } from '@obsidians/docker'
 import { BaseProjectManager } from '@obsidians/workspace'
-import compilerManager from '@obsidians/eth-compiler'
+import compilerManager from '../compilerManager'
 
 export default () => {
   const [selected, onSelected] = React.useState('')

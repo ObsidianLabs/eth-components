@@ -6,7 +6,7 @@ import { TerminalButton } from '@obsidians/workspace'
 
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
-import { SolcButton, TruffleButton } from '@obsidians/eth-project'
+import { CompilerSelectors } from '@obsidians/compiler'
 
 export default function BottomBar (props) {
   return <>
@@ -25,11 +25,7 @@ export default function BottomBar (props) {
     <div className='flex-1' />
     <CacheRoute
       path={`/local/:project`}
-      component={TruffleButton}
-    />
-    <CacheRoute
-      path={`/local/:project`}
-      component={SolcButton}
+      component={CompilerSelectors}
     />
     <CacheRoute
       path={`/local/:project`}

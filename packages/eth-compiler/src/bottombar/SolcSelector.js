@@ -5,7 +5,7 @@ import { DropdownItem } from '@obsidians/ui-components'
 import notification from '@obsidians/notification'
 import { DockerImageSelector } from '@obsidians/docker'
 import { BaseProjectManager } from '@obsidians/workspace'
-import compilerManager from '@obsidians/eth-compiler'
+import compilerManager from '../compilerManager'
 
 let n
 

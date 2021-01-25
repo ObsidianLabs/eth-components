@@ -6,7 +6,7 @@ import notification from '@obsidians/notification'
 
 import { NewProjectModal } from '@obsidians/workspace'
 import { DockerImageInputSelector } from '@obsidians/docker'
-import compilerManager from '@obsidians/eth-compiler'
+import compilerManager from '@obsidians/compiler'
 
 export default class ExtendedNewProjectModal extends NewProjectModal {
   constructor (props) {

@@ -5,7 +5,7 @@ import redux from '@obsidians/redux'
 import { ProjectManager, BaseProjectManager } from '@obsidians/workspace'
 
 import { networkManager } from '@obsidians/eth-network'
-import compilerManager from '@obsidians/eth-compiler'
+import compilerManager from '@obsidians/compiler'
 import { utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
@@ -33,7 +33,7 @@ function makeProjectManager (Base) {
       this.toggleTerminal(true)
   
       try {
-        await compilerManager.build(settings.compilers)
+        await compilerManager.build(settings)
       } catch (e) {
         console.warn(e)
         return false

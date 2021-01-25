@@ -2,6 +2,9 @@ import React from 'react'
 
 import {
   DebouncedFormGroup,
+  FormGroup,
+  Label,
+  CustomInput,
 } from '@obsidians/ui-components'
 
 import {
@@ -12,7 +15,7 @@ import {
 } from '@obsidians/workspace'
 
 import { DockerImageInputSelector } from '@obsidians/docker'
-import compilerManager from '@obsidians/eth-compiler'
+import compilerManager from '@obsidians/compiler'
 
 export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   static contextType = WorkspaceContext
@@ -23,6 +26,27 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   
   componentWillUnmount () {
     BaseProjectManager.channel.off('settings', this.debouncedUpdate)
+  }
+
+  renderLanguageOption = projectSettings => {
+    if (!this.props.languages?.length) {
+      return null
+    }
+
+    return (
+      <FormGroup>
+        <Label>Project language</Label>
+        <CustomInput
+          id='settings-language'
+          type='select'
+          className='bg-black'
+          value={projectSettings?.get('language')}
+          onChange={event => this.onChange('language')(event.target.value)}
+        >
+          {this.props.languages.map(item => <option key={item.key} value={item.key}>{item.text}</option>)}
+        </CustomInput>
+      </FormGroup>
+    )
   }
 
   render () {
@@ -36,8 +60,8 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             <ProjectPath projectRoot={projectRoot} />
 
             <h4 className='mt-4'>General</h4>
+            {this.renderLanguageOption(projectSettings)}
             <DebouncedFormGroup
-              code
               label='Main file'
               className='bg-black'
               value={projectSettings?.get('main')}
@@ -45,7 +69,6 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               placeholder={`Required`}
             />
             <DebouncedFormGroup
-              code
               label='Smart contract to deploy'
               className='bg-black'
               value={projectSettings?.get('deploy')}
