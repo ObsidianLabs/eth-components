@@ -1,5 +1,6 @@
 import React from 'react'
 
+import platform from '@obsidians/platform'
 import { DropdownItem } from '@obsidians/ui-components'
 
 import notification from '@obsidians/notification'
@@ -35,13 +36,20 @@ export default () => {
       selected={selected}
       onSelected={v => BaseProjectManager.instance.projectSettings?.set('compilers.solc', v)}
     >
-      <DropdownItem
-        active={selected === 'default'}
-        onClick={() => BaseProjectManager.instance.projectSettings?.set('compilers.solc', 'default')}
-      >
-        Default Solc
-      </DropdownItem>
-      <DropdownItem divider />
+      {
+        platform.isDesktop
+        ? <>
+            <DropdownItem
+              active={selected === 'default'}
+              onClick={() => BaseProjectManager.instance.projectSettings?.set('compilers.solc', 'default')}
+            >
+              Default Solc
+            </DropdownItem>
+            <DropdownItem divider />
+          </>
+        : null
+      }
+      
     </DockerImageSelector>
   )
 }

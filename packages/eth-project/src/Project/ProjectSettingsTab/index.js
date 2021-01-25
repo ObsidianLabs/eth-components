@@ -14,6 +14,7 @@ import {
   ProjectPath,
 } from '@obsidians/workspace'
 
+import platform from '@obsidians/platform'
 import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
 
@@ -76,17 +77,20 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               placeholder={`Required`}
             />
             <h4 className='mt-4'>Compilers</h4>
-            <DockerImageInputSelector
-              channel={compilerManager.truffle}
-              disableAutoSelection
-              bg='bg-black'
-              label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
-              noneName={`${process.env.COMPILER_NAME}`}
-              modalTitle={`${process.env.COMPILER_NAME} Manager`}
-              downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-              selected={projectSettings?.get(`compilers.${process.env.COMPILER_VERSION_KEY}`)}
-              onSelected={truffle => this.onChange(`compilers.${process.env.COMPILER_VERSION_KEY}`)(truffle)}
-            />
+            {
+              platform.isDesktop &&
+              <DockerImageInputSelector
+                channel={compilerManager.truffle}
+                disableAutoSelection
+                bg='bg-black'
+                label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
+                noneName={`${process.env.COMPILER_NAME}`}
+                modalTitle={`${process.env.COMPILER_NAME} Manager`}
+                downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
+                selected={projectSettings?.get(`compilers.${process.env.COMPILER_VERSION_KEY}`)}
+                onSelected={truffle => this.onChange(`compilers.${process.env.COMPILER_VERSION_KEY}`)(truffle)}
+              />
+            }
             <DockerImageInputSelector
               channel={compilerManager.solc}
               disableAutoSelection
@@ -95,7 +99,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               noneName='solc'
               modalTitle='Solc Manager'
               downloadingTitle='Downloading Solc'
-              extraOptions={[{
+              extraOptions={platform.isDesktop && [{
                 id: 'default',
                 display: 'Default Solc',
                 onClick: () => this.onChange('compilers.solc')('default')
