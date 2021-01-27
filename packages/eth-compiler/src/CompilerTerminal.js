@@ -12,19 +12,19 @@ import Terminal from '@obsidians/terminal'
 import compilerManager from './compilerManager'
 import TruffleTerminal from './TruffleTerminal'
 
-const initialTabs = [
-  { key: 'project', text: <span key='compiler-project'><i className='fas fa-folder-open mr-1' />Project</span> },
-]
-
+const initialTabs = []
 if (platform.isDesktop) {
+  initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />Project</span> })
   initialTabs.push({ key: 'truffle', text: <span key='compiler-truffle'><i className='fas fa-cookie mr-1' />Truffle</span> })
+} else {
+  initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-hammer mr-1' />Compiler</span> })
 }
 
 export default class CompilerTerminal extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      activeTab: 'project'
+      activeTab: 'terminal'
     }
 
     compilerManager.switchCompilerConsole = this.switchCompilerConsole.bind(this)
@@ -46,17 +46,17 @@ export default class CompilerTerminal extends PureComponent {
         size='sm'
         headerClassName='nav-tabs-dark-active'
         noCloseTab
-        initialSelected='project'
+        initialSelected='terminal'
         initialTabs={initialTabs}
         onSelectTab={tab => this.setState({ activeTab: tab.key })}
       >
         <TabContent className='h-100 w-100' activeTab={activeTab}>
-          <TabPane className='h-100 w-100' tabId='project'>
+          <TabPane className='h-100 w-100' tabId='terminal'>
             <Terminal
               ref={ref => (compilerManager.terminal = ref)}
-              active={active && activeTab === 'project'}
+              active={active && activeTab === 'terminal'}
               cwd={cwd}
-              logId='compiler-project'
+              logId='compiler-terminal'
               input={platform.isDesktop}
             />
           </TabPane>

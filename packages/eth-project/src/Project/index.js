@@ -1,4 +1,5 @@
 import Workspace from '@obsidians/workspace'
+import platform from '@obsidians/platform'
 import fileOps from '@obsidians/file-ops'
 import { useBuiltinCustomTabs, modelSessionManager, defaultModeDetector } from '@obsidians/code-editor'
 import compilerManager, { CompilerTerminal } from '@obsidians/compiler'
@@ -28,7 +29,7 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
     return contextMenu
   }
   const cloned = [...contextMenu]
-  cloned.splice(5, 0, {
+  cloned.splice(platform.isDesktop ? 5: 3, 0, {
     text: 'Deploy',
     onClick: () => projectManager.deploy(node.path),
   }, null)

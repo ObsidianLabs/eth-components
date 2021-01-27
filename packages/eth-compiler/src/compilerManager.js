@@ -1,18 +1,41 @@
+import platform from '@obsidians/platform'
 import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
 import semver from 'semver'
 
+import SolcjsCompiler from './SolcjsCompiler'
+
+class SolcjsChannel extends DockerImageChannel {
+  installed () {
+    return true
+  }
+
+  versions () {
+    const versions = Object.keys(window.soljsonReleases).map(Tag => ({ Tag }))
+    const event = new CustomEvent('versions', { detail: versions })
+    this.eventTarget.dispatchEvent(event)
+    return versions
+  }
+}
+
 class CompilerManager {
   constructor () {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
-    this.solc = new DockerImageChannel('ethereum/solc', {
-      filter: v => semver.valid(v) && !v.endsWith('alpine')
-    })
+    if (platform.isDesktop) {
+      this.solc = new DockerImageChannel('ethereum/solc', {
+        filter: v => semver.valid(v) && !v.endsWith('alpine')
+      })
+    } else {
+      this.solc = new SolcjsChannel()
+    }
     this._terminal = null
     this._truffleTerminal = null
     this._button = null
     this.notification = null
+    if (platform.isWeb) {
+      this.solcjsCompiler = new SolcjsCompiler()
+    }
   }
 
   set terminal (v) {
@@ -40,7 +63,89 @@ class CompilerManager {
     }
   }
 
-  async build ({ compilers = {} }) {
+  async cacheSolcBin (url, version) {
+    const cacheStorage = await window.caches.open('solcjs')
+    const cached = await cacheStorage.match(url)
+
+    if (cached) {
+      return
+    }
+
+    this.notification = notification.info(`Downloading Solc Bin`, `Downloading <b>${version}</b>...`, 0)
+    const request = new Request(url, { mode: 'no-cors' })
+    const response = await fetch(request)
+    await cacheStorage.put(url, response)
+    this.notification.dismiss()
+  }
+
+  async buildBySolcjs (projectManager) {
+    if (!await projectManager.isMainValid) {
+      notification.error('No Main File', `Please specify the main file in project settings.`)
+      throw new Error('No Main File.')
+    }
+
+    const solcVersion = projectManager.projectSettings.get('compilers.solc')
+    const solcFileName = window.soljsonReleases[solcVersion]
+    const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
+
+    this._button.setState({ building: true })
+    await this.cacheSolcBin(solcUrl, solcFileName)
+
+    this._terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
+    this.notification = notification.info(`Building Project`, `Building...`, 0)
+    const output = await this.solcjsCompiler.compile(solcUrl, projectManager)
+
+    if (!output) {
+      this.notification.dismiss()
+      notification.error('Build Failed', ``)
+      this._button.setState({ building: false })
+      throw new Error('Build Failed.')
+    }
+
+    if (output.contracts) {
+      for (const file in output.contracts) {
+        for (const contractName in output.contracts[file]) {
+          const json = output.contracts[file][contractName]
+          const contractJsonPath = projectManager.pathForProjectFile(`build/contracts/${contractName}.json`)
+          const contractJson = JSON.stringify(json, null, 2)
+          await fileOps.current.writeFile(contractJsonPath, contractJson)
+        }
+      }
+      projectManager.refreshDirectory()
+      projectManager.refreshDirectory(projectManager.pathForProjectFile('build/contracts'))
+    }
+
+    console.log(output)
+
+    let hasError = false
+    output.errors?.forEach(error => {
+      let color
+      if (error.severity === 'error') {
+        hasError = true
+        color = '--color-danger'
+      } else if (error.severity === 'warning') {
+        color = '--color-warning'
+      }
+      this._terminal.writeToTerminal(error.type, color)
+      this._terminal.writeToTerminal(`${error.formattedMessage.replace(error.type, '').replace(/\n/g, '\n\r')}`)
+    })
+
+    this.notification.dismiss()
+    this._button.setState({ building: false })
+    if (hasError) {
+      notification.error('Build Failed', `Code has errors.`)
+    } else {
+      notification.success('Build Successful', `The smart contract is built.`)
+    }
+  }
+
+  async build (settings, projectManager) {
+    if (platform.isWeb) {
+      return await this.buildBySolcjs(projectManager)
+    }
+
+    const { compilers = {} } = settings
+
     const projectRoot = this.projectRoot
 
     if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
@@ -66,7 +171,7 @@ class CompilerManager {
     }
 
     this._button.setState({ building: true })
-    this.switchCompilerConsole('project')
+    this.switchCompilerConsole('terminal')
     this.notification = notification.info(`Building Project`, `Building...`, 0)
 
     const cmd = this.generateBuildCmd({ projectRoot, compilers })
@@ -81,7 +186,7 @@ class CompilerManager {
     this._button.setState({ building: false })
     this.notification.dismiss()
 
-    notification.success('Build Successful', `The smart contract is compiled.`)
+    notification.success('Build Successful', `The smart contract is built.`)
   }
 
   async stop () {
