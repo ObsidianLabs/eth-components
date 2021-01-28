@@ -105,14 +105,11 @@ export default class Sdk {
     return promise
   }
 
-  async getTransactionsCount (address) {
-    return 0
+  async getTransactionsCount () {
+    return
   }
 
-  async getTransactions (address, page = 1, size = 10) {
-    return {
-      length: 0,
-      list: []
-    }
+  async getTransactions (address, page = 0, size = 10) {
+    return await this.client.getTransactions(address, page, size)
   }
 }

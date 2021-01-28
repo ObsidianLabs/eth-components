@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import { Badge } from '@obsidians/ui-components'
 import { utils } from '@obsidians/sdk'
 
 export default class TransactionFee extends PureComponent {
@@ -11,16 +12,16 @@ export default class TransactionFee extends PureComponent {
     if (amount > 0.001) {
       fee = `${amount} ${process.env.TOKEN_SYMBOL}`
     } else if (gvalue > 0.001) {
-      fee = `${gvalue} Gdrip`
+      fee = `${gvalue} Gwei`
     } else {
-      fee = `${value} drip`
+      fee = `${value} wei`
     }
 
     const id = `tooltip-fee-${value}-${Math.floor(Math.random() * 1000)}`
-    return <>
-      <span id={id} style={{ cursor: 'default', display: 'block', textAlign: 'right' }}>
-        { fee }
-      </span>
-    </>
+    return (
+      <Badge pill>
+        {fee}
+      </Badge>
+    )
   }
 }

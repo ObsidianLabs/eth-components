@@ -1,4 +1,5 @@
 import platform from '@obsidians/platform'
+import headerActions from '@obsidians/header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 import Sdk from '@obsidians/sdk'
@@ -74,7 +75,7 @@ class NetworkManager {
 
     redux.dispatch('SELECT_NETWORK', network.id)
     notification.success(`Network`, network.notification)
-    return true
+    headerActions.updateNetwork(network.id)
   }
 }
 

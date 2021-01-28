@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react'
 
 import { Badge } from '@obsidians/ui-components'
+import { utils } from '@obsidians/sdk'
 
 import moment from 'moment'
 
-import TransactionTransfer from './TransactionTransfer'
 import TransactionFee from './TransactionFee'
 import Address from './Address'
 
@@ -15,21 +15,33 @@ export default class TransactionRow extends PureComponent {
 
   render () {
     const { tx, owner } = this.props
-    let TxComponent = <TransactionTransfer tx={tx} owner={owner} />
+
+    const amount = `${utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL}`
     return (
       <tr onClick={this.onClick}>
-        <td><small>{moment(tx.timestamp * 1000).format('MM/DD HH:mm:ss')}</small></td>
+        <td><small>{moment(tx.timeStamp * 1000).format('MM/DD HH:mm:ss')}</small></td>
+        <td><small>{tx.blockNumber}</small></td>
         <td>
           <div className='flex-1 overflow-hidden'>
             <Address addr={tx.hash} redirect={false}/>
           </div>
         </td>
-        <td>{TxComponent}</td>
         <td>
-          <TransactionFee value={tx.gasFee}/>
+          <Address addr={tx.from} showTooltip={false}/>
         </td>
         <td>
-          <TransactionFee value={tx.gasPrice}/>
+          <Address addr={tx.to} showTooltip={false}/>
+        </td>
+        <td align='right'>
+          <Badge pill color={tx.from === owner ? 'danger' : 'success'}>
+            {amount}
+          </Badge>
+        </td>
+        <td align='right'>
+          <Badge pill>{tx.gasUsed}</Badge>
+        </td>
+        <td align='right'>
+          <TransactionFee value={(BigInt(tx.gasPrice) * BigInt(tx.gasUsed)).toString()}/>
         </td>
       </tr>
     )
