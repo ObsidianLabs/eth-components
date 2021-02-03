@@ -13,6 +13,10 @@ export default class ProjectToolbar extends PureComponent {
     const { projectSettings, projectManager } = this.context
     const compilers = projectSettings?.get('compilers') || {}
 
+    const deployButton = process.env.PROJECT === 'platon' ?
+      null :
+      <DeployButton projectManager={projectManager} />
+
     return <>
       <CompilerButton
         className='rounded-0 border-0 flex-none w-5'
@@ -20,7 +24,7 @@ export default class ProjectToolbar extends PureComponent {
         solc={compilers.solc}
         onClick={() => projectManager.compile()}
       />
-      <DeployButton projectManager={projectManager} />
+      {deployButton}
       <div className='flex-1' />
       <ToolbarButton
         id='settings'

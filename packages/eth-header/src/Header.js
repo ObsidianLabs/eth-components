@@ -68,42 +68,44 @@ export default class Header extends PureComponent {
     const contractName = selectedContract && (internalContracts[selectedContract] || <code>{selectedContract}</code>)
     const accountName = selectedAccount && (this.state.keypairs.find(k => k.address === selectedAccount)?.name || <code>{selectedAccount}</code>)
 
-    const navbarRight = [
-      {
-        route: 'contract',
-        title: 'Contract',
-        icon: 'fas fa-file-invoice',
-        selected: { id: selectedContract, name: contractName },
-        dropdown: dropdownStarredInContract,
-        onClickItem: selected => headerActions.selectContract(network.id, selected),
-        contextMenu: () => [{
-          text: 'Remove from Starred',
-          onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
-        }],
+    const contractNavbarItem = {
+      route: 'contract',
+      title: 'Contract',
+      icon: 'fas fa-file-invoice',
+      selected: { id: selectedContract, name: contractName },
+      dropdown: dropdownStarredInContract,
+      onClickItem: selected => headerActions.selectContract(network.id, selected),
+      contextMenu: () => [{
+        text: 'Remove from Starred',
+        onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
+      }],
+    }
+    const accountNavbarItem = {
+      route: 'account',
+      title: 'Explorer',
+      icon: 'fas fa-file-invoice',
+      selected: { id: selectedAccount, name: accountName },
+      dropdown: [...dropdownKeypairs, ...dropdownStarred],
+      onClickItem: selected => headerActions.selectAccount(network.id, selected),
+      contextMenu: () => [{
+        text: 'Remove from Starred',
+        onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
+      }],
+    }
+    const networkNavbarItem = {
+      route: 'network',
+      title: 'Network',
+      icon: network.icon,
+      selected: network,
+      dropdown: networkList,
+      onClickItem: (_, network) => {
+        networkManager.setNetwork(network)
       },
-      {
-        route: 'account',
-        title: 'Explorer',
-        icon: 'fas fa-file-invoice',
-        selected: { id: selectedAccount, name: accountName },
-        dropdown: [...dropdownKeypairs, ...dropdownStarred],
-        onClickItem: selected => headerActions.selectAccount(network.id, selected),
-        contextMenu: () => [{
-          text: 'Remove from Starred',
-          onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
-        }],
-      },
-      {
-        route: 'network',
-        title: 'Network',
-        icon: network.icon,
-        selected: network,
-        dropdown: networkList,
-        onClickItem: (_, network) => {
-          networkManager.setNetwork(network)
-        },
-      },
-    ]
+    }
+
+    const navbarRight = process.env.PROJECT === 'platon' ?
+      [ networkNavbarItem ] :
+      [ contractNavbarItem, accountNavbarItem, networkNavbarItem ]
 
     return (
       <>
