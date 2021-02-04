@@ -15,7 +15,9 @@ import TruffleTerminal from './TruffleTerminal'
 const initialTabs = []
 if (platform.isDesktop) {
   initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />Project</span> })
-  initialTabs.push({ key: 'truffle', text: <span key='compiler-truffle'><i className='fas fa-cookie mr-1' />Truffle</span> })
+  if (process.env.PROJECT !== 'platon') {
+    initialTabs.push({ key: 'truffle', text: <span key='compiler-truffle'><i className='fas fa-cookie mr-1' />Truffle</span> })
+  }
 } else {
   initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-hammer mr-1' />Compiler</span> })
 }
