@@ -7,8 +7,8 @@ const formatAddress = address => <code>{address.substr(0, 10)}...{address.substr
 const accountAddress = address => `/account/${address}`
 
 export default function Address ({ addr, redirect = true, displayText, showTooltip = true }) {
-  const [id] = useState(`tooltip-address-${addr}-${Math.floor(Math.random() * 1000)}`)
-  
+  const [id] = useState(`tooltip-address-${addr.replace(/\W/g, '')}-${Math.floor(Math.random() * 1000)}`)
+
   if (!addr) {
     return null
   }
