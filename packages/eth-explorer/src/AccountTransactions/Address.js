@@ -7,11 +7,10 @@ const formatAddress = address => <code>{address.substr(0, 10)}...{address.substr
 const accountAddress = address => `/account/${address}`
 
 export default function Address ({ addr, redirect = true, displayText, showTooltip = true }) {
-  const [id] = useState(`tooltip-address-${addr.replace(/\W/g, '')}-${Math.floor(Math.random() * 1000)}`)
-
   if (!addr) {
     return null
   }
+  const [id] = useState(`tooltip-address-${addr.replace(/\W/g, '')}-${Math.floor(Math.random() * 1000)}`)
   const hash = displayText ? displayText : formatAddress(addr)
   const url = accountAddress(addr)
   let text
