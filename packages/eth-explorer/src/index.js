@@ -11,6 +11,7 @@ import CacheRoute from 'react-router-cache-route'
 import AccountPage from './AccountPage'
 
 import TransferButton from './buttons/TransferButton'
+import ConvertButton from './buttons/ConvertButton'
 import FaucetButton from './buttons/FaucetButton'
 
 export { default as AccountTransactions } from './AccountTransactions'
@@ -115,6 +116,14 @@ export default class Explorer extends PureComponent {
         NavbarButtons={(
           <>
             <TransferButton from={value} />
+            <ConvertButton
+              address={value}
+              network={this.props.network}
+              onChange={(value) => {
+                this.tabs?.current?.navbar?.current?.onChange({ target: { value } })
+                this.tabs?.current?.updateTab({ value })
+                this.onValue(value)
+              }} />
             <FaucetButton address={value} network={this.props.network} />
           </>
         )}
