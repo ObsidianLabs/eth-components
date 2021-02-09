@@ -38,7 +38,7 @@ export default class TransactionRow extends PureComponent {
           </Badge>
         </td>
         <td align='right'>
-          <Badge pill>{tx.gasUsed}</Badge>
+          <Badge pill>{new Intl.NumberFormat().format(tx.gasUsed)}</Badge>
         </td>
         <td align='right'>
           <TransactionFee value={(BigInt(tx.gasPrice) * BigInt(tx.gasUsed)).toString()}/>
