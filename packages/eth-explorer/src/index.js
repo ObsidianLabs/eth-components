@@ -97,7 +97,10 @@ export default class Explorer extends PureComponent {
   }
 
   render () {
-    const { network } = this.props
+    const {
+      network,
+      ExtraToolbarButtons = () => null
+    } = this.props
     const { initialSelected, initialTabs, value } = this.state
 
     return <>
@@ -115,7 +118,8 @@ export default class Explorer extends PureComponent {
         NavbarButtons={(
           <>
             <TransferButton from={value} />
-            <FaucetButton address={value} network={this.props.network} />
+            <FaucetButton address={value} network={network} />
+            <ExtraToolbarButtons explorer={this} address={value} network={network} />
           </>
         )}
       >
