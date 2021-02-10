@@ -3,7 +3,7 @@ import { UncontrolledTooltip } from '@obsidians/ui-components'
 
 import { Link } from 'react-router-dom'
 
-const formatAddress = address => <code>{address.substr(0, 10)}...{address.substr(address.length - 6, address.length)}</code>
+const formatAddress = address => <code>{address.substr(0, 12)}...{address.substr(address.length - 6, address.length)}</code>
 const accountAddress = address => `/account/${address}`
 
 export default function Address ({ addr, redirect = true, displayText, showTooltip = true }) {
