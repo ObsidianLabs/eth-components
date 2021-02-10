@@ -117,6 +117,7 @@ export default class ContractActions extends Component {
         }
       )
     } catch (e) {
+      console.warn(e)
       notification.error('Error', e.message)
       this.setState({ executing: false, actionError: e.message, actionResult: '' })
       return
