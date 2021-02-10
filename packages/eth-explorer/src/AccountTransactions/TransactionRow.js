@@ -17,6 +17,7 @@ export default class TransactionRow extends PureComponent {
     const { tx, owner } = this.props
 
     const amount = `${utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL}`
+
     return (
       <tr onClick={this.onClick}>
         <td><small>{moment(tx.timeStamp * 1000).format('MM/DD HH:mm:ss')}</small></td>
@@ -40,7 +41,7 @@ export default class TransactionRow extends PureComponent {
           }
         </td>
         <td align='right'>
-          <Badge pill color={tx.from === owner ? 'danger' : 'success'}>
+          <Badge pill color={tx.from?.toLowerCase() === owner.toLowerCase() ? 'danger' : 'success'}>
             {amount}
           </Badge>
         </td>
