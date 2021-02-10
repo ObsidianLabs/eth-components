@@ -40,11 +40,7 @@ export default class ContractEvents extends PureComponent {
     const { contract, value } = this.props
     let logs
     try {
-      const status = await networkManager.sdk.getStatus()
-      logs = await contract[selectedEvent.name].call(...Array(selectedEvent.inputs.length)).getLogs({
-        fromEpoch: status.epochNumber - 9999 > 0 ? status.epochNumber - 9999 : 0,
-        toEpoch: 'latest_state',
-      })
+      logs = await networkManager.sdk.getLogs(contract, selectedEvent)
     } catch (e) {
       console.warn(e)
       this.setState({ loading: false, error: e.message, logs: '' })
@@ -130,12 +126,8 @@ export default class ContractEvents extends PureComponent {
       <tr key={`table-row-${index}`}>
         <td><code><small>{item.epochNumber}</small></code></td>
         {columns.map(({ name, type }, index2) => {
-          let content = ''
-          if (item.params?.object) {
-            content = item.params.object[name]
-          } else if (item.params?.array) {
-            content = item.params.array[index2]
-          }
+
+          let content = item.arguments[index2]
           content = content ? content.toString() : ''
 
           if (type === 'address') {
