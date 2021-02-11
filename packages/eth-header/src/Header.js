@@ -34,6 +34,7 @@ export default class Header extends PureComponent {
       projects,
       selectedProject,
       starred,
+      extraContractItems,
       selectedContract,
       selectedAccount,
       network,
@@ -52,20 +53,26 @@ export default class Header extends PureComponent {
     dropdownKeypairs.unshift({ header: 'keypair manager' })
    
     const dropdownStarred = starred.map(item => ({ id: item, name: <code>{item.substr(0, 6)}...{item.substr(-4)}</code> }))
-    const dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred]
+    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred]
     if (dropdownStarred.length) {
       dropdownStarred.unshift({ header: 'starred' })
       dropdownStarred.unshift({ divider: true })
     } else {
       dropdownStarredInContract.push({ none: true })
     }
-    dropdownStarredInContract.unshift({ divider: true })
-    dropdownStarredInContract.unshift({ id: '0x0888000000000000000000000000000000000002', name: 'Staking' })
-    dropdownStarredInContract.unshift({ id: '0x0888000000000000000000000000000000000001', name: 'SponsorWhitelistControl' })
-    dropdownStarredInContract.unshift({ id: '0x0888000000000000000000000000000000000000', name: 'AdminControl' })
-    dropdownStarredInContract.unshift({ header: 'internal contracts' })
+    if (extraContractItems) {
+      dropdownStarredInContract = [...extraContractItems, ...dropdownStarredInContract]
+    }
 
-    const contractName = selectedContract && (internalContracts[selectedContract] || <code>{selectedContract}</code>)
+    let contractName
+    if (selectedContract) {
+      if (extraContractItems) {
+        contractName = extraContractItems.find(item => item.id === selectedContract)?.name
+      }
+      if (!contractName) {
+        contractName = <code>{selectedContract}</code>
+      }
+    }
     const accountName = selectedAccount && (this.state.keypairs.find(k => k.address === selectedAccount)?.name || <code>{selectedAccount}</code>)
 
     const navbarRight = [
