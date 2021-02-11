@@ -7,15 +7,15 @@ export default class Client {
       if (window.ethereum) {
         this.provider = new ethers.providers.Web3Provider(window.ethereum)
         this.provider.isMetaMask = true
-        this.etherscan = new EtherscanProxy(networkId)
       } else {
-        this.provider = ethers.getDefaultProvider(networkId, {
-          infura: process.env.INFURA_PROJECT_ID
+        this.provider = new ethers.providers.InfuraProvider(networkId, {
+          projectId: process.env.INFURA_PROJECT_ID
         })
       }
     } else {
       this.provider = ethers.getDefaultProvider(url)
     }
+    this.etherscan = new EtherscanProxy(networkId)
   }
 
   async getAccount (address) {
@@ -26,7 +26,7 @@ export default class Client {
   }
 
   async getTransactions (address, page, size) {
-    const result = await this.etherscan.getTransactions(address, page, size)
+    const result = await this.etherscan.getHistory(address, page, size)
     return {
       length: 0,
       list: result.result
@@ -41,7 +41,7 @@ class EtherscanProxy {
     this.channel = new IpcChannel('etherscan')
   }
 
-  async getTransactions (address, page = 0, size = 10) {
+  async getHistory (address, page = 0, size = 10) {
     const query = {
       module: 'account',
       action: 'txlist',
