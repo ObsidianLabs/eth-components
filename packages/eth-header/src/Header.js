@@ -7,12 +7,6 @@ import { networkManager } from '@obsidians/eth-network'
 
 import headerActions from './headerActions'
 
-const internalContracts = {
-  '0x0888000000000000000000000000000000000000': 'AdminControl',
-  '0x0888000000000000000000000000000000000001': 'SponsorWhitelistControl',
-  '0x0888000000000000000000000000000000000002': 'Staking',
-}
-
 export default class Header extends PureComponent {
   constructor (props) {
     super(props)
