@@ -8,15 +8,6 @@ import CacheRoute from 'react-router-cache-route'
 
 import ContractPage from './ContractPage'
 
-const internalContracts = {
-  '0x0888000000000000000000000000000000000000': 'AdminControl',
-  '0x0888000000000000000000000000000000000001': 'SponsorWhitelistControl',
-  '0x0888000000000000000000000000000000000002': 'Staking',
-}
-
-// import TransferButton from './buttons/TransferButton'
-// import FaucetButton from './buttons/FaucetButton'
-
 export default class Contract extends PureComponent {
   constructor (props) {
     super(props)

@@ -1,5 +1,6 @@
 export { default } from './Sdk'
 
+export { default as redux } from './redux'
 export { default as networks } from './networks'
 export { default as txOptions } from './txOptions'
 export { default as utils } from './utils'

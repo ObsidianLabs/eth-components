@@ -42,7 +42,6 @@
     "rollup-plugin-postcss": "^2.3.0"
   },
   "peerDependencies": {
-    "immutable": "^4.0.0-rc.12",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-highlight": "^0.12.0",
