@@ -61,7 +61,6 @@ export default class TruffleTerminal extends PureComponent {
           resolveOnFirstLog: true,
           stopCommand: 'docker stop -t 1 truffle-terminal'
         }}
-        input
         interactive
       />
     )
