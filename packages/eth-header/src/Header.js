@@ -40,14 +40,31 @@ export default class Header extends PureComponent {
       navbarItem(projects, selectedProject, username)
     ]
 
-    const dropdownKeypairs = this.state.keypairs.map(k => ({ id: k.address, name: k.name || <code>{k.address.substr(0, 6)}...{k.address.substr(-4)}</code> }))
+    const contractIcon = isSelected => isSelected ? 'fas fa-file-invoice' : 'far fa-file'
+    const addressIcon = isSelected => isSelected ? 'fas fa-map-marker-alt' : 'far fa-map-marker'
+
+    const dropdownKeypairs = this.state.keypairs.map(k => {
+      const address = k.address.toLowerCase()
+      return {
+        id: address,
+        name: k.name || <code className='small'>{address.substr(0, 10)}...{address.substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
     if (!dropdownKeypairs.length) {
       dropdownKeypairs.push({ none: true })
     }
     dropdownKeypairs.unshift({ header: 'keypair manager' })
    
-    const dropdownStarred = starred.map(item => ({ id: item, name: <code>{item.substr(0, 6)}...{item.substr(-4)}</code> }))
-    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred]
+    const dropdownStarred = starred.map(item => {
+      const name = this.state.keypairs.find(k => k.address.toLowerCase() === item)?.name
+      return {
+        id: item,
+        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
+    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred.map(item => ({ ...item, icon: contractIcon }))]
     if (dropdownStarred.length) {
       dropdownStarred.unshift({ header: 'starred' })
       dropdownStarred.unshift({ divider: true })
@@ -85,14 +102,20 @@ export default class Header extends PureComponent {
       {
         route: 'account',
         title: 'Explorer',
-        icon: 'fas fa-file-invoice',
+        icon: 'fas fa-map-marker-alt',
+        noneIcon: 'fas fa-map-marker-times',
         selected: { id: selectedAccount, name: accountName },
         dropdown: [...dropdownKeypairs, ...dropdownStarred],
         onClickItem: selected => headerActions.selectAccount(network.id, selected),
-        contextMenu: () => [{
-          text: 'Remove from Starred',
-          onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
-        }],
+        contextMenu: address => {
+          if (starred.indexOf(address.toLowerCase()) === -1) {
+            return
+          }
+          return [{
+            text: 'Remove from Starred',
+            onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
+          }]
+        },
       },
       {
         route: 'network',
