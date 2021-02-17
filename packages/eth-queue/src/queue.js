@@ -19,6 +19,16 @@ class Queue extends BaseQueueManager {
       notification.error('Transaction Timeout', e.message)
       return
     }
+    if (tx.error) {
+      notification.error('Transaction Failed', tx.error)
+
+      this.updateStatus(txHash, 'FAILED', {
+        tx: tx.tx,
+        receipt: tx.receipt,
+        error: { code: tx.code, message: tx.error }
+      }, callbacks)
+      return
+    }
     this.updateStatus(txHash, 'MINED', { tx }, callbacks)
 
     const receipt = await pendingTransaction.executed()

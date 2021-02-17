@@ -139,6 +139,12 @@ export default class TransactionDetails extends PureComponent {
           <code>{JSON.stringify(receipt, null, 2)}</code>
         </Highlight>
       )
+    } else if (selected === 'error') {
+      return (
+        <Highlight language='javascript' className='pre-box bg2 pre-wrap break-all small my-0' element='pre'>
+          <code>{JSON.stringify(error, null, 2)}</code>
+        </Highlight>
+      )
     } else if (selected === 'abi') {
       return (
         <Highlight language='javascript' className='pre-box bg2 pre-wrap break-all small my-0' element='pre'>
@@ -190,6 +196,9 @@ export default class TransactionDetails extends PureComponent {
     }
     if (tx.data?.receipt) {
       options.push({ key: 'receipt', text: 'Receipt' })
+    }
+    if (tx.data?.error) {
+      options.push({ key: 'error', text: 'Error' })
     }
     if (tx.data?.abi) {
       options.push({ key: 'abi', text: 'ABI' })

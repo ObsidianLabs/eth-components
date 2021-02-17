@@ -37,10 +37,10 @@ export default class ContractEvents extends PureComponent {
     }
     this.setState({ loading: true, error: '', logs: '' })
 
-    const { contract, value } = this.props
+    const { contract } = this.props
     let logs
     try {
-      logs = await networkManager.sdk.getLogs(contract, selectedEvent)
+      logs = await contract.getLogs(selectedEvent)
     } catch (e) {
       console.warn(e)
       this.setState({ loading: false, error: e.message, logs: '' })
@@ -97,7 +97,7 @@ export default class ContractEvents extends PureComponent {
           <table className='table table-sm table-hover table-striped'>
             <thead>
               <tr>
-                <th scope='col'><div>epoch</div><div>epoch</div></th>
+                <th scope='col'><div>block</div><div>block</div></th>
                 {columns.map(({ name, type }) => (
                   <th key={`table-col-${name}`} scope='col'>
                     <div><div style={{ lineHeight: '1.1rem' }}>{name}</div><div style={{ lineHeight: '0.8rem', fontVariant: 'none', fontWeight: '300' }} className='small'>{type}</div></div>
@@ -124,10 +124,10 @@ export default class ContractEvents extends PureComponent {
     }
     return rows.map((item, index) => (
       <tr key={`table-row-${index}`}>
-        <td><code><small>{item.epochNumber}</small></code></td>
+        <td><code><small>{item.blockNumber}</small></code></td>
         {columns.map(({ name, type }, index2) => {
 
-          let content = item.arguments[index2]
+          let content = item.args[index2]
           content = content ? content.toString() : ''
 
           if (type === 'address') {
