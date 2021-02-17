@@ -14,10 +14,6 @@ export class HeaderActions {
     redux.dispatch('SELECT_ACCOUNT', { network, account })
   }
 
-  removeFromStarred (network, account) {
-    redux.dispatch('REMOVE_ACCOUNT', { network, account })
-  }
-
   updateNetwork (networkId) {
     this.history.push(`/network/${networkId}`)
   }

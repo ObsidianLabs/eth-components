@@ -35,7 +35,7 @@ export default class TransactionRow extends PureComponent {
             tx.contractAddress
               ? <>
                   <Badge color='success' className='mr-1'>contract creation</Badge>
-                  <Address addr={tx.contractAddress} showTooltip={false}/>
+                  <Address addr={tx.contractAddress} route='contract' showTooltip={false}/>
                 </>
               : <Address addr={tx.to} showTooltip={false}/>
           }

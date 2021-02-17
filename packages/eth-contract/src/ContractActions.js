@@ -190,8 +190,8 @@ export default class ContractActions extends Component {
   }
 
   render () {
-    const actions = this.props.abi
-    const selectedAction = actions[this.state.selected] || {}
+    const { abi, signer } = this.props
+    const selectedAction = abi[this.state.selected] || {}
 
     return (
       <div className='d-flex flex-column align-items-stretch h-100'>
@@ -253,6 +253,11 @@ export default class ContractActions extends Component {
             <KeypairInputSelector
               size='sm'
               label='Signer'
+              extra={networkManager.browserExtension?.isEnabled && signer && [{
+                group: networkManager.browserExtension.name.toLowerCase(),
+                badge: networkManager.browserExtension.name,
+                children: [{ address: signer, name: 'selected' }],
+              }]}
               value={this.state.signer}
               onChange={signer => this.setState({ signer })}
             />

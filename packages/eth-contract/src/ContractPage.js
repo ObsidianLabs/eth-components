@@ -110,7 +110,7 @@ export default class ContractPage extends PureComponent {
     this.refresh()
   }
 
-  renderContractActions (value, abi, contract) {
+  renderContractActions (value, abi, contract, signer) {
     if (!abi.length) {
       return (
         <Screen>
@@ -124,6 +124,7 @@ export default class ContractPage extends PureComponent {
         value={value}
         abi={abi}
         contract={contract}
+        signer={signer}
         // contract={contract}
         // abi={this.state.abi}
         // history={contractCalls.getIn(['action', 'history'])}
@@ -190,6 +191,7 @@ export default class ContractPage extends PureComponent {
   }
 
   render () {
+    const { signer } = this.props
     const { error, abi, account, errorType } = this.state
 
     if (!networkManager.sdk) {
@@ -259,7 +261,7 @@ export default class ContractPage extends PureComponent {
           defaultSize={320}
           minSize={200}
         >
-          {this.renderContractActions(this.props.value, actions, contractInstance)}
+          {this.renderContractActions(this.props.value, actions, contractInstance, signer)}
           <SplitPane
             split='vertical'
             defaultSize={320}
