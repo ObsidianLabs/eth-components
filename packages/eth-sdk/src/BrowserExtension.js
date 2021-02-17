@@ -32,10 +32,12 @@ export default class BrowserExtension {
     this.onChainChanged(chainId)
 
     ethereum.on('accountsChanged', this.onAccountsChanged.bind(this))
-    const accounts = await this.getAllAccounts()
-    this._accounts = accounts
-    redux.dispatch('UPDATE_UI_STATE', { browserAccounts: accounts })
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
     this.onAccountsChanged(accounts)
+
+    const allAccounts = await this.getAllAccounts()
+    this._accounts = allAccounts
+    redux.dispatch('UPDATE_UI_STATE', { browserAccounts: allAccounts })
   }
 
   async onChainChanged (chainId) {
@@ -53,6 +55,6 @@ export default class BrowserExtension {
   }
 
   async onAccountsChanged (accounts) {
-    console.log(accounts)
+    redux.dispatch('UPDATE_UI_STATE', { signer: accounts[0] })
   }
 }

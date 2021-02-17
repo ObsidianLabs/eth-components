@@ -76,8 +76,8 @@ export default class Contract extends PureComponent {
   }
 
   render () {
-    const { network } = this.props
-    const { initialSelected, initialTabs, value } = this.state
+    const { network, signer } = this.props
+    const { initialSelected, initialTabs } = this.state
 
     return <>
       <TabsWithNavigationBar
@@ -102,6 +102,7 @@ export default class Contract extends PureComponent {
               cacheLifecycles={props.cacheLifecycles}
               onDisplay={this.onPageDisplay}
               value={props.match.params.name}
+              signer={signer}
             />
           )}
         />
