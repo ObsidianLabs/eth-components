@@ -32,10 +32,10 @@ export default class TransactionRow extends PureComponent {
         </td>
         <td>
           {
-            tx.contractCreated
+            tx.contractAddress
               ? <>
                   <Badge color='success' className='mr-1'>contract creation</Badge>
-                  <Address addr={tx.contractCreated} showTooltip={false}/>
+                  <Address addr={tx.contractAddress} showTooltip={false}/>
                 </>
               : <Address addr={tx.to} showTooltip={false}/>
           }
