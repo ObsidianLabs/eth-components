@@ -1,12 +1,13 @@
 import React from 'react'
 import CacheRoute from 'react-router-cache-route'
 
+import Auth from '@obsidians/auth'
 import { KeypairButton } from '@obsidians/keypair'
 import { TerminalButton } from '@obsidians/workspace'
 
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
-import { SolcButton, TruffleButton } from '@obsidians/eth-project'
+import { CompilerSelectors } from '@obsidians/compiler'
 
 export default function BottomBar (props) {
   return <>
@@ -24,15 +25,11 @@ export default function BottomBar (props) {
     </AbiStorage>
     <div className='flex-1' />
     <CacheRoute
-      path={`/local/:project`}
-      component={TruffleButton}
+      path={`/${Auth.username || 'local'}/:project`}
+      component={CompilerSelectors}
     />
     <CacheRoute
-      path={`/local/:project`}
-      component={SolcButton}
-    />
-    <CacheRoute
-      path={`/local/:project`}
+      path={`/${Auth.username || 'local'}/:project`}
       component={TerminalButton}
     />
   </>

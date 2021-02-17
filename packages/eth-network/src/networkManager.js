@@ -1,4 +1,5 @@
 import platform from '@obsidians/platform'
+import headerActions from '@obsidians/header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 import Sdk from '@obsidians/sdk'
@@ -40,6 +41,17 @@ class NetworkManager {
     this._sdk = new Sdk({ ...this.network, ...params })
   }
 
+  async disposeSdk (params) {
+    this._sdk = null
+    if (this.onSdkDisposedCallback) {
+      this.onSdkDisposedCallback()
+    }
+  }
+
+  onSdkDisposed (callback) {
+    this.onSdkDisposedCallback = callback
+  }
+
   setNetwork (network, force) {
     if (this.browserExtension && !force) {
       if (redux.getState().network) {
@@ -55,7 +67,7 @@ class NetworkManager {
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
 
     this.network = network
-    if (network.id) {
+    if (network.id && network.id !== 'dev') {
       this._sdk = new Sdk(network)
     } else {
       this._sdk = null
@@ -63,7 +75,7 @@ class NetworkManager {
 
     redux.dispatch('SELECT_NETWORK', network.id)
     notification.success(`Network`, network.notification)
-    return true
+    headerActions.updateNetwork(network.id)
   }
 }
 

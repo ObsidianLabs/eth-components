@@ -80,7 +80,7 @@ export default class Welcome extends PureComponent {
                 channel={compiler.truffle}
                 title={`${process.env.COMPILER_NAME} in Docker`}
                 subtitle={this.props.truffleSubtitle}
-                link={`https://hub.docker.com/r/${process.env.DOCKER_IMAGE_TRUFFLE}`}
+                link={`https://hub.docker.com/r/${process.env.DOCKER_IMAGE_COMPILER}`}
                 onInstalled={this.refresh}
                 downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
               />

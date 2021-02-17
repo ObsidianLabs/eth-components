@@ -5,17 +5,9 @@ import {
 } from '@obsidians/ui-components'
 
 import CacheRoute from 'react-router-cache-route'
+import { namedContracts } from '@obsidians/sdk'
 
 import ContractPage from './ContractPage'
-
-const internalContracts = {
-  '0x0888000000000000000000000000000000000000': 'AdminControl',
-  '0x0888000000000000000000000000000000000001': 'SponsorWhitelistControl',
-  '0x0888000000000000000000000000000000000002': 'Staking',
-}
-
-// import TransferButton from './buttons/TransferButton'
-// import FaucetButton from './buttons/FaucetButton'
 
 export default class Contract extends PureComponent {
   constructor (props) {
@@ -69,9 +61,10 @@ export default class Contract extends PureComponent {
 
   getTabText = tab => {
     const { value, temp } = tab
+    const address = (value || '').toLowerCase()
     let tabText = ''
-    if (internalContracts[value]) {
-      tabText = internalContracts[value]
+    if (namedContracts[address]) {
+      tabText = namedContracts[address]
     } else if (value.length < 10) {
       tabText += value
     } else {

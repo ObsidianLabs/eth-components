@@ -82,7 +82,17 @@ export default class Sdk {
 
     promise.mined = async () => {
       const res = await pendingTx
-      await res.wait(1)
+      try {
+        await res.wait(1)
+      } catch (err) {
+        const { reason, code, transaction: tx, receipt } = err
+        tx.value = tx.value.toString()
+        tx.gasPrice = tx.gasPrice.toString()
+        tx.gasLimit = tx.gasLimit.toString()
+        receipt.gasUsed = receipt.gasUsed.toString()
+        receipt.cumulativeGasUsed = receipt.cumulativeGasUsed.toString()
+        return { error: reason, code, tx, receipt }
+      }
       const tx = await this.provider.getTransaction(res.hash)
       delete tx.confirmations
       tx.value = tx.value.toString()
@@ -93,11 +103,11 @@ export default class Sdk {
 
     promise.executed = async () => {
       const res = await pendingTx
-      const tx = await this.provider.getTransactionReceipt(res.hash)
-      delete tx.confirmations
-      tx.gasUsed = tx.gasUsed.toString()
-      tx.cumulativeGasUsed = tx.cumulativeGasUsed.toString()
-      return tx
+      const receipt = await this.provider.getTransactionReceipt(res.hash)
+      delete receipt.confirmations
+      receipt.gasUsed = receipt.gasUsed.toString()
+      receipt.cumulativeGasUsed = receipt.cumulativeGasUsed.toString()
+      return receipt
     }
 
     promise.confirmed = () => pendingTx.then(res => res.wait(10))
@@ -105,14 +115,11 @@ export default class Sdk {
     return promise
   }
 
-  async getTransactionsCount (address) {
-    return 0
+  async getTransactionsCount () {
+    return
   }
 
-  async getTransactions (address, page = 1, size = 10) {
-    return {
-      length: 0,
-      list: []
-    }
+  async getTransactions (address, page = 0, size = 10) {
+    return await this.client.getTransactions(address, page, size)
   }
 }

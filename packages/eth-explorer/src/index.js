@@ -11,6 +11,7 @@ import CacheRoute from 'react-router-cache-route'
 import AccountPage from './AccountPage'
 
 import TransferButton from './buttons/TransferButton'
+import ConvertButton from './buttons/ConvertButton'
 import FaucetButton from './buttons/FaucetButton'
 
 export { default as AccountTransactions } from './AccountTransactions'
@@ -57,7 +58,7 @@ export default class Explorer extends PureComponent {
   updateKeypairs = keypairs => {
     this.keypairs = {}
     keypairs.forEach(k => {
-      this.keypairs[k.address] = k.name
+      this.keypairs[k.address.toLowerCase()] = k.name
     })
     this.forceUpdate()
   }
@@ -85,9 +86,10 @@ export default class Explorer extends PureComponent {
 
   getTabText = tab => {
     const { value, temp } = tab
+    const address = (value || '').toLowerCase()
     let tabText = ''
-    if (this.keypairs[value]) {
-      tabText = this.keypairs[value]
+    if (this.keypairs[address]) {
+      tabText = this.keypairs[address]
     } else if (value.length < 10) {
       tabText = value
     } else {
@@ -97,7 +99,10 @@ export default class Explorer extends PureComponent {
   }
 
   render () {
-    const { network } = this.props
+    const {
+      network,
+      ExtraToolbarButtons = () => null
+    } = this.props
     const { initialSelected, initialTabs, value } = this.state
 
     return <>
@@ -113,10 +118,19 @@ export default class Explorer extends PureComponent {
         onRefresh={this.onRefresh}
         onTabsUpdated={this.props.onTabsUpdated}
         NavbarButtons={(
-          <React.Fragment>
+          <>
             <TransferButton from={value} />
-            {this.props.network === 'testnet' && <FaucetButton address={value} network={this.props.network} />}
-          </React.Fragment>
+            <ConvertButton
+              address={value}
+              network={this.props.network}
+              onChange={(value) => {
+                this.tabs?.current?.navbar?.current?.onChange({ target: { value } })
+                this.tabs?.current?.updateTab({ value })
+                this.onValue(value)
+              }} />
+            <FaucetButton address={value} network={network} />
+            <ExtraToolbarButtons explorer={this} address={value} network={network} />
+          </>
         )}
       >
         <CacheRoute

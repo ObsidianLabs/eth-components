@@ -17,4 +17,9 @@ export default class Contract {
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
     return await voidSigner.populateTransaction(tx)
   }
+
+  async getLogs (event) {
+    const logs = await this.instance.queryFilter(event.name)
+    return logs
+  }
 }

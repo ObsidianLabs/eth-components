@@ -59,11 +59,11 @@ export default class DeployerButton extends PureComponent {
       }
     }
 
-    const { signer } = this.state
+    const { contractName, signer } = this.state
     const options = {}
     txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    const result = await this.estimateCallback({ parameters, signer, ...options })
+    const result = await this.estimateCallback({ parameters, contractName, signer, ...options })
 
     if (result) {
       this.setState(result)
@@ -81,11 +81,11 @@ export default class DeployerButton extends PureComponent {
       }
     }
 
-    const { signer } = this.state
+    const { contractName, signer } = this.state
     const options = {}
     txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    this.callback({ parameters, signer, ...options })
+    this.callback({ parameters, contractName, signer, ...options })
   }
 
   closeModal = () => {

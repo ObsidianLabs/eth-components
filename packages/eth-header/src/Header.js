@@ -7,12 +7,6 @@ import { networkManager } from '@obsidians/eth-network'
 
 import headerActions from './headerActions'
 
-const internalContracts = {
-  '0x0888000000000000000000000000000000000000': 'AdminControl',
-  '0x0888000000000000000000000000000000000001': 'SponsorWhitelistControl',
-  '0x0888000000000000000000000000000000000002': 'Staking',
-}
-
 export default class Header extends PureComponent {
   constructor (props) {
     super(props)
@@ -34,6 +28,7 @@ export default class Header extends PureComponent {
       projects,
       selectedProject,
       starred,
+      extraContractItems,
       selectedContract,
       selectedAccount,
       network,
@@ -45,27 +40,50 @@ export default class Header extends PureComponent {
       navbarItem(projects, selectedProject, username)
     ]
 
-    const dropdownKeypairs = this.state.keypairs.map(k => ({ id: k.address, name: k.name || <code>{k.address.substr(0, 6)}...{k.address.substr(-4)}</code> }))
+    const contractIcon = isSelected => isSelected ? 'fas fa-file-invoice' : 'far fa-file'
+    const addressIcon = isSelected => isSelected ? 'fas fa-map-marker-alt' : 'far fa-map-marker'
+
+    const dropdownKeypairs = this.state.keypairs.map(k => {
+      const address = k.address.toLowerCase()
+      return {
+        id: address,
+        name: k.name || <code className='small'>{address.substr(0, 10)}...{address.substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
     if (!dropdownKeypairs.length) {
       dropdownKeypairs.push({ none: true })
     }
     dropdownKeypairs.unshift({ header: 'keypair manager' })
    
-    const dropdownStarred = starred.map(item => ({ id: item, name: <code>{item.substr(0, 6)}...{item.substr(-4)}</code> }))
-    const dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred]
+    const dropdownStarred = starred.map(item => {
+      const name = this.state.keypairs.find(k => k.address.toLowerCase() === item)?.name
+      return {
+        id: item,
+        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
+    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred.map(item => ({ ...item, icon: contractIcon }))]
     if (dropdownStarred.length) {
       dropdownStarred.unshift({ header: 'starred' })
       dropdownStarred.unshift({ divider: true })
     } else {
       dropdownStarredInContract.push({ none: true })
     }
-    dropdownStarredInContract.unshift({ divider: true })
-    dropdownStarredInContract.unshift({ id: '0x0888000000000000000000000000000000000002', name: 'Staking' })
-    dropdownStarredInContract.unshift({ id: '0x0888000000000000000000000000000000000001', name: 'SponsorWhitelistControl' })
-    dropdownStarredInContract.unshift({ id: '0x0888000000000000000000000000000000000000', name: 'AdminControl' })
-    dropdownStarredInContract.unshift({ header: 'internal contracts' })
+    if (extraContractItems) {
+      dropdownStarredInContract = [...extraContractItems, ...dropdownStarredInContract]
+    }
 
-    const contractName = selectedContract && (internalContracts[selectedContract] || <code>{selectedContract}</code>)
+    let contractName
+    if (selectedContract) {
+      if (extraContractItems) {
+        contractName = extraContractItems.find(item => item.id === selectedContract)?.name
+      }
+      if (!contractName) {
+        contractName = <code>{selectedContract}</code>
+      }
+    }
     const accountName = selectedAccount && (this.state.keypairs.find(k => k.address === selectedAccount)?.name || <code>{selectedAccount}</code>)
 
     const navbarRight = [
@@ -84,14 +102,20 @@ export default class Header extends PureComponent {
       {
         route: 'account',
         title: 'Explorer',
-        icon: 'fas fa-file-invoice',
+        icon: 'fas fa-map-marker-alt',
+        noneIcon: 'fas fa-map-marker-times',
         selected: { id: selectedAccount, name: accountName },
         dropdown: [...dropdownKeypairs, ...dropdownStarred],
         onClickItem: selected => headerActions.selectAccount(network.id, selected),
-        contextMenu: () => [{
-          text: 'Remove from Starred',
-          onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
-        }],
+        contextMenu: address => {
+          if (starred.indexOf(address.toLowerCase()) === -1) {
+            return
+          }
+          return [{
+            text: 'Remove from Starred',
+            onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
+          }]
+        },
       },
       {
         route: 'network',
@@ -99,11 +123,8 @@ export default class Header extends PureComponent {
         icon: network.icon,
         selected: network,
         dropdown: networkList,
-        onClickItem: (networkId, network) => {
-          const success = networkManager.setNetwork(network)
-          if (success) {
-            headerActions.updateNetwork(networkId)
-          }
+        onClickItem: (_, network) => {
+          networkManager.setNetwork(network)
         },
       },
     ]

@@ -1,21 +1,49 @@
+import platform from '@obsidians/platform'
 import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
 import semver from 'semver'
 
-class Compiler {
+import SolcjsCompiler from './SolcjsCompiler'
+
+class SolcjsChannel extends DockerImageChannel {
+  installed () {
+    return true
+  }
+
+  versions () {
+    const versions = Object.keys(window.soljsonReleases).map(Tag => ({ Tag }))
+    const event = new CustomEvent('versions', { detail: versions })
+    this.eventTarget.dispatchEvent(event)
+    return versions
+  }
+}
+
+class CompilerManager {
   constructor () {
-    this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_TRUFFLE)
-    this.solc = new DockerImageChannel('ethereum/solc', {
-      filter: v => semver.valid(v) && !v.endsWith('alpine')
-    })
+    this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
+    if (platform.isDesktop) {
+      this.solc = new DockerImageChannel('ethereum/solc', {
+        filter: v => semver.valid(v) && !v.endsWith('alpine')
+      })
+    } else {
+      this.solc = new SolcjsChannel()
+    }
     this._terminal = null
+    this._truffleTerminal = null
     this._button = null
     this.notification = null
+    if (platform.isWeb) {
+      this.solcjsCompiler = new SolcjsCompiler()
+    }
   }
 
   set terminal (v) {
     this._terminal = v
+  }
+
+  set truffleTerminal (v) {
+    this._truffleTerminal = v
   }
 
   set button (v) {
@@ -35,35 +63,118 @@ class Compiler {
     }
   }
 
-  async build (config = {}) {
+  async cacheSolcBin (url, version) {
+    const cacheStorage = await window.caches.open('solcjs')
+    const cached = await cacheStorage.match(url)
+
+    if (cached) {
+      return
+    }
+
+    this.notification = notification.info(`Downloading Solc Bin`, `Downloading <b>${version}</b>...`, 0)
+    const request = new Request(url, { mode: 'no-cors' })
+    const response = await fetch(request)
+    await cacheStorage.put(url, response)
+    this.notification.dismiss()
+  }
+
+  async buildBySolcjs (projectManager) {
+    if (!await projectManager.isMainValid) {
+      notification.error('No Main File', `Please specify the main file in project settings.`)
+      throw new Error('No Main File.')
+    }
+
+    const solcVersion = projectManager.projectSettings.get('compilers.solc')
+    const solcFileName = window.soljsonReleases[solcVersion]
+    const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
+
+    this._button.setState({ building: true })
+    await this.cacheSolcBin(solcUrl, solcFileName)
+
+    this._terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
+    this.notification = notification.info(`Building Project`, `Building...`, 0)
+    const output = await this.solcjsCompiler.compile(solcUrl, projectManager)
+
+    if (!output) {
+      this.notification.dismiss()
+      notification.error('Build Failed', ``)
+      this._button.setState({ building: false })
+      throw new Error('Build Failed.')
+    }
+
+    if (output.contracts) {
+      for (const file in output.contracts) {
+        for (const contractName in output.contracts[file]) {
+          const json = output.contracts[file][contractName]
+          const contractJsonPath = projectManager.pathForProjectFile(`build/contracts/${contractName}.json`)
+          const contractJson = JSON.stringify(json, null, 2)
+          await fileOps.current.writeFile(contractJsonPath, contractJson)
+        }
+      }
+      projectManager.refreshDirectory()
+      projectManager.refreshDirectory(projectManager.pathForProjectFile('build/contracts'))
+    }
+
+    console.log(output)
+
+    let hasError = false
+    output.errors?.forEach(error => {
+      let color
+      if (error.severity === 'error') {
+        hasError = true
+        color = '--color-danger'
+      } else if (error.severity === 'warning') {
+        color = '--color-warning'
+      }
+      this._terminal.writeToTerminal(error.type, color)
+      this._terminal.writeToTerminal(`${error.formattedMessage.replace(error.type, '').replace(/\n/g, '\n\r')}`)
+    })
+
+    this.notification.dismiss()
+    this._button.setState({ building: false })
+    if (hasError) {
+      notification.error('Build Failed', `Code has errors.`)
+    } else {
+      notification.success('Build Successful', `The smart contract is built.`)
+    }
+  }
+
+  async build (settings, projectManager) {
+    if (platform.isWeb) {
+      return await this.buildBySolcjs(projectManager)
+    }
+
+    const { compilers = {} } = settings
+
     const projectRoot = this.projectRoot
 
-    if (!config || !config[process.env.COMPILER_VERSION_KEY]) {
+    if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
       notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
       throw new Error(`No ${process.env.COMPILER_NAME} version.`)
     }
 
     const allVersions = await this.truffle.versions()
-    if (!allVersions.find(v => v.Tag === config[process.env.COMPILER_VERSION_KEY])) {
-      notification.error(`${process.env.COMPILER_NAME} ${config[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
+    if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
+      notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
       throw new Error(`${process.env.COMPILER_NAME} version not installed`)
     }
 
-    if (!config.solc) {
+    if (!compilers.solc) {
       notification.error('No Solc Version', `Please select a version for solc in project settings.`)
       throw new Error('No solc version.')
     }
 
     const allSolcVersions = await this.solc.versions()
-    if (config.solc !== 'default' && !allSolcVersions.find(v => v.Tag === config.solc)) {
-      notification.error(`Solc ${config.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
+    if (compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
+      notification.error(`Solc ${compilers.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
       throw new Error('Solc version not installed')
     }
 
     this._button.setState({ building: true })
+    this.switchCompilerConsole('terminal')
     this.notification = notification.info(`Building Project`, `Building...`, 0)
 
-    const cmd = this.generateBuildCmd({ projectRoot, config })
+    const cmd = this.generateBuildCmd({ projectRoot, compilers })
     const result = await this._terminal.exec(cmd)
     if (result.code) {
       this._button.setState({ building: false })
@@ -75,7 +186,7 @@ class Compiler {
     this._button.setState({ building: false })
     this.notification.dismiss()
 
-    notification.success('Build Successful', `The smart contract is compiled.`)
+    notification.success('Build Successful', `The smart contract is built.`)
   }
 
   async stop () {
@@ -85,20 +196,19 @@ class Compiler {
     }
   }
 
-  generateBuildCmd({ projectRoot, config }) {
-    // const { base: name } = fileOps.current.path.parse(projectRoot)
+  generateBuildCmd({ projectRoot, compilers }) {
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
       '-v /var/run/docker.sock:/var/run/docker.sock',
       `-v "${projectDir}:${projectDir}"`,
       `-w "${projectDir}"`,
-      `${process.env.DOCKER_IMAGE_TRUFFLE}:${config[process.env.COMPILER_VERSION_KEY]}`,
+      `${process.env.DOCKER_IMAGE_COMPILER}:${compilers[process.env.COMPILER_VERSION_KEY]}`,
       `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
     
-    if (config.solc !== 'default') {
-      cmd.push(`--compilers.solc.version '${config.solc}'`)
+    if (compilers.solc !== 'default') {
+      cmd.push(`--compilers.solc.version '${compilers.solc}'`)
       cmd.push(`--compilers.solc.docker 1`)
     }
     
@@ -106,4 +216,4 @@ class Compiler {
   }
 }
 
-export default new Compiler()
+export default new CompilerManager()

@@ -61,6 +61,7 @@ export default class TransferButton extends PureComponent {
         }
       )
     } catch (e) {
+      console.warn(e)
       notification.error('Push Transaction Failed', e.message)
       this.setState({ pushing: false })
       return

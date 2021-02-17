@@ -2,6 +2,9 @@ import React from 'react'
 
 import {
   DebouncedFormGroup,
+  FormGroup,
+  Label,
+  CustomInput,
 } from '@obsidians/ui-components'
 
 import {
@@ -11,8 +14,9 @@ import {
   ProjectPath,
 } from '@obsidians/workspace'
 
+import platform from '@obsidians/platform'
 import { DockerImageInputSelector } from '@obsidians/docker'
-import compilerManager from '@obsidians/eth-compiler'
+import compilerManager from '@obsidians/compiler'
 
 export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   static contextType = WorkspaceContext
@@ -23,6 +27,27 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   
   componentWillUnmount () {
     BaseProjectManager.channel.off('settings', this.debouncedUpdate)
+  }
+
+  renderLanguageOption = projectSettings => {
+    if (!this.props.languages?.length) {
+      return null
+    }
+
+    return (
+      <FormGroup>
+        <Label>Project language</Label>
+        <CustomInput
+          id='settings-language'
+          type='select'
+          className='bg-black'
+          value={projectSettings?.get('language')}
+          onChange={event => this.onChange('language')(event.target.value)}
+        >
+          {this.props.languages.map(item => <option key={item.key} value={item.key}>{item.text}</option>)}
+        </CustomInput>
+      </FormGroup>
+    )
   }
 
   render () {
@@ -36,8 +61,8 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             <ProjectPath projectRoot={projectRoot} />
 
             <h4 className='mt-4'>General</h4>
+            {this.renderLanguageOption(projectSettings)}
             <DebouncedFormGroup
-              code
               label='Main file'
               className='bg-black'
               value={projectSettings?.get('main')}
@@ -45,7 +70,6 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               placeholder={`Required`}
             />
             <DebouncedFormGroup
-              code
               label='Smart contract to deploy'
               className='bg-black'
               value={projectSettings?.get('deploy')}
@@ -53,17 +77,20 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               placeholder={`Required`}
             />
             <h4 className='mt-4'>Compilers</h4>
-            <DockerImageInputSelector
-              channel={compilerManager.truffle}
-              disableAutoSelection
-              bg='bg-black'
-              label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
-              noneName={`${process.env.COMPILER_NAME}`}
-              modalTitle={`${process.env.COMPILER_NAME} Manager`}
-              downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-              selected={projectSettings?.get(`compilers.${process.env.COMPILER_VERSION_KEY}`)}
-              onSelected={truffle => this.onChange(`compilers.${process.env.COMPILER_VERSION_KEY}`)(truffle)}
-            />
+            {
+              platform.isDesktop &&
+              <DockerImageInputSelector
+                channel={compilerManager.truffle}
+                disableAutoSelection
+                bg='bg-black'
+                label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
+                noneName={`${process.env.COMPILER_NAME}`}
+                modalTitle={`${process.env.COMPILER_NAME} Manager`}
+                downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
+                selected={projectSettings?.get(`compilers.${process.env.COMPILER_VERSION_KEY}`)}
+                onSelected={truffle => this.onChange(`compilers.${process.env.COMPILER_VERSION_KEY}`)(truffle)}
+              />
+            }
             <DockerImageInputSelector
               channel={compilerManager.solc}
               disableAutoSelection
@@ -72,7 +99,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               noneName='solc'
               modalTitle='Solc Manager'
               downloadingTitle='Downloading Solc'
-              extraOptions={[{
+              extraOptions={platform.isDesktop && [{
                 id: 'default',
                 display: 'Default Solc',
                 onClick: () => this.onChange('compilers.solc')('default')

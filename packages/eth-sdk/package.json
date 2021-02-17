@@ -4,13 +4,16 @@
   "description": "Ethereum SDK",
   "author": "Phil <qft.gtr@gmail.com>",
   "license": "GPL-3.0",
-  "main": "src/index.js",
+  "browser": "src/index.js",
+  "main": "main/index.js",
   "files": [
-    "src"
+    "src",
+    "main"
   ],
   "scripts": {},
   "dependencies": {
-    "@obsidians/ipc": "^0.1.0",
+    "@obsidians/ipc": "^0.1.2",
+    "@obsidians/platform": "^0.1.0",
     "url-parse": "^1.4.7"
   },
   "devDependencies": {
@@ -23,6 +26,7 @@
     "cross-env": "^6.0.3"
   },
   "peerDependencies": {
-    "ethers": "^5.0.26"
+    "ethers": "^5.0.30",
+    "immutable": "^4.0.0-rc.12"
   }
 }

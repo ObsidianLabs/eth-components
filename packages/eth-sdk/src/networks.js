@@ -1,4 +1,6 @@
-export default [
+import platform from '@obsidians/platform'
+
+const networks = [
   {
     id: 'ropsten',
     group: 'testnet',
@@ -50,3 +52,18 @@ export default [
     chainId: 1,
   }
 ]
+
+if (platform.isDesktop) {
+  networks.unshift({
+    id: 'dev',
+    group: 'default',
+    name: 'Development',
+    fullName: 'Development Network',
+    icon: 'fas fa-laptop-code',
+    notification: 'Switched to <b>Development</b> network.',
+    url: 'http://localhost:8545',
+    chainId: 0,
+  })
+}
+
+export default networks

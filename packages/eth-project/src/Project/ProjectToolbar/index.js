@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 
 import { WorkspaceContext } from '@obsidians/workspace'
 import { ToolbarButton } from '@obsidians/ui-components'
-import { CompilerButton } from '@obsidians/eth-compiler'
+import { CompilerButton } from '@obsidians/compiler'
 
 import DeployButton from './DeployButton'
 

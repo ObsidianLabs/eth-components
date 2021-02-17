@@ -68,8 +68,10 @@ class NodeManager {
     if (this._status) {
       this._status.setState({ lifecycle })
     }
-    if (params) {
+    if (lifecycle === 'started') {
       networkManager.updateSdk(params)
+    } else if (lifecycle === 'stopping') {
+      networkManager.disposeSdk()
     }
   }
 
