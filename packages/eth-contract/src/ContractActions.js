@@ -253,6 +253,13 @@ export default class ContractActions extends Component {
             <KeypairInputSelector
               size='sm'
               label='Signer'
+              extra={networkManager.browserExtension?.isEnabled && [{
+                group: networkManager.browserExtension.name.toLowerCase(),
+                badge: networkManager.browserExtension.name,
+                children: [
+                  { address: networkManager.browserExtension?.currentAccount, name: 'selected' },
+                ],
+              }]}
               value={this.state.signer}
               onChange={signer => this.setState({ signer })}
             />

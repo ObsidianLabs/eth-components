@@ -11,6 +11,7 @@ import notification from '@obsidians/notification'
 import { KeypairInputSelector } from '@obsidians/keypair'
 import { txOptions } from '@obsidians/sdk'
 
+import { networkManager } from '@obsidians/eth-network'
 import { ContractForm, ActionParamFormGroup } from '@obsidians/eth-contract'
 
 export default class DeployerButton extends PureComponent {
@@ -139,6 +140,13 @@ export default class DeployerButton extends PureComponent {
         {constructorParameters}
         <KeypairInputSelector
           label='Signer'
+          extra={networkManager.browserExtension?.isEnabled && [{
+            group: networkManager.browserExtension.name.toLowerCase(),
+            badge: networkManager.browserExtension.name,
+            children: [
+              { address: networkManager.browserExtension?.currentAccount, name: 'current selected' },
+            ],
+          }]}
           value={this.state.signer}
           onChange={signer => this.setState({ signer })}
         />

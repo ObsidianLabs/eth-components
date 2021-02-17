@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 
+import redux from '@obsidians/redux'
 import Navbar from '@obsidians/navbar'
 import keypairManager from '@obsidians/keypair'
 import { NewProjectModal, navbarItem } from '@obsidians/eth-project' 
@@ -28,6 +29,7 @@ export default class Header extends PureComponent {
       projects,
       selectedProject,
       starred,
+      browserAccounts,
       extraContractItems,
       selectedContract,
       selectedAccount,
@@ -55,6 +57,19 @@ export default class Header extends PureComponent {
       dropdownKeypairs.push({ none: true })
     }
     dropdownKeypairs.unshift({ header: 'keypair manager' })
+
+    const dropdownBrowserAccounts = browserAccounts.map(item => {
+      const name = this.state.keypairs.find(k => k.address.toLowerCase() === item)?.name
+      return {
+        id: item,
+        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
+    if (dropdownBrowserAccounts.length) {
+      dropdownBrowserAccounts.unshift({ header: networkManager.browserExtension.name.toLowerCase() })
+      dropdownBrowserAccounts.unshift({ divider: true })
+    }
    
     const dropdownStarred = starred.map(item => {
       const name = this.state.keypairs.find(k => k.address.toLowerCase() === item)?.name
@@ -96,7 +111,7 @@ export default class Header extends PureComponent {
         onClickItem: selected => headerActions.selectContract(network.id, selected),
         contextMenu: () => [{
           text: 'Remove from Starred',
-          onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
+          onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
         }],
       },
       {
@@ -105,7 +120,7 @@ export default class Header extends PureComponent {
         icon: 'fas fa-map-marker-alt',
         noneIcon: 'fas fa-map-marker-times',
         selected: { id: selectedAccount, name: accountName },
-        dropdown: [...dropdownKeypairs, ...dropdownStarred],
+        dropdown: [...dropdownKeypairs, ...dropdownBrowserAccounts, ...dropdownStarred],
         onClickItem: selected => headerActions.selectAccount(network.id, selected),
         contextMenu: address => {
           if (starred.indexOf(address.toLowerCase()) === -1) {
@@ -113,7 +128,9 @@ export default class Header extends PureComponent {
           }
           return [{
             text: 'Remove from Starred',
-            onClick: ({ id }) => headerActions.removeFromStarred(network.id, id),
+            onClick: ({ id }) => {
+              redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id })
+            },
           }]
         },
       },

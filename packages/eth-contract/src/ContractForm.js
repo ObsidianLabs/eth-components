@@ -10,6 +10,7 @@ import {
   Modal,
 } from '@obsidians/ui-components'
 
+import { networkManager } from '@obsidians/eth-network'
 import { KeypairInputSelector } from '@obsidians/keypair'
 
 import { utils } from '@obsidians/sdk'
@@ -144,7 +145,20 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
       />
     )
   } else if (type === 'address') {
-    return <KeypairInputSelector size={size} editable maxLength={42} icon='fas fa-map-marker-alt' {...props} />
+    return (
+      <KeypairInputSelector
+        size={size}
+        editable
+        maxLength={42}
+        icon='fas fa-map-marker-alt'
+        extra={networkManager.browserExtension?.isEnabled && [{
+          group: networkManager.browserExtension.name.toLowerCase(),
+          badge: networkManager.browserExtension.name,
+          children: networkManager.browserExtension?.allAccounts?.map(address => ({ address })) || []
+        }]}
+        {...props}
+      />
+    )
   } else if (textarea) {
     return (
       <div style={{ position: 'relative' }}>
@@ -338,8 +352,6 @@ export default class ContractForm extends PureComponent {
   }
 
   render () {
-    console.debug('[render] ContractForm', this.props)
-
     const { size, name: methodName, inputs = [], Empty, disabled } = this.props
 
     if (!inputs.length) {

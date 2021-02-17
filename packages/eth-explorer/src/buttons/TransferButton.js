@@ -105,6 +105,11 @@ export default class TransferButton extends PureComponent {
             icon='fas fa-map-marker-alt'
             placeholder='Recipient address'
             maxLength={42}
+            extra={networkManager.browserExtension?.isEnabled && [{
+              group: networkManager.browserExtension.name.toLowerCase(),
+              badge: networkManager.browserExtension.name,
+              children: networkManager.browserExtension?.allAccounts?.map(address => ({ address })) || []
+            }]}
             value={recipient}
             onChange={recipient => this.setState({ recipient })}
           />

@@ -4,15 +4,15 @@ import { UncontrolledTooltip } from '@obsidians/ui-components'
 import { Link } from 'react-router-dom'
 
 const formatAddress = address => <code>{address.substr(0, 12)}...{address.substr(address.length - 6, address.length)}</code>
-const accountAddress = address => `/account/${address}`
+const getUrl = (address, route = 'account') => `/${route}/${address}`
 
-export default function Address ({ addr, redirect = true, displayText, showTooltip = true }) {
+export default function Address ({ addr, route, redirect = true, displayText, showTooltip = true }) {
   if (!addr) {
     return null
   }
   const [id] = useState(`tooltip-address-${addr.replace(/\W/g, '')}-${Math.floor(Math.random() * 1000)}`)
   const hash = displayText ? displayText : formatAddress(addr)
-  const url = accountAddress(addr)
+  const url = getUrl(addr, route)
   let text
   if (redirect) {
     text = (
