@@ -67,11 +67,13 @@ export default class Explorer extends PureComponent {
     return this.state.value
   }
 
-  openTab = value => {
-    this.tabs.current && this.tabs.current.openTab(value)
-  }
+  openTab = value => this.tabs.current?.openTab(value)
 
   onValue = value => {
+    if (value !== value.toLowerCase()) {
+      value = value.toLowerCase()
+      this.tabs.current?.updateTab({ value })
+    }
     this.setState({ value })
     this.props.onValueChanged && this.props.onValueChanged(value)
   }
@@ -124,7 +126,6 @@ export default class Explorer extends PureComponent {
               address={value}
               network={this.props.network}
               onChange={(value) => {
-                this.tabs?.current?.navbar?.current?.onChange({ target: { value } })
                 this.tabs?.current?.updateTab({ value })
                 this.onValue(value)
               }} />

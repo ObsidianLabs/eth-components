@@ -42,11 +42,13 @@ export default class Contract extends PureComponent {
     return this.state.value
   }
 
-  openTab = value => {
-    this.tabs.current && this.tabs.current.openTab(value)
-  }
+  openTab = value => this.tabs.current?.openTab(value)
 
   onValue = value => {
+    if (value !== value.toLowerCase()) {
+      value = value.toLowerCase()
+      this.tabs.current?.updateTab({ value })
+    }
     this.setState({ value })
     this.props.onValueChanged && this.props.onValueChanged(value)
   }
