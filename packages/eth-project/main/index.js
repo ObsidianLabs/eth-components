@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const fse = require('fs-extra')
+const semver = require('semver')
 const { FileTreeChannel } = require('@obsidians/filetree')
 
 const isDirectoryNotEmpty = dirPath => {
@@ -42,10 +43,9 @@ const copyRecursiveSync = (src, dest, name) => {
   }
 }
 
-
 class ProjectChannel extends FileTreeChannel {
   async post (_, { template, projectRoot, name }) {
-    if (await isDirectoryNotEmpty(projectRoot)) {
+    if (!template.startsWith('openzeppelin') && await isDirectoryNotEmpty(projectRoot)) {
       throw new Error(`<b>${projectRoot}</b> is not an empty directory.`)
     }
 
