@@ -61,9 +61,10 @@ export default class Contract extends PureComponent {
 
   getTabText = tab => {
     const { value, temp } = tab
+    const address = (value || '').toLowerCase()
     let tabText = ''
-    if (namedContracts[value]) {
-      tabText = namedContracts[value]
+    if (namedContracts[address]) {
+      tabText = namedContracts[address]
     } else if (value.length < 10) {
       tabText += value
     } else {

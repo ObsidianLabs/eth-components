@@ -58,7 +58,7 @@ export default class Explorer extends PureComponent {
   updateKeypairs = keypairs => {
     this.keypairs = {}
     keypairs.forEach(k => {
-      this.keypairs[k.address] = k.name
+      this.keypairs[k.address.toLowerCase()] = k.name
     })
     this.forceUpdate()
   }
@@ -86,9 +86,10 @@ export default class Explorer extends PureComponent {
 
   getTabText = tab => {
     const { value, temp } = tab
+    const address = (value || '').toLowerCase()
     let tabText = ''
-    if (this.keypairs[value]) {
-      tabText = this.keypairs[value]
+    if (this.keypairs[address]) {
+      tabText = this.keypairs[address]
     } else if (value.length < 10) {
       tabText = value
     } else {
