@@ -49,7 +49,7 @@ export default class BrowserExtension {
   }
 
   async getAllAccounts () {
-    const result = await ethereum.request({ method: 'wallet_getPermissions' })
+    const result = await this.ethereum.request({ method: 'wallet_getPermissions' })
     const found = result[0].caveats.find(c => c.type === 'filterResponse')
     return found ? found.value : []
   }
