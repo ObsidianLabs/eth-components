@@ -96,6 +96,7 @@ export default class AccountTransactions extends PureComponent {
 
 
   render () {
+    const TransactionHeader = this.props.TransactionHeader
     if (this.state.hide) {
       return null
     }
@@ -103,18 +104,7 @@ export default class AccountTransactions extends PureComponent {
       <TableCard
         title='Transactions'
         tableSm
-        TableHead={(
-          <tr>
-            <th style={{ width: '10%' }}>time</th>
-            <th style={{ width: '8%' }}>block</th>
-            <th style={{ width: '17%' }}>tx hash</th>
-            <th style={{ width: '17%' }}>from</th>
-            <th style={{ width: '17%' }}>to</th>
-            <th style={{ width: '8%', textAlign: 'right' }}>value</th>
-            <th style={{ width: '8%', textAlign: 'right' }}>gas used</th>
-            <th style={{ width: '15%', textAlign: 'right' }}>fee</th>
-          </tr>
-        )}
+        TableHead={<TransactionHeader />}
       >
         {this.renderTableBody()}
       </TableCard>
@@ -122,6 +112,20 @@ export default class AccountTransactions extends PureComponent {
   }
 }
 
+const TransactionHeader = () => (
+  <tr>
+    <th style={{ width: '10%' }}>time</th>
+    <th style={{ width: '8%' }}>block</th>
+    <th style={{ width: '17%' }}>tx hash</th>
+    <th style={{ width: '17%' }}>from</th>
+    <th style={{ width: '17%' }}>to</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>value</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>gas used</th>
+    <th style={{ width: '15%', textAlign: 'right' }}>fee</th>
+  </tr>
+)
+
 AccountTransactions.defaultProps = {
+  TransactionHeader,
   TransactionRow,
 }

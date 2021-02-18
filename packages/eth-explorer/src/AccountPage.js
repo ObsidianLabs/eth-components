@@ -69,6 +69,7 @@ export default class AccountPage extends PureComponent {
   }
 
   render () {
+    const { AccountInfo } = this.props
     const { error, account } = this.state
     
     if (!networkManager.sdk) {
@@ -122,3 +123,6 @@ export default class AccountPage extends PureComponent {
   }
 }
 
+AccountTransactions.defaultProps = {
+  AccountInfo,
+}
