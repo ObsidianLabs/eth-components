@@ -167,7 +167,7 @@ function makeProjectManager (Base) {
       this.deployButton.setState({ pending: true, result: '' })
   
       const networkId = networkManager.sdk.networkId
-      const { contractName, parameters, gas, gasPrice, storageLimit } = allParameters
+      const { contractName, parameters, ...override } = allParameters
       const codeHash = utils.sign.sha3(deploy.deployedBytecode)
   
       let result
@@ -178,7 +178,7 @@ function makeProjectManager (Base) {
           parameters: parameters.array
         }, {
           from: allParameters.signer,
-          gas, gasPrice, storageLimit
+          ...override
         })
 
         result = await new Promise((resolve, reject) => {
@@ -190,7 +190,7 @@ function makeProjectManager (Base) {
               signer: allParameters.signer,
               abi: deploy.abi,
               params: parameters.obj,
-              gas, gasPrice, storageLimit,
+              ...override,
               modalWhenExecuted: true,
             },
             {
