@@ -256,7 +256,7 @@ export default class ContractActions extends Component {
               extra={networkManager.browserExtension?.isEnabled && signer && [{
                 group: networkManager.browserExtension.name.toLowerCase(),
                 badge: networkManager.browserExtension.name,
-                children: [{ address: signer, name: 'selected' }],
+                children: [{ address: signer, name: networkManager.browserExtension.name }],
               }]}
               value={this.state.signer}
               onChange={signer => this.setState({ signer })}

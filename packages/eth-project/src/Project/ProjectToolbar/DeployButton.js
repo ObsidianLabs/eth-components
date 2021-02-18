@@ -145,7 +145,7 @@ export default class DeployerButton extends PureComponent {
           extra={networkManager.browserExtension?.isEnabled && signer && [{
             group: networkManager.browserExtension.name.toLowerCase(),
             badge: networkManager.browserExtension.name,
-            children: [{ address: signer, name: 'current selected' }],
+            children: [{ address: signer, name: networkManager.browserExtension.name }],
           }]}
           value={this.state.signer}
           onChange={signer => this.setState({ signer })}
