@@ -1,4 +1,3 @@
-import platform from '@obsidians/platform'
 import headerActions from '@obsidians/header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
@@ -10,10 +9,6 @@ class NetworkManager {
   constructor () {
     this._sdk = null
     this.network = undefined
-
-    if (platform.isWeb && Sdk.InitBrowserExtension) {
-      this.browserExtension = Sdk.InitBrowserExtension(this)
-    }
   }
 
   get networkId () {
@@ -22,6 +17,10 @@ class NetworkManager {
 
   get sdk () {
     return this._sdk
+  }
+
+  get browserExtension () {
+    return this._sdk?.browserExtension
   }
 
   // custom network

@@ -1,7 +1,6 @@
 const path = require('path')
 const fs = require('fs')
 const fse = require('fs-extra')
-const semver = require('semver')
 const { FileTreeChannel } = require('@obsidians/filetree')
 
 const isDirectoryNotEmpty = dirPath => {

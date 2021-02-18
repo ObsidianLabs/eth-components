@@ -1,10 +1,11 @@
 import { ethers } from 'ethers'
+import platform from '@obsidians/platform'
 
-import BrowserExtension from './BrowserExtension'
 import utils from './utils'
 import Client from './Client'
 import Contract from './Contract'
 import signatureProvider from './signatureProvider'
+import BrowserExtension from './BrowserExtension'
 
 export default class Sdk {
   constructor ({ url, chainId, explorer, id }) {
@@ -13,11 +14,9 @@ export default class Sdk {
     this.url = url
     this.chainId = chainId
     this.explorer = explorer
-  }
 
-  static InitBrowserExtension (networkManager) {
-    if (window.ethereum && window.ethereum.isMetaMask) {
-      return new BrowserExtension(networkManager, window.ethereum)
+    if (platform.isWeb && window.ethereum && window.ethereum.isMetaMask) {
+      this.browserExtension = new BrowserExtension(window.ethereum)
     }
   }
 
