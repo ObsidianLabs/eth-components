@@ -123,6 +123,6 @@ export default class AccountPage extends PureComponent {
   }
 }
 
-AccountTransactions.defaultProps = {
+AccountPage.defaultProps = {
   AccountInfo,
 }
