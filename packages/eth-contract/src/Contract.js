@@ -42,10 +42,15 @@ export default class Contract extends PureComponent {
     return this.state.value
   }
 
-  openTab = value => this.tabs.current?.openTab(value)
+  openTab = value => {
+    if (!this.props.noLowerCaseTransform) {
+      value = value.toLowerCase()
+    }
+    this.tabs.current?.openTab(value)
+  }
 
   onValue = value => {
-    if (value !== value.toLowerCase()) {
+    if (!this.props.noLowerCaseTransform && value !== value.toLowerCase()) {
       value = value.toLowerCase()
       this.tabs.current?.updateTab({ value })
     }
@@ -62,8 +67,8 @@ export default class Contract extends PureComponent {
   }
 
   getTabText = tab => {
-    const { value, temp } = tab
-    const address = (value || '').toLowerCase()
+    const { value = '', temp } = tab
+    const address = this.props.noLowerCaseTransform ? value : value.toLowerCase()
     let tabText = ''
     if (namedContracts[address]) {
       tabText = namedContracts[address]

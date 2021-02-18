@@ -41,7 +41,7 @@ export default class TransactionRow extends PureComponent {
           }
         </td>
         <td align='right'>
-          <Badge pill color={tx.from?.toLowerCase() === owner.toLowerCase() ? 'danger' : 'success'}>
+          <Badge pill color={tx.from === owner ? 'danger' : 'success'}>
             {amount}
           </Badge>
         </td>
