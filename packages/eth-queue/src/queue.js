@@ -19,7 +19,7 @@ class Queue extends BaseQueueManager {
       notification.error('Transaction Timeout', e.message)
       return
     }
-    if (tx.error) {
+    if (tx && tx.error) {
       notification.error('Transaction Failed', tx.error)
 
       this.updateStatus(txHash, 'FAILED', {
