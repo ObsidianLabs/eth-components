@@ -72,7 +72,7 @@ export default class Header extends PureComponent {
     }
    
     const dropdownStarred = starred.map(item => {
-      const name = this.state.keypairs.find(k => k.address.toLowerCase() === item)?.name
+      const name = this.state.keypairs.find(k => k.address === item)?.name
       return {
         id: item,
         name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
