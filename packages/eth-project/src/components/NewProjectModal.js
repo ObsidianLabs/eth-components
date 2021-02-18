@@ -39,14 +39,20 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
   }
 
   async createProject ({ projectRoot, name, template, group }) {
+    const { truffleVersion, openZeppelinVersion } = this.state
+    if (!truffleVersion) {
+      notification.error('Cannot Create the Project', `Please install ${process.env.COMPILER_NAME_IN_LABEL} and select a version.`)
+      return false
+    }
+    
     if (platform.isWeb) {
-      return super.createProject({ projectRoot, name, template })
+      return super.createProject({ projectRoot, name, template, compilerVersion: truffleVersion })
     }
 
     if (group === 'open zeppelin') {
+      await super.createProject({ projectRoot, name, template, compilerVersion: truffleVersion })
+
       this.setState({ showTerminal: true })
-      await fileOps.current.ensureDirectory(projectRoot)
-      const { truffleVersion, openZeppelinVersion } = this.state
 
       const hasERC1155 = semver.gte(openZeppelinVersion, 'v3.1.0')
       if (!hasERC1155) {
@@ -69,17 +75,6 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         return false
       }
 
-      const config = {
-        main: hasERC1155 ? './contracts/GameItems.sol' : './contracts/GLDToken.sol',
-        deploy: hasERC1155 ? './build/contracts/GameItems.json' : './contracts/GLDToken.json',
-        compilers: {
-          [process.env.COMPILER_VERSION_KEY]: truffleVersion,
-          solc: template === 'openzeppelin-v2' ? '0.5.17' : '0.6.12'
-        }
-      }
-      await fileOps.current.writeFile(fileOps.current.path.join(projectRoot, 'config.json'), JSON.stringify(config, null, 2))
-
-      await super.createProject({ projectRoot, name, template })
       return { projectRoot, name }
     }
 
@@ -120,33 +115,21 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       return { projectRoot, name }
     }
 
-    return super.createProject({ projectRoot, name, template })
+    return super.createProject({ projectRoot, name, template, compilerVersion: truffleVersion })
   }
 
   renderOtherOptions = () => {
-    if (this.state.group === 'open zeppelin') {
-      return (
-        <>
+    return (
+      <>
+        {
+          this.state.group === 'open zeppelin' &&
           <DropdownInput
             label='Open Zeppelin Version'
             options={openZeppelinVersions}
             value={this.state.openZeppelinVersion}
             onChange={openZeppelinVersion => this.setState({ openZeppelinVersion })}
           />
-          <DockerImageInputSelector
-            channel={compilerManager.truffle}
-            label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
-            noneName={`${process.env.COMPILER_NAME}`}
-            modalTitle={`${process.env.COMPILER_NAME} Manager`}
-            downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-            selected={this.state.truffleVersion}
-            onSelected={truffleVersion => this.setState({ truffleVersion })}
-          />
-        </>
-      )
-    }
-    if (this.state.group === process.env.COMPILER_NAME) {
-      return (
+        }
         <DockerImageInputSelector
           channel={compilerManager.truffle}
           label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
@@ -156,9 +139,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
           selected={this.state.truffleVersion}
           onSelected={truffleVersion => this.setState({ truffleVersion })}
         />
-      )
-    }
-    return null
+      </>
+    )
   }
 }
 

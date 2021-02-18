@@ -1,6 +1,6 @@
 {
-  "main": "./contracts/Coin.sol",
-  "deploy": "./build/contracts/Coin.json",
+  "main": "./contracts/GLDToken.sol",
+  "deploy": "./build/contracts/GLDToken.json",
   "compilers": {
     "#compiler_name": "#compiler_version",
     "solc": "0.6.12"
