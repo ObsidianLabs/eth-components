@@ -8,14 +8,14 @@ export default {
     const secret = await channel.invoke('post', 'new-secret')
     const address = ethers.utils.computeAddress(secret)
     return {
-      address,
+      address: address.toLowerCase(),
       secret,
     }
   },
   importKeypair (secret) {
     const address = ethers.utils.computeAddress(secret)
     return {
-      address,
+      address: address.toLowerCase(),
       secret,
     }
   },

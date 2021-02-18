@@ -46,7 +46,7 @@ export default class Header extends PureComponent {
     const addressIcon = isSelected => isSelected ? 'fas fa-map-marker-alt' : 'far fa-map-marker'
 
     const dropdownKeypairs = this.state.keypairs.map(k => {
-      const address = k.address.toLowerCase()
+      const address = k.address
       return {
         id: address,
         name: k.name || <code className='small'>{address.substr(0, 10)}...{address.substr(-8)}</code>,
@@ -59,7 +59,7 @@ export default class Header extends PureComponent {
     dropdownKeypairs.unshift({ header: 'keypair manager' })
 
     const dropdownBrowserAccounts = browserAccounts.map(item => {
-      const name = this.state.keypairs.find(k => k.address.toLowerCase() === item)?.name
+      const name = this.state.keypairs.find(k => k.address === item)?.name
       return {
         id: item,
         name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
@@ -123,7 +123,7 @@ export default class Header extends PureComponent {
         dropdown: [...dropdownKeypairs, ...dropdownBrowserAccounts, ...dropdownStarred],
         onClickItem: selected => headerActions.selectAccount(network.id, selected),
         contextMenu: address => {
-          if (starred.indexOf(address.toLowerCase()) === -1) {
+          if (starred.indexOf(address) === -1) {
             return
           }
           return [{
