@@ -1,5 +1,4 @@
 import { ethers } from 'ethers'
-import platform from '@obsidians/platform'
 
 import utils from './utils'
 import Client from './Client'
@@ -14,9 +13,11 @@ export default class Sdk {
     this.url = url
     this.chainId = chainId
     this.explorer = explorer
+  }
 
-    if (platform.isWeb && window.ethereum && window.ethereum.isMetaMask) {
-      this.browserExtension = new BrowserExtension(window.ethereum)
+  static InitBrowserExtension (networkManager) {
+    if (window.ethereum && window.ethereum.isMetaMask) {
+      return new BrowserExtension(networkManager, window.ethereum)
     }
   }
 

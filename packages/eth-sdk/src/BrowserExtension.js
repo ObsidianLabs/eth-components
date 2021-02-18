@@ -1,10 +1,10 @@
 import redux from '@obsidians/redux'
-import { networkManager } from '@obsidians/eth-network'
 import networks from './networks'
 
 export default class BrowserExtension {
-  constructor (ethereum) {
+  constructor (networkManager, ethereum) {
     this.name = 'MetaMask'
+    this.networkManager = networkManager
     this._accounts = []
     this._enabled = false
     if (ethereum && ethereum.isMetaMask) {
@@ -44,7 +44,7 @@ export default class BrowserExtension {
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
     if (network) {
-      networkManager.setNetwork(network, true)
+      this.networkManager.setNetwork(network, true)
     }
   }
 
