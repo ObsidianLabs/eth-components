@@ -33,24 +33,24 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
     this.state = {
       ...this.state,
-      truffleVersion: '',
+      compilerVersion: '',
       openZeppelinVersion: 'v3.4.0',
     }
   }
 
   async createProject ({ projectRoot, name, template, group }) {
-    const { truffleVersion, openZeppelinVersion } = this.state
-    if (!truffleVersion) {
+    const { compilerVersion, openZeppelinVersion } = this.state
+    if (!this.props.noCompilerOption && !compilerVersion) {
       notification.error('Cannot Create the Project', `Please install ${process.env.COMPILER_NAME_IN_LABEL} and select a version.`)
       return false
     }
     
     if (platform.isWeb) {
-      return super.createProject({ projectRoot, name, template, compilerVersion: truffleVersion })
+      return super.createProject({ projectRoot, name, template, compilerVersion })
     }
 
     if (group === 'open zeppelin') {
-      await super.createProject({ projectRoot, name, template, compilerVersion: truffleVersion })
+      await super.createProject({ projectRoot, name, template, compilerVersion })
 
       this.setState({ showTerminal: true })
 
@@ -80,8 +80,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
     if (group === process.env.COMPILER_NAME) {
       this.setState({ showTerminal: true })
-      const truffleVersion = this.state.truffleVersion
-      if (!truffleVersion) {
+      const compilerVersion = this.state.compilerVersion
+      if (!compilerVersion) {
         notification.error('Cannot Create the Project', `Please select a version for ${process.env.COMPILER_NAME}.`)
         return false
       }
@@ -92,7 +92,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         `--name ${process.env.PROJECT}-create-project`,
         `-v "${projectDir}:/project/${name}"`,
         `-w "/project/${name}"`,
-        `${process.env.DOCKER_IMAGE_COMPILER}:${truffleVersion}`,
+        `${process.env.DOCKER_IMAGE_COMPILER}:${compilerVersion}`,
         `${process.env.COMPILER_EXECUTABLE_NAME} unbox ${template}`,
       ].join(' ')
 
@@ -107,7 +107,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         main: './contracts/MetaCoin.sol',
         deploy: './build/contracts/MetaCoin.json',
         compilers: {
-          [process.env.COMPILER_VERSION_KEY]: truffleVersion,
+          [process.env.COMPILER_VERSION_KEY]: compilerVersion,
           solc: 'default'
         }
       }
@@ -115,10 +115,13 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       return { projectRoot, name }
     }
 
-    return super.createProject({ projectRoot, name, template, compilerVersion: truffleVersion })
+    return super.createProject({ projectRoot, name, template, compilerVersion })
   }
 
   renderOtherOptions = () => {
+    if (this.props.noCompilerOption) {
+      return null
+    }
     return (
       <>
         {
@@ -136,8 +139,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
           noneName={`${process.env.COMPILER_NAME}`}
           modalTitle={`${process.env.COMPILER_NAME} Manager`}
           downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-          selected={this.state.truffleVersion}
-          onSelected={truffleVersion => this.setState({ truffleVersion })}
+          selected={this.state.compilerVersion}
+          onSelected={compilerVersion => this.setState({ compilerVersion })}
         />
       </>
     )
