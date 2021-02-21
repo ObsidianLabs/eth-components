@@ -61,7 +61,7 @@ class NodeManager {
       `-v ${process.env.PROJECT}-${name}:/data`,
       `-w /data`,
       `${process.env.DOCKER_IMAGE_NODE}:${version}`,
-      `--datadir=/data --dev --dev.period=1 --nousb --http --http.addr=0.0.0.0 --http.corsdomain=* --password=pwd`
+      `--datadir=/data --dev --dev.period=1 --nousb --http --http.addr=0.0.0.0 --http.corsdomain="*" --password=pwd`
     ].join(' ')
   }
   updateLifecycle (lifecycle, params) {
