@@ -102,18 +102,18 @@ export default class Header extends PureComponent {
     const accountName = selectedAccount && (this.state.keypairs.find(k => k.address === selectedAccount)?.name || <code>{selectedAccount}</code>)
 
     const navbarRight = [
-      {
-        route: 'contract',
-        title: 'Contract',
-        icon: 'fas fa-file-invoice',
-        selected: { id: selectedContract, name: contractName },
-        dropdown: dropdownStarredInContract,
-        onClickItem: selected => headerActions.selectContract(network.id, selected),
-        contextMenu: () => [{
-          text: 'Remove from Starred',
-          onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
-        }],
-      },
+      // {
+      //   route: 'contract',
+      //   title: 'Contract',
+      //   icon: 'fas fa-file-invoice',
+      //   selected: { id: selectedContract, name: contractName },
+      //   dropdown: dropdownStarredInContract,
+      //   onClickItem: selected => headerActions.selectContract(network.id, selected),
+      //   contextMenu: () => [{
+      //     text: 'Remove from Starred',
+      //     onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
+      //   }],
+      // },
       {
         route: 'account',
         title: 'Explorer',

@@ -119,7 +119,7 @@ export default class Explorer extends PureComponent {
         onTabsUpdated={this.props.onTabsUpdated}
         NavbarButtons={(
           <>
-            <TransferButton from={value} />
+            {/* <TransferButton from={value} /> */}
             <ConvertButton
               address={value}
               network={this.props.network}

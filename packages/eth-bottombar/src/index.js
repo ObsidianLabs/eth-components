@@ -16,13 +16,13 @@ export default function BottomBar (props) {
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
-    <QueueButton txs={props.txs} />
+    {/* <QueueButton txs={props.txs} />
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
         <i className='fas fa-list mr-1' />
         ABI Storage
       </div>
-    </AbiStorage>
+    </AbiStorage> */}
     <div className='flex-1' />
     <CacheRoute
       path={`/${Auth.username || 'local'}/:project`}

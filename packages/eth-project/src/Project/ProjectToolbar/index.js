@@ -21,7 +21,7 @@ export default class ProjectToolbar extends PureComponent {
         solc={compilers.solc}
         onClick={() => projectManager.compile()}
       />
-      <DeployButton projectManager={projectManager} signer={signer} />
+      {/* <DeployButton projectManager={projectManager} signer={signer} /> */}
       <div className='flex-1' />
       <ToolbarButton
         id='settings'
