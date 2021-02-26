@@ -147,23 +147,27 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
   }
 }
 
+const templates = [
+  { id: 'coin', display: 'Coin' },
+]
+if (platform.isDesktop) {
+  templates.push({
+    group: 'open zeppelin',
+    badge: 'Open Zeppelin',
+    children: [
+      { id: 'openzeppelin', display: 'Open Zeppelin' },
+    ],
+  })
+  templates.push({
+    group: `${process.env.COMPILER_NAME}`,
+    badge: `${process.env.COMPILER_NAME}`,
+    children: [
+      { id: 'metacoin', display: 'Metacoin' },
+    ],
+  })
+}
+
 ExtendedNewProjectModal.defaultProps = {
   defaultTemplate: 'coin',
-  templates: [
-    { id: 'coin', display: 'Coin' },
-    {
-      group: 'open zeppelin',
-      badge: 'Open Zeppelin',
-      children: [
-        { id: 'openzeppelin', display: 'Open Zeppelin' },
-      ],
-    },
-    {
-      group: `${process.env.COMPILER_NAME}`,
-      badge: `${process.env.COMPILER_NAME}`,
-      children: [
-        { id: 'metacoin', display: 'Metacoin' },
-      ],
-    },
-  ]
+  templates,
 }
