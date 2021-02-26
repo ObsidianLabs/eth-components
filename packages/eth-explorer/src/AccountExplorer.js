@@ -101,6 +101,7 @@ export default class Explorer extends PureComponent {
   render () {
     const {
       network,
+      signer,
       ExtraToolbarButtons = () => null
     } = this.props
     const { initialSelected, initialTabs, value } = this.state
@@ -119,7 +120,7 @@ export default class Explorer extends PureComponent {
         onTabsUpdated={this.props.onTabsUpdated}
         NavbarButtons={(
           <>
-            <TransferButton from={value} />
+            <TransferButton from={value} signer={signer} />
             <ConvertButton
               address={value}
               network={this.props.network}

@@ -6,6 +6,8 @@ import Contract from './Contract'
 import signatureProvider from './signatureProvider'
 import BrowserExtension from './BrowserExtension'
 
+let browserExtension
+
 export default class Sdk {
   constructor ({ url, chainId, explorer, id }) {
     this.client = new Client(id, url)
@@ -17,7 +19,8 @@ export default class Sdk {
 
   static InitBrowserExtension (networkManager) {
     if (window.ethereum && window.ethereum.isMetaMask) {
-      return new BrowserExtension(networkManager, window.ethereum)
+      browserExtension = new BrowserExtension(networkManager, window.ethereum)
+      return browserExtension
     }
   }
 
@@ -70,7 +73,7 @@ export default class Sdk {
 
   sendTransaction (tx) {
     let pendingTx
-    if (this.provider.isMetaMask) {
+    if (this.provider.isMetaMask && browserExtension && browserExtension.currentAccount === tx.from) {
       const signer = this.provider.getSigner(tx.from)
       pendingTx = signer.sendTransaction(tx)
     } else {

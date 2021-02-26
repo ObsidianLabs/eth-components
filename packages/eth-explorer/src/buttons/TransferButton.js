@@ -10,7 +10,7 @@ import {
 
 import { networkManager } from '@obsidians/eth-network'
 import notification from '@obsidians/notification'
-import { KeypairInputSelector } from '@obsidians/keypair'
+import keypairManager, { KeypairInputSelector } from '@obsidians/keypair'
 import queue from '@obsidians/eth-queue'
 
 export default class TransferButton extends PureComponent {
@@ -18,27 +18,40 @@ export default class TransferButton extends PureComponent {
     super(props)
 
     this.state = {
+      loading: false,
       amount: '',
       recipient: '',
       pushing: false,
     }
 
     this.modal = React.createRef()
+    this.keypairInput = React.createRef()
     this.amountInput = React.createRef()
   }
 
   openModal = async () => {
-    if (!this.refresh()) {
+    if (!await this.refresh()) {
       return
     }
     this.modal.current.openModal()
     setTimeout(() => this.amountInput.current.focus(), 100)
   }
 
-  refresh = () => {
-    const from = this.props.from
+  refresh = async () => {
+    const { from, signer } = this.props
     if (!from || !networkManager.sdk.isValidAddress(from)) {
       return
+    }
+    if (signer && signer !== from) {
+      this.setState({ loading: true })
+      try {
+        await keypairManager.getKeypair(from)
+      } catch {
+        notification.error('Cannot Transfer', `Please add the address <b>${from}</b> in the keypair manager or select it in ${process.env.BROWSER_EXTENSION_NAME}.`)
+        this.setState({ loading: false })
+        return
+      }
+      this.setState({ loading: false })
     }
     return true
   }
@@ -72,13 +85,14 @@ export default class TransferButton extends PureComponent {
   }
 
   render () {
-    const { amount, recipient, pushing } = this.state
+    const { loading, amount, recipient, pushing } = this.state
 
     return <>
       <ToolbarButton
         id='navbar-transfer'
         size='md'
         icon='fas fa-sign-out-alt'
+        loading={loading}
         tooltip='Transfer'
         onClick={this.openModal}
       />
@@ -101,6 +115,7 @@ export default class TransferButton extends PureComponent {
         <FormGroup>
           <Label>Recipient</Label>
           <KeypairInputSelector
+            ref={this.keypairInput}
             editable
             icon='fas fa-map-marker-alt'
             placeholder='Recipient address'
