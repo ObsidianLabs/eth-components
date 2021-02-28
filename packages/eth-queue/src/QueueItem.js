@@ -32,14 +32,14 @@ export default ({ txHash, data, status, ts }) => {
           <b>{data.name}</b>
           {statusComponent}
         </span>
-        <span className='small text-muted'>
+        <span className='small text-alpha-50'>
           <i className='far fa-clock mx-1' />
           {moment.unix(ts).format('MM/DD HH:mm:ss')}
         </span>
       </div>
-      { data.address && <div className='small text-muted'><code>{data.address}</code></div> }
-      { data.contractAddress && <div className='small text-muted'><code>{data.contractAddress}</code></div> }
-      { data.contractName && <div className='small text-muted'>{data.contractName}</div> }
+      { data.address && <div className='small text-alpha-50'><code>{data.address}</code></div> }
+      { data.contractAddress && <div className='small text-alpha-50'><code>{data.contractAddress}</code></div> }
+      { data.contractName && <div className='small text-alpha-50'>{data.contractName}</div> }
     </div>
   )
 }
