@@ -95,9 +95,10 @@ export default class DeployerButton extends PureComponent {
 
   render () {
     const signer = this.props.signer
+    const pending = this.state.pending
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
-    if (this.state.pending) {
+    if (pending) {
       icon = <span key='deploying-icon'><i className='fas fa-spinner fa-spin' /></span>
     }
 
@@ -128,13 +129,14 @@ export default class DeployerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>
-        { this.state.pending ? 'Deploying' : `Deploy`}
+        { pending ? 'Deploying' : `Deploy`}
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
         overflow
         title={<span>Deploy Contract <b>{this.state.contractName}</b></span>}
         textConfirm='Deploy'
+        pending={pending && 'Deploying...'}
         onConfirm={this.confirmDeploymentParameters}
         textActions={[`Estimate ${txOptions.title}`]}
         onActions={[this.estimate]}
