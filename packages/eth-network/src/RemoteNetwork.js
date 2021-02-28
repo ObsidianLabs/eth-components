@@ -79,10 +79,13 @@ export default class RemoteNetwork extends PureComponent {
                 name='Chain ID'
                 badge={info?.chainId}
               />
-              <TableCardRow
-                name='ENS'
-                badge={info?.ensAddress}
-              />
+              {
+                info?.ensAddress &&
+                <TableCardRow
+                  name='ENS'
+                  badge={info?.ensAddress}
+                />
+              }
             </TableCard>
           </div>
           <div className='col-6 p-0'>
