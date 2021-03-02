@@ -33,7 +33,7 @@ export default class InstanceList extends PureComponent {
   componentDidMount() {
     this.refreshInstances()
   }
-  
+
   componentDidUpdate (prevProps) {
     if (this.props.networkId !== prevProps.networkId) {
       this.refreshInstances()
@@ -111,6 +111,7 @@ export default class InstanceList extends PureComponent {
                 networkId={this.props.networkId}
                 minerKey={this.props.minerKey}
                 onRefresh={this.refreshInstances}
+                instances={this.state.instances}
               />
             </>
           )}
