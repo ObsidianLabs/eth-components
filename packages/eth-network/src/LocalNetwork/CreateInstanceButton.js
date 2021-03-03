@@ -33,9 +33,15 @@ export default class CreateInstanceButton extends PureComponent {
   onCreateInstance = async () => {
     let keys
     let miner
+
+    if (this.props.instances.some(instance => instance.Name.substr(process.env.PROJECT.length + 1) === this.state.name)) {
+      notification.error('Failed', `You have an instance named ${this.state.name}, please use a different name.`)
+      return
+    }
+
     if (this.props.minerKey) {
       const keypairs = await keypairManager.loadAllKeypairs()
-  
+
       if (!keypairs || !keypairs.length) {
         notification.error('Failed', 'Please create or import a keypair in the keypair manager first.')
         return
@@ -56,7 +62,12 @@ export default class CreateInstanceButton extends PureComponent {
       keys,
     })
     this.modal.current.closeModal()
-    this.setState({ pending: false })
+    this.setState({
+      pending: false,
+      name: '',
+      version: '',
+      miner: ''
+    })
     this.props.onRefresh()
   }
 
