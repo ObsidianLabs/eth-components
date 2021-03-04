@@ -31,15 +31,17 @@ class Contract extends TabbedExplorer {
     this.initialize({ value, tabs })
   }
 
-  componentDidUpdate () {
-    this.checkLocation()
+  componentDidUpdate (props) {
+    if (this.props.match?.params?.value !== props.match?.params?.value) {
+      this.checkLocation()
+    }
   }
 
   checkLocation = () => {
     const value = this.props.match?.params?.value || ''
     return value && this.openTab(value)
   }
-  
+
   render () {
     const { history, route, network, uiState, contracts, valueFormatter } = this.props
 

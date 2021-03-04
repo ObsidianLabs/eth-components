@@ -51,8 +51,10 @@ class AccountExplorer extends TabbedExplorer {
     keypairManager.onUpdated(this.updateKeypairs)
   }
 
-  componentDidUpdate () {
-    this.checkLocation()
+  componentDidUpdate (props) {
+    if (this.props.match?.params?.value !== props.match?.params?.value) {
+      this.checkLocation()
+    }
   }
 
   checkLocation = () => {
