@@ -42,19 +42,26 @@ class AccountExplorer extends TabbedExplorer {
   }
 
   componentDidMount () {
-    const { network, accounts } = this.props
-    const value = accounts.getIn([network, 'selected'])
-    const tabs = accounts.getIn([network, 'tabs'])?.toArray() || []
-    this.initialize({ value, tabs })
-
+    this.init()
     keypairManager.loadAllKeypairs().then(this.updateKeypairs)
     keypairManager.onUpdated(this.updateKeypairs)
   }
 
   componentDidUpdate (props) {
+    if (this.props.network !== props.network) {
+      this.init()
+    }
+    
     if (this.props.match?.params?.value !== props.match?.params?.value) {
       this.checkLocation()
     }
+  }
+
+  init = () => {
+    const { network, accounts } = this.props
+    const value = accounts.getIn([network, 'selected'])
+    const tabs = accounts.getIn([network, 'tabs'])?.toArray() || []
+    this.initialize({ value, tabs, subroute: network })
   }
 
   checkLocation = () => {

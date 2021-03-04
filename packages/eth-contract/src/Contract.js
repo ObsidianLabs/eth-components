@@ -25,16 +25,24 @@ class Contract extends TabbedExplorer {
   }
 
   componentDidMount () {
-    const { network, contracts } = this.props
-    const value = contracts.getIn([network, 'selected'])
-    const tabs = contracts.getIn([network, 'tabs'])?.toArray() || []
-    this.initialize({ value, tabs })
+    this.init()
   }
 
   componentDidUpdate (props) {
+    if (this.props.network !== props.network) {
+      this.init()
+    }
+
     if (this.props.match?.params?.value !== props.match?.params?.value) {
       this.checkLocation()
     }
+  }
+
+  init = () => {
+    const { network, contracts } = this.props
+    const value = contracts.getIn([network, 'selected'])
+    const tabs = contracts.getIn([network, 'tabs'])?.toArray() || []
+    this.initialize({ value, tabs, subroute: network })
   }
 
   checkLocation = () => {
