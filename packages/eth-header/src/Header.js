@@ -29,6 +29,7 @@ export default class Header extends PureComponent {
       projects,
       selectedProject,
       starred,
+      starredContracts = starred,
       browserAccounts,
       extraContractItems,
       selectedContract,
@@ -79,11 +80,23 @@ export default class Header extends PureComponent {
         icon: addressIcon,
       }
     })
-    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarred.map(item => ({ ...item, icon: contractIcon }))]
+
+    const dropdownStarredContracts = starredContracts.map(item => {
+      const name = this.state.keypairs.find(k => k.address === item)?.name
+      return {
+        id: item,
+        name: <code className='small'>{item}</code>,
+        // name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
+    
+    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarredContracts.map(item => ({ ...item, icon: contractIcon }))]
     if (dropdownStarred.length) {
       dropdownStarred.unshift({ header: 'starred' })
       dropdownStarred.unshift({ divider: true })
-    } else {
+    }
+    if (!starredContracts.length) {
       dropdownStarredInContract.push({ none: true })
     }
     if (extraContractItems) {
