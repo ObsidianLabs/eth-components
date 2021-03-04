@@ -86,6 +86,7 @@ class AccountExplorer extends TabbedExplorer {
     const props = {
       starred,
       subroute: network,
+      signer: uiState.get('signer'),
       getTabText: tab => {
         let { value = '', temp } = tab
         const address = valueFormatter(value)
