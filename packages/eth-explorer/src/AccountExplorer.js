@@ -56,8 +56,8 @@ class AccountExplorer extends TabbedExplorer {
   }
 
   checkLocation = () => {
-    const name = this.props.match?.params?.name || ''
-    return name && this.page.current?.openTab(name)
+    const value = this.props.match?.params?.value || ''
+    return value && this.openTab(value)
   }
 
   updateKeypairs = keypairs => {
