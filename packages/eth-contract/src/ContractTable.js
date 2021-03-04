@@ -11,8 +11,8 @@ import {
 } from '@obsidians/ui-components'
 
 import notification from '@obsidians/notification'
-import DropdownCard from './DropdownCard'
-import ContractForm from './ContractForm'
+import DropdownCard from './components/DropdownCard'
+import ContractForm from './components/ContractForm'
 
 export default class ContractTable extends Component {
   state = {

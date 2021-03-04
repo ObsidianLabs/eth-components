@@ -51,7 +51,7 @@ export default class AccountPage extends PureComponent {
       return
     }
 
-    if (!networkManager.sdk?.isValidAddress(value)) {
+    if (!await networkManager.sdk?.isValidAddress(value)) {
       this.setState({ loading: false, error: true, account: null })
       return
     }

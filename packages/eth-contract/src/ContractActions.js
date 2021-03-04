@@ -17,8 +17,8 @@ import queue from '@obsidians/eth-queue'
 import { networkManager } from '@obsidians/eth-network'
 import Highlight from 'react-highlight'
 
-import DropdownCard from './DropdownCard'
-import ContractForm, { ActionParamFormGroup } from './ContractForm'
+import DropdownCard from './components/DropdownCard'
+import ContractForm, { ActionParamFormGroup } from './components/ContractForm'
 
 export default class ContractActions extends Component {
   state = {

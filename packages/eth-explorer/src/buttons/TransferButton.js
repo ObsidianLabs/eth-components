@@ -39,7 +39,7 @@ export default class TransferButton extends PureComponent {
 
   refresh = async () => {
     const { from, signer } = this.props
-    if (!from || !networkManager.sdk.isValidAddress(from)) {
+    if (!from || !await networkManager.sdk.isValidAddress(from)) {
       return
     }
     if (signer && signer !== from) {
