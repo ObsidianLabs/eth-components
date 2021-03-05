@@ -13,7 +13,6 @@ import keypairManager from '@obsidians/keypair'
 import AccountPage from './AccountPage'
 
 import TransferButton from './buttons/TransferButton'
-import ConvertButton from './buttons/ConvertButton'
 import FaucetButton from './buttons/FaucetButton'
 
 class AccountExplorer extends TabbedExplorer {
@@ -23,14 +22,6 @@ class AccountExplorer extends TabbedExplorer {
     valueFormatter: value => value.toLowerCase(),
     ToolbarButtons: ({ explorer, value, ...otherProps }) => <>
       <TransferButton from={value} {...otherProps} />
-      <ConvertButton
-        address={value}
-        {...otherProps}
-        onChange={value => {
-          this.tabs.current?.updateTab({ value })
-          this.onValue(value)
-        }}
-      />
       <FaucetButton address={value} {...otherProps} />
     </>,
   }
@@ -51,7 +42,7 @@ class AccountExplorer extends TabbedExplorer {
     if (this.props.network !== props.network) {
       this.init()
     }
-    
+
     if (this.props.match?.params?.value !== props.match?.params?.value) {
       this.checkLocation()
     }
