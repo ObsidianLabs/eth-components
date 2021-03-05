@@ -56,7 +56,7 @@ export default class InstanceRow extends PureComponent {
       <IconButton
         color='transparent'
         className='mr-1 text-muted'
-        onClick={() => this.props.onOpenConfig(data)}
+        onClick={() => this.props.onOpenConfig(this.props.data)}
         icon='fas fa-cog'
       />
     )
