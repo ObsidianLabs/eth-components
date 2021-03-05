@@ -22,7 +22,7 @@ export default class ProjectToolbar extends PureComponent {
         onClick={() => projectManager.compile()}
       />
       { !noDeploy && <DeployButton projectManager={projectManager} signer={signer} /> }
-      {<ExtraButtons projectManager={projectManager} signer={signer} />}
+      { ExtraButtons && <ExtraButtons projectManager={projectManager} signer={signer} /> }
       <div className='flex-1' />
       <ToolbarButton
         id='settings'
