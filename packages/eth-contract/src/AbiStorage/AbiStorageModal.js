@@ -85,7 +85,7 @@ export default class AbiStorageModal extends PureComponent {
     return this.state.abis.map(this.renderAbiRow)
   }
 
-  renderAbiRow = item => {
+  renderAbiRow = (item, index) => {
     const [codeHash, obj] = item
     const abi = obj.get('abi')
     try {
@@ -105,12 +105,12 @@ export default class AbiStorageModal extends PureComponent {
           <div className='d-flex flex-row justify-content-end hover-show'>
             <IconButton
               color='transparent'
-              id={`show-abi-${codeHash}`}
+              id={`show-abi-${index}`}
               className='text-muted'
               icon='fas fa-eye'
               onClick={() => this.viewAbi(abi)}
             >
-              <UncontrolledTooltip delay={0} placement='top' target={`show-abi-${codeHash}`}>
+              <UncontrolledTooltip delay={0} placement='top' target={`show-abi-${index}`}>
                 Show ABI
               </UncontrolledTooltip>
             </IconButton>
