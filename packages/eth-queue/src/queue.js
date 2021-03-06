@@ -15,6 +15,7 @@ class Queue extends BaseQueueManager {
     try {
       tx = await pendingTransaction.mined()
     } catch (e) {
+      console.warn(e)
       this.updateStatus(txHash, 'FAILED-TIMEOUT', { error: { message: e.message } }, callbacks)
       notification.error('Transaction Timeout', e.message)
       return
@@ -31,8 +32,16 @@ class Queue extends BaseQueueManager {
     }
     this.updateStatus(txHash, 'MINED', { tx }, callbacks)
 
-    const receipt = await pendingTransaction.executed()
-    if (receipt.outcomeStatus) {
+    let receipt
+    try {
+      receipt = await pendingTransaction.executed()
+    } catch (e) {
+      console.warn(e)
+      notification.error('Transaction Failed', e.message)
+      this.updateStatus(txHash, 'FAILED', { error: { error: e.message } }, callbacks)
+      return
+    }
+    if (receipt?.outcomeStatus) {
       pendingTransaction.cfx.call(tx, tx.epochHeight - 1).catch(err => {
         const decodedMessage = utils.decodeError(err.data.replace(/\"/g, ''))
         notification.error('Transaction Failed', decodedMessage)
@@ -45,7 +54,7 @@ class Queue extends BaseQueueManager {
       })
 
       return
-    } else {
+    } else if (receipt.gasUsed) {
       const gasUsed = receipt.gasUsed.toString()
       // const gasFee = receipt.gasFee.toString()
       notification.info('Transaction Executed', `Gas used ${gasUsed}.`)
@@ -53,14 +62,15 @@ class Queue extends BaseQueueManager {
     }
     this.updateStatus(txHash, 'EXECUTED', { receipt }, callbacks)
 
+    let result
     try {
-      await pendingTransaction.confirmed()
+      result = await pendingTransaction.confirmed()
     } catch (e) {
       this.updateStatus(txHash, 'CONFIRMED', {}, callbacks)
       return
     }
-    notification.success('Transaction Confirmed', '')
-    this.updateStatus(txHash, 'CONFIRMED', {}, callbacks)
+    notification.success('Transaction Confirmed', result.message || '')
+    this.updateStatus(txHash, 'CONFIRMED', { confirmed: result.message }, callbacks)
   }
 }
 
