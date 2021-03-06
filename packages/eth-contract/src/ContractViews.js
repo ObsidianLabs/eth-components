@@ -10,13 +10,17 @@ import {
   Badge,
 } from '@obsidians/ui-components'
 
+import { KeypairInputSelector } from '@obsidians/keypair'
 import notification from '@obsidians/notification'
+import { networkManager } from '@obsidians/eth-network'
+
 import DropdownCard from './components/DropdownCard'
 import ContractForm from './components/ContractForm'
 
-export default class ContractTable extends Component {
+export default class ContractViews extends Component {
   state = {
     selected: 0,
+    signer: '',
     executing: false,
     actionError: '',
     actionResult: '',
@@ -48,7 +52,9 @@ export default class ContractTable extends Component {
 
     let result
     try {
-      result = await this.props.contract.query(actionName, parameters.array)
+      result = await this.props.contract.query(actionName, parameters, {
+        from: this.state.signer
+      })
     } catch (e) {
       console.warn(e)
       this.setState({ executing: false, actionError: e.message, actionResult: '' })
@@ -58,7 +64,7 @@ export default class ContractTable extends Component {
     this.setState({
       executing: false,
       actionError: '',
-      actionResult: JSON.stringify(result, null, 2)
+      actionResult: JSON.stringify(result, null, 2),
     })
   }
 
@@ -86,7 +92,7 @@ export default class ContractTable extends Component {
         </DropdownMenu>
       </UncontrolledButtonDropdown>
       <ToolbarButton
-        id='contract-execute'
+        id='contract-execute-view'
         icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
         tooltip='Execute'
         className='border-right-1'
@@ -117,10 +123,14 @@ export default class ContractTable extends Component {
   }
 
   render () {
-    const actions = this.props.abi
+    const { abi: actions, signer, signerSelector } = this.props
 
-    if (!actions || !actions.length) {
-      return null
+    if (!actions?.length) {
+      return (
+        <Screen>
+          <p>No views found</p>
+        </Screen>
+      )
     }
     
     const selectedAction = actions[this.state.selected] || {}
@@ -142,6 +152,26 @@ export default class ContractTable extends Component {
               Empty={<div className='small'>(None)</div>}
             />
           </DropdownCard>
+          {
+            signerSelector &&
+            <DropdownCard
+              isOpen
+              title='Authorization'
+              overflow
+            >
+              <KeypairInputSelector
+                size='sm'
+                label='Signer'
+                extra={networkManager.browserExtension?.isEnabled && signer && [{
+                  group: networkManager.browserExtension.name.toLowerCase(),
+                  badge: networkManager.browserExtension.name,
+                  children: [{ address: signer, name: networkManager.browserExtension.name }],
+                }]}
+                value={this.state.signer}
+                onChange={signer => this.setState({ signer })}
+              />
+            </DropdownCard>
+          }
           <DropdownCard
             isOpen
             title='Result'

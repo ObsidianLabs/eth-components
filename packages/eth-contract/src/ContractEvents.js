@@ -148,6 +148,16 @@ export default class ContractEvents extends PureComponent {
   }
 
   render () {
+    const events = this.props.abi
+
+    if (!events?.length) {
+      return (
+        <Screen>
+          <p>No events found</p>
+        </Screen>
+      )
+    }
+
     return (
       <div className='d-flex flex-column align-items-stretch h-100'>
         <div className='d-flex border-bottom-1'>

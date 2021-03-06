@@ -94,12 +94,12 @@ export default class ContractActions extends Component {
     const signer = this.state.signer
 
     const options = {}
-    txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
     let result = {}
     try {
       const value = utils.unit.toValue(this.state.amount || '0')
-      const tx = await this.props.contract.execute(actionName, parameters.array, {
+      const tx = await this.props.contract.execute(actionName, parameters, {
         from: signer,
         value,
         ...options,
@@ -155,7 +155,7 @@ export default class ContractActions extends Component {
         </DropdownMenu>
       </UncontrolledButtonDropdown>
       <ToolbarButton
-        id='contract-execute'
+        id='contract-execute-action'
         icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
         tooltip='Execute'
         className='border-right-1'
@@ -193,6 +193,14 @@ export default class ContractActions extends Component {
     const { abi, signer } = this.props
     const selectedAction = abi[this.state.selected] || {}
 
+    if (!abi.length) {
+      return (
+        <Screen>
+          <p>No actions found</p>
+        </Screen>
+      )
+    }
+
     return (
       <div className='d-flex flex-column align-items-stretch h-100'>
         <div className='d-flex border-bottom-1'>
@@ -221,30 +229,33 @@ export default class ContractActions extends Component {
               /> : null
             }
           </DropdownCard>
-          <DropdownCard
-            isOpen
-            title={txOptions.title}
-            right={
-              <Badge color='primary' onClick={evt => {
-                evt.stopPropagation()
-                this.estimate(selectedAction.name)
-              }}>Estimate</Badge>
-            }
-          >
-            {
-              txOptions.list.map(option => (
-                <ActionParamFormGroup
-                  size='sm'
-                  key={`param-${option.name}`}
-                  label={option.label}
-                  icon={option.icon}
-                  placeholder={option.placeholder}
-                  value={this.state[option.name]}
-                  onChange={value => this.setState({ [option.name]: value })}
-                />
-              ))
-            }
-          </DropdownCard>
+          {
+            txOptions.list?.length &&
+            <DropdownCard
+              isOpen
+              title={txOptions.title}
+              right={
+                <Badge color='primary' onClick={evt => {
+                  evt.stopPropagation()
+                  this.estimate(selectedAction.name)
+                }}>Estimate</Badge>
+              }
+            >
+              {
+                txOptions.list.map(option => (
+                  <ActionParamFormGroup
+                    size='sm'
+                    key={`param-${option.name}`}
+                    label={option.label}
+                    icon={option.icon}
+                    placeholder={option.placeholder}
+                    value={this.state[option.name]}
+                    onChange={value => this.setState({ [option.name]: value })}
+                  />
+                ))
+              }
+            </DropdownCard>
+          }
           <DropdownCard
             isOpen
             title='Authorization'

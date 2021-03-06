@@ -15,7 +15,7 @@ import { networkManager } from '@obsidians/eth-network'
 import redux from '@obsidians/redux'
 
 import ContractActions from './ContractActions'
-import ContractTable from './ContractTable'
+import ContractViews from './ContractViews'
 import ContractEvents from './ContractEvents'
 import AbiStorageModal from './AbiStorage/AbiStorageModal'
 
@@ -110,68 +110,6 @@ export default class ContractPage extends PureComponent {
     this.refresh()
   }
 
-  renderContractActions (value, abi, contract, signer) {
-    if (!abi.length) {
-      return (
-        <Screen>
-          <p>No actions found</p>
-        </Screen>
-      )
-    }
-    return (
-      <ContractActions
-        // network={network}
-        value={value}
-        abi={abi}
-        contract={contract}
-        signer={signer}
-        // contract={contract}
-        // abi={this.state.abi}
-        // history={contractCalls.getIn(['action', 'history'])}
-        // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
-      />
-    )
-  }
-
-  renderContractViews (value, abi, contract) {
-    if (!abi.length) {
-      return (
-        <Screen>
-          <p>No views found</p>
-        </Screen>
-      )
-    }
-    return (
-      <ContractTable
-        value={value}
-        abi={abi}
-        contract={contract}
-      // network={network}
-      // contract={contract}
-      // abi={this.state.abi}
-      // history={contractCalls.getIn(['table', 'history'])}
-      // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}
-      />
-    )
-  }
-
-  renderContractEvents (value, abi, contract) {
-    if (!abi.length) {
-      return (
-        <Screen>
-          <p>No events found</p>
-        </Screen>
-      )
-    }
-    return (
-      <ContractEvents
-        value={value}
-        abi={abi}
-        contract={contract}
-      />
-    )
-  }
-
   renderABIDropdownItem () {
     return this.state.abis.map(abiItem => {
       const [codeHash, abiObj] = abiItem
@@ -191,14 +129,14 @@ export default class ContractPage extends PureComponent {
   }
 
   render () {
-    const { signer } = this.props
+    const { value, signer } = this.props
     const { error, abi, account, errorType } = this.state
 
     if (!networkManager.sdk) {
       return null
     }
 
-    if (!this.props.value) {
+    if (!value) {
       return (
         <Screen>
           <h4 className='display-4'>New Page</h4>
@@ -248,7 +186,7 @@ export default class ContractPage extends PureComponent {
       )
     }
 
-    const contractInstance = networkManager.sdk.contractFrom({ abi, address: this.props.value })
+    const contractInstance = networkManager.sdk.contractFrom({ abi, address: value })
     const functions = abi.filter(item => item.type === 'function')
     const events = abi.filter(item => item.type === 'event')
     const actions = functions.filter(item => item.stateMutability !== 'view' && item.stateMutability !== 'pure')
@@ -261,14 +199,33 @@ export default class ContractPage extends PureComponent {
           defaultSize={320}
           minSize={200}
         >
-          {this.renderContractActions(this.props.value, actions, contractInstance, signer)}
+          <ContractActions
+            value={value}
+            abi={actions}
+            contract={contractInstance}
+            signer={signer}
+            // network={network}
+            // history={contractCalls.getIn(['action', 'history'])}
+            // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
+          />
           <SplitPane
             split='vertical'
             defaultSize={320}
             minSize={200}
           >
-            {this.renderContractViews(this.props.value, views, contractInstance)}
-            {this.renderContractEvents(this.props.value, events, contractInstance)}
+            <ContractViews
+              value={value}
+              abi={views}
+              contract={contractInstance}
+              // network={network}
+              // history={contractCalls.getIn(['table', 'history'])}
+              // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}
+            />
+            <ContractEvents
+              value={value}
+              abi={events}
+              contract={contractInstance}
+            />
           </SplitPane>
         </SplitPane>
       </div>

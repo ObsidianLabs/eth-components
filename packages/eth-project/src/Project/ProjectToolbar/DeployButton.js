@@ -40,7 +40,7 @@ export default class DeployerButton extends PureComponent {
   getDeploymentParameters = (constructorAbi, contractName, callback, estimate) => {
     this.modal.current.openModal()
     const options = {}
-    txOptions.list.forEach(opt => options[opt.name] = '')
+    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = '')
     this.setState({
       constructorAbi,
       contractName,
@@ -62,7 +62,7 @@ export default class DeployerButton extends PureComponent {
 
     const { contractName, signer } = this.state
     const options = {}
-    txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
     const result = await this.estimateCallback({ parameters, contractName, signer, ...options })
 
@@ -84,7 +84,7 @@ export default class DeployerButton extends PureComponent {
 
     const { contractName, signer } = this.state
     const options = {}
-    txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
     this.callback({ parameters, contractName, signer, ...options })
   }
@@ -154,6 +154,7 @@ export default class DeployerButton extends PureComponent {
         />
         <div className='row'>
           {
+            txOptions.list?.length &&
             txOptions.list.map(option => (
               <ActionParamFormGroup
                 key={`deploy-param-${option.name}`}
