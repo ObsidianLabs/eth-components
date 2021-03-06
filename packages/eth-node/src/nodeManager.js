@@ -48,7 +48,7 @@ class NodeManager {
       resolveOnFirstLog: true,
       stopCommand: `docker stop ${process.env.PROJECT}-${name}-${version}`,
     })
-    return { id: `dev.${name}` }
+    return { id: `dev.${name}`, version }
   }
 
   generateCommand ({ name, version }) {
