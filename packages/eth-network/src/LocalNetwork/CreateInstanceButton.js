@@ -39,9 +39,8 @@ export default class CreateInstanceButton extends PureComponent {
       return
     }
 
+    const keypairs = await keypairManager.loadAllKeypairs()
     if (this.props.minerKey) {
-      const keypairs = await keypairManager.loadAllKeypairs()
-
       if (!keypairs || !keypairs.length) {
         notification.error('Failed', 'Please create or import a keypair in the keypair manager first.')
         return
@@ -50,6 +49,8 @@ export default class CreateInstanceButton extends PureComponent {
 
       const secret = await keypairManager.getSecret(this.state.miner)
       miner = { address: this.state.miner, secret }
+    } else {
+      keys = keypairs.map(k => k.address)
     }
 
     this.setState({ pending: 'Creating...' })
