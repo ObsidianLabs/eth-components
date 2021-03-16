@@ -2,7 +2,6 @@ import redux from '@obsidians/redux'
 
 export default class NavGuard {
   constructor (history) {
-    console.info('[Router Guard] Start watching route changes')
     this.history = history
     const { location } = history
     this.uninstall = history.listen(location => this.handleChanges(location))
