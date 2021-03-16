@@ -21,19 +21,19 @@ export default class TransactionDetails extends PureComponent {
   }
 
   renderContent = (tx, selected) => {
-    const { txHash, status, data } = tx
+    const { txHash, status, data = {} } = tx
     const {
-      // contractAddress,
       functionName,
       contractName,
       signer, params,
       value,
+      confirmed,
       tx: txObject,
       error,
       receipt,
       abi,
-    } = data || {}
-    const contractAddress = receipt?.contractAddress
+    } = data
+    const contractAddress = receipt?.contractAddress || data.contractAddress
 
     if (selected === 'basic') {
       return (
@@ -88,6 +88,14 @@ export default class TransactionDetails extends PureComponent {
               name={`${process.env.TOKEN_SYMBOL} Transfered`}
               icon='fas fa-coins'
               badge={`${utils.unit.fromValue(value)} ${process.env.TOKEN_SYMBOL}`}
+            />
+          }
+          {
+            confirmed &&
+            <TableCardRow
+              name='Result'
+              icon='fas fa-sign-out'
+              badge={confirmed}
             />
           }
           <TableCardRow
