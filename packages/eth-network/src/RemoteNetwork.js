@@ -13,7 +13,7 @@ export default class RemoteNetwork extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      info: null,
+      info: props.info || null,
       status: null,
     }
   }
@@ -24,6 +24,9 @@ export default class RemoteNetwork extends PureComponent {
   }
 
   componentDidUpdate (prevProps) {
+    if (this.props.info !== prevProps.info) {
+      this.setState({ info: this.props.info })
+    }
     if (this.props.networkId !== prevProps.networkId) {
       this.refresh()
     }
@@ -67,18 +70,31 @@ export default class RemoteNetwork extends PureComponent {
   }
 
   render () {
-    const { networkId } = this.props
+    const { networkId, EditButton } = this.props
     const { status, info } = this.state
 
     return (
       <div className='d-flex flex-1 flex-column overflow-auto'>
         <div className='d-flex'>
           <div className='col-6 p-0 border-right-black'>
-            <TableCard title={`${process.env.CHAIN_NAME} Network (${networkId})`}>
-              <TableCardRow
-                name='Chain ID'
-                badge={info?.chainId}
-              />
+            <TableCard
+              title={`${process.env.CHAIN_NAME} Network (${networkId})`}
+              right={EditButton}
+            >
+              {
+                info?.url &&
+                <TableCardRow
+                  name='URL'
+                  badge={info?.url}
+                />
+              }
+              {
+                info?.chainId &&
+                <TableCardRow
+                  name='Chain ID'
+                  badge={info?.chainId}
+                />
+              }
               {
                 info?.ensAddress &&
                 <TableCardRow
@@ -90,18 +106,27 @@ export default class RemoteNetwork extends PureComponent {
           </div>
           <div className='col-6 p-0'>
             <TableCard title='Blocks'>
-              <TableCardRow
-                name='Block Number'
-                badge={status?.number}
-              />
-              <TableCardRow
-                name='Block Time'
-                badge={status ? moment(status.timestamp * 1000).format('MMMM Do, HH:mm:ss') : ''}
-              />
-              <TableCardRow
-                name='Difficulty'
-                badge={status && Number(status.difficulty).toFixed(0)}
-              />
+              {
+                status?.number &&
+                <TableCardRow
+                  name='Block Number'
+                  badge={status?.number}
+                />
+              }
+              {
+                status?.timestamp &&
+                <TableCardRow
+                  name='Block Time'
+                  badge={moment(status.timestamp * 1000).format('MMMM Do, HH:mm:ss')}
+                />
+              }
+              {
+                status?.difficulty &&
+                <TableCardRow
+                  name='Difficulty'
+                  badge={status && Number(status.difficulty).toFixed(0)}
+                />
+              }
             </TableCard>
           </div>
         </div>

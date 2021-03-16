@@ -1,6 +1,7 @@
 import React from 'react'
 
 import LocalNetwork from './LocalNetwork'
+import CustomNetwork from './CustomNetwork'
 import { default as DefaultRemoteNetwork } from './RemoteNetwork'
 
 export default props => {
@@ -10,7 +11,8 @@ export default props => {
     configButton,
     minerKey,
     minerTerminal,
-    RemoteNetwork = DefaultRemoteNetwork
+    RemoteNetwork = DefaultRemoteNetwork,
+    customNetwork,
   } = props
   
   if (networkId === 'dev') {
@@ -23,8 +25,9 @@ export default props => {
         minerTerminal={minerTerminal}
       />
     )
+  } else if (networkId.startsWith('custom')) {
+    return <CustomNetwork networkId={networkId} customNetwork={customNetwork} RemoteNetwork={RemoteNetwork} />
+  } else {
+    return <RemoteNetwork networkId={networkId} />
   }
-  return (
-    <RemoteNetwork networkId={networkId} />
-  )
 }
