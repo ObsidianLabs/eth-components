@@ -99,11 +99,11 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               noneName='solc'
               modalTitle='Solc Manager'
               downloadingTitle='Downloading Solc'
-              extraOptions={platform.isDesktop && [{
+              extraOptions={platform.isDesktop ? [{
                 id: 'default',
                 display: 'Default Solc',
                 onClick: () => this.onChange('compilers.solc')('default')
-              }]}
+              }] : undefined}
               selected={projectSettings?.get('compilers.solc')}
               onSelected={solc => this.onChange('compilers.solc')(solc)}
             />
