@@ -51,6 +51,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   }
 
   render () {
+    const { noSolc } = this.props
     const { projectRoot, projectSettings } = this.context
 
     return (
@@ -91,22 +92,25 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 onSelected={truffle => this.onChange(`compilers.${process.env.COMPILER_VERSION_KEY}`)(truffle)}
               />
             }
-            <DockerImageInputSelector
-              channel={compilerManager.solc}
-              disableAutoSelection
-              bg='bg-black'
-              label='Solc version'
-              noneName='solc'
-              modalTitle='Solc Manager'
-              downloadingTitle='Downloading Solc'
-              extraOptions={platform.isDesktop ? [{
-                id: 'default',
-                display: 'Default Solc',
-                onClick: () => this.onChange('compilers.solc')('default')
-              }] : undefined}
-              selected={projectSettings?.get('compilers.solc')}
-              onSelected={solc => this.onChange('compilers.solc')(solc)}
-            />
+            {
+              !noSolc &&
+              <DockerImageInputSelector
+                channel={compilerManager.solc}
+                disableAutoSelection
+                bg='bg-black'
+                label='Solc version'
+                noneName='solc'
+                modalTitle='Solc Manager'
+                downloadingTitle='Downloading Solc'
+                extraOptions={platform.isDesktop ? [{
+                  id: 'default',
+                  display: 'Default Solc',
+                  onClick: () => this.onChange('compilers.solc')('default')
+                }] : undefined}
+                selected={projectSettings?.get('compilers.solc')}
+                onSelected={solc => this.onChange('compilers.solc')(solc)}
+              />
+            }
             <AbstractProjectSettingsTab.DeleteButton context={this.context} />
           </div>
         </div>
