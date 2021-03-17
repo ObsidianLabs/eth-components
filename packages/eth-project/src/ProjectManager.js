@@ -42,15 +42,17 @@ function makeProjectManager (Base) {
   
       return true
     }
+
+    async getDefaultContract () {
+      const settings = await this.checkSettings()
+      if (!settings?.deploy) {
+        throw new Error('Please set the smart contract to deploy in project settings.')
+      }
+      return this.pathForProjectFile(settings.deploy)
+    }
   
     async deploy (contractPath) {
-      if (!contractPath) {
-        const settings = await this.checkSettings()
-        if (!settings?.deploy) {
-          throw new Error('Please set the smart contract to deploy in project settings.')
-        }
-        contractPath = this.pathForProjectFile(settings.deploy)
-      }
+      contractPath = contractPath || await this.getDefaultContract()
       const contractName = fileOps.current.path.parse(contractPath).name
   
       let contractObj
@@ -63,7 +65,7 @@ function makeProjectManager (Base) {
   
       let constructorAbi
       try {
-        constructorAbi = await this.getConstructorAbi(contractObj)
+        constructorAbi = await this.getConstructorAbi(contractObj.abi)
       } catch (e) {
         notification.error('Deploy Error', e.message)
         return
@@ -85,28 +87,30 @@ function makeProjectManager (Base) {
       }
     }
   
-    getConstructorAbi (contractObj) {
-      if (!contractObj.abi) {
+    getConstructorAbi (contractAbi, { key = 'type', value = 'constructor' } = {}) {
+      if (!contractAbi) {
         throw new Error(`Error in reading the ABI. Does not have the field abi.`)
       }
-      if (!Array.isArray(contractObj.abi)) {
+      if (!Array.isArray(contractAbi)) {
         throw new Error(`Error in reading the ABI. Field abi is not an array.`)
       }
-      const constructorAbi = contractObj.abi.find(item => item.type === 'constructor')
+      const constructorAbi = contractAbi.find(item => item[key] === value)
       return constructorAbi
     }
 
-    validateDeployment (contractObj, allParameters) {
+    checkSdkAndSigner (allParameters) {
       if (!networkManager.sdk) {
         notification.error('Deployment Error', 'No running node. Please start one first.')
-        return
+        return true
       }
   
       if (!allParameters.signer) {
         notification.error('Deployment Error', 'No signer specified. Please select one to sign the deployment transaction.')
-        return
+        return true
       }
-  
+    }
+
+    validateDeployment (contractObj) {  
       let bytecode, deployedBytecode
       if (platform.isDesktop) {
         bytecode = contractObj.bytecode
@@ -133,7 +137,10 @@ function makeProjectManager (Base) {
     }
     
     async estimate (contractObj, allParameters) {
-      const deploy = this.validateDeployment(contractObj, allParameters)
+      if (this.checkSdkAndSigner(allParameters)) {
+        return
+      }
+      const deploy = this.validateDeployment(contractObj)
       if (!deploy) {
         return
       }
@@ -145,6 +152,7 @@ function makeProjectManager (Base) {
         const tx = await networkManager.sdk.getDeployTransaction({
           abi: deploy.abi,
           bytecode: deploy.bytecode,
+          options: deploy.options,
           parameters: parameters.array
         }, {
           from: allParameters.signer,
@@ -159,7 +167,10 @@ function makeProjectManager (Base) {
     }
 
     async pushDeployment (contractObj, allParameters) {
-      const deploy = this.validateDeployment(contractObj, allParameters)
+      if (this.checkSdkAndSigner(allParameters)) {
+        return
+      }
+      const deploy = this.validateDeployment(contractObj)
       if (!deploy) {
         return
       }
@@ -175,6 +186,7 @@ function makeProjectManager (Base) {
         const tx = await networkManager.sdk.getDeployTransaction({
           abi: deploy.abi,
           bytecode: deploy.bytecode,
+          options: deploy.options,
           parameters: parameters.array
         }, {
           from: allParameters.signer,
