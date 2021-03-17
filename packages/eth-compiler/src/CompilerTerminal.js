@@ -9,7 +9,7 @@ import {
 import platform from '@obsidians/platform'
 import Terminal from '@obsidians/terminal'
 
-import compilerManager from './compilerManager'
+import { CompilerManager } from './compilerManager'
 import TruffleTerminal from './TruffleTerminal'
 
 const initialTabs = []
@@ -29,7 +29,7 @@ export default class CompilerTerminal extends PureComponent {
       activeTab: 'terminal'
     }
 
-    compilerManager.switchCompilerConsole = this.switchCompilerConsole.bind(this)
+    CompilerManager.switchCompilerConsole = this.switchCompilerConsole.bind(this)
     this.tabs = React.createRef()
   }
 
@@ -55,7 +55,7 @@ export default class CompilerTerminal extends PureComponent {
         <TabContent className='h-100 w-100' activeTab={activeTab}>
           <TabPane className='h-100 w-100' tabId='terminal'>
             <Terminal
-              ref={ref => (compilerManager.terminal = ref)}
+              ref={ref => (CompilerManager.terminal = ref)}
               active={active && activeTab === 'terminal'}
               cwd={cwd}
               logId='compiler-terminal'

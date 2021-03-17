@@ -8,7 +8,7 @@ import Terminal from '@obsidians/terminal'
 import notification from '@obsidians/notification'
 import { networkManager } from '@obsidians/eth-network'
 
-import compilerManager from './compilerManager'
+import { CompilerManager } from './compilerManager'
 
 export default class TruffleTerminal extends PureComponent {
   state = {
@@ -31,7 +31,7 @@ export default class TruffleTerminal extends PureComponent {
   }
 
   stopTruffleConsole = () => {
-    compilerManager._truffleTerminal?.stop()
+    CompilerManager.truffleTerminal?.stop()
     this.setState({ truffleConsole: false })
   }
 
@@ -51,7 +51,7 @@ export default class TruffleTerminal extends PureComponent {
     const cmd = `docker run -it --rm --name truffle-terminal -v "${cwd}":"${cwd}" -w "${cwd}" obsidians/truffle:v5.1.61 truffle console`
     return (
       <Terminal
-        ref={ref => (compilerManager.truffleTerminal = ref)}
+        ref={ref => (CompilerManager.truffleTerminal = ref)}
         active={active && truffleConsole}
         cwd={cwd}
         logId='compiler-truffle'

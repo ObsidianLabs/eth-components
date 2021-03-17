@@ -5,7 +5,7 @@ import {
   UncontrolledTooltip
 } from '@obsidians/ui-components'
 
-import compilerManager from './compilerManager'
+import { CompilerManager } from './compilerManager'
 
 export default class CompilerButton extends PureComponent {
   constructor (props) {
@@ -16,16 +16,14 @@ export default class CompilerButton extends PureComponent {
   }
 
   componentDidMount () {
-    compilerManager.button = this
+    CompilerManager.button = this
   }
 
   onClick = () => {
     if (this.state.building) {
-      compilerManager.stop()
+      CompilerManager.stop()
     } else if (this.props.onClick) {
       this.props.onClick()
-    } else {
-      compilerManager.build({})
     }
   }
 

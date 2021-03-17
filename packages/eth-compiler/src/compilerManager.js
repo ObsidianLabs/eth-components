@@ -19,7 +19,11 @@ class SolcjsChannel extends DockerImageChannel {
   }
 }
 
-class CompilerManager {
+export class CompilerManager {
+  static button = null
+  static terminal = null
+  static truffleTerminal = null
+
   constructor () {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
     if (platform.isDesktop) {
@@ -29,37 +33,22 @@ class CompilerManager {
     } else {
       this.solc = new SolcjsChannel()
     }
-    this._terminal = null
-    this._truffleTerminal = null
-    this._button = null
     this.notification = null
     if (platform.isWeb) {
       this.solcjsCompiler = new SolcjsCompiler()
     }
   }
 
-  set terminal (v) {
-    this._terminal = v
-  }
-
-  set truffleTerminal (v) {
-    this._truffleTerminal = v
-  }
-
-  set button (v) {
-    this._button = v
-  }
-
   get projectRoot () {
-    if (!this._terminal) {
+    if (!CompilerManager.terminal) {
       throw new Error('CompilerTerminal is not instantiated.')
     }
-    return this._terminal.props.cwd
+    return CompilerManager.terminal.props.cwd
   }
 
   focus () {
-    if (this._terminal) {
-      this._terminal.focus()
+    if (CompilerManager.terminal) {
+      CompilerManager.terminal.focus()
     }
   }
 
@@ -88,17 +77,17 @@ class CompilerManager {
     const solcFileName = window.soljsonReleases[solcVersion]
     const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
 
-    this._button.setState({ building: true })
+    CompilerManager.button.setState({ building: true })
     await this.cacheSolcBin(solcUrl, solcFileName)
 
-    this._terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
+    CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
     this.notification = notification.info(`Building Project`, `Building...`, 0)
     const output = await this.solcjsCompiler.compile(solcUrl, projectManager)
 
     if (!output) {
       this.notification.dismiss()
       notification.error('Build Failed', ``)
-      this._button.setState({ building: false })
+      CompilerManager.button.setState({ building: false })
       throw new Error('Build Failed.')
     }
 
@@ -126,12 +115,12 @@ class CompilerManager {
       } else if (error.severity === 'warning') {
         color = '--color-warning'
       }
-      this._terminal.writeToTerminal(error.type, color)
-      this._terminal.writeToTerminal(`${error.formattedMessage.replace(error.type, '').replace(/\n/g, '\n\r')}`)
+      CompilerManager.terminal.writeToTerminal(error.type, color)
+      CompilerManager.terminal.writeToTerminal(`${error.formattedMessage.replace(error.type, '').replace(/\n/g, '\n\r')}`)
     })
 
     this.notification.dismiss()
-    this._button.setState({ building: false })
+    CompilerManager.button.setState({ building: false })
     if (hasError) {
       notification.error('Build Failed', `Code has errors.`)
     } else {
@@ -170,33 +159,34 @@ class CompilerManager {
       throw new Error('Solc version not installed')
     }
 
-    this._button.setState({ building: true })
-    this.switchCompilerConsole('terminal')
+    CompilerManager.button.setState({ building: true })
+    CompilerManager.switchCompilerConsole('terminal')
     this.notification = notification.info(`Building Project`, `Building...`, 0)
 
-    const cmd = this.generateBuildCmd({ projectRoot, compilers })
-    const result = await this._terminal.exec(cmd)
+    const cmd = this.generateBuildCmd({ projectRoot, settings })
+    const result = await CompilerManager.terminal.exec(cmd)
     if (result.code) {
-      this._button.setState({ building: false })
+      CompilerManager.button.setState({ building: false })
       this.notification.dismiss()
       notification.error('Build Failed', `Code has errors.`)
       throw new Error(result.logs)
     }
 
-    this._button.setState({ building: false })
+    CompilerManager.button.setState({ building: false })
     this.notification.dismiss()
 
     notification.success('Build Successful', `The smart contract is built.`)
   }
 
-  async stop () {
-    if (this._terminal) {
-      this._terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
-      await this._terminal.stop()
+  static async stop () {
+    if (CompilerManager.terminal) {
+      CompilerManager.terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
+      await CompilerManager.terminal.stop()
     }
   }
 
-  generateBuildCmd({ projectRoot, compilers }) {
+  generateBuildCmd ({ projectRoot, settings }) {
+    const compilers = settings.compilers
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
