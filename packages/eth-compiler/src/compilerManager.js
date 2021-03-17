@@ -148,13 +148,13 @@ export class CompilerManager {
       throw new Error(`${process.env.COMPILER_NAME} version not installed`)
     }
 
-    if (!compilers.solc) {
-      notification.error('No Solc Version', `Please select a version for solc in project settings.`)
-      throw new Error('No solc version.')
-    }
+    // if (!compilers.solc) {
+    //   notification.error('No Solc Version', `Please select a version for solc in project settings.`)
+    //   throw new Error('No solc version.')
+    // }
 
     const allSolcVersions = await this.solc.versions()
-    if (compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
+    if (compilers.solc && compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
       notification.error(`Solc ${compilers.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
       throw new Error('Solc version not installed')
     }
@@ -197,7 +197,7 @@ export class CompilerManager {
       `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
     
-    if (compilers.solc !== 'default') {
+    if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
       cmd.push(`--compilers.solc.docker 1`)
     }
