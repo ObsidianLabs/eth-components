@@ -57,7 +57,7 @@ export default class ContractActions extends Component {
     let result
     try {
       const value = utils.unit.toValue(this.state.amount || '0')
-      const tx = await this.props.contract.execute(actionName, parameters, {
+      const tx = await this.props.contract.execute(actionName, parameters.array, {
         from: this.state.signer,
         value,
       })
@@ -100,7 +100,7 @@ export default class ContractActions extends Component {
     let result = {}
     try {
       const value = utils.unit.toValue(this.state.amount || '0')
-      const tx = await this.props.contract.execute(actionName, parameters, {
+      const tx = await this.props.contract.execute(actionName, parameters.array, {
         from: signer,
         value,
         ...options,

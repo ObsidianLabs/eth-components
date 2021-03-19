@@ -53,7 +53,7 @@ export default class ContractViews extends Component {
 
     let result
     try {
-      result = await this.props.contract.query(actionName, parameters, {
+      result = await this.props.contract.query(actionName, parameters.array, {
         from: this.state.signer
       })
     } catch (e) {
