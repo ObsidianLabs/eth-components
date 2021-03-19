@@ -1,5 +1,6 @@
 export { default } from './Contract'
 
+export { default as ContractPage } from './ContractPage'
 export { default as ContractActions } from './ContractActions'
 export { default as ContractViews } from './ContractViews'
 export { default as ContractEvents } from './ContractEvents'
