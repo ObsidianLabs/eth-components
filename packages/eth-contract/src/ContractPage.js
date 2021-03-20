@@ -27,7 +27,7 @@ export default class ContractPage extends PureComponent {
     this.state = {
       error: null,
       errorType: null,
-      abi: null,
+      abi: {},
       abis: [],
       selectedAbi: null,
       account: null,
@@ -52,7 +52,7 @@ export default class ContractPage extends PureComponent {
   }
 
   refresh = async () => {
-    this.setState({ loading: true, error: null, abi: null, abis: [], selectedAbi: null, account: null, errorType: null })
+    this.setState({ loading: true, error: null, abi: {}, abis: [], selectedAbi: null, account: null, errorType: null })
 
     await new Promise(resolve => setTimeout(resolve, 10))
 
@@ -63,14 +63,14 @@ export default class ContractPage extends PureComponent {
       return
     }
 
-    let abi = redux.getState().abis.getIn([value, 'abi'])
-    if (abi) {
-      try {
-        this.setState({ loading: false, abi: JSON.parse(abi) })
-      } catch (e) {
-        this.setState({ loading: false, error: 'Invalid ABI structure.' })
+    try {
+      const abiData = this.getAbiData(value)
+      if (abiData) {
+        this.setState({ loading: false, abi: abiData })
+        return
       }
-      return
+    } catch (e) {
+      this.setState({ loading: false, error: e.message })
     }
 
     let account
@@ -87,22 +87,35 @@ export default class ContractPage extends PureComponent {
       return
     }
 
-    abi = redux.getState().abis.getIn([account.codeHash, 'abi'])
-    if (!abi) {
-      this.setState({
-        loading: false,
-        error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
-        errorType: 'ABI_NOT_FOUND',
-        abis: redux.getState().abis.toArray(),
-      })
-      return
+    try {
+      const abiData = this.getAbiData(account.codeHash)
+      if (abiData) {
+        this.setState({ loading: false, abi: abiData })
+        return
+      }
+    } catch (e) {
+      this.setState({ loading: false, error: e.message })
     }
 
-    try {
-      this.setState({ loading: false, abi: JSON.parse(abi) })
-    } catch (e) {
-      this.setState({ loading: false, error: 'Invalid ABI structure.' })
+    this.setState({
+      loading: false,
+      error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
+      errorType: 'ABI_NOT_FOUND',
+      abis: redux.getState().abis.toArray(),
+    })
+  }
+
+  getAbiData (codeHash) {
+    const abiData = redux.getState().abis.get(codeHash).toJS()
+    if (!abiData) {
+      return
     }
+    try {
+      abiData.abi = JSON.parse(abiData.abi)
+    } catch {
+      throw new Error('Invalid ABI structure.')
+    }
+    return abiData
   }
 
   async openAbiStorageModal (codeHash) {
@@ -120,7 +133,7 @@ export default class ContractPage extends PureComponent {
       return (
         <DropdownItem
           key={codeHash}
-          onClick={() => this.setState({ abi, error: null })}
+          onClick={() => this.setState({ abi: { abi }, error: null })}
         >
           <b>{abiObj.get('name')}</b> - <small><code>{codeHash}</code></small>
         </DropdownItem>
@@ -186,9 +199,9 @@ export default class ContractPage extends PureComponent {
       )
     }
 
-    const contractInstance = networkManager.sdk.contractFrom({ abi, address: value })
-    const functions = abi.filter(item => item.type === 'function')
-    const events = abi.filter(item => item.type === 'event')
+    const contractInstance = networkManager.sdk.contractFrom({ ...abi, address: value })
+    const functions = abi.abi.filter(item => item.type === 'function')
+    const events = abi.abi.filter(item => item.type === 'event')
     const actions = functions.filter(item => item.stateMutability !== 'view' && item.stateMutability !== 'pure')
     const views = functions.filter(item => item.stateMutability === 'view' || item.stateMutability === 'pure')
 

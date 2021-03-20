@@ -239,6 +239,7 @@ function makeProjectManager (Base) {
       notification.success('Deploy Successful')
   
       redux.dispatch('ABI_ADD', {
+        ...deploy.options,
         name: contractName,
         codeHash: result.codeHash,
         abi: JSON.stringify(deploy.abi),
