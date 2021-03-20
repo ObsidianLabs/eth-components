@@ -28,7 +28,8 @@ export class CompilerManager {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
     if (platform.isDesktop) {
       this.solc = new DockerImageChannel('ethereum/solc', {
-        filter: v => semver.valid(v) && !v.endsWith('alpine')
+        filter: v => semver.valid(v) && !v.endsWith('alpine'),
+        size: 50,
       })
     } else {
       this.solc = new SolcjsChannel()
@@ -103,8 +104,6 @@ export class CompilerManager {
       projectManager.refreshDirectory()
       projectManager.refreshDirectory(projectManager.pathForProjectFile('build/contracts'))
     }
-
-    console.log(output)
 
     let hasError = false
     output.errors?.forEach(error => {
