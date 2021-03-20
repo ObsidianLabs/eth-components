@@ -39,6 +39,11 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
   }
 
   async createProject ({ projectRoot, name, template, group }) {
+    if (this.props.createProject) {
+      const createProject = this.props.createProject.bind(this)
+      return createProject({ projectRoot, name, template, group })
+    }
+
     const { compilerVersion, openZeppelinVersion } = this.state
     if (!this.props.noCompilerOption && !compilerVersion) {
       notification.error('Cannot Create the Project', `Please install ${process.env.COMPILER_NAME_IN_LABEL} and select a version.`)
