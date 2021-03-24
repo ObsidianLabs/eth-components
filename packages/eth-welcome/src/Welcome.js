@@ -9,6 +9,7 @@ import { ListItemDocker, ListItemDockerImage } from '@obsidians/docker'
 
 import { instanceChannel } from '@obsidians/eth-network'
 import compiler from '@obsidians/eth-compiler'
+import { t } from '@obsidians/i18n'
 
 import checkDependencies from './checkDependencies'
 
@@ -54,10 +55,9 @@ export default class Welcome extends PureComponent {
       <div className='d-flex h-100 overflow-auto'>
         <div className='jumbotron jumbotron-fluid'>
           <div className='container'>
-            <h4 className='display-4'>Welcome to {process.env.PROJECT_NAME}</h4>
+            <h4 className='display-4'>{t('welcome.welcome', { projectName: process.env.PROJECT_NAME })}</h4>
 
-            <p className='lead'>{process.env.PROJECT_NAME} is a graphic IDE for developing smart contracts on the {process.env.CHAIN_NAME} blockchain.
-            To get started, please install the prerequisite tools for {process.env.CHAIN_NAME}.</p>
+            <p className='lead'>{t('welcome.message', { projectName: process.env.PROJECT_NAME, chainName: process.env.CHAIN_NAME })}</p>
 
             <div className='my-3' />
 
@@ -93,7 +93,7 @@ export default class Welcome extends PureComponent {
               style={{ width: 'fit-content' }}
               onClick={this.props.onGetStarted}
             >
-              {this.state.ready ? 'Get Started' : 'Skip'}
+              {this.state.ready ? t('welcome.start') : t('welcome.skip')}
             </Button>
           </div>
         </div>
