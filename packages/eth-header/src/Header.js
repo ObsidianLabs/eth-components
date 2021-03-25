@@ -3,8 +3,9 @@ import React, { PureComponent } from 'react'
 import redux from '@obsidians/redux'
 import Navbar from '@obsidians/navbar'
 import keypairManager from '@obsidians/keypair'
-import { NewProjectModal, navbarItem } from '@obsidians/eth-project' 
+import { NewProjectModal, navbarItem } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 import headerActions from './headerActions'
 
@@ -57,7 +58,7 @@ export default class Header extends PureComponent {
     if (!dropdownKeypairs.length) {
       dropdownKeypairs.push({ none: true })
     }
-    dropdownKeypairs.unshift({ header: 'keypair manager' })
+    dropdownKeypairs.unshift({ header: t('keypair.manager.title') })
 
     const dropdownBrowserAccounts = browserAccounts.map(item => {
       const name = this.state.keypairs.find(k => k.address === item)?.name
@@ -71,7 +72,7 @@ export default class Header extends PureComponent {
       dropdownBrowserAccounts.unshift({ header: networkManager.browserExtension.name.toLowerCase() })
       dropdownBrowserAccounts.unshift({ divider: true })
     }
-   
+
     const dropdownStarred = starred.map(item => {
       const name = this.state.keypairs.find(k => k.address === item)?.name
       return {
@@ -90,10 +91,10 @@ export default class Header extends PureComponent {
         icon: addressIcon,
       }
     })
-    
-    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarredContracts.map(item => ({ ...item, icon: contractIcon }))]
+
+    let dropdownStarredInContract = [{ header: t('header.starred') }, ...dropdownStarredContracts.map(item => ({ ...item, icon: contractIcon }))]
     if (dropdownStarred.length) {
-      dropdownStarred.unshift({ header: 'starred' })
+      dropdownStarred.unshift({ header:  t('header.starred') })
       dropdownStarred.unshift({ divider: true })
     }
     if (!starredContracts.length) {
@@ -117,19 +118,19 @@ export default class Header extends PureComponent {
     const navbarRight = [
       {
         route: 'contract',
-        title: 'Contract',
+        title:  t('header.contract'),
         icon: 'fas fa-file-invoice',
         selected: { id: selectedContract, name: contractName },
         dropdown: dropdownStarredInContract,
         onClickItem: selected => headerActions.selectContract(network.id, selected),
         contextMenu: () => [{
-          text: 'Remove from Starred',
+          text: t('header.removeStarred'),
           onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
         }],
       },
       {
         route: 'account',
-        title: 'Explorer',
+        title: t('header.explorer'),
         icon: 'fas fa-map-marker-alt',
         noneIcon: 'fas fa-map-marker-times',
         selected: { id: selectedAccount, name: accountName },
@@ -140,7 +141,7 @@ export default class Header extends PureComponent {
             return
           }
           return [{
-            text: 'Remove from Starred',
+            text: t('header.removeStarred'),
             onClick: ({ id }) => {
               redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id })
             },
@@ -149,7 +150,7 @@ export default class Header extends PureComponent {
       },
       {
         route: 'network',
-        title: 'Network',
+        title: t('header.explorer'),
         icon: network.icon,
         selected: network,
         dropdown: networkList,

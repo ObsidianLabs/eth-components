@@ -151,6 +151,13 @@ const translation = {
     startNode: 'Please start an {{chain}} node.',
     gotoNetwork: 'Go to Network',
   },
+  header: {
+    starred: 'starred',
+    removeStarred: 'Remove from Starred',
+    contract: 'Contract',
+    explorer: 'Explorer',
+    network: 'Network',
+  }
 }
 
 export default {
