@@ -8,6 +8,7 @@ import { TerminalButton } from '@obsidians/workspace'
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
+import { t } from '@obsidians/i18n'
 
 export default function BottomBar (props) {
   return <>
@@ -20,7 +21,7 @@ export default function BottomBar (props) {
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
         <i className='fas fa-list mr-1' />
-        ABI Storage
+        {t('bottombar.abiStorage')}
       </div>
     </AbiStorage>
     <div className='flex-1' />

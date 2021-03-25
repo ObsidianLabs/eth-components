@@ -1,5 +1,6 @@
 const translation = {
-  welcome: {
+  bottombar: {
+    abiStorage: 'ABI Storage'
   }
 }
 
