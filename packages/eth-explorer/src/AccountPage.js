@@ -4,6 +4,7 @@ import {
   Screen,
   LoadingScreen,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { networkManager } from '@obsidians/eth-network'
 
@@ -71,7 +72,7 @@ export default class AccountPage extends PureComponent {
   render () {
     const { AccountInfo } = this.props
     const { error, account } = this.state
-    
+
     if (!networkManager.sdk) {
       return null
     }
@@ -79,8 +80,8 @@ export default class AccountPage extends PureComponent {
     if (!this.props.value) {
       return (
         <Screen>
-          <h4 className='display-4'>New Page</h4>
-          <p className='lead'>Please enter an {process.env.CHAIN_NAME} address.</p>
+          <h4 className='display-4'>{t('explorer.newPage')}</h4>
+          <p className='lead'>{t('explorer.enterAddress', { chain: process.env.CHAIN_NAME })}</p>
         </Screen>
       )
     }
@@ -92,7 +93,7 @@ export default class AccountPage extends PureComponent {
     if (error) {
       return (
         <Screen>
-          <h4 className='display-4'>Invalid Address</h4>
+          <h4 className='display-4'>{t('explorer.error.invalidAddress')}</h4>
           <p>{error}</p>
           <p className='lead'><kbd>{this.props.value}</kbd></p>
         </Screen>

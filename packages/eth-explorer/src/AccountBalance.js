@@ -4,15 +4,16 @@ import {
   TableCard,
   TableCardRow,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 export default class AccountBalance extends PureComponent {
   render () {
     const { account } = this.props
 
     return (
-      <TableCard title='Balance'>
+      <TableCard title={t('explorer.balance')}>
         <TableCardRow
-          name='Total'
+          name={t('explorer.total')}
           icon='far fa-wallet'
           badge={`${account.balance} ${process.env.TOKEN_SYMBOL}`}
           badgeColor='success'
@@ -20,7 +21,7 @@ export default class AccountBalance extends PureComponent {
         {
           account.count !== undefined &&
           <TableCardRow
-            name='Transactions'
+            name={t('explorer.transactions')}
             icon='far fa-wallet'
             badge={account.count}
           />

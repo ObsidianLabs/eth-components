@@ -7,6 +7,7 @@ import {
   FormGroup,
   Label,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { networkManager } from '@obsidians/eth-network'
 import notification from '@obsidians/notification'
@@ -47,7 +48,7 @@ export default class TransferButton extends PureComponent {
       try {
         await keypairManager.getKeypair(from)
       } catch {
-        notification.error('Cannot Transfer', `Please add the address <b>${from}</b> in the keypair manager or select it in ${process.env.BROWSER_EXTENSION_NAME}.`)
+        notification.error(t('explorer.error.cantTransfer'), t('explorer.error.missingKey', { from, extension: process.env.BROWSER_EXTENSION_NAME }))
         this.setState({ loading: false })
         return
       }
@@ -67,7 +68,7 @@ export default class TransferButton extends PureComponent {
       await queue.add(
         () => networkManager.sdk.sendTransaction(tx),
         {
-          name: 'Transfer',
+          name: t('explorer.transfer.title'),
           signer: from,
           address: from,
           params: { from, to, amount },
@@ -75,7 +76,7 @@ export default class TransferButton extends PureComponent {
       )
     } catch (e) {
       console.warn(e)
-      notification.error('Push Transaction Failed', e.message)
+      notification.error(t('explorer.error.transactionFailed'), e.message)
       this.setState({ pushing: false })
       return
     }
@@ -93,32 +94,32 @@ export default class TransferButton extends PureComponent {
         size='md'
         icon='fas fa-sign-out-alt'
         loading={loading}
-        tooltip='Transfer'
+        tooltip={t('explorer.transfer.title')}
         onClick={this.openModal}
       />
       <Modal
         ref={this.modal}
         overflow
-        title='Transfer'
-        textConfirm='Sign and Push'
+        title={t('explorer.transfer.title')}
+        textConfirm={t('explorer.transfer.signAndPush')}
         confirmDisabled={false}
         onConfirm={this.push}
-        pending={pushing && 'Pushing...'}
+        pending={pushing && `${t('explorer.transfer.pushing')}...`}
       >
         <DebouncedFormGroup
           ref={this.amountInput}
-          label='Amount'
+          label={t('explorer.transfer.amount')}
           maxLength='50'
           value={amount}
           onChange={amount => this.setState({ amount })}
         />
         <FormGroup>
-          <Label>Recipient</Label>
+          <Label>{t('explorer.transfer.recipient')}</Label>
           <KeypairInputSelector
             ref={this.keypairInput}
             editable
             icon='fas fa-map-marker-alt'
-            placeholder='Recipient address'
+            placeholder={t('explorer.transfer.recipientAddress')}
             maxLength={42}
             extra={networkManager.browserExtension?.isEnabled && [{
               group: networkManager.browserExtension.name.toLowerCase(),

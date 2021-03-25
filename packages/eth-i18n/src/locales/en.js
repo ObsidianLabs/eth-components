@@ -49,9 +49,6 @@ const translation = {
     },
   },
   contract: {
-    disconnected: 'Disconnected',
-    startNode: 'Please start an {{chain}} node.',
-    gotoNetwork: 'Go to Network',
     writeFunctions: 'write functions',
     execute: 'Execute',
     parameters: 'Parameters',
@@ -111,7 +108,49 @@ const translation = {
       abiNotFoundMessagePost: 'with code hash',
       noViewsFound: 'No views found',
     },
-  }
+  },
+  explorer: {
+    balance: 'Balance',
+    total: 'Total',
+    transactions: 'Transactions',
+    information: 'Information',
+    code: 'Code',
+    hash: 'Hash',
+    newPage: 'New Page',
+    enterAddress: 'Please enter an {{chain}} address.',
+    loadMore: 'Load More',
+    contractCreation: '',
+    table: {
+      time: 'time',
+      block: 'block',
+      txHash: 'tx hash',
+      from: 'from',
+      to: 'to',
+      value: 'value',
+      gasUsed: 'gas used',
+      fee: 'fee',
+    },
+    transfer: {
+      title: 'Transfer',
+      signAndPush: 'Sign and Push',
+      pushing: 'Pushing',
+      amount: 'Amount',
+      recipient: 'Recipient',
+      recipientAddress: 'Recipient address',
+    },
+    error: {
+      invalidAddress: 'Invalid Address',
+      noTransactionFound: 'No Transactions Found',
+      cantTransfer: 'Cannot Transfer',
+      missingKey: 'Please add the address <b>{{from}}</b> in the keypair manager or select it in {{extension}}.',
+      transactionFailed: 'Push Transaction Failed',
+    },
+  },
+  network: {
+    disconnected: 'Disconnected',
+    startNode: 'Please start an {{chain}} node.',
+    gotoNetwork: 'Go to Network',
+  },
 }
 
 export default {

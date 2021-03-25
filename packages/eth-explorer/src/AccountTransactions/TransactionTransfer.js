@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Badge } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 import { utils } from '@obsidians/sdk'
 
 import Address from './Address'
@@ -18,7 +19,7 @@ export default function ({ tx, owner }) {
       <div className='flex-1 overflow-hidden'>
         {
           tx.contractCreated &&
-          <Address addr={tx.contractCreated} displayText='Contract Creation' redirect={false}/>
+          <Address addr={tx.contractCreated} displayText={t('explorer.contractCreation')} redirect={false}/>
         }
         {
           !tx.contractCreated &&

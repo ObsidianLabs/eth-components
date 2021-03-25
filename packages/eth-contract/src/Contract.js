@@ -57,11 +57,11 @@ class Contract extends TabbedExplorer {
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
         <Screen>
-          <h4 className='display-4'>{t('contract.disconnected')}</h4>
-          <p className='lead'>{t('contract.startNode', { chain: process.env.CHAIN_NAME })}</p>
+          <h4 className='display-4'>{t('network.disconnected')}</h4>
+          <p className='lead'>{t('network.startNode', { chain: process.env.CHAIN_NAME })}</p>
           <hr />
           <span>
-            <Button color='primary' onClick={() => history.push(`/network/${network}`)}>{t('contract.gotoNetwork')}</Button>
+            <Button color='primary' onClick={() => history.push(`/network/${network}`)}>{t('network.gotoNetwork')}</Button>
           </span>
         </Screen>
       )

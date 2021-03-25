@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 
 import { Badge } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 import { utils } from '@obsidians/sdk'
 
 import moment from 'moment'
@@ -34,7 +35,7 @@ export default class TransactionRow extends PureComponent {
           {
             tx.contractAddress
               ? <>
-                  <Badge color='success' className='mr-1'>contract creation</Badge>
+                  <Badge color='success' className='mr-1'>{t('explorer.contractCreation')}</Badge>
                   <Address addr={tx.contractAddress} route='contract' showTooltip={false}/>
                 </>
               : <Address addr={tx.to} showTooltip={false}/>

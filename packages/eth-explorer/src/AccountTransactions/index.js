@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import {
   TableCard,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { networkManager } from '@obsidians/eth-network'
 
@@ -69,7 +70,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loading' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}
           </td>
         </tr>
       )
@@ -77,7 +78,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loadmore' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            No Transactions Found
+            {t('explorer.error.noTransactionFound')}
           </td>
         </tr>
       )
@@ -85,7 +86,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loadmore' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            <span className='btn btn-sm btn-secondary' onClick={this.loadMore}>Load More</span>
+            <span className='btn btn-sm btn-secondary' onClick={this.loadMore}>{t('explorer.loadMore')}</span>
           </td>
         </tr>
       )
@@ -114,14 +115,14 @@ export default class AccountTransactions extends PureComponent {
 
 const TransactionHeader = () => (
   <tr>
-    <th style={{ width: '10%' }}>time</th>
-    <th style={{ width: '8%' }}>block</th>
-    <th style={{ width: '17%' }}>tx hash</th>
-    <th style={{ width: '17%' }}>from</th>
-    <th style={{ width: '17%' }}>to</th>
-    <th style={{ width: '8%', textAlign: 'right' }}>value</th>
-    <th style={{ width: '8%', textAlign: 'right' }}>gas used</th>
-    <th style={{ width: '15%', textAlign: 'right' }}>fee</th>
+    <th style={{ width: '10%' }}>{t('explorer.table.time')}</th>
+    <th style={{ width: '8%' }}>{t('explorer.table.block')}</th>
+    <th style={{ width: '17%' }}>{t('explorer.table.txHash')}</th>
+    <th style={{ width: '17%' }}>{t('explorer.table.from')}</th>
+    <th style={{ width: '17%' }}>{t('explorer.table.to')}</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>{t('explorer.table.value')}</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>{t('explorer.table.gasUsed')}</th>
+    <th style={{ width: '15%', textAlign: 'right' }}>{t('explorer.table.fee')}</th>
   </tr>
 )
 
