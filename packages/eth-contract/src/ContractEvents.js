@@ -10,6 +10,7 @@ import {
   DropdownItem,
   Card,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { Link } from 'react-router-dom'
 
@@ -66,7 +67,7 @@ export default class ContractEvents extends PureComponent {
           <code className='mx-1'><b>{selectedEvent.name}</b></code>
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>events</DropdownItem>
+          <DropdownItem header>{t('contract.events')}</DropdownItem>
           {events.map((item, index) => (
             <DropdownItem
               key={item.name}
@@ -81,7 +82,7 @@ export default class ContractEvents extends PureComponent {
       <ToolbarButton
         id='contract-event'
         icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
-        tooltip='Get event logs'
+        tooltip={t('contract.getEventLogs')}
         className='border-right-1'
         onClick={() => this.getEventLogs(selectedEvent)}
       />
@@ -98,7 +99,7 @@ export default class ContractEvents extends PureComponent {
           <table className='table table-sm table-hover table-striped'>
             <thead>
               <tr>
-                <th scope='col'><div>block</div><div>block</div></th>
+                <th scope='col'><div>{t('contract.block')}</div><div>{t('contract.block')}</div></th>
                 {columns.map(({ name, type }) => (
                   <th key={`table-col-${name}`} scope='col'>
                     <div><div style={{ lineHeight: '1.1rem' }}>{name}</div><div style={{ lineHeight: '0.8rem', fontVariant: 'none', fontWeight: '300' }} className='small'>{type}</div></div>
@@ -118,10 +119,10 @@ export default class ContractEvents extends PureComponent {
 
   renderTableBody = (rows, columns) => {
     if (this.state.loading) {
-      return <tr><td align='middle' colSpan={columns.length + 1}>Loading...</td></tr>
+      return <tr><td align='middle' colSpan={columns.length + 1}>{t('loading')}</td></tr>
     }
     if (!rows.length) {
-      return <tr><td align='middle' colSpan={columns.length + 1}>(no data)</td></tr>
+      return <tr><td align='middle' colSpan={columns.length + 1}>({t('contract.noData')})</td></tr>
     }
     return rows.map((item, index) => (
       <tr key={`table-row-${index}`}>
@@ -154,7 +155,7 @@ export default class ContractEvents extends PureComponent {
     if (!events?.length) {
       return (
         <Screen>
-          <p>No events found</p>
+          <p>{t('contract.error.noEvent')}</p>
         </Screen>
       )
     }
@@ -168,7 +169,7 @@ export default class ContractEvents extends PureComponent {
           className='btn-secondary d-flex align-items-center justify-content-between border-0 rounded-0 px-2 py-0'
           style={{ flex: 'none', height: '28px' }}
         >
-          Event Logs
+          {t('contract.eventLogs')}
         </div>
         <Card body>
           {this.renderLogsTable()}

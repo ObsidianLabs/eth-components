@@ -9,11 +9,13 @@ import {
   MultiSelect,
   Modal,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { networkManager } from '@obsidians/eth-network'
 import { KeypairInputSelector } from '@obsidians/keypair'
 
 import { utils } from '@obsidians/sdk'
+import Contract from '../Contract'
 
 const optionItemFromValue = (value, type) => {
   let icon = null
@@ -40,7 +42,7 @@ class ArrayInput extends PureComponent {
 
     this.modal = React.createRef()
     this.input = React.createRef()
-    
+
     this.state = {
       values: props.value || [],
       data: '',
@@ -50,23 +52,23 @@ class ArrayInput extends PureComponent {
 
     this.options = [
       {
-        label: 'Add Item',
+        label: t('contract.form.addItem'),
         options: [
-          { label: 'Enter...', getValue: this.enterNewItem },
+          { label: `${t('contract.form.enter')}...`, getValue: this.enterNewItem },
         ]
       }
     ]
   }
-  
+
   enterNewItem = async () => {
-    this.setState({ newValue: '', title: 'Enter a New Item' })
+    this.setState({ newValue: '', title: t('contract.form.enterNewItem') })
     this.modal.current.openModal()
     // setTimeout(() => this.input.current.focus(), 100)
     return new Promise(resolve=> this.onResolve = resolve)
   }
 
   onClickItem = async ({ value }) => {
-    this.setState({ newValue: value, title: 'Modiry an Item' })
+    this.setState({ newValue: value, title: t('contract.form.modifyItem') })
     this.modal.current.openModal()
     setTimeout(() => {
       // this.input.current.focus()
@@ -128,7 +130,7 @@ class ArrayInput extends PureComponent {
 
 export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, unit, children }) {
   const props = { value, onChange, disabled, placeholder }
-  
+
   if (!type) {
     return <DebouncedInput size={size} addon={children} {...props} />
   }
@@ -280,7 +282,7 @@ export default class ContractForm extends PureComponent {
         length = Number(type.substr(5))
       }
       if (bytes.length > length) {
-        throw new Error(`Byte length overflow for parameter <b>${name}</b>. Expect ${length} but got ${bytes.length}.`)
+        throw new Error(t('contract.form.error.byteLength', { name, length, bytesLength: bytes.length }))
       }
       const arr = new Uint8Array(length)
       arr.set(bytes)
@@ -289,20 +291,20 @@ export default class ContractForm extends PureComponent {
         raw: arr,
       }
     }
-    
+
     if (type.startsWith('int') || type.startsWith('uint')) {
       let number
       try {
         number = BigInt(value)
       } catch (e) {
-        throw new Error(`The entered value of <b>${name}</b> is not an integer number.`)
+        throw new Error(t('contract.form.error.notInteger', { name }))
       }
       if (type.startsWith('uint') && number < BigInt(0)) {
-        throw new Error(`The entered value of <b>${name}</b> is not a unsigned integer.`)
+        throw new Error(t('contract.form.error.notUnsigned', { name }))
       }
       return { display: number.toString(), raw: number.toString() }
     }
-    
+
     return { display: value, raw: value }
   }
 

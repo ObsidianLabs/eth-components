@@ -5,6 +5,7 @@ import {
   Screen,
   Button,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { withRouter } from 'react-router-dom'
 import redux, { connect } from '@obsidians/redux'
@@ -56,11 +57,11 @@ class Contract extends TabbedExplorer {
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
         <Screen>
-          <h4 className='display-4'>Disconnected</h4>
-          <p className='lead'>Please start an {process.env.CHAIN_NAME} node.</p>
+          <h4 className='display-4'>{t('contract.disconnected')}</h4>
+          <p className='lead'>{t('contract.startNode', { chain: process.env.CHAIN_NAME })}</p>
           <hr />
           <span>
-            <Button color='primary' onClick={() => history.push(`/network/${network}`)}>Go to Network</Button>
+            <Button color='primary' onClick={() => history.push(`/network/${network}`)}>{t('contract.gotoNetwork')}</Button>
           </span>
         </Screen>
       )

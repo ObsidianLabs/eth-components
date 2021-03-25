@@ -10,6 +10,7 @@ import {
   DropdownItem,
   Badge,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import notification from '@obsidians/notification'
 import { txOptions, utils } from '@obsidians/sdk'
@@ -50,7 +51,7 @@ export default class ContractActions extends Component {
     try {
       parameters = this.form.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('contract.error.parameters'), e.message)
       return
     }
 
@@ -63,7 +64,7 @@ export default class ContractActions extends Component {
       })
       result = await networkManager.sdk.estimate(tx)
     } catch (e) {
-      notification.error('Estimate Error', e.message)
+      notification.error(t('contract.error.estimate'), e.message)
       return
     }
 
@@ -78,7 +79,7 @@ export default class ContractActions extends Component {
     }
 
     if (!this.state.signer) {
-      notification.error('Error', 'No signer is provided.')
+      notification.error(t('contract.error.sign'), t('contract.error.noSigner'))
       return
     }
 
@@ -86,7 +87,7 @@ export default class ContractActions extends Component {
     try {
       parameters = this.form.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('contract.error.parameters'), e.message)
       return
     }
 
@@ -119,7 +120,7 @@ export default class ContractActions extends Component {
       )
     } catch (e) {
       console.warn(e)
-      notification.error('Error', e.message)
+      notification.error(t('error'), e.message)
       this.setState({ executing: false, actionError: e.message, actionResult: '' })
       return
     }
@@ -143,7 +144,7 @@ export default class ContractActions extends Component {
           <code className='mx-1'><b>{selectedAction.name}</b></code>
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>write functions</DropdownItem>
+          <DropdownItem header>{t('contract.writeFunctions')}</DropdownItem>
           {actions.map((item, index) => (
             <DropdownItem
               key={item.name}
@@ -158,7 +159,7 @@ export default class ContractActions extends Component {
       <ToolbarButton
         id='contract-execute-action'
         icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
-        tooltip='Execute'
+        tooltip={t('contract.execute')}
         className='border-right-1'
         onClick={() => this.executeAction(selectedAction.name)}
       />
@@ -187,7 +188,7 @@ export default class ContractActions extends Component {
       )
     }
 
-    return <div className='small'>(None)</div>
+    return <div className='small'>({t('none')})</div>
   }
 
   render () {
@@ -197,7 +198,7 @@ export default class ContractActions extends Component {
     if (!abi.length) {
       return (
         <Screen>
-          <p>No actions found</p>
+          <p>{t('contract.error.noAction')}</p>
         </Screen>
       )
     }
@@ -210,20 +211,20 @@ export default class ContractActions extends Component {
         <div className='d-flex flex-column flex-grow-1 overflow-auto'>
           <DropdownCard
             isOpen
-            title='Parameters'
+            title={t('contract.parameters')}
           >
             <ContractForm
               ref={form => { this.form = form }}
               size='sm'
               {...selectedAction}
-              Empty={<div className='small'>(None)</div>}
+              Empty={<div className='small'>({t('none')})</div>}
             />
             {
               (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
               <ActionParamFormGroup
                 size='sm'
-                label={`${process.env.TOKEN_SYMBOL} to Transfer`}
-                placeholder='Default: 0'
+                label={t('contract.toTransfer', { symbol: process.env.TOKEN_SYMBOL })}
+                placeholder={`${t('contract.default')}: 0`}
                 value={this.state.amount}
                 onChange={amount => this.setState({ amount })}
                 icon='fas fa-coins'
@@ -239,7 +240,7 @@ export default class ContractActions extends Component {
                 <Badge color='primary' onClick={evt => {
                   evt.stopPropagation()
                   this.estimate(selectedAction.name)
-                }}>Estimate</Badge>
+                }}>{t('contract.estimate')}</Badge>
               }
             >
               {
@@ -259,12 +260,12 @@ export default class ContractActions extends Component {
           }
           <DropdownCard
             isOpen
-            title='Authorization'
+            title={t('contract.authorization')}
             overflow
           >
             <KeypairInputSelector
               size='sm'
-              label='Signer'
+              label={t('contract.signer')}
               extra={networkManager.browserExtension?.isEnabled && signer && [{
                 group: networkManager.browserExtension.name.toLowerCase(),
                 badge: networkManager.browserExtension.name,

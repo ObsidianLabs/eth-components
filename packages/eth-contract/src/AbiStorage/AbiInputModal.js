@@ -4,6 +4,7 @@ import {
   Modal,
   DebouncedFormGroup,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 
 export default class AbiInputModal extends PureComponent {
@@ -58,18 +59,18 @@ export default class AbiInputModal extends PureComponent {
       <Modal
         ref={this.modal}
         h100
-        title='Enter New ABI'
+        title={t('contract.abi.new')}
         onConfirm={this.onConfirm}
         confirmDisabled={!name || !codeHash || !validJson}
       >
         <DebouncedFormGroup
           ref={this.nameInput}
-          label='Name'
+          label={t('contract.abi.name')}
           value={name}
           onChange={name => this.setState({ name })}
         />
         <DebouncedFormGroup
-          label='Code hash / Address'
+          label={t('contract.abi.address')}
           value={codeHash}
           onChange={codeHash => this.setState({ codeHash })}
         />
@@ -77,7 +78,7 @@ export default class AbiInputModal extends PureComponent {
           size='sm'
           label='ABI'
           type='textarea'
-          placeholder='Please enter the ABI object. Must be a valid JSON array.'
+          placeholder={t('contract.abi.placeholder')}
           formGroupClassName='d-flex flex-column flex-grow-1 code'
           inputGroupClassName='flex-grow-1'
           className='h-100 code'

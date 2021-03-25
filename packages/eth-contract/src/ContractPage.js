@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { networkManager } from '@obsidians/eth-network'
 import redux from '@obsidians/redux'
@@ -59,7 +60,7 @@ export default class ContractPage extends PureComponent {
     const value = this.props.value
 
     if (!value) {
-      this.setState({ loading: false, error: 'No address entered.' })
+      this.setState({ loading: false, error: t('contract.error.noAddressEntered') })
       return
     }
 
@@ -83,7 +84,7 @@ export default class ContractPage extends PureComponent {
     }
 
     if (account.codeHash === '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470') {
-      this.setState({ loading: false, error: 'No contract deployed.' })
+      this.setState({ loading: false, error: t('contract.error.noContractDeployed') })
       return
     }
 
@@ -99,7 +100,7 @@ export default class ContractPage extends PureComponent {
 
     this.setState({
       loading: false,
-      error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
+      error: <span>{t('contract.error.noAbiFor')} <code>{account.codeHash}</code>.</span>,
       errorType: 'ABI_NOT_FOUND',
       abis: redux.getState().abis.toArray(),
     })
@@ -152,8 +153,8 @@ export default class ContractPage extends PureComponent {
     if (!value) {
       return (
         <Screen>
-          <h4 className='display-4'>New Page</h4>
-          <p className='lead'>Please enter an {process.env.CHAIN_NAME} address.</p>
+          <h4 className='display-4'>{t('contract.newPage')}</h4>
+          <p className='lead'>{t('contract.enterAddress', { chain: process.env.CHAIN_NAME })}</p>
         </Screen>
       )
     }
@@ -166,13 +167,13 @@ export default class ContractPage extends PureComponent {
       if (account && errorType && errorType === 'ABI_NOT_FOUND') {
         return (
           <Screen>
-            <h4 className='display-4'>ABI Not Found</h4>
-            <p>There is no associated ABI for the current contract at <kbd>{account.address}</kbd> with code hash <kbd>{account.codeHash}</kbd></p>
+            <h4 className='display-4'>{t('contract.error.abiNotFound')}</h4>
+            <p>{t('contract.error.abiNotFoundMessagePre')} <kbd>{account.address}</kbd> {t('contract.error.abiNotFoundMessagePost')} <kbd>{account.codeHash}</kbd></p>
             <hr />
             <div className='flex'>
               <UncontrolledButtonDropdown>
                 <DropdownToggle color='primary' caret>
-                  Select an existing ABI
+                  {t('contract.selectExistingAbi')}
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>ABIs</DropdownItem>
@@ -184,7 +185,7 @@ export default class ContractPage extends PureComponent {
                 style={{ marginLeft: '15px', height: '36px' }}
                 onClick={() => this.openAbiStorageModal(account.codeHash)}
               >
-                Add ABI for code hash <code>{account.codeHash.substr(0, 4)}...{account.codeHash.substr(account.codeHash.length - 4, account.codeHash.length)}</code>
+                {t('contract.addAbiFor')} <code>{account.codeHash.substr(0, 4)}...{account.codeHash.substr(account.codeHash.length - 4, account.codeHash.length)}</code>
               </Button>
             </div>
             <AbiStorageModal ref={this.abiStorageModal}/>
@@ -193,7 +194,7 @@ export default class ContractPage extends PureComponent {
       }
       return (
         <Screen>
-          <h4 className='display-4'>Error</h4>
+          <h4 className='display-4'>{t('error')}</h4>
           <p>{error}</p>
         </Screen>
       )

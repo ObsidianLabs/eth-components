@@ -7,6 +7,7 @@ import {
   DeleteButton,
   UncontrolledTooltip,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import redux from '@obsidians/redux'
 import notification from '@obsidians/notification'
@@ -48,8 +49,8 @@ export default class AbiStorageModal extends PureComponent {
     const { name, codeHash, abi } = await this.abiInputModal.current.openModal(inputName, inputCodeHash)
     redux.dispatch('ABI_ADD', { name, codeHash, abi })
     notification.success(
-      'ABI Added',
-      `A new ABI record is added to the storage.`
+      t('contract.abi.added'),
+      t('contract.abi.addedMessage')
     )
     this.refresh()
   }
@@ -57,8 +58,8 @@ export default class AbiStorageModal extends PureComponent {
   deleteAbi = async codeHash => {
     redux.dispatch('ABI_DELETE', codeHash)
     notification.info(
-      'ABI Deleted',
-      `The ABI record is removed from the storage.`
+      t('contract.abi.deleted'),
+      t('contract.abi.deletedMessage')
     )
     this.refresh()
   }
@@ -68,7 +69,7 @@ export default class AbiStorageModal extends PureComponent {
       return (
         <tr key='abis-loading' >
           <td align='middle' colSpan={3}>
-            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}
           </td>
         </tr>
       )
@@ -77,7 +78,7 @@ export default class AbiStorageModal extends PureComponent {
       return (
         <tr key='abis-none' >
           <td align='middle' colSpan={3}>
-            (No ABIs)
+            ({t('contract.error.noAbis')})
           </td>
         </tr>
       )
@@ -111,7 +112,7 @@ export default class AbiStorageModal extends PureComponent {
               onClick={() => this.viewAbi(abi)}
             >
               <UncontrolledTooltip delay={0} placement='top' target={`show-abi-${index}`}>
-                Show ABI
+                {t('contract.abi.show')}
               </UncontrolledTooltip>
             </IconButton>
             <DeleteButton
@@ -127,17 +128,17 @@ export default class AbiStorageModal extends PureComponent {
     return <>
       <Modal
         ref={this.modal}
-        title='ABI Storage'
-        textActions={['New']}
-        textCancel='Close'
+        title={t('contract.abi.storage')}
+        textActions={[t('contract.abi.newAction')]}
+        textCancel={t('button.close')}
         onActions={[this.newAbi]}
       >
         <Table
           tableSm
           TableHead={(
             <tr>
-              <th style={{ width: '16%' }}>Name</th>
-              <th style={{ width: '75%' }}>Code Hash / Address</th>
+              <th style={{ width: '16%' }}>{t('contract.abi.name')}</th>
+              <th style={{ width: '75%' }}>{t('contract.abi.address')}</th>
               <th style={{ width: '9%' }}></th>
             </tr>
           )}

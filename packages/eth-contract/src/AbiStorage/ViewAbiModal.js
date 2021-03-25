@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import {
   Modal,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import Highlight from 'react-highlight'
 
@@ -28,7 +29,7 @@ export default class ViewAbiModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        title='View ABI'
+        title={t('contract.abi.view')}
       >
         <Highlight
           language='javascript'

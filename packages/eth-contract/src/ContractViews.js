@@ -10,6 +10,7 @@ import {
   DropdownItem,
   Badge,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import { KeypairInputSelector } from '@obsidians/keypair'
 import notification from '@obsidians/notification'
@@ -45,7 +46,7 @@ export default class ContractViews extends Component {
     try {
       parameters = this.form.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('contract.error.parameters'), e.message)
       return
     }
 
@@ -80,7 +81,7 @@ export default class ContractViews extends Component {
           <code className='mx-1'><b>{selectedAction.name}</b></code>
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>read functions</DropdownItem>
+          <DropdownItem header>{t('contract.readFunctions')}</DropdownItem>
           {actions.map((item, index) => (
             <DropdownItem
               key={item.name}
@@ -95,7 +96,7 @@ export default class ContractViews extends Component {
       <ToolbarButton
         id='contract-execute-view'
         icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
-        tooltip='Execute'
+        tooltip={t('contract.execute')}
         className='border-right-1'
         onClick={() => this.executeAction(selectedAction.name)}
       />
@@ -111,7 +112,7 @@ export default class ContractViews extends Component {
         </div>
       )
     }
-    
+
     if (actionResult) {
       return (
         <pre className='text-body pre-wrap break-all small user-select'>
@@ -120,7 +121,7 @@ export default class ContractViews extends Component {
       )
     }
 
-    return <div className='small'>(None)</div>
+    return <div className='small'>({t('none')})</div>
   }
 
   render () {
@@ -129,11 +130,11 @@ export default class ContractViews extends Component {
     if (!actions?.length) {
       return (
         <Screen>
-          <p>No views found</p>
+          <p>{t('contract.error.noViewsFound')}</p>
         </Screen>
       )
     }
-    
+
     const selectedAction = actions[this.state.selected] || {}
 
     return (
@@ -144,20 +145,20 @@ export default class ContractViews extends Component {
         <div className='d-flex flex-column flex-grow-1 overflow-auto'>
           <DropdownCard
             isOpen
-            title='Parameters'
+            title={t('contract.parameters')}
           >
             <ContractForm
               ref={form => { this.form = form }}
               size='sm'
               {...selectedAction}
-              Empty={<div className='small'>(None)</div>}
+              Empty={<div className='small'>({t('none')})</div>}
             />
           </DropdownCard>
           {
             signerSelector &&
             <DropdownCard
               isOpen
-              title='Authorization'
+              title={t('contract.authorization')}
               overflow
             >
               <KeypairInputSelector
@@ -179,8 +180,8 @@ export default class ContractViews extends Component {
             minHeight='120px'
             right={
               this.state.actionError
-                ? <Badge color='danger'>Error</Badge>
-                : this.state.actionResult ? <Badge color='success'>Success</Badge> : null
+                ? <Badge color='danger'>{t('error')}</Badge>
+                : this.state.actionResult ? <Badge color='success'>{t('success')}</Badge> : null
             }
           >
             {this.renderResult()}
