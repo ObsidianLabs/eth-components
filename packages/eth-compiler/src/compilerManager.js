@@ -1,4 +1,5 @@
 import platform from '@obsidians/platform'
+import { t } from '@obsidians/i18n'
 import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
@@ -61,7 +62,7 @@ export class CompilerManager {
       return
     }
 
-    this.notification = notification.info(`Downloading Solc Bin`, `Downloading <b>${version}</b>...`, 0)
+    this.notification = notification.info(t('compiler.downloadingSolc'), t('compiler.downloadingSolcMessage', { verion }), 0)
     const request = new Request(url, { mode: 'no-cors' })
     const response = await fetch(request)
     await cacheStorage.put(url, response)
@@ -70,7 +71,7 @@ export class CompilerManager {
 
   async buildBySolcjs (projectManager) {
     if (!await projectManager.isMainValid) {
-      notification.error('No Main File', `Please specify the main file in project settings.`)
+      notification.error(t('compiler.error.noMainFile'), t('compiler.error.noMainFileMessage'))
       throw new Error('No Main File.')
     }
 
@@ -82,12 +83,12 @@ export class CompilerManager {
     await this.cacheSolcBin(solcUrl, solcFileName)
 
     CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
-    this.notification = notification.info(`Building Project`, `Building...`, 0)
+    this.notification = notification.info(t('compiler.build.building'), t('compiler.build.buildingMessage'), 0)
     const output = await this.solcjsCompiler.compile(solcUrl, projectManager)
 
     if (!output) {
       this.notification.dismiss()
-      notification.error('Build Failed', ``)
+      notification.error(t('compiler.error.buildFailed'), ``)
       CompilerManager.button.setState({ building: false })
       throw new Error('Build Failed.')
     }
@@ -121,9 +122,9 @@ export class CompilerManager {
     this.notification.dismiss()
     CompilerManager.button.setState({ building: false })
     if (hasError) {
-      notification.error('Build Failed', `Code has errors.`)
+      notification.error(t('compiler.error.buildFailed'), t('compiler.error.codeError'))
     } else {
-      notification.success('Build Successful', `The smart contract is built.`)
+      notification.success(t('compiler.build.success'), t('compiler.build.successMessage'))
     }
   }
 
@@ -137,13 +138,13 @@ export class CompilerManager {
     const projectRoot = this.projectRoot
 
     if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
-      notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
+      notification.error(t('compiler.error.noVersion', { compiler: process.env.COMPILER_NAME }), t('compiler.error.noVersionMessage', { compiler: process.env.COMPILER_NAME }))
       throw new Error(`No ${process.env.COMPILER_NAME} version.`)
     }
 
     const allVersions = await this.truffle.versions()
     if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
-      notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
+      notification.error(t('compiler.error.notInstall', { compiler: process.env.COMPILER_NAME, version: compilers[process.env.COMPILER_VERSION_KEY] }), t('compiler.error.notInstallMessage', { compiler: process.env.COMPILER_NAME }))
       throw new Error(`${process.env.COMPILER_NAME} version not installed`)
     }
 
@@ -154,27 +155,27 @@ export class CompilerManager {
 
     const allSolcVersions = await this.solc.versions()
     if (compilers.solc && compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
-      notification.error(`Solc ${compilers.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
+      notification.error(t('compiler.error.solcNotInstall', { solc: compilers.solc }), t('compiler.error.solcNotInstallMessage'))
       throw new Error('Solc version not installed')
     }
 
     CompilerManager.button.setState({ building: true })
     CompilerManager.switchCompilerConsole('terminal')
-    this.notification = notification.info(`Building Project`, `Building...`, 0)
+    this.notification = notification.info(t('compiler.build.building'), t('compiler.build.buildingMessage'), 0)
 
     const cmd = this.generateBuildCmd({ projectRoot, settings })
     const result = await CompilerManager.terminal.exec(cmd)
     if (result.code) {
       CompilerManager.button.setState({ building: false })
       this.notification.dismiss()
-      notification.error('Build Failed', `Code has errors.`)
+      notification.error(t('compiler.error.buildFailed'), t('compiler.error.codeError'))
       throw new Error(result.logs)
     }
 
     CompilerManager.button.setState({ building: false })
     this.notification.dismiss()
 
-    notification.success('Build Successful', `The smart contract is built.`)
+    notification.success(t('compiler.build.success'), t('compiler.build.successMessage'))
   }
 
   static async stop () {
@@ -195,12 +196,12 @@ export class CompilerManager {
       `${process.env.DOCKER_IMAGE_COMPILER}:${compilers[process.env.COMPILER_VERSION_KEY]}`,
       `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
-    
+
     if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
       cmd.push(`--compilers.solc.docker 1`)
     }
-    
+
     return cmd.join(' ')
   }
 }

@@ -5,6 +5,7 @@ import {
   TabContent,
   TabPane,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import platform from '@obsidians/platform'
 import Terminal from '@obsidians/terminal'
@@ -14,12 +15,12 @@ import TruffleTerminal from './TruffleTerminal'
 
 const initialTabs = []
 if (platform.isDesktop) {
-  initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />Project</span> })
+  initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />{t('compiler.project')}</span> })
   if (process.env.PROJECT === 'eth') {
     // initialTabs.push({ key: 'truffle', text: <span key='compiler-truffle'><i className='fas fa-cookie mr-1' />Truffle</span> })
   }
 } else {
-  initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-hammer mr-1' />Compiler</span> })
+  initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-hammer mr-1' />{t('compiler.compiler')}</span> })
 }
 
 export default class CompilerTerminal extends PureComponent {
@@ -41,7 +42,7 @@ export default class CompilerTerminal extends PureComponent {
   render () {
     const { active, cwd } = this.props
     const { activeTab } = this.state
-  
+
     return (
       <Tabs
         ref={this.tabs}

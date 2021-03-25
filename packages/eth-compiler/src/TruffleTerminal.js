@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import {
   Button,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import Terminal from '@obsidians/terminal'
 import notification from '@obsidians/notification'
@@ -17,11 +18,11 @@ export default class TruffleTerminal extends PureComponent {
 
   tryOpenTruffleConsole = () => {
     if (!networkManager.sdk) {
-      notification.error('No Network Detected', 'No Ethereum node instance is running.')
+      notification.error(t('compiler.error.noNetwork'), t('compiler.error.noNetworkMessage'))
       return
     }
     this.setState({ truffleConsole: true })
-    this.notification = notification.info(`Starting Truffle Console...`, '', 0)
+    this.notification = notification.info(t('compiler.truffle.starting'), '', 0)
     networkManager.onSdkDisposed(this.stopTruffleConsole)
   }
 
@@ -38,16 +39,16 @@ export default class TruffleTerminal extends PureComponent {
   render () {
     const { active, cwd } = this.props
     const { truffleConsole } = this.state
-  
+
     if (!truffleConsole) {
       return (
         <div className='bg-dark p-3 h-100'>
-          <h5>Start Truffle Console</h5>
-          <Button size='sm' color='primary' onClick={this.tryOpenTruffleConsole}>Start</Button>
+          <h5>{t('compiler.truffle.start')}</h5>
+          <Button size='sm' color='primary' onClick={this.tryOpenTruffleConsole}>{t('compiler.start')}</Button>
         </div>
       )
     }
-  
+
     const cmd = `docker run -it --rm --name truffle-terminal -v "${cwd}":"${cwd}" -w "${cwd}" obsidians/truffle:v5.1.61 truffle console`
     return (
       <Terminal
