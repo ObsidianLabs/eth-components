@@ -25,15 +25,25 @@ modelSessionManager.registerModeDetector(filePath => {
 })
 
 const makeContextMenu = (contextMenu, projectManager) => node => {
-  if (node.children || !node.name.endsWith('.json')) {
+  if (node.children) {
     return contextMenu
   }
-  const cloned = [...contextMenu]
-  cloned.splice(platform.isDesktop ? 5: 3, 0, {
-    text: 'Deploy',
-    onClick: () => projectManager.deploy(node.path),
-  }, null)
-  return cloned
+  if (node.name.endsWith('.json')) {
+    const cloned = [...contextMenu]
+    cloned.splice(platform.isDesktop ? 5: 3, 0, {
+      text: 'Deploy',
+      onClick: () => projectManager.deploy(node.path),
+    }, null)
+    return cloned
+  } else if (node.name.endsWith('.sol') && platform.isDesktop) {
+    const cloned = [...contextMenu]
+    cloned.splice(platform.isDesktop ? 5: 3, 0, {
+      text: 'Compile',
+      onClick: () => projectManager.compile(node.path),
+    }, null)
+    return cloned
+  }
+  return contextMenu
 }
 
 Workspace.defaultProps = {

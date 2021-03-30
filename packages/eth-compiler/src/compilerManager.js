@@ -127,7 +127,7 @@ export class CompilerManager {
     }
   }
 
-  async build (settings, projectManager) {
+  async build (settings, projectManager, sourceFile) {
     if (platform.isWeb) {
       return await this.buildBySolcjs(projectManager)
     }
@@ -160,9 +160,13 @@ export class CompilerManager {
 
     CompilerManager.button.setState({ building: true })
     CompilerManager.switchCompilerConsole('terminal')
-    this.notification = notification.info(`Building Project`, `Building...`, 0)
+    if (!sourceFile) {
+      this.notification = notification.info(`Building Project`, `Building...`, 0)
+    } else {
+      this.notification = notification.info(`Building Contract File`, `Building <b>${sourceFile}</b>...`, 0)
+    }
 
-    const cmd = this.generateBuildCmd({ projectRoot, settings })
+    const cmd = this.generateBuildCmd({ projectRoot, settings, sourceFile })
     const result = await CompilerManager.terminal.exec(cmd)
     if (result.code) {
       CompilerManager.button.setState({ building: false })
@@ -174,7 +178,11 @@ export class CompilerManager {
     CompilerManager.button.setState({ building: false })
     this.notification.dismiss()
 
-    notification.success('Build Successful', `The smart contract is built.`)
+    if (!sourceFile) {
+      notification.success('Build Successful', `The project is built.`)
+    } else {
+      notification.success('Build Successful', `The contract file is built.`)
+    }
   }
 
   static async stop () {
@@ -184,7 +192,7 @@ export class CompilerManager {
     }
   }
 
-  generateBuildCmd ({ projectRoot, settings }) {
+  generateBuildCmd ({ projectRoot, settings, sourceFile }) {
     const compilers = settings.compilers
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
     const cmd = [
@@ -199,6 +207,10 @@ export class CompilerManager {
     if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
       cmd.push(`--compilers.solc.docker 1`)
+    }
+
+    if (sourceFile) {
+      cmd.push(`--contracts_directory '${sourceFile}*'`)
     }
     
     return cmd.join(' ')

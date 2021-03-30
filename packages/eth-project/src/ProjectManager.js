@@ -27,14 +27,14 @@ function makeProjectManager (Base) {
       return this.pathForProjectFile('config.json')
     }
   
-    async compile () {
+    async compile (sourceFile) {
       const settings = await this.checkSettings()
   
       await this.project.saveAll()
       this.toggleTerminal(true)
   
       try {
-        await compilerManager.build(settings, this)
+        await compilerManager.build(settings, this, sourceFile)
       } catch (e) {
         console.warn(e)
         return false
