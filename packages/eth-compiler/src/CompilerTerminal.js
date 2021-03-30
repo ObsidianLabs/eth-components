@@ -38,6 +38,10 @@ export default class CompilerTerminal extends PureComponent {
     this.tabs.current.currentTab = tab
   }
 
+  clearTerminal = () => {
+    CompilerManager.terminal.clearContent()
+  }
+
   render () {
     const { active, cwd } = this.props
     const { activeTab } = this.state
@@ -51,6 +55,7 @@ export default class CompilerTerminal extends PureComponent {
         initialSelected='terminal'
         initialTabs={initialTabs}
         onSelectTab={tab => this.setState({ activeTab: tab.key })}
+        ToolButtons={[{ icon: 'far fa-trash-alt', tooltip: 'Clear', onClick: this.clearTerminal }]}
       >
         <TabContent className='h-100 w-100' activeTab={activeTab}>
           <TabPane className='h-100 w-100' tabId='terminal'>

@@ -70,6 +70,10 @@ export default class NodeTerminal extends PureComponent {
     setTimeout(() => this.tabs.current.onCloseTab({ key: 'miner' }), 100)
   }
 
+  clearTerminal = () => {
+    nodeManager.terminal.clearContent()
+  }
+
   render () {
     const { active, miner } = this.props
     const { activeTab } = this.state
@@ -89,6 +93,7 @@ export default class NodeTerminal extends PureComponent {
         initialSelected='node'
         initialTabs={initialTabs}
         onSelectTab={tab => this.setState({ activeTab: tab.key })}
+        ToolButtons={[{ icon: 'far fa-trash-alt', tooltip: 'Clear', onClick: this.clearTerminal }]}
       >
         <TabContent className='h-100 w-100' activeTab={activeTab}>
           <TabPane className='h-100 w-100' tabId='node'>
