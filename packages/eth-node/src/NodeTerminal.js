@@ -71,7 +71,7 @@ export default class NodeTerminal extends PureComponent {
   }
 
   clearTerminal = () => {
-    nodeManager.terminal.clearContent()
+    nodeManager._terminal?.clearContent()
   }
 
   render () {
