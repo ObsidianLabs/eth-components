@@ -10,17 +10,20 @@ export default class ProjectToolbar extends PureComponent {
   static contextType = WorkspaceContext
 
   render () {
-    const { signer, noDeploy, ExtraButtons = () => null } = this.props
+    const { signer, noBuild, noDeploy, ExtraButtons = () => null } = this.props
     const { projectSettings, projectManager } = this.context
     const compilers = projectSettings?.get('compilers') || {}
 
     return <>
-      <CompilerButton
-        className='rounded-0 border-0 flex-none w-5'
-        truffle={compilers[process.env.COMPILER_VERSION_KEY]}
-        solc={compilers.solc}
-        onClick={() => projectManager.compile()}
-      />
+      {
+        !noBuild &&
+        <CompilerButton
+          className='rounded-0 border-0 flex-none w-5'
+          truffle={compilers[process.env.COMPILER_VERSION_KEY]}
+          solc={compilers.solc}
+          onClick={() => projectManager.compile()}
+        />
+      }
       { !noDeploy && <DeployButton projectManager={projectManager} signer={signer} /> }
       { <ExtraButtons projectManager={projectManager} signer={signer} /> }
       <div className='flex-1' />
