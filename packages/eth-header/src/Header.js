@@ -25,6 +25,7 @@ export default class Header extends PureComponent {
 
   render () {
     const {
+      noExplorer,
       profile,
       projects,
       selectedProject,
@@ -114,50 +115,52 @@ export default class Header extends PureComponent {
     }
     const accountName = selectedAccount && (this.state.keypairs.find(k => k.address === selectedAccount)?.name || <code>{selectedAccount}</code>)
 
-    const navbarRight = [
-      {
-        route: 'contract',
-        title: 'Contract',
-        icon: 'fas fa-file-invoice',
-        selected: { id: selectedContract, name: contractName },
-        dropdown: dropdownStarredInContract,
-        onClickItem: selected => headerActions.selectContract(network.id, selected),
-        contextMenu: () => [{
+    const contractNavbarItem = {
+      route: 'contract',
+      title: 'Contract',
+      icon: 'fas fa-file-invoice',
+      selected: { id: selectedContract, name: contractName },
+      dropdown: dropdownStarredInContract,
+      onClickItem: selected => headerActions.selectContract(network.id, selected),
+      contextMenu: () => [{
+        text: 'Remove from Starred',
+        onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
+      }],
+    }
+    const explorerNavbarItem = {
+      route: 'account',
+      title: 'Explorer',
+      icon: 'fas fa-map-marker-alt',
+      noneIcon: 'fas fa-map-marker-times',
+      selected: { id: selectedAccount, name: accountName },
+      dropdown: [...dropdownKeypairs, ...dropdownBrowserAccounts, ...dropdownStarred],
+      onClickItem: selected => headerActions.selectAccount(network.id, selected),
+      contextMenu: address => {
+        if (starred.indexOf(address) === -1) {
+          return
+        }
+        return [{
           text: 'Remove from Starred',
-          onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
-        }],
+          onClick: ({ id }) => {
+            redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id })
+          },
+        }]
       },
-      {
-        route: 'account',
-        title: 'Explorer',
-        icon: 'fas fa-map-marker-alt',
-        noneIcon: 'fas fa-map-marker-times',
-        selected: { id: selectedAccount, name: accountName },
-        dropdown: [...dropdownKeypairs, ...dropdownBrowserAccounts, ...dropdownStarred],
-        onClickItem: selected => headerActions.selectAccount(network.id, selected),
-        contextMenu: address => {
-          if (starred.indexOf(address) === -1) {
-            return
-          }
-          return [{
-            text: 'Remove from Starred',
-            onClick: ({ id }) => {
-              redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id })
-            },
-          }]
-        },
+    }
+    const networkNavbarItem = {
+      route: 'network',
+      title: 'Network',
+      icon: network.icon,
+      selected: network,
+      dropdown: networkList,
+      onClickItem: (_, network) => {
+        networkManager.setNetwork(network)
       },
-      {
-        route: 'network',
-        title: 'Network',
-        icon: network.icon,
-        selected: network,
-        dropdown: networkList,
-        onClickItem: (_, network) => {
-          networkManager.setNetwork(network)
-        },
-      },
-    ]
+    }
+
+    const navbarRight = noExplorer
+      ? [contractNavbarItem, networkNavbarItem]
+      : [contractNavbarItem, explorerNavbarItem, networkNavbarItem]
 
     return (
       <>
