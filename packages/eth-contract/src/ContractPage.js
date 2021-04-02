@@ -106,7 +106,7 @@ export default class ContractPage extends PureComponent {
   }
 
   getAbiData (codeHash) {
-    const abiData = redux.getState().abis.get(codeHash).toJS()
+    const abiData = redux.getState().abis.get(codeHash)?.toJS()
     if (!abiData) {
       return
     }
