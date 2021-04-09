@@ -40,7 +40,7 @@ class ArrayInput extends PureComponent {
 
     this.modal = React.createRef()
     this.input = React.createRef()
-    
+
     this.state = {
       values: props.value || [],
       data: '',
@@ -57,7 +57,7 @@ class ArrayInput extends PureComponent {
       }
     ]
   }
-  
+
   enterNewItem = async () => {
     this.setState({ newValue: '', title: 'Enter a New Item' })
     this.modal.current.openModal()
@@ -126,9 +126,9 @@ class ArrayInput extends PureComponent {
   }
 }
 
-export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, unit, children }) {
+export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, unit, children, maxLength = 128 }) {
   const props = { value, onChange, disabled, placeholder }
-  
+
   if (!type) {
     return <DebouncedInput size={size} addon={children} {...props} />
   }
@@ -149,7 +149,7 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
       <KeypairInputSelector
         size={size}
         editable
-        maxLength={42}
+        maxLength={maxLength}
         icon='fas fa-map-marker-alt'
         extra={networkManager.browserExtension?.isEnabled && [{
           group: networkManager.browserExtension.name.toLowerCase(),
@@ -289,7 +289,7 @@ export default class ContractForm extends PureComponent {
         raw: arr,
       }
     }
-    
+
     if (type.startsWith('int') || type.startsWith('uint')) {
       let number
       try {
@@ -302,7 +302,7 @@ export default class ContractForm extends PureComponent {
       }
       return { display: number.toString(), raw: number.toString() }
     }
-    
+
     return { display: value, raw: value }
   }
 
