@@ -111,7 +111,7 @@ export default class ContractViews extends Component {
         </div>
       )
     }
-    
+
     if (actionResult) {
       return (
         <pre className='text-body pre-wrap break-all small user-select'>
@@ -124,7 +124,7 @@ export default class ContractViews extends Component {
   }
 
   render () {
-    const { abi: actions, signer, signerSelector } = this.props
+    const { abi: actions, signer, signerSelector, addrSize } = this.props
 
     if (!actions?.length) {
       return (
@@ -133,7 +133,7 @@ export default class ContractViews extends Component {
         </Screen>
       )
     }
-    
+
     const selectedAction = actions[this.state.selected] || {}
 
     return (
@@ -151,6 +151,7 @@ export default class ContractViews extends Component {
               size='sm'
               {...selectedAction}
               Empty={<div className='small'>(None)</div>}
+              addrSize={addrSize}
             />
           </DropdownCard>
           {
@@ -169,6 +170,7 @@ export default class ContractViews extends Component {
                   children: [{ address: signer, name: networkManager.browserExtension.name }],
                 }]}
                 value={this.state.signer}
+                addrSize={addrSize}
                 onChange={signer => this.setState({ signer })}
               />
             </DropdownCard>
