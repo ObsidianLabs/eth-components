@@ -191,7 +191,7 @@ export default class ContractActions extends Component {
   }
 
   render () {
-    const { abi, signer } = this.props
+    const { abi, signer, addrSize } = this.props
     const selectedAction = abi[this.state.selected] || {}
 
     if (!abi.length) {
@@ -217,6 +217,7 @@ export default class ContractActions extends Component {
               size='sm'
               {...selectedAction}
               Empty={<div className='small'>(None)</div>}
+              addrSize={addrSize}
             />
             {
               (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
@@ -272,6 +273,7 @@ export default class ContractActions extends Component {
               }]}
               value={this.state.signer}
               onChange={signer => this.setState({ signer })}
+              addrSize={addrSize}
             />
           </DropdownCard>
         </div>

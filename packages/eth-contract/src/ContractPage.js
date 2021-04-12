@@ -142,7 +142,7 @@ export default class ContractPage extends PureComponent {
   }
 
   render () {
-    const { value, signer } = this.props
+    const { value, signer, addrSize } = this.props
     const { error, abi, account, errorType } = this.state
 
     if (!networkManager.sdk) {
@@ -217,6 +217,7 @@ export default class ContractPage extends PureComponent {
             abi={actions}
             contract={contractInstance}
             signer={signer}
+            addrSize={addrSize}
             // network={network}
             // history={contractCalls.getIn(['action', 'history'])}
             // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
@@ -230,6 +231,7 @@ export default class ContractPage extends PureComponent {
               value={value}
               abi={views}
               contract={contractInstance}
+              addrSize={addrSize}
               // network={network}
               // history={contractCalls.getIn(['table', 'history'])}
               // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}

@@ -93,6 +93,7 @@ class ArrayInput extends PureComponent {
       placeholder,
       textarea,
       unit,
+      addrSize,
     } = this.props
     return <>
       <MultiSelect
@@ -118,6 +119,7 @@ class ArrayInput extends PureComponent {
           placeholder={placeholder}
           textarea={textarea}
           unit={unit}
+          addrSize={addrSize}
         >
           {addon}
         </ActionParamInput>
@@ -126,7 +128,7 @@ class ArrayInput extends PureComponent {
   }
 }
 
-export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, unit, children, maxLength = 128 }) {
+export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, unit, children, addrSize }) {
   const props = { value, onChange, disabled, placeholder }
 
   if (!type) {
@@ -142,6 +144,7 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
         textarea={textarea}
         unit={unit}
         onChange={onChange}
+        addrSize={addrSize}
       />
     )
   } else if (type === 'address') {
@@ -149,7 +152,7 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
       <KeypairInputSelector
         size={size}
         editable
-        maxLength={maxLength}
+        maxLength={addrSize || 42}
         icon='fas fa-map-marker-alt'
         extra={networkManager.browserExtension?.isEnabled && [{
           group: networkManager.browserExtension.name.toLowerCase(),
@@ -173,7 +176,7 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
   }
 }
 
-export function ActionParamFormGroup ({ size, className, label, placeholder, value, onChange, icon }) {
+export function ActionParamFormGroup ({ size, className, label, placeholder, value, onChange, icon, addrSize }) {
   return (
     <FormGroup className={classnames(className, size === 'sm' && 'mb-2')}>
       <Label className={size === 'sm' && 'mb-1 small font-weight-bold'}>{label}</Label>
@@ -182,6 +185,7 @@ export function ActionParamFormGroup ({ size, className, label, placeholder, val
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        addrSize={addrSize}
       >
         <span><i className={icon} /></span>
       </ActionParamInput>
@@ -212,7 +216,7 @@ export default class ContractForm extends PureComponent {
   componentDidMount () {
     if (this.props.args) {
       this.setState({ args: [...this.props.args] })
-  }
+    }
   }
 
   componentWillReceiveProps (props) {
@@ -316,7 +320,7 @@ export default class ContractForm extends PureComponent {
     const value = this.state.args[index]
     // const unit = units(type)
     const onChange = value => this.setArgValue(value, index)
-    const props = { size: this.props.size, type, placeholder: type, value, onChange, disabled }
+    const props = { size: this.props.size, type, placeholder: type, value, onChange, disabled, addrSize: this.props.addrSize }
 
     if (type.startsWith('int') || type.startsWith('uint')) {
       return (
