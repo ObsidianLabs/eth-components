@@ -4,6 +4,7 @@ import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 
 import { ProjectManager, BaseProjectManager } from '@obsidians/workspace'
+import { modelSessionManager } from '@obsidians/code-editor'
 
 import { networkManager } from '@obsidians/eth-network'
 import compilerManager from '@obsidians/compiler'
@@ -33,10 +34,11 @@ function makeProjectManager (Base) {
       await this.project.saveAll()
       this.toggleTerminal(true)
   
-      try {
-        await compilerManager.build(settings, this, sourceFile)
-      } catch (e) {
-        console.warn(e)
+      const result = await compilerManager.build(settings, this, sourceFile)
+      if (result?.decorations) {
+        modelSessionManager.updateDecorations(result.decorations)
+      }
+      if (result?.errors) {
         return false
       }
   

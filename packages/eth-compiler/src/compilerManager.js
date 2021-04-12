@@ -3,6 +3,7 @@ import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
 import semver from 'semver'
+import stripAnsi from 'strip-ansi'
 
 import SolcjsCompiler from './SolcjsCompiler'
 
@@ -168,21 +169,33 @@ export class CompilerManager {
 
     const cmd = this.generateBuildCmd({ projectRoot, settings, sourceFile })
     const result = await CompilerManager.terminal.exec(cmd)
-    if (result.code) {
-      CompilerManager.button.setState({ building: false })
-      this.notification.dismiss()
-      notification.error('Build Failed', `Code has errors.`)
-      throw new Error(result.logs)
-    }
 
     CompilerManager.button.setState({ building: false })
     this.notification.dismiss()
+
+    if (result.code === 130) {
+      if (result.code === 130) {
+        notification.error('Build Terminated')
+        return { errors: [] }
+      }
+    }
+
+    const { errors, decorations } = this.parseBuildLogs(stripAnsi(result.logs))
+    if (result.code) {
+      if (errors.length) {
+        notification.error('Build Failed', errors[0])
+      } else {
+        notification.error('Build Failed', `Code has errors.`)
+      }
+      return { errors, decorations }
+    }
 
     if (!sourceFile) {
       notification.success('Build Successful', `The project is built.`)
     } else {
       notification.success('Build Successful', `The contract file is built.`)
     }
+    return { decorations }
   }
 
   static async stop () {
@@ -190,6 +203,60 @@ export class CompilerManager {
       CompilerManager.terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
       await CompilerManager.terminal.stop()
     }
+  }
+
+  parseBuildLogs (msg) {
+    let index
+    index = msg.indexOf('Compiling your contracts...')
+    if (index > -1) {
+      msg = msg.substr(index + 30)
+    }
+    const lines = msg.split('\n')
+
+    const errors = []
+    let decorations = []
+    let status = ''
+    let currentBlock = ''
+    lines.map(line => line.trim()).forEach(line => {
+      if (!line) {
+        if (status === 'ERROR') {
+          errors.push(currentBlock.trim())
+        } else if (status === 'DECORATION') {
+          decorations.push(currentBlock.trim())
+        }
+        status = ''
+        currentBlock = ''
+      } else if (line.startsWith('Error: ') || status === 'ERROR') {
+        status = 'ERROR'
+        currentBlock += (line + '\n')
+      } else if (line.startsWith(',/')) {
+        if (status === 'DECORATION') {
+          decorations.push(currentBlock.trim())
+        }
+        status === 'DECORATION'
+        currentBlock = (line.substr(1) + '\n')
+      } else if (line.startsWith('/') || status === 'DECORATION') {
+        status = 'DECORATION'
+        currentBlock += (line + '\n')
+      }
+    })
+    decorations = decorations.map(msg => {
+      const lines = msg.split('\n')
+      const [prefix, ...rest] = lines[0].split(': ')
+      const [filePath, row, column] = prefix.split(':')
+      const text = rest.join(': ').trim()
+      let type = 'error'
+      if (text.startsWith('Warning: ')) {
+        type = 'warning'
+      }
+      if (row && column) {
+        const length = lines[lines.length - 1].trim().length
+        return { filePath, type, row: Number(row), column: Number(column), length, text }
+      } else {
+        return { filePath, type, text }
+      }
+    })
+    return { errors, decorations }
   }
 
   generateBuildCmd ({ projectRoot, settings, sourceFile }) {
