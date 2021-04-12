@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react'
 
 import {
   Modal,
+  DropdownInput,
   Button,
   UncontrolledTooltip,
   Label,
 } from '@obsidians/ui-components'
 
+import fileOps from '@obsidians/file-ops'
 import notification from '@obsidians/notification'
 import { KeypairInputSelector } from '@obsidians/keypair'
 import { txOptions } from '@obsidians/sdk'
@@ -18,10 +20,13 @@ export default class DeployerButton extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      pending: false,
-      constructorAbi: null,
+      selected: '',
+      contractsFolder: '',
+      contracts: [],
       contractName: '',
+      constructorAbi: null,
       signer: '',
+      pending: false,
     }
     this.modal = React.createRef()
   }
@@ -37,17 +42,73 @@ export default class DeployerButton extends PureComponent {
     this.props.projectManager.deploy()
   }
 
-  getDeploymentParameters = (constructorAbi, contractName, callback, estimate) => {
+  getDeploymentParameters = async (contractPath, callback, estimate) => {
+    const { dir: contractsFolder, base: selected } = fileOps.current.path.parse(contractPath)
+    const files = await fileOps.current.listFolder(contractsFolder)
+    this.setState({
+      selected,
+      contractsFolder,
+      contracts: files.map(f => f.name).filter(name => name.endsWith('.json')),
+    })
+
     this.modal.current.openModal()
+    await this.updateAbi(contractPath)
     const options = {}
     txOptions.list && txOptions.list.forEach(opt => options[opt.name] = '')
-    this.setState({
-      constructorAbi,
-      contractName,
-      ...options,
-    })
+    this.setState(options)
     this.callback = callback
     this.estimateCallback = estimate
+  }
+
+  updateContract = async selected => {
+    this.setState({ selected })
+    const contractPath = fileOps.current.path.join(this.state.contractsFolder, selected)
+    await this.updateAbi(contractPath)
+  }
+
+  updateAbi = async contractPath => {
+    const contractName = fileOps.current.path.parse(contractPath).name
+
+    let contractObj
+    try {
+      contractObj = await this.readContractJson(contractPath)
+    } catch (e) {
+      notification.error('ABI File Error', e.message)
+      return
+    }
+
+    let constructorAbi
+    try {
+      constructorAbi = await this.getConstructorAbi(contractObj.abi)
+    } catch (e) {
+      notification.error('ABI File Error', e.message)
+      return
+    }
+
+    this.setState({
+      contractName: contractObj.contractName || contractName,
+      constructorAbi,
+    })
+  }
+  
+  readContractJson = async contractPath => {
+    const contractJson = await fileOps.current.readFile(contractPath)
+
+    try {
+      return JSON.parse(contractJson)
+    } catch (e) {
+      throw new Error(`Error in reading <b>${contractPath}</b>. Not a valid JSON file.`)
+    }
+  }
+
+  getConstructorAbi = (contractAbi, { key = 'type', value = 'constructor' } = {}) => {
+    if (!contractAbi) {
+      throw new Error(`Error in reading the ABI. Does not have the field abi.`)
+    }
+    if (!Array.isArray(contractAbi)) {
+      throw new Error(`Error in reading the ABI. Field abi is not an array.`)
+    }
+    return contractAbi.find(item => item[key] === value)
   }
 
   estimate = async () => {
@@ -95,7 +156,7 @@ export default class DeployerButton extends PureComponent {
 
   render () {
     const signer = this.props.signer
-    const pending = this.state.pending
+    const { contracts, selected, contractName, pending } = this.state
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
     if (pending) {
@@ -134,13 +195,19 @@ export default class DeployerButton extends PureComponent {
       <Modal
         ref={this.modal}
         overflow
-        title={<span>Deploy Contract <b>{this.state.contractName}</b></span>}
+        title={<span>Deploy Contract <b>{contractName}</b></span>}
         textConfirm='Deploy'
         pending={pending && 'Deploying...'}
         onConfirm={this.confirmDeploymentParameters}
         textActions={[`Estimate ${txOptions.title}`]}
         onActions={[this.estimate]}
       >
+        <DropdownInput
+          label='Contract ABI'
+          options={contracts.map(c => ({ id: c, display: c }))}
+          value={selected}
+          onChange={this.updateContract}
+        />
         {constructorParameters}
         <KeypairInputSelector
           label='Signer'

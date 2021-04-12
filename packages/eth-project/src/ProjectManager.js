@@ -54,50 +54,10 @@ function makeProjectManager (Base) {
     }
   
     async deploy (contractPath) {
-      contractPath = contractPath || await this.getDefaultContract()
-      const contractName = fileOps.current.path.parse(contractPath).name
-  
-      let contractObj
-      try {
-        contractObj = await this.readContractJson(contractPath)
-      } catch (e) {
-        notification.error('Deploy Error', e.message)
-        return
-      }
-  
-      let constructorAbi
-      try {
-        constructorAbi = await this.getConstructorAbi(contractObj.abi)
-      } catch (e) {
-        notification.error('Deploy Error', e.message)
-        return
-      }
-  
-      this.deployButton.getDeploymentParameters(constructorAbi, contractObj.contractName || contractName,
+      this.deployButton.getDeploymentParameters(contractPath || await this.getDefaultContract(),
         allParameters => this.pushDeployment(contractObj, allParameters),
         allParameters => this.estimate(contractObj, allParameters)
       )
-    }
-  
-    async readContractJson (contractPath) {
-      const contractJson = await fileOps.current.readFile(contractPath)
-  
-      try {
-        return JSON.parse(contractJson)
-      } catch (e) {
-        throw new Error(`Error in reading <b>${contractPath}</b>. Not a valid JSON file.`)
-      }
-    }
-  
-    getConstructorAbi (contractAbi, { key = 'type', value = 'constructor' } = {}) {
-      if (!contractAbi) {
-        throw new Error(`Error in reading the ABI. Does not have the field abi.`)
-      }
-      if (!Array.isArray(contractAbi)) {
-        throw new Error(`Error in reading the ABI. Field abi is not an array.`)
-      }
-      const constructorAbi = contractAbi.find(item => item[key] === value)
-      return constructorAbi
     }
 
     checkSdkAndSigner (allParameters) {
