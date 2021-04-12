@@ -172,6 +172,7 @@ export class CompilerManager {
 
     CompilerManager.button.setState({ building: false })
     this.notification.dismiss()
+    await CompilerManager.terminal.execAsChildProcess(`docker rm $(docker ps --filter status=exited --filter ancestor=ethereum/solc:${compilers.solc} -q)`)
 
     if (result.code === 130) {
       if (result.code === 130) {
@@ -202,6 +203,7 @@ export class CompilerManager {
     if (CompilerManager.terminal) {
       CompilerManager.terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
       await CompilerManager.terminal.stop()
+      await CompilerManager.terminal.execAsChildProcess(`docker rm $(docker ps --filter status=exited --filter ancestor=ethereum/solc:${compilers.solc} -q)`)
     }
   }
 
