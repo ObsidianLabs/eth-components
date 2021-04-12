@@ -192,9 +192,9 @@ export class CompilerManager {
     }
 
     if (!sourceFile) {
-      notification.success('Build Successful', `The project is built.`)
+      notification.success('Build Project Successful', `Please find the generated ABI and bytecode in the <b>build/contracts</b> folder.`)
     } else {
-      notification.success('Build Successful', `The contract file is built.`)
+      notification.success('Build File Successful', `Please find the generated ABI and bytecode in the <b>build/contracts</b> folder.`)
     }
     return { decorations }
   }
