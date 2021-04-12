@@ -153,6 +153,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 }
 
 const templates = [
+  { id: 'empty', display: 'Empty Project' },
   { id: 'coin', display: 'Coin' },
 ]
 if (platform.isDesktop) {
