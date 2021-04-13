@@ -3,6 +3,9 @@ const fs = require('fs')
 const fse = require('fs-extra')
 const { FileTreeChannel } = require('@obsidians/filetree')
 
+const prettier = require('prettier/standalone')
+const solidityPlugin = require('prettier-plugin-solidity')
+
 const isDirectoryNotEmpty = dirPath => {
   try {
     const stat = fs.statSync(dirPath)
@@ -61,6 +64,15 @@ class ProjectChannel extends FileTreeChannel {
     copyRecursiveSync(templateFolder, projectRoot, name, compilerVersion)
 
     return { projectRoot, name }
+  }
+
+  formatSolidity (code) {
+    const formatted = prettier.format(code, {
+      parser: 'solidity-parse',
+      plugins: [solidityPlugin],
+      tabWidth: 2,
+    })
+    return formatted
   }
 }
 
