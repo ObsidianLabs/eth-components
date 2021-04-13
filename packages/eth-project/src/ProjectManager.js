@@ -55,8 +55,8 @@ function makeProjectManager (Base) {
   
     async deploy (contractPath) {
       this.deployButton.getDeploymentParameters(contractPath || await this.getDefaultContract(),
-        allParameters => this.pushDeployment(contractObj, allParameters),
-        allParameters => this.estimate(contractObj, allParameters)
+        (contractObj, allParameters) => this.pushDeployment(contractObj, allParameters),
+        (contractObj, allParameters) => this.estimate(contractObj, allParameters)
       )
     }
 

@@ -24,6 +24,7 @@ export default class DeployerButton extends PureComponent {
       contractsFolder: '',
       contracts: [],
       contractName: '',
+      contractObj: null,
       constructorAbi: null,
       signer: '',
       pending: false,
@@ -87,6 +88,7 @@ export default class DeployerButton extends PureComponent {
 
     this.setState({
       contractName: contractObj.contractName || contractName,
+      contractObj,
       constructorAbi,
     })
   }
@@ -121,11 +123,11 @@ export default class DeployerButton extends PureComponent {
       }
     }
 
-    const { contractName, signer } = this.state
+    const { contractName, contractObj, signer } = this.state
     const options = {}
     txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    const result = await this.estimateCallback({ parameters, contractName, signer, ...options })
+    const result = await this.estimateCallback(contractObj, { parameters, contractName, signer, ...options })
 
     if (result) {
       this.setState(result)
@@ -143,11 +145,11 @@ export default class DeployerButton extends PureComponent {
       }
     }
 
-    const { contractName, signer } = this.state
+    const { contractName, contractObj, signer } = this.state
     const options = {}
     txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    this.callback({ parameters, contractName, signer, ...options })
+    this.callback(contractObj, { parameters, contractName, signer, ...options })
   }
 
   closeModal = () => {
