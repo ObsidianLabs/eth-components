@@ -191,10 +191,11 @@ export class CompilerManager {
       return { errors, decorations }
     }
 
+    const buildFolder = fileOps.current.path.join('build', 'contracts')
     if (!sourceFile) {
-      notification.success('Build Project Successful', `Please find the generated ABI and bytecode in the <b>build/contracts</b> folder.`)
+      notification.success('Build Project Successful', `Please find the generated ABI and bytecode in the <b>${buildFolder}</b> folder.`)
     } else {
-      notification.success('Build File Successful', `Please find the generated ABI and bytecode in the <b>build/contracts</b> folder.`)
+      notification.success('Build File Successful', `Please find the generated ABI and bytecode in the <b>${buildFolder}</b> folder.`)
     }
     return { decorations }
   }
