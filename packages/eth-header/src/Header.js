@@ -3,8 +3,8 @@ import React, { PureComponent } from 'react'
 import redux from '@obsidians/redux'
 import Navbar from '@obsidians/navbar'
 import keypairManager from '@obsidians/keypair'
-import { NewProjectModal, navbarItem } from '@obsidians/eth-project'
-import { networkManager } from '@obsidians/eth-network'
+import { NewProjectModal, navbarItem } from '@obsidians/project'
+import { networkManager } from '@obsidians/network'
 
 import headerActions from './headerActions'
 
