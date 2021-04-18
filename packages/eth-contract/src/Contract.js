@@ -105,3 +105,7 @@ export default connect([
   'network',
   'contracts',
 ])(withRouter(Contract))
+
+export {
+  Contract as BaseContract
+}
