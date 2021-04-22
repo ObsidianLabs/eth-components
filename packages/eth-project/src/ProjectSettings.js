@@ -14,6 +14,7 @@ export default class ExtendedProjectSettings extends ProjectSettings {
       main: rawSettings.main || './contracts/Contract.sol',
       deploy: rawSettings.deploy || './build/contracts/Contract.json',
       compilers: {
+        ...compilers,
         [process.env.COMPILER_VERSION_KEY]: compilers[process.env.COMPILER_VERSION_KEY] || '',
         solc: compilers.solc || '',
       }
