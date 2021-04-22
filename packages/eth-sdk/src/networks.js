@@ -50,6 +50,14 @@ const networks = [
     notification: 'Switched to <b>Homestead Mainnet</b>.',
     url: '/',
     chainId: 1,
+  },
+  {
+    id: 'custom',
+    group: 'others',
+    name: 'Custom',
+    fullName: 'Custom Network',
+    icon: 'fas fa-edit',
+    notification: 'Switched to <b>Custom</b> network.',
   }
 ]
 

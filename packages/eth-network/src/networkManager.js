@@ -1,5 +1,5 @@
 import platform from '@obsidians/platform'
-import headerActions from '@obsidians/header'
+import headerActions from '@obsidians/eth-header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 import Sdk from '@obsidians/sdk'
@@ -65,7 +65,7 @@ class NetworkManager {
     headerActions.updateNetwork(network.id)
   }
 
-  async updateCustomNetwork ({ url, option }) {
+  async updateCustomNetwork ({ url, option = '{}' }) {
     try {
       if (option) {
         option = JSON.parse(option)
