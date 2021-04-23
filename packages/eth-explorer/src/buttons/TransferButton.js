@@ -64,24 +64,32 @@ export default class TransferButton extends PureComponent {
 
     try {
       const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount })
-      await queue.add(
-        () => networkManager.sdk.sendTransaction(tx),
-        {
-          name: 'Transfer',
-          signer: from,
-          address: from,
-          params: { from, to, amount },
-        }
-      )
+      await new Promise((resolve, reject) => {
+        queue.add(
+          () => networkManager.sdk.sendTransaction(tx),
+          {
+            name: 'Transfer',
+            signer: from,
+            address: from,
+            params: { from, to, amount },
+          },
+          {
+            pushing: () => {
+              this.setState({ pushing: false })
+              this.modal.current.closeModal()
+            },
+            executed: resolve,
+            'failed-timeout': reject,
+            failed: reject,
+          }
+        )
+      })
     } catch (e) {
       console.warn(e)
       notification.error('Push Transaction Failed', e.message)
       this.setState({ pushing: false })
       return
     }
-
-    this.setState({ pushing: false })
-    this.modal.current.closeModal()
   }
 
   render () {

@@ -41,7 +41,10 @@ class Queue extends BaseQueueManager {
       this.updateStatus(txHash, 'FAILED', { error: { error: e.message } }, callbacks)
       return
     }
-    if (receipt?.outcomeStatus) {
+    if (receipt && !receipt.status) {
+      this.updateStatus(txHash, 'FAILED', { receipt }, callbacks)
+      return
+    } else if (receipt?.outcomeStatus) {
       pendingTransaction.cfx.call(tx, tx.epochHeight - 1).catch(err => {
         const decodedMessage = utils.decodeError(err.data.replace(/\"/g, ''))
         notification.error('Transaction Failed', decodedMessage)
