@@ -6,6 +6,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { NodeButton, NodeStatus } from '@obsidians/eth-node'
+import notification from '@obsidians/notification'
 
 import instanceChannel from './instanceChannel'
 
@@ -63,6 +64,10 @@ export default class InstanceRow extends PureComponent {
   }
 
   deleteInstance = async name => {
+    if (this.props.runningInstance === name) {
+      notification.error('Unable to Delete', 'Please stop the instance first if you want to delete it.')
+      return
+    }
     await instanceChannel.invoke('delete', name)
     this.props.onRefresh()
   }
@@ -74,11 +79,7 @@ export default class InstanceRow extends PureComponent {
 
     return (
       <tr className='hover-flex'>
-        <td>
-          <div className='flex-row align-items-center'>
-            {name}
-          </div>
-        </td>
+        <td><div className='flex-row align-items-center'>{name}</div></td>
         <td>{this.renderStartStopBtn(name, labels.version, labels.chain)}</td>
         <td>{this.renderVersionBtn(labels.version)}</td>
         <td>{this.renderChainBtn(labels.chain)}</td>
