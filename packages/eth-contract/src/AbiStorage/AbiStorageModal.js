@@ -130,7 +130,7 @@ export default class AbiStorageModal extends PureComponent {
         title='ABI Storage'
         textActions={['New']}
         textCancel='Close'
-        onActions={[this.newAbi]}
+        onActions={[() => this.newAbi()]}
       >
         <Table
           tableSm
