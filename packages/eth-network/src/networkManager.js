@@ -75,7 +75,7 @@ class NetworkManager {
       return
     }
     const status = await this.createSdk({ id: 'custom', url, option })
-    
+
     if (status) {
       redux.dispatch('SELECT_NETWORK', `custom`)
       notification.success(`Network Connected`, `Connected to network at <b>${url}</b>`)
