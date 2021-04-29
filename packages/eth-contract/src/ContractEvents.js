@@ -152,11 +152,7 @@ export default class ContractEvents extends PureComponent {
     const events = this.props.abi
 
     if (!events?.length) {
-      return (
-        <Screen>
-          <p>No events found</p>
-        </Screen>
-      )
+      return <Screen><p>No events found</p></Screen>
     }
 
     return (
@@ -170,9 +166,7 @@ export default class ContractEvents extends PureComponent {
         >
           Event Logs
         </div>
-        <Card body>
-          {this.renderLogsTable()}
-        </Card>
+        <Card body>{this.renderLogsTable()}</Card>
       </div>
     )
   }
