@@ -43,13 +43,22 @@ export default class DeployerButton extends PureComponent {
     this.props.projectManager.deploy()
   }
 
-  getDeploymentParameters = async (contractPath, callback, estimate) => {
+  getDeploymentParameters = async (option, callback, estimate) => {
+    let contractPath, contracts
+    if (typeof option === 'string') {
+      contractPath = option
+      this.getConstructorAbiArgs = contractObj => [contractObj.abi]
+    } else {
+      contractPath = option.contractPath
+      contracts = option.contracts
+      this.getConstructorAbiArgs = option.getConstructorAbiArgs
+    }
     const { dir: contractsFolder, base: selected } = fileOps.current.path.parse(contractPath)
     const files = await fileOps.current.listFolder(contractsFolder)
     this.setState({
       selected,
       contractsFolder,
-      contracts: files.map(f => f.name).filter(name => name.endsWith('.json')),
+      contracts: contracts || files.map(f => f.name).filter(name => name.endsWith('.json')),
     })
 
     this.modal.current.openModal()
@@ -80,7 +89,7 @@ export default class DeployerButton extends PureComponent {
 
     let constructorAbi
     try {
-      constructorAbi = await this.getConstructorAbi(contractObj.abi)
+      constructorAbi = await this.getConstructorAbi(...this.getConstructorAbiArgs(contractObj))
     } catch (e) {
       notification.error('ABI File Error', e.message)
       return
@@ -105,7 +114,7 @@ export default class DeployerButton extends PureComponent {
 
   getConstructorAbi = (contractAbi, { key = 'type', value = 'constructor' } = {}) => {
     if (!contractAbi) {
-      throw new Error(`Error in reading the ABI. Does not have the field abi.`)
+      throw new Error(`Error in reading the ABI.`)
     }
     if (!Array.isArray(contractAbi)) {
       throw new Error(`Error in reading the ABI. Field abi is not an array.`)
@@ -138,7 +147,7 @@ export default class DeployerButton extends PureComponent {
     let parameters = { array: [], obj: {} }
     if (this.state.constructorAbi) {
       try {
-        parameters = this.form.getParameters()
+        parameters = this.form?.getParameters()
       } catch (e) {
         notification.error('Error in Constructor Parameters', e.message)
         return
