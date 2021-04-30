@@ -90,6 +90,13 @@ export default class ContractActions extends Component {
       return
     }
 
+    if (parameters.empty && parameters.array.length && !this.confirming) {
+      this.confirming = true
+      setTimeout(() => { this.confirming = false }, 3000)
+      notification.info('Send transaction with empty parameters?', 'Press the execute button again to confirm.', 3)
+      return
+    }
+
     this.setState({ executing: true, actionError: '', actionResult: '' })
 
     const signer = this.state.signer

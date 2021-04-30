@@ -14,10 +14,7 @@ export default function () {
     async provideDocumentFormattingEdits (model) {
       const code = model.getValue()
 
-      console.log(code)
-
       const formatted = await BaseProjectManager.channel.invoke('formatSolidity', code)
-      console.log(formatted)
 
       return [{
         range: model.getFullModelRange(),

@@ -249,11 +249,15 @@ export default class ContractForm extends PureComponent {
     const array = []
     const json = {}
     const obj = {}
+    let empty = true
 
     this.props.inputs.forEach(({ name, type }, index) => {
       const value = this.state.args[index]
       const key = name || `(param${index})`
       if (!type) {
+        if (value) {
+          empty = false
+        }
         array.push(value)
         json[key] = value.toString()
         obj[key] = { type, value }
@@ -261,18 +265,28 @@ export default class ContractForm extends PureComponent {
         const typedValue = value
           ? value.map((item, i) => this.valueByType(item.value, type.replace('[]', ''), `${key}[${i}]`))
           : []
+        if (typedValue.length) {
+          empty = false
+        }
         array.push(typedValue.map(v => v.raw))
         json[key] = typedValue.map(v => v.raw)
         obj[key] = { type, value: typedValue.map(v => v.display) }
       } else {
         const typedValue = this.valueByType(value, type, key)
+        if (type.startsWith('int') || type.startsWith('uint')) {
+          if (typedValue.raw !== '0') {
+            empty = false
+          }
+        } else if (typedValue.raw) {
+          empty = false
+        }
         array.push(typedValue.raw)
         json[key] = typedValue.raw
         obj[key] = { type, value: typedValue.display }
       }
     })
 
-    return { array, json, obj }
+    return { array, json, obj, empty }
   }
 
   valueByType = (value, type, name) => {
