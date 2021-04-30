@@ -64,7 +64,7 @@ export default class InstanceRow extends PureComponent {
   }
 
   deleteInstance = async name => {
-    if (this.props.runningInstance === name) {
+    if (this.props.lifecycle !== 'stopped' && this.props.runningInstance === name) {
       notification.error('Unable to Delete', 'Please stop the instance first if you want to delete it.')
       return
     }
