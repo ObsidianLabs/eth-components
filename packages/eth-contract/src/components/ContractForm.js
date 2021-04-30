@@ -92,7 +92,6 @@ class ArrayInput extends PureComponent {
       type,
       placeholder,
       textarea,
-      unit,
     } = this.props
     return <>
       <MultiSelect
@@ -117,7 +116,6 @@ class ArrayInput extends PureComponent {
           onChange={newValue => this.setState({ newValue })}
           placeholder={placeholder}
           textarea={textarea}
-          unit={unit}
         >
           {addon}
         </ActionParamInput>
@@ -126,7 +124,7 @@ class ArrayInput extends PureComponent {
   }
 }
 
-export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, unit, children, maxLength = 128 }) {
+export function ActionParamInput ({ size, type, value, onChange, placeholder, disabled, textarea, children, maxLength = 128 }) {
   const props = { value, onChange, disabled, placeholder }
 
   if (!type) {
@@ -140,7 +138,6 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
         type={type.replace('[]', '')}
         placeholder={placeholder.replace('[]', '')}
         textarea={textarea}
-        unit={unit}
         onChange={onChange}
       />
     )
@@ -159,11 +156,30 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
         {...props}
       />
     )
-  } else if (textarea) {
+  } else if (type === 'string') {
     return (
       <div style={{ position: 'relative' }}>
         <DebouncedInput type='textarea' size={size} {...props} />
-        { unit && <Badge style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100 }}>{unit}</Badge> }
+        <Badge style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100 }}>UTF8</Badge>
+      </div>
+    )
+  } else if (textarea) {
+    const { raw = '', encoding = 'utf8' } = value || {}
+    const onChange = raw => props.onChange({ encoding, raw })
+
+    return (
+      <div style={{ position: 'relative' }}>
+        <DebouncedInput type='textarea' size={size} {...props} value={raw} onChange={onChange} />
+        <Badge
+          color={encoding === 'utf8' ? 'primary' : 'secondary'}
+          style={{ position: 'absolute', right: '38px', bottom: '5px', height: '18px', zIndex: 100, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+          onClick={() => { props.onChange({ encoding: 'utf8', raw })}}
+        >UTF8</Badge>
+        <Badge
+          color={encoding === 'hex' ? 'primary' : 'secondary'}
+          style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          onClick={() => { props.onChange({ encoding: 'hex', raw })}}
+        >HEX</Badge>
       </div>
     )
   } else {
@@ -272,7 +288,21 @@ export default class ContractForm extends PureComponent {
     }
 
     if (type.startsWith('bytes') || type === 'byte') {
-      const bytes = utils.format.bytes(value)
+      let bytes
+      if (value.encoding === 'hex') {
+        let hex = value.raw.toLowerCase()
+        if (!hex.startsWith('0x')) {
+          hex = '0x' + hex
+        }
+        try {
+          bytes = utils.format.bytesFromHex(hex)
+        } catch {
+          throw new Error(`Not a valid hex string for parameter <b>${name}</b>.`)
+        }
+      } else {
+        bytes = utils.format.bytes(value.raw)
+      }
+
       let length = bytes.length
       if (type === 'byte') {
         length = 1
@@ -336,9 +366,7 @@ export default class ContractForm extends PureComponent {
     }
 
     if (type.startsWith('bytes') || type === 'string') {
-      return (
-        <ActionParamInput {...props} textarea unit='UTF8'/>
-      )
+      return <ActionParamInput {...props} textarea />
     } else if (icon) {
       return (
         <ActionParamInput {...props}>
