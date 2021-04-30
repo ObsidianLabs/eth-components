@@ -15,6 +15,7 @@ export default class AbiInputModal extends PureComponent {
     this.state = {
       name: '',
       codeHash: '',
+      codeHashEditable: true,
       abi: '',
       validJson: false,
     }
@@ -22,7 +23,9 @@ export default class AbiInputModal extends PureComponent {
 
   openModal = (name, codeHash, abi) => {
     if (name || codeHash) {
-      this.setState({ name, codeHash })
+      this.setState({ name, codeHash, codeHashEditable: !codeHash })
+    } else {
+      this.setState({ codeHashEditable: false })
     }
     if (abi) {
       this.onChangeAbi(abi)
@@ -53,7 +56,7 @@ export default class AbiInputModal extends PureComponent {
   }
 
   render () {
-    const { name, codeHash, validJson } = this.state
+    const { name, codeHash, codeHashEditable, validJson } = this.state
     return (
       <Modal
         ref={this.modal}
@@ -72,6 +75,7 @@ export default class AbiInputModal extends PureComponent {
           label='Code hash / Address'
           value={codeHash}
           onChange={codeHash => this.setState({ codeHash })}
+          disabled={!codeHashEditable}
         />
         <DebouncedFormGroup
           size='sm'
