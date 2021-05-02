@@ -5,18 +5,36 @@ import {
   DeleteButton,
 } from '@obsidians/ui-components'
 
-import { NodeButton, NodeStatus } from '@obsidians/eth-node'
+import nodeManager, { NodeButton, NodeStatus } from '@obsidians/eth-node'
 import notification from '@obsidians/notification'
 
 import instanceChannel from './instanceChannel'
 
 export default class InstanceRow extends PureComponent {
+  constructor (props) {
+    super(props)
+    this.button = React.createRef()
+  }
+
+  componentDidMount () {
+    if (this.props.data.running) {
+      const { Name, Labels } = this.props.data
+      const name = Name.substr(process.env.PROJECT.length + 1)
+      const { version, chain } = Labels
+      this.button.current?.setState({ lifecycle: 'started' })
+      const params = { id: `dev.${name}`, version }
+      nodeManager.updateLifecycle('started', params)
+      this.props.onNodeLifecycle(name, 'started', params)
+    }
+  }
+
   renderStartStopBtn = (name, version, chain) => {
     if (this.props.lifecycle !== 'stopped' && this.props.runningInstance !== name) {
       return null
     }
     return (
       <NodeButton
+        ref={this.button}
         name={name}
         version={version}
         chain={chain}
