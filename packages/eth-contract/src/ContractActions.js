@@ -126,7 +126,11 @@ export default class ContractActions extends Component {
       )
     } catch (e) {
       console.warn(e)
-      notification.error('Error', e.message)
+      if (e.data) {
+        notification.error('Error', `${e.message}<br />${e.data}`)
+      } else {
+        notification.error('Error', e.message)
+      }
       this.setState({ executing: false, actionError: e.message, actionResult: '' })
       return
     }
@@ -164,6 +168,7 @@ export default class ContractActions extends Component {
       </UncontrolledButtonDropdown>
       <ToolbarButton
         id='contract-execute-action'
+        key={this.state.executing ? 'action-executing' : 'action-execute'}
         icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
         tooltip='Execute'
         className='border-right-1'

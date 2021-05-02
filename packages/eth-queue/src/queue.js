@@ -38,24 +38,14 @@ class Queue extends BaseQueueManager {
     } catch (e) {
       console.warn(e)
       notification.error('Transaction Failed', e.message)
-      this.updateStatus(txHash, 'FAILED', { error: { error: e.message } }, callbacks)
+      this.updateStatus(txHash, 'FAILED', {
+        receipt: e.receipt,
+        error: { code: e.code, message: e.message, data: e.data },
+      }, callbacks)
       return
     }
-    if (receipt && !receipt.status) {
+    if (typeof receipt === 'boolean' && !receipt.status) {
       this.updateStatus(txHash, 'FAILED', { receipt }, callbacks)
-      return
-    } else if (receipt?.outcomeStatus) {
-      pendingTransaction.cfx.call(tx, tx.epochHeight - 1).catch(err => {
-        const decodedMessage = utils.decodeError(err.data.replace(/\"/g, ''))
-        notification.error('Transaction Failed', decodedMessage)
-
-        this.updateStatus(txHash, 'FAILED', { receipt, error: {
-          code: err.code,
-          message: err.message,
-          data: decodedMessage,
-        } }, callbacks)
-      })
-
       return
     } else if (receipt.gasUsed) {
       const gasUsed = receipt.gasUsed.toString()

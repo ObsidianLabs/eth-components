@@ -172,7 +172,6 @@ function makeProjectManager (Base) {
               executed: ({ tx, receipt, abi }) => {
                 resolve({
                   network: networkId,
-                  contractCreated: receipt.contractAddress,
                   codeHash,
                   ...parameters,
                   tx,
