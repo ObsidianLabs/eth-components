@@ -14,6 +14,8 @@ import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
 
 const openZeppelinVersions = [
+  { id: 'v4.1.0', display: 'v4.1.0' },
+  { id: 'v4.0.0', display: 'v4.0.0' },
   { id: 'v3.4.0', display: 'v3.4.0' },
   { id: 'v3.3.0', display: 'v3.3.0' },
   { id: 'v3.2.0', display: 'v3.2.0' },
@@ -34,7 +36,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     this.state = {
       ...this.state,
       compilerVersion: '',
-      openZeppelinVersion: 'v3.4.0',
+      openZeppelinVersion: 'v4.1.0',
     }
   }
 
@@ -55,24 +57,26 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     }
 
     if (group === 'open zeppelin') {
-      await super.createProject({ projectRoot, name, template, compilerVersion })
-
       this.setState({ showTerminal: true })
 
       const hasERC1155 = semver.gte(openZeppelinVersion, 'v3.1.0')
       if (!hasERC1155) {
         template = 'openzeppelin-no-erc1155'
       }
+      let openZeppelinPackage = `@openzeppelin/contracts`
+      if (semver.lt(openZeppelinVersion, '3.0.0')) {
+        openZeppelinPackage = 'openzeppelin-solidity'
+        template = 'openzeppelin-v2'
+      } else if (semver.gte(openZeppelinVersion, '4.0.0')) {
+        template = 'openzeppelin-v4'
+      }
+
+      await super.createProject({ projectRoot, name, template, compilerVersion })
 
       let result = await this.terminal.current.exec(`npm init -y`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Cannot Create the Project')
         return false
-      }
-      let openZeppelinPackage = `@openzeppelin/contracts`
-      if (semver.lt(openZeppelinVersion, '3.0.0')) {
-        openZeppelinPackage = 'openzeppelin-solidity'
-        template = 'openzeppelin-v2'
       }
       result = await this.terminal.current.exec(`npm i -S ${openZeppelinPackage}@${openZeppelinVersion}`, { cwd: projectRoot })
       if (result.code) {

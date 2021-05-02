@@ -1,0 +1,8 @@
+{
+  "main": "./contracts/GameItems.sol",
+  "deploy": "./build/contracts/GameItems.json",
+  "compilers": {
+    "#compiler_name": "#compiler_version",
+    "solc": "0.8.0"
+  }
+}
