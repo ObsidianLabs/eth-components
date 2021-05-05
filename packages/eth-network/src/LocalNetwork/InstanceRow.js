@@ -7,6 +7,7 @@ import {
 
 import nodeManager, { NodeButton, NodeStatus } from '@obsidians/eth-node'
 import notification from '@obsidians/notification'
+import redux from '@obsidians/redux'
 
 import instanceChannel from './instanceChannel'
 
@@ -87,6 +88,7 @@ export default class InstanceRow extends PureComponent {
       return
     }
     await instanceChannel.invoke('delete', name)
+    redux.dispatch('DELETE_INSTANCE', { name })
     this.props.onRefresh()
   }
 
