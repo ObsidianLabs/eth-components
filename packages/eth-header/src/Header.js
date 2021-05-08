@@ -37,6 +37,7 @@ export default class Header extends PureComponent {
       selectedAccount,
       network,
       networkList,
+      AuthModal,
     } = this.props
 
     const username = profile.get('username') || 'local'
@@ -170,6 +171,7 @@ export default class Header extends PureComponent {
           navbarRight={navbarRight}
         />
         <NewProjectModal />
+        { AuthModal && <AuthModal /> }
       </>
     )
   }
