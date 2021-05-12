@@ -44,10 +44,7 @@ class Queue extends BaseQueueManager {
       }, callbacks)
       return
     }
-    if (typeof receipt === 'boolean' && !receipt.status) {
-      this.updateStatus(txHash, 'FAILED', { receipt }, callbacks)
-      return
-    } else if (receipt.gasUsed) {
+    if (receipt.gasUsed) {
       const gasUsed = receipt.gasUsed.toString()
       // const gasFee = receipt.gasFee.toString()
       notification.info('Transaction Executed', `Gas used ${gasUsed}.`)
