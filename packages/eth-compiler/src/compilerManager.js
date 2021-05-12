@@ -136,15 +136,18 @@ export class CompilerManager {
     const { compilers = {} } = settings
 
     const projectRoot = this.projectRoot
+    CompilerManager.button.setState({ building: 'checking' })
 
     if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
       notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
+      CompilerManager.button.setState({ building: false })
       throw new Error(`No ${process.env.COMPILER_NAME} version.`)
     }
 
     const allVersions = await this.truffle.versions()
     if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
       notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
+      CompilerManager.button.setState({ building: false })
       throw new Error(`${process.env.COMPILER_NAME} version not installed`)
     }
 
@@ -156,6 +159,7 @@ export class CompilerManager {
     const allSolcVersions = await this.solc.versions()
     if (compilers.solc && compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
       notification.error(`Solc ${compilers.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
+      CompilerManager.button.setState({ building: false })
       throw new Error('Solc version not installed')
     }
 
@@ -204,7 +208,7 @@ export class CompilerManager {
     if (CompilerManager.terminal) {
       CompilerManager.terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
       await CompilerManager.terminal.stop()
-      await CompilerManager.terminal.execAsChildProcess(`docker rm $(docker ps --filter status=exited --filter ancestor=ethereum/solc:${compilers.solc} -q)`)
+      // await CompilerManager.terminal.execAsChildProcess(`docker rm $(docker ps --filter status=exited --filter ancestor=ethereum/solc:${compilers.solc} -q)`)
     }
   }
 
