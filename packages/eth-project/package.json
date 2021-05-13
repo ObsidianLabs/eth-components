@@ -32,8 +32,6 @@
     "@obsidians/ui-components": "^0.3.0",
     "@obsidians/workspace": "^0.3.0",
     "lodash": "^4.17.15",
-    "prettier": "^2.2.1",
-    "prettier-plugin-solidity": "1.0.0-beta.8",
     "semver": "^7.3.2"
   },
   "devDependencies": {

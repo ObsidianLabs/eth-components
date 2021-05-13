@@ -1,6 +1,8 @@
 import * as monaco from 'monaco-editor'
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer'
-import { BaseProjectManager } from '@obsidians/workspace'
+
+import prettier from 'prettier/standalone'
+import solidityPlugin from 'prettier-plugin-solidity'
 
 import SolidityHighlightRules from './SolidityHighlightRules'
 
@@ -14,7 +16,11 @@ export default function () {
     async provideDocumentFormattingEdits (model) {
       const code = model.getValue()
 
-      const formatted = await BaseProjectManager.channel.invoke('formatSolidity', code)
+      const formatted = prettier.format(code, {
+        parser: 'solidity-parse',
+        plugins: [solidityPlugin],
+        tabWidth: 2,
+      })
 
       return [{
         range: model.getFullModelRange(),
