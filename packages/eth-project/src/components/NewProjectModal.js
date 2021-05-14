@@ -159,6 +159,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 const templates = [
   { id: 'empty', display: 'Empty Project' },
   { id: 'coin', display: 'Coin' },
+  { id: 'erc20', display: 'ERC20 Token' },
 ]
 if (platform.isDesktop) {
   templates.push({
