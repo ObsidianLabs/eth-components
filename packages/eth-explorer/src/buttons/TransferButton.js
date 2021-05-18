@@ -127,7 +127,7 @@ export default class TransferButton extends PureComponent {
             editable
             icon='fas fa-map-marker-alt'
             placeholder='Recipient address'
-            maxLength={42}
+            // maxLength={42}
             extra={networkManager.browserExtension?.isEnabled && [{
               group: networkManager.browserExtension.name.toLowerCase(),
               badge: networkManager.browserExtension.name,
