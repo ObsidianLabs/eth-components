@@ -142,6 +142,7 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
       />
     )
   } else if (type === 'address') {
+    delete props.placeholder
     return (
       <KeypairInputSelector
         size={size}
