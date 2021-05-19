@@ -29,7 +29,9 @@ class NetworkManager {
   }
 
   async disposeSdk (params) {
-    this._sdk = null
+    if (this.networkId === 'dev') {
+      this._sdk = null
+    }
     if (this.onSdkDisposedCallback) {
       this.onSdkDisposedCallback()
     }
