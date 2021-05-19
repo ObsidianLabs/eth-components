@@ -93,6 +93,7 @@ export default class TransferButton extends PureComponent {
   }
 
   render () {
+    const { addressLength = 42 } = this.props
     const { loading, amount, recipient, pushing } = this.state
 
     return <>
@@ -127,7 +128,7 @@ export default class TransferButton extends PureComponent {
             editable
             icon='fas fa-map-marker-alt'
             placeholder='Recipient address'
-            // maxLength={42}
+            maxLength={addressLength}
             extra={networkManager.browserExtension?.isEnabled && [{
               group: networkManager.browserExtension.name.toLowerCase(),
               badge: networkManager.browserExtension.name,
