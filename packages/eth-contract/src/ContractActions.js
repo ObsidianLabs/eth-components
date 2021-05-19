@@ -46,6 +46,11 @@ export default class ContractActions extends Component {
   }
 
   estimate = async actionName => {
+    if (!this.state.signer) {
+      notification.error('Error', 'No signer is provided. Please make sure you have availabe keypairs to use in the keypair manager.')
+      return
+    }
+
     let parameters = { array: [], obj: {} }
     try {
       parameters = this.form.getParameters()
@@ -57,7 +62,7 @@ export default class ContractActions extends Component {
     let result
     try {
       const value = utils.unit.toValue(this.state.amount || '0')
-      const tx = await this.props.contract.execute(actionName, parameters.array, {
+      const tx = await this.props.contract.execute(actionName, parameters, {
         from: this.state.signer,
         value,
       })
@@ -78,7 +83,7 @@ export default class ContractActions extends Component {
     }
 
     if (!this.state.signer) {
-      notification.error('Error', 'No signer is provided.')
+      notification.error('Error', 'No signer is provided. Please make sure you have availabe keypairs to use in the keypair manager.')
       return
     }
 
