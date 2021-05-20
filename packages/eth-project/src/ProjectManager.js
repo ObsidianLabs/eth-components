@@ -7,7 +7,7 @@ import { ProjectManager, BaseProjectManager } from '@obsidians/workspace'
 import { modelSessionManager } from '@obsidians/code-editor'
 
 import { networkManager } from '@obsidians/eth-network'
-import compilerManager from '@obsidians/compiler'
+import compilerManager, { CompilerManager } from '@obsidians/compiler'
 import { utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
@@ -23,12 +23,17 @@ function makeProjectManager (Base) {
       super(project, projectRoot)
       this.deployButton = null
     }
-  
+
     get settingsFilePath () {
       return this.pathForProjectFile('config.json')
     }
-  
+
     async compile (sourceFile) {
+      if (CompilerManager.button.state.building) {
+        notification.error('Build Failed', 'Another build task is running now.')
+        return false
+      }
+
       const settings = await this.checkSettings()
   
       await this.project.saveAll()
