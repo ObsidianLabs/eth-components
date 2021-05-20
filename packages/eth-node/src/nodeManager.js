@@ -64,12 +64,12 @@ class NodeManager {
       `--datadir=/data --dev --dev.period=1 --nousb --http --http.addr=0.0.0.0 --http.corsdomain="*" --password=pwd`
     ].join(' ')
   }
-  updateLifecycle (lifecycle, params) {
+  async updateLifecycle (lifecycle, params) {
     if (this._status) {
       this._status.setState({ lifecycle })
     }
     if (lifecycle === 'started') {
-      networkManager.updateSdk(params)
+      await networkManager.updateSdk(params)
     } else if (lifecycle === 'stopping') {
       networkManager.disposeSdk()
     }

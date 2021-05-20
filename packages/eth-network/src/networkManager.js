@@ -26,6 +26,18 @@ class NetworkManager {
 
   async updateSdk (params) {
     this._sdk = new Sdk({ ...this.network, ...params })
+    await new Promise(resolve => {
+      const h = setInterval(() => {
+        if (!this.sdk) {
+          clearInterval(h)
+          return
+        }
+        this.sdk.getStatus().then(() => {
+          clearInterval(h)
+          resolve()
+        })
+      }, 1000)
+    })
   }
 
   async disposeSdk (params) {
