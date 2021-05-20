@@ -59,16 +59,18 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     if (group === 'open zeppelin') {
       this.setState({ showTerminal: true })
 
-      const hasERC1155 = semver.gte(openZeppelinVersion, 'v3.1.0')
-      if (!hasERC1155) {
-        template = 'openzeppelin-no-erc1155'
-      }
       let openZeppelinPackage = `@openzeppelin/contracts`
-      if (semver.lt(openZeppelinVersion, '3.0.0')) {
-        openZeppelinPackage = 'openzeppelin-solidity'
-        template = 'openzeppelin-v2'
-      } else if (semver.gte(openZeppelinVersion, '4.0.0')) {
-        template = 'openzeppelin-v4'
+      if (template === 'openzeppelin') {
+        const hasERC1155 = semver.gte(openZeppelinVersion, 'v3.1.0')
+        if (!hasERC1155) {
+          template = 'openzeppelin-no-erc1155'
+        }
+        if (semver.lt(openZeppelinVersion, '3.0.0')) {
+          openZeppelinPackage = 'openzeppelin-solidity'
+          template = 'openzeppelin-v2'
+        } else if (semver.gte(openZeppelinVersion, '4.0.0')) {
+          template = 'openzeppelin-v4'
+        }
       }
 
       await super.createProject({ projectRoot, name, template, compilerVersion })
