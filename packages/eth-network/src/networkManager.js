@@ -35,7 +35,7 @@ class NetworkManager {
         this.sdk.getStatus().then(() => {
           clearInterval(h)
           resolve()
-        })
+        }).catch(() => null)
       }, 1000)
     })
   }
