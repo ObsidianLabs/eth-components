@@ -168,7 +168,7 @@ if (platform.isDesktop) {
     group: 'open zeppelin',
     badge: 'Open Zeppelin',
     children: [
-      { id: 'openzeppelin', display: 'Open Zeppelin' },
+      { id: 'openzeppelin', display: 'Basics - ERC20, ERC721 & ERC1155 (v3.1+)' },
     ],
   })
   templates.push({
