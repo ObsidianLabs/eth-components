@@ -11,7 +11,8 @@ import Terminal from '@obsidians/terminal'
 
 import nodeManager from './nodeManager'
 
-const parser = /block:\s(\d+),/
+// const parser = /block:\s(\d+),/
+const parser = /Height=(\d+)/
 function parseLine(line) {
   const match = parser.exec(line)
   if (match && match[1]) {
