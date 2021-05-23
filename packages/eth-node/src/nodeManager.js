@@ -8,6 +8,7 @@ class NodeManager {
     this._sdk = null
     this._terminal = null
     this._minerTerminal = null
+    this._indexerTerminal = null
     this._configModal = null
     this.network = null
   }
@@ -22,6 +23,10 @@ class NodeManager {
 
   set minerTerminal (v) {
     this._minerTerminal = v
+  }
+
+  set indexerTerminal (v) {
+    this._indexerTerminal = v
   }
 
   set configModal (v) {
@@ -43,6 +48,10 @@ class NodeManager {
       throw new Error('Version not installed')
     }
 
+    return await this.execStart({ name, version })
+  }
+
+  async execStart ({ name, version }) {
     const startDocker = this.generateCommand({ name, version })
     await this._terminal.exec(startDocker, {
       resolveOnFirstLog: true,

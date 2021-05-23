@@ -10,8 +10,8 @@ export default props => {
     active,
     networkId = 'dev',
     configButton,
+    tabs,
     minerKey,
-    minerTerminal,
     RemoteNetwork = DefaultRemoteNetwork,
     CustomNetworkModal = DefaultCustomNetworkModal,
     customNetwork,
@@ -23,8 +23,8 @@ export default props => {
         networkId={networkId}
         active={active}
         configButton={configButton}
+        tabs={tabs}
         minerKey={minerKey}
-        minerTerminal={minerTerminal}
       />
     )
   } else if (networkId.startsWith('custom')) {
