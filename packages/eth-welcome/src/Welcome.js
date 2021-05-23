@@ -25,8 +25,9 @@ export default class Welcome extends PureComponent {
       ready: false
     }
     this.listItemDocker = React.createRef()
-    this.listItemNode = React.createRef()
-    this.listItemCompiler = React.createRef()
+    this.imageRefs = new Array(2 + (props.extraItems?.length || 0))
+      .fill(null)
+      .map(() => React.createRef())
   }
 
   componentDidMount () {
@@ -40,12 +41,32 @@ export default class Welcome extends PureComponent {
     fileOps.current.offFocus(this.refresh)
   }
 
+  getImageItems = (props = this.props) => {
+    const { extraItems = [] } = props
+    return [
+      {
+        channel: instanceChannel.node,
+        title: `${process.env.CHAIN_EXECUTABLE_NAME} in Docker`,
+        subtitle: props.nodeSubtitle,
+        link: `https://hub.docker.com/r/${process.env.DOCKER_IMAGE_NODE}`,
+        downloadingTitle: `Downloading ${process.env.CHAIN_EXECUTABLE_NAME}`,
+      },
+      {
+        channel: compiler.truffle,
+        title: `${process.env.COMPILER_NAME} in Docker`,
+        subtitle: props.truffleSubtitle,
+        link: `https://hub.docker.com/r/${process.env.DOCKER_IMAGE_COMPILER}`,
+        downloadingTitle: `Downloading ${process.env.COMPILER_NAME}`,
+      },
+      ...extraItems,
+    ]
+  }
+
   refresh = async () => {
     if (this.mounted) {
       this.listItemDocker.current.refresh()
-      this.listItemNode.current.refresh()
-      this.listItemCompiler.current.refresh()
-      const ready = await checkDependencies()
+      this.imageRefs.forEach(ref => ref.current?.refresh())
+      const ready = await checkDependencies(this.props.extraItems)
       this.setState({ ready })
     }
   }
@@ -66,24 +87,18 @@ export default class Welcome extends PureComponent {
                 ref={this.listItemDocker}
                 onStartedDocker={this.refresh}
               />
-              <ListItemDockerImage
-                ref={this.listItemNode}
-                channel={instanceChannel.node}
-                title={`${process.env.CHAIN_EXECUTABLE_NAME} in Docker`}
-                subtitle={this.props.nodeSubtitle}
-                link={`https://hub.docker.com/r/${process.env.DOCKER_IMAGE_NODE}`}
-                onInstalled={this.refresh}
-                downloadingTitle={`Downloading ${process.env.CHAIN_EXECUTABLE_NAME}`}
-              />
-              <ListItemDockerImage
-                ref={this.listItemCompiler}
-                channel={compiler.truffle}
-                title={`${process.env.COMPILER_NAME} in Docker`}
-                subtitle={this.props.truffleSubtitle}
-                link={`https://hub.docker.com/r/${process.env.DOCKER_IMAGE_COMPILER}`}
-                onInstalled={this.refresh}
-                downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-              />
+              {this.getImageItems().map((item, i) => (
+                <ListItemDockerImage
+                  key={`docker-image-${i}`}
+                  ref={this.imageRefs[i]}
+                  channel={item.channel}
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  link={item.link}
+                  downloadingTitle={item.downloadingTitle}
+                  onInstalled={this.refresh}
+                />
+              ))}
             </ListGroup>
             <Button
               block
