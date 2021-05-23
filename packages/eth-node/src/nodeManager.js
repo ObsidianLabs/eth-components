@@ -95,6 +95,8 @@ class NodeManager {
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
     if (this._terminal) {
       const n = notification.info(`Stopping ${process.env.CHAIN_EXECUTABLE_NAME}...`, '', 0)
+      this._minerTerminal?.stop()
+      this._indexerTerminal?.stop()
       await this._terminal.stop()
       n.dismiss()
     }
