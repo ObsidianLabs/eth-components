@@ -39,7 +39,7 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  setNetwork (network, force) {
+  setNetwork (network, force, redirect = true) {
     if (this.browserExtension && !force) {
       if (redux.getState().network) {
         notification.info(`Please use ${this.browserExtension.name} to switch the network.`)
@@ -62,7 +62,9 @@ class NetworkManager {
 
     redux.dispatch('SELECT_NETWORK', network.id)
     notification.success(`Network`, network.notification)
-    headerActions.updateNetwork(network.id)
+    if (redirect) {
+      headerActions.updateNetwork(network.id)
+    }
   }
 
   async updateCustomNetwork ({ url, option }) {
