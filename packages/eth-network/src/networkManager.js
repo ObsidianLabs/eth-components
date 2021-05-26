@@ -10,6 +10,7 @@ class NetworkManager {
   constructor () {
     this._sdk = null
     this.network = undefined
+    this.networks = []
 
     if (platform.isWeb && Sdk.InitBrowserExtension) {
       this.browserExtension = Sdk.InitBrowserExtension(this)
@@ -39,13 +40,14 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  setNetwork (network, force, redirect = true) {
+  setNetwork (network, { force, redirect = true, notify = true }) {
     if (this.browserExtension && !force) {
       if (redux.getState().network) {
         notification.info(`Please use ${this.browserExtension.name} to switch the network.`)
       }
       return
     }
+
     if (!network || network.id === redux.getState().network) {
       return
     }
@@ -61,7 +63,9 @@ class NetworkManager {
     }
 
     redux.dispatch('SELECT_NETWORK', network.id)
-    notification.success(`Network`, network.notification)
+    if (notify) {
+      notification.success(`Network`, network.notification)
+    }
     if (redirect) {
       headerActions.updateNetwork(network.id)
     }

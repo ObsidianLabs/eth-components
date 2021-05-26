@@ -25,7 +25,7 @@ export default class BrowserExtension {
   get allAccounts () {
     return this._accounts
   }
-  
+
   async initialize (ethereum) {
     ethereum.on('chainChanged', this.onChainChanged.bind(this))
     const chainId = await ethereum.request({ method: 'eth_chainId' })
@@ -44,7 +44,7 @@ export default class BrowserExtension {
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
     if (network) {
-      this.networkManager.setNetwork(network, true)
+      this.networkManager.setNetwork(network, { force: true })
     }
   }
 
