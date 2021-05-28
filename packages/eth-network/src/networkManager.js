@@ -40,7 +40,7 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  setNetwork (network, { force, redirect = true, notify = true }) {
+  setNetwork (network, { force, redirect = true, notify = true } = {}) {
     if (this.browserExtension && !force) {
       if (redux.getState().network) {
         notification.info(`Please use ${this.browserExtension.name} to switch the network.`)
