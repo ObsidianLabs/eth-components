@@ -25,7 +25,7 @@ export default class AbiInputModal extends PureComponent {
     if (name || codeHash) {
       this.setState({ name, codeHash, codeHashEditable: !codeHash })
     } else {
-      this.setState({ codeHashEditable: false })
+      this.setState({ codeHashEditable: true })
     }
     if (abi) {
       this.onChangeAbi(abi)
