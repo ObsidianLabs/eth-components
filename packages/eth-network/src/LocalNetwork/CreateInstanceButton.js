@@ -109,9 +109,10 @@ export default class CreateInstanceButton extends PureComponent {
           <DebouncedFormGroup
             label='Instance name'
             placeholder='Can only contain alphanumeric characters, dots, hyphens or underscores.'
-            maxLength='50'
+            maxLength='30'
             value={this.state.name}
             onChange={name => this.setState({ name })}
+            validator={v => !/^[0-9a-z\-_]*$/.test(v) && 'Instance name can only contain letters, digits, dash or underscore'}
           />
           <DockerImageInputSelector
             channel={instanceChannel.node}
