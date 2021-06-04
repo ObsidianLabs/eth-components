@@ -107,7 +107,12 @@ export default class ContractEvents extends PureComponent {
       }
 
       await new Promise(resolve => {
-        this.setState({ logs: [...this.state.logs, ...logs.reverse()] }, resolve)
+        let allLogs = [...this.state.logs, ...logs.reverse()]
+        if (allLogs.length > 100) {
+          allLogs = allLogs.slice(0, 100)
+          hasMore = false
+        }
+        this.setState({ logs: allLogs }, resolve)
       })
 
       if (from > rangeFrom) {
@@ -214,6 +219,15 @@ export default class ContractEvents extends PureComponent {
         <tr key='loading' className='bg-transparent'>
           <td align='middle' colSpan={columns.length + 1}>
             <i className='fas fa-spin fa-spinner mr-1' />Loading...
+          </td>
+        </tr>
+      )
+    }
+    if (rows.length >= 100) {
+      list.push(
+        <tr key='too-many-records' className='bg-transparent text-muted'>
+          <td align='middle' colSpan={columns.length + 1}>
+            (too many records; hide after 100)
           </td>
         </tr>
       )
