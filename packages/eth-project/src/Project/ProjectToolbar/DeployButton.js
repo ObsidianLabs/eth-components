@@ -71,7 +71,8 @@ export default class DeployerButton extends PureComponent {
   }
 
   updateContract = async selected => {
-    this.setState({ selected })
+    const txOptionObj = Object.fromEntries(txOptions.list.map(option => [option.name, '']))
+    this.setState({ selected, ...txOptionObj })
     const contractPath = fileOps.current.path.join(this.state.contractsFolder, selected)
     await this.updateAbi(contractPath)
   }
@@ -122,28 +123,18 @@ export default class DeployerButton extends PureComponent {
     return contractAbi.find(item => item[key] === value)
   }
 
-  estimate = async () => {
-    let parameters = { array: [], obj: {} }
-    if (this.state.constructorAbi) {
-      try {
-        parameters = this.form.getParameters()
-      } catch (e) {
-        return
+  needEstimate = () => {
+    if (txOptions.list?.length) {
+      const option = txOptions.list[0]
+      const value = this.state[option.name]
+      if (!value) {
+        return true
       }
     }
-
-    const { contractName, contractObj, signer } = this.state
-    const options = {}
-    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
-
-    const result = await this.estimateCallback(contractObj, { parameters, contractName, signer, ...options })
-
-    if (result) {
-      this.setState(result)
-    }
+    return false
   }
 
-  confirmDeploymentParameters = () => {
+  prepare = () => {
     let parameters = { array: [], obj: {} }
     if (this.state.constructorAbi) {
       try {
@@ -158,7 +149,31 @@ export default class DeployerButton extends PureComponent {
     const options = {}
     txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    this.callback(contractObj, { parameters, contractName, signer, ...options })
+    return [contractObj, { parameters, contractName, signer, ...options }]
+  }
+
+  estimate = async () => {
+    const args = this.prepare()
+    if (!args) {
+      return
+    }
+    const result = await this.estimateCallback(...args)
+    if (result) {
+      this.setState(result)
+    }
+  }
+
+  confirmDeployment = async () => {
+    if (this.needEstimate()) {
+      this.estimate()
+      return
+    }
+
+    const args = this.prepare()
+    if (!args) {
+      return
+    }
+    this.callback(...args)
   }
 
   closeModal = () => {
@@ -188,6 +203,8 @@ export default class DeployerButton extends PureComponent {
         <div className='mb-2' />
       </>
     }
+    
+    const needEstimate = this.needEstimate()
 
     return <>
       <Button
@@ -205,11 +222,10 @@ export default class DeployerButton extends PureComponent {
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
-        overflow
         title={<span>Deploy Contract <b>{contractName}</b></span>}
-        textConfirm='Deploy'
+        textConfirm={needEstimate ? 'Estimate & Deploy' : 'Deploy'}
         pending={pending && 'Deploying...'}
-        onConfirm={this.confirmDeploymentParameters}
+        onConfirm={this.confirmDeployment}
         textActions={[`Estimate ${txOptions.title}`]}
         onActions={[this.estimate]}
       >
