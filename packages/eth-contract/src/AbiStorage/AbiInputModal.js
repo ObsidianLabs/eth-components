@@ -23,9 +23,9 @@ export default class AbiInputModal extends PureComponent {
 
   openModal = (name, codeHash, abi) => {
     if (name || codeHash) {
-      this.setState({ name, codeHash, codeHashEditable: !codeHash })
+      this.setState({ name, codeHash, abi: '', codeHashEditable: !codeHash })
     } else {
-      this.setState({ codeHashEditable: true })
+      this.setState({ name: '', codeHash: '', abi: '', validJson: false, codeHashEditable: true })
     }
     if (abi) {
       this.onChangeAbi(abi)
