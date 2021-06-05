@@ -12,6 +12,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
+import fileOps from '@obsidians/file-ops'
 import redux from '@obsidians/redux'
 
 import ContractActions from './ContractActions'
@@ -29,6 +30,7 @@ export default class ContractPage extends PureComponent {
       errorType: null,
       abi: {},
       abis: [],
+      projectAbis: null,
       selectedAbi: null,
       account: null,
       loading: true,
@@ -97,11 +99,33 @@ export default class ContractPage extends PureComponent {
       this.setState({ loading: false, error: e.message })
     }
 
+    const projectRoot = redux.getState().projects.getIn(['selected', 'path'])
+    if (!projectRoot) {
+      this.setState({ projectAbis: null })
+    } else {
+      const { path, fs } = fileOps.current
+      const contractsFolder = path.join(projectRoot, 'build', 'contracts')
+      const files = await fileOps.current.listFolder(contractsFolder)
+      const contracts = await Promise.all(files
+        .map(f => f.name)
+        .filter(name => name.endsWith('.json'))
+        .map(name => path.join(contractsFolder, name))
+        .map(contractPath => fs.readFile(contractPath, 'utf8')
+          .then(content => ({ contractPath, contract: JSON.parse(content) }))
+          .catch(() => null)
+        )
+      )
+      const projectAbis = contracts
+        .filter(Boolean)
+        .map(({ contractPath, contract }) => [contractPath, { name: contract.contractName, abi: contract.abi }])
+      this.setState({ projectAbis })
+    }
+
     this.setState({
       loading: false,
       error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
       errorType: 'ABI_NOT_FOUND',
-      abis: redux.getState().abis.toArray(),
+      abis: Object.entries(redux.getState().abis.toJS()),
     })
   }
 
@@ -123,22 +147,45 @@ export default class ContractPage extends PureComponent {
     this.refresh()
   }
 
-  renderABIDropdownItem () {
-    return this.state.abis.map(abiItem => {
+  renderAbiDropdownItem = abis => {
+    if (!abis) {
+      return null
+    }
+    return abis.map(abiItem => {
       const [codeHash, abiObj] = abiItem
       let abi
       try {
-        abi = JSON.parse(abiObj.get('abi'))
+        abi = typeof abiObj.abi === 'string' ? JSON.parse(abiObj.abi) : abiObj.abi
       } catch (error) {}
       return (
         <DropdownItem
           key={codeHash}
           onClick={() => this.setState({ abi: { abi }, error: null })}
         >
-          <b>{abiObj.get('name')}</b> - <small><code>{codeHash}</code></small>
+          {abiObj.name}
+          <div className='text-muted small'><code>{codeHash}</code></div>
         </DropdownItem>
       )
     })
+  }
+
+  renderAbisFromProject = () => {
+    const abis = this.state.projectAbis
+    if (!abis) {
+      return null
+    }
+
+    return (
+      <UncontrolledButtonDropdown className='mr-2 mb-2'>
+        <DropdownToggle color='primary' caret>
+          Select from the current project
+        </DropdownToggle>
+        <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
+          {/* <DropdownItem header>ABIs</DropdownItem> */}
+          {this.renderAbiDropdownItem(abis)}
+        </DropdownMenu>
+      </UncontrolledButtonDropdown>
+    )
   }
 
   render () {
@@ -169,22 +216,19 @@ export default class ContractPage extends PureComponent {
             <h4 className='display-4'>ABI Not Found</h4>
             <p>There is no associated ABI for the current contract at <kbd>{account.address}</kbd> with code hash <kbd>{account.codeHash}</kbd></p>
             <hr />
-            <div className='flex'>
-              <UncontrolledButtonDropdown>
+            <div className='d-flex flex-wrap align-items-start'>
+              <UncontrolledButtonDropdown className='mr-2 mb-2'>
                 <DropdownToggle color='primary' caret>
-                  Select an existing ABI
+                  Select from <b>ABI Storage</b>
                 </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem header>ABIs</DropdownItem>
-                  {this.renderABIDropdownItem()}
+                <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
+                  {/* <DropdownItem header>ABIs</DropdownItem> */}
+                  {this.renderAbiDropdownItem(this.state.abis)}
                 </DropdownMenu>
               </UncontrolledButtonDropdown>
-              <Button
-                color='primary'
-                style={{ marginLeft: '15px', height: '36px' }}
-                onClick={() => this.openAbiStorageModal(account.codeHash)}
-              >
-                Add ABI for code hash <code>{account.codeHash.substr(0, 4)}...{account.codeHash.substr(account.codeHash.length - 4, account.codeHash.length)}</code>
+              {this.renderAbisFromProject()}
+              <Button color='primary' onClick={() => this.openAbiStorageModal(account.codeHash)}>
+                Add ABI for code hash <small><code>{account.codeHash.substr(0, 6)}...{account.codeHash.substr(-4)}</code></small>
               </Button>
             </div>
             <AbiStorageModal ref={this.abiStorageModal}/>
