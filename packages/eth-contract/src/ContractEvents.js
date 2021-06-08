@@ -291,6 +291,11 @@ export default class ContractEvents extends PureComponent {
                       this.setState({ rangeTo: isNaN(value) ? '' : value })
                     }}
                   />
+                  <InputGroupAddon addonType='append'>
+                    <Button color='secondary' size='sm' onClick={() => this.setState({ rangeFrom: '', rangeTo: '' })}>
+                      Clear
+                    </Button>
+                  </InputGroupAddon>
                 </InputGroup>
               </FormGroup>
             </div>
