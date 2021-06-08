@@ -40,6 +40,11 @@ export default class Sdk {
     return await this.provider.getBlock('latest')
   }
 
+  async latest () {
+    const status = await this.getStatus()
+    return status.number
+  }
+
   async accountFrom (address) {
     const account = await this.client.getAccount(address)
     return {
