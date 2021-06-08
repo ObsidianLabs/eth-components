@@ -7,28 +7,31 @@ import {
 export default class CustomNetwork extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = {
-      info: { url: '', option: '' },
-    }
     this.modal = React.createRef()
   }
 
   componentDidMount () {
-    if (!this.props.customNetwork) {
+    const { customNetwork } = this.props
+    if (!customNetwork) {
       this.modal.current.openModal()
     } else {
-      this.modal.current.update(this.props.customNetwork)
+      this.modal.current.update(customNetwork)
     }
   }
 
   render () {
-    const { networkId, customNetwork, RemoteNetwork, CustomNetworkModal } = this.props
-    const { info } = this.state
+    const {
+      networkId,
+      customNetwork,
+      RemoteNetwork,
+      CustomNetworkModal,
+      placeholder,
+    } = this.props
 
     return <>
       <RemoteNetwork
         networkId={networkId}
-        info={info}
+        {...customNetwork}
         EditButton={
           <IconButton
             color='default'
@@ -40,7 +43,7 @@ export default class CustomNetwork extends PureComponent {
       />
       <CustomNetworkModal
         ref={this.modal}
-        onUpdate={info => this.setState({ info })}
+        placeholder={placeholder}
       />
     </>
   }
