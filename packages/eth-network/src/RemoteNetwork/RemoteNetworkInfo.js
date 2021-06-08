@@ -9,7 +9,7 @@ import moment from 'moment'
 
 export default class RemoteNetworkInfo extends PureComponent {
   render () {
-    const { networkId, EditButton, info, status } = this.props
+    const { networkId, url, EditButton, info, status } = this.props
 
     return (
       <div className='d-flex'>
@@ -18,10 +18,7 @@ export default class RemoteNetworkInfo extends PureComponent {
             title={`${process.env.CHAIN_NAME} Network (${networkId})`}
             right={EditButton}
           >
-            <TableCardRow
-              name='URL'
-              badge={info?.url}
-            />
+            <TableCardRow name='Node URL' badge={url} badgeColor='primary' />
             {
               info?.chainId &&
               <TableCardRow

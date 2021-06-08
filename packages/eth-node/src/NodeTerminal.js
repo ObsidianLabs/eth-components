@@ -110,6 +110,10 @@ export default class NodeTerminal extends PureComponent {
     }
   }
 
+  onNodeFinished = result => {
+    nodeManager._nodeButton?.stop()
+  }
+
   render () {
     const { active, miner, indexer } = this.props
     const { activeTab } = this.state
@@ -132,6 +136,7 @@ export default class NodeTerminal extends PureComponent {
               active={active && activeTab === 'node'}
               ref={ref => (nodeManager.terminal = ref)}
               onLogReceived={onLogReceived}
+              onFinished={this.onNodeFinished}
             />
           </TabPane>
           <TabPane className='h-100 w-100' tabId='miner'>

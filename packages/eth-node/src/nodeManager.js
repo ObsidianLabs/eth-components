@@ -6,6 +6,7 @@ import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 class NodeManager {
   constructor () {
     this._sdk = null
+    this._nodeButton = null
     this._terminal = null
     this._minerTerminal = null
     this._indexerTerminal = null
@@ -37,10 +38,12 @@ class NodeManager {
     this._status = v
   }
 
-  async start ({ name, version }) {
+  async start ({ name, version }, nodeButton) {
     if (!this._terminal) {
       throw new Error()
     }
+
+    this._nodeButton = nodeButton
 
     const versions = await instanceChannel.node.versions()
     if (!versions.find(v => v.Tag === version)) {
@@ -48,13 +51,13 @@ class NodeManager {
       throw new Error('Version not installed')
     }
 
-    return await this.execStart({ name, version })
+    return this.execStart({ name, version })
   }
 
-  async execStart ({ name, version }) {
+  execStart ({ name, version }) {
     const startDocker = this.generateCommand({ name, version })
-    await this._terminal.exec(startDocker, {
-      resolveOnFirstLog: true,
+    this._terminal.exec(startDocker, {
+      returnCodeOnly: true,
       stopCommand: `docker stop ${process.env.PROJECT}-${name}-${version}`,
     })
     return { id: `dev.${name}`, version }

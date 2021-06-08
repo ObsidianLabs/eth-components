@@ -42,7 +42,6 @@ export default connect(['network', 'globalConfig'])(props => {
       <CustomNetwork
         networkId={networkId}
         customNetwork={customNetwork}
-        RemoteNetwork={RemoteNetwork}
         CustomNetworkModal={CustomNetworkModal}
       />
     )

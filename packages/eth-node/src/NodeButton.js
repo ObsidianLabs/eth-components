@@ -35,7 +35,7 @@ export default class NodeButton extends PureComponent {
         name: this.props.name,
         version: this.props.version,
         chain: this.props.chain,
-      })
+      }, this)
       await this.onLifecycle('started', params)
       this.setState({ lifecycle: 'started' })
     } catch (e) {
@@ -45,6 +45,10 @@ export default class NodeButton extends PureComponent {
   }
 
   stop = async () => {
+    const lifecycle = this.state.lifecycle
+    if (lifecycle === 'stopping' || lifecycle === 'stopped') {
+      return
+    }
     this.setState({ lifecycle: 'stopping' })
     this.onLifecycle('stopping')
 

@@ -4,6 +4,8 @@ import {
   IconButton,
 } from '@obsidians/ui-components'
 
+import RemoteNetwork from '../RemoteNetwork'
+
 export default class CustomNetwork extends PureComponent {
   constructor (props) {
     super(props)
@@ -23,7 +25,6 @@ export default class CustomNetwork extends PureComponent {
     const {
       networkId,
       customNetwork,
-      RemoteNetwork,
       CustomNetworkModal,
       placeholder,
     } = this.props
