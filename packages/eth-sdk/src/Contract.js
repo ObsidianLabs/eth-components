@@ -9,7 +9,16 @@ export default class Contract {
   }
 
   async query (method, { array }) {
-    return await this.instance.functions[method](...array)
+    const result = await this.instance.functions[method](...array)
+    const methodAbi = this.abi.find(item => item.name === method)
+    const outputs = methodAbi && methodAbi.outputs
+    return Object.fromEntries(outputs.map(({ name, type }, index) => {
+      let value = result[index]
+      if (type.startsWith('uint') || type.startsWith('int')) {
+        value = value.toString()
+      }
+      return [name || `${index}`, { type, value }]
+    }))
   }
 
   async execute (method, { array }, override) {
