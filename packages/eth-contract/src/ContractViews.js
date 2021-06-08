@@ -77,7 +77,7 @@ export default class ContractViews extends Component {
       <UncontrolledButtonDropdown size='sm'>
         <DropdownToggle color='primary' caret className='rounded-0 border-0 px-2 border-right-1'>
           <i className='far fa-eye' />
-          <code className='mx-1'><b>{selectedAction.name}</b></code>
+          <code className='ml-2 mr-1'><b>{selectedAction.name}</b></code>
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem header>read functions</DropdownItem>
