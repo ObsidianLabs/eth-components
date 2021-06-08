@@ -18,8 +18,8 @@ export default class Contract {
     return await voidSigner.populateTransaction(tx)
   }
 
-  async getLogs (event) {
-    const logs = await this.instance.queryFilter(event.name)
+  async getLogs (event, { from, to }) {
+    const logs = await this.instance.queryFilter(event.name, from, to)
     return logs
   }
 }
