@@ -17,16 +17,21 @@ import { utils } from '@obsidians/sdk'
 
 const optionItemFromValue = (value, type) => {
   let icon = null
-  let label = value.length > 10 ? `${value.substr(0, 8)}...` : value
+  let label = value
+  if (typeof value === 'object') {
+    label = value.raw
+    if (value.encoding === 'utf8') {
+      // icon = <i className='fas fa-text mr-1'/>
+    } else if (value.encoding === 'hex') {
+      icon = <i className='fas fa-code mr-1'/>
+    }
+  }
+  label = label.length > 10 ? `${label.substr(0, 8)}...` : label
 
   // if (format === 'file') {
   //   icon = <i className='fas fa-file mr-1' />
   //   label = fileOps.current.path.parse(value).base
-  // } else if (format === 'utf8') {
-  //   icon = <i className='fas fa-font-case mr-1'/>
-  // } else if (format === 'hex') {
-  //   icon = <i className='fas fa-code mr-1'/>
-  // }
+  // } else 
 
   return {
     value,
@@ -141,6 +146,26 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
         onChange={onChange}
       />
     )
+  } else if (type.startsWith('int') || type.startsWith('uint')) {
+    const value = props.value
+    let invalid
+    if (value) {
+      invalid = value !== parseInt(value).toString()
+      if (type.startsWith('uint') && value < 0) {
+        invalid = true
+      }
+    }
+    const feedback = type.startsWith('int') ? 'Invalid integer' : 'Invalid unsigned integer'
+
+    return (
+      <DebouncedInput
+        size={size}
+        addon={children}
+        {...props}
+        feedback={invalid && feedback}
+        invalid={invalid}
+      />
+    )
   } else if (type === 'address') {
     delete props.placeholder
     return (
@@ -167,20 +192,34 @@ export function ActionParamInput ({ size, type, value, onChange, placeholder, di
   } else if (textarea) {
     const { raw = '', encoding = 'utf8' } = value || {}
     const onChange = raw => props.onChange({ encoding, raw })
-
+    let invalid, feedback
+    if (encoding === 'hex') {
+      invalid = raw && !/^0[xX][0-9a-fA-F]+$/.test(raw)
+      feedback = invalid && 'Invalid hex string'
+    }
+    
     return (
       <div style={{ position: 'relative' }}>
-        <DebouncedInput type='textarea' size={size} {...props} value={raw} onChange={onChange} />
-        <Badge
-          color={encoding === 'utf8' ? 'primary' : 'secondary'}
-          style={{ position: 'absolute', right: '38px', bottom: '5px', height: '18px', zIndex: 100, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-          onClick={() => { props.onChange({ encoding: 'utf8', raw })}}
-        >UTF8</Badge>
-        <Badge
-          color={encoding === 'hex' ? 'primary' : 'secondary'}
-          style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-          onClick={() => { props.onChange({ encoding: 'hex', raw })}}
-        >HEX</Badge>
+        <DebouncedInput
+          type='textarea'
+          size={size}
+          {...props}
+          value={raw}
+          onChange={onChange}
+          feedback={feedback}
+          invalid={invalid}
+        >
+          <Badge
+            color={encoding === 'utf8' ? 'primary' : 'secondary'}
+            style={{ position: 'absolute', right: '38px', bottom: '5px', height: '18px', zIndex: 100, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+            onClick={() => { props.onChange({ encoding: 'utf8', raw })}}
+          >UTF8</Badge>
+          <Badge
+            color={encoding === 'hex' ? 'primary' : 'secondary'}
+            style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+            onClick={() => { props.onChange({ encoding: 'hex', raw })}}
+          >HEX</Badge>
+        </DebouncedInput>
       </div>
     )
   } else {
