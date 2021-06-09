@@ -51,7 +51,7 @@ class Contract extends TabbedExplorer {
   }
 
   render () {
-    const { history, route, network, uiState, contracts, valueFormatter } = this.props
+    const { history, route, network, uiState, projects, contracts, valueFormatter } = this.props
 
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
@@ -67,10 +67,12 @@ class Contract extends TabbedExplorer {
     }
 
     const starred = contracts.getIn([network, 'starred'])?.toArray() || []
+    const projectRoot = projects.getIn(['selected', 'path'])
     const props = {
       starred,
       subroute: network,
       signer: uiState.get('signer'),
+      projectRoot,
       getTabText: tab => {
         let { value = '', temp } = tab
         const address = valueFormatter(value)
@@ -103,5 +105,6 @@ class Contract extends TabbedExplorer {
 export default connect([
   'uiState',
   'network',
+  'projects',
   'contracts',
 ])(withRouter(Contract))

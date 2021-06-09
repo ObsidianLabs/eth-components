@@ -47,6 +47,9 @@ export default class ContractPage extends PureComponent {
     if (prevProps.value !== this.props.value) {
       this.refresh()
     }
+    if (prevProps.projectRoot !== this.props.projectRoot) {
+      this.refreshProjectAbis()
+    }
   }
 
   componentDidRecover = () => {
@@ -99,7 +102,18 @@ export default class ContractPage extends PureComponent {
       this.setState({ loading: false, error: e.message })
     }
 
-    const projectRoot = redux.getState().projects.getIn(['selected', 'path'])
+    this.refreshProjectAbis()
+
+    this.setState({
+      loading: false,
+      error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
+      errorType: 'ABI_NOT_FOUND',
+      abis: Object.entries(redux.getState().abis.toJS()),
+    })
+  }
+
+  refreshProjectAbis = async () => {
+    const projectRoot = this.props.projectRoot
     if (!projectRoot) {
       this.setState({ projectAbis: null })
     } else {
@@ -120,13 +134,6 @@ export default class ContractPage extends PureComponent {
         .map(({ contractPath, contract }) => [contractPath, { name: contract.contractName, abi: contract.abi }])
       this.setState({ projectAbis })
     }
-
-    this.setState({
-      loading: false,
-      error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
-      errorType: 'ABI_NOT_FOUND',
-      abis: Object.entries(redux.getState().abis.toJS()),
-    })
   }
 
   getAbiData (codeHash) {
@@ -162,7 +169,7 @@ export default class ContractPage extends PureComponent {
           key={codeHash}
           onClick={() => this.setState({ abi: { abi }, error: null })}
         >
-          {abiObj.name}
+          <b>{abiObj.name}</b>
           <div className='text-muted small'><code>{codeHash}</code></div>
         </DropdownItem>
       )
@@ -181,7 +188,6 @@ export default class ContractPage extends PureComponent {
           Select from the current project
         </DropdownToggle>
         <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
-          {/* <DropdownItem header>ABIs</DropdownItem> */}
           {this.renderAbiDropdownItem(abis)}
         </DropdownMenu>
       </UncontrolledButtonDropdown>
