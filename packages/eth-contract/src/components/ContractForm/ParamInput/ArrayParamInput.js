@@ -1,0 +1,109 @@
+import React, { PureComponent } from 'react'
+
+import {
+  MultiSelect,
+  Modal,
+} from '@obsidians/ui-components'
+
+import ActionParamFormGroup from '../ActionParamFormGroup'
+
+const optionItemFromValue = (item, type, index) => {
+  let icon = null
+  let label = item.display || typeof item.value === 'object' ? item.value.raw : item.value
+  label = label.length > 10 ? `${label.substr(0, 8)}...` : label
+
+  return {
+    value: `item-${index}`,
+    item,
+    type,
+    label: <span key={`item-${index}`}>{icon}{label}</span>
+  }
+}
+
+export default class ArrayParamInput extends PureComponent {
+  constructor (props) {
+    super(props)
+
+    this.modal = React.createRef()
+    this.input = React.createRef()
+
+    this.state = {
+      values: [], // props.value
+      index: '',
+      item: {},
+      title: '',
+      errorInData: false,
+    }
+  }
+
+  componentDidMount () {
+    this.props.onChange([], { raw: [], display: [], empty: true })
+  }
+
+  enterNewItem = async () => {
+    const index = this.state.values.length
+    this.setState({ item: {}, index, title: 'Enter a New Item' })
+    this.modal.current.openModal()
+    // setTimeout(() => this.input.current.focus(), 100)
+    return new Promise(resolve => this.onResolve = resolve)
+  }
+
+  onClickItem = async value => {
+    const index = this.state.values.indexOf(value)
+    this.setState({ item: value.item, index, title: 'Modiry an Item' })
+    this.modal.current.openModal()
+    // setTimeout(() => this.input.current.focus(), 100)
+    return new Promise(resolve => this.onResolve = resolve)
+  }
+
+  onConfirm = () => {
+    this.onResolve(optionItemFromValue(this.state.item, this.props.type, this.state.index))
+    this.setState({ item: {} })
+    this.modal.current.closeModal()
+  }
+
+  onChange = values => {
+    this.setState({ values })
+
+    const value = values.map(v => v.item)
+    const raw = values.map(v => v.item.raw)
+    const display = values.map(v => v.item.display)
+    const error = values.map(v => v.item.error).find(Boolean)
+
+    this.props.onChange(value, { raw, display, empty: !values.length, error })
+  }
+
+  render () {
+    const { size, label, type } = this.props
+    const { index } = this.state
+    const itemType = type.replace('[]', '')
+
+    return <>
+      <MultiSelect
+        size={size}
+        prepend={<span key='icon-array-param'><i className='fas fa-brackets' /></span>}
+        append={<span key='icon-array-add'><i className='fas fa-plus' /></span>}
+        onClick={this.enterNewItem}
+        value={this.state.values}
+        onChange={this.onChange}
+        onClickLabel={this.onClickItem}
+        placeholder='Click to add item...'
+      />
+      <Modal
+        ref={this.modal}
+        overflow
+        title={this.state.title}
+        onConfirm={this.onConfirm}
+        confirmDisabled={this.state.errorInData}
+      >
+        <ActionParamFormGroup
+          ref={this.input}
+          label={`${label}[${index}]`}
+          type={itemType}
+          value={this.state.item.value}
+          onChange={(value, extra) => this.setState({ item: { value, ...extra } })}
+        />
+      </Modal>
+    </>
+  }
+}

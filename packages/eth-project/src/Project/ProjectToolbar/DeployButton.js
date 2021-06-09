@@ -255,9 +255,9 @@ export default class DeployerButton extends PureComponent {
                 className={option.className}
                 label={option.label}
                 icon={option.icon}
-                placeholder={option.placeholder}
                 value={this.state[option.name]}
                 onChange={value => this.setState({ [option.name]: value })}
+                placeholder={option.placeholder}
               />
             ))
           }

@@ -19,7 +19,8 @@ import { networkManager } from '@obsidians/eth-network'
 import Highlight from 'react-highlight'
 
 import DropdownCard from './components/DropdownCard'
-import ContractForm, { ActionParamFormGroup } from './components/ContractForm'
+import ContractForm from './components/ContractForm'
+import ActionParamFormGroup from './components/ContractForm/ActionParamFormGroup'
 
 export default class ContractActions extends Component {
   state = {
@@ -240,10 +241,10 @@ export default class ContractActions extends Component {
               <ActionParamFormGroup
                 size='sm'
                 label={`${process.env.TOKEN_SYMBOL} to Transfer`}
-                placeholder='Default: 0'
+                icon='fas fa-coins'
                 value={this.state.amount}
                 onChange={amount => this.setState({ amount })}
-                icon='fas fa-coins'
+                placeholder='Default: 0'
               /> : null
             }
           </DropdownCard>
@@ -266,9 +267,9 @@ export default class ContractActions extends Component {
                     key={`param-${option.name}`}
                     label={option.label}
                     icon={option.icon}
-                    placeholder={option.placeholder}
                     value={this.state[option.name]}
                     onChange={value => this.setState({ [option.name]: value })}
+                    placeholder={option.placeholder}
                   />
                 ))
               }

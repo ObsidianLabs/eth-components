@@ -17,7 +17,7 @@ export default class Contract {
       if (type.startsWith('uint') || type.startsWith('int')) {
         value = value.toString()
       }
-      return [name || `${index}`, { type, value }]
+      return [name || `(param${index})`, { type, value }]
     }))
   }
 

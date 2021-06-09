@@ -8,7 +8,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Card,
   FormGroup,
   Label,
   InputGroup,
@@ -22,7 +21,6 @@ import { Link } from 'react-router-dom'
 import notification from '@obsidians/notification'
 
 import DropdownCard from './components/DropdownCard'
-import { ActionParamFormGroup } from './components/ContractForm'
 
 import { networkManager } from '@obsidians/eth-network'
 
@@ -264,7 +262,7 @@ export default class ContractEvents extends PureComponent {
           <DropdownCard isOpen title='Parameters'>
             <div className='row'>
               <FormGroup className='mb-2 col-12'>
-                <Label className='mb-1 small font-weight-bold'>Range</Label>
+                <Label className='mb-1 small'>Range</Label>
                 <InputGroup size='sm'>
                   <Input
                     innerRef={this.input}
