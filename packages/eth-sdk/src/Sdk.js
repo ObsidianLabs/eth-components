@@ -12,7 +12,6 @@ export default class Sdk {
   constructor ({ url, chainId, explorer, id }) {
     this.client = new Client(id, url)
     this.networkId = id
-    this.url = url
     this.chainId = chainId
     this.explorer = explorer
   }
@@ -22,6 +21,10 @@ export default class Sdk {
       browserExtension = new BrowserExtension(networkManager, window.ethereum)
       return browserExtension
     }
+  }
+
+  get url () {
+    return this.provider && this.provider.connection && this.provider.connection.url
   }
 
   get provider () {
