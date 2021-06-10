@@ -10,13 +10,19 @@ import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
 
 export default function BottomBar (props) {
+  const {
+    secretName = 'Private Key',
+    chains,
+    mnemonic,
+    txs,
+  } = props
   return <>
-    <KeypairButton secretName='Private Key / Mnemonic' chains={props.chains} mnemonic={props.mnemonic}>
+    <KeypairButton secretName={secretName} chains={chains} mnemonic={mnemonic}>
       <div className='btn btn-primary btn-sm btn-flat'>
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
-    <QueueButton txs={props.txs} />
+    <QueueButton txs={txs} />
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
         <i className='fas fa-list mr-1' />
