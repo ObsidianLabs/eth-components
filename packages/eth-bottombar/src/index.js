@@ -11,13 +11,13 @@ import { CompilerSelectors } from '@obsidians/compiler'
 
 export default function BottomBar (props) {
   const {
-    secretName = 'Private Key',
-    chains,
     mnemonic,
+    secretName = mnemonic ? 'Private Key / Mnemonic' : 'Private Key',
+    chains,
     txs,
   } = props
   return <>
-    <KeypairButton secretName={secretName} chains={chains} mnemonic={mnemonic}>
+    <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains}>
       <div className='btn btn-primary btn-sm btn-flat'>
         <i className='fas fa-key' />
       </div>
