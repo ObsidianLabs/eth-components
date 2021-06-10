@@ -27,6 +27,10 @@ export default class Contract {
     return await voidSigner.populateTransaction(tx)
   }
 
+  get maxGap () {
+    return 1000
+  }
+
   async getLogs (event, { from, to }) {
     const logs = await this.instance.queryFilter(event.name, from, to)
     return logs

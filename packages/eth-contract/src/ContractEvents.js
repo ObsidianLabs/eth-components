@@ -56,15 +56,16 @@ export default class ContractEvents extends PureComponent {
       return
     }
 
+    const maxGap = this.props.contract.maxGap
     if (typeof rangeFrom === 'number' && typeof rangeTo !== 'number') {
-      rangeTo = rangeFrom + 9999
+      rangeTo = rangeFrom + 10 * maxGap - 1
       if (rangeTo > latest) {
         rangeTo = latest
       }
       this.setState({ rangeTo })
     }
     if (typeof rangeTo === 'number' && typeof rangeFrom !== 'number') {
-      rangeFrom = rangeTo - 9999
+      rangeFrom = rangeTo - (10 * maxGap - 1)
       if (rangeFrom < 0) {
         rangeFrom = 0
       }
@@ -72,7 +73,7 @@ export default class ContractEvents extends PureComponent {
     }
     if (typeof rangeTo !== 'number') {
       rangeTo = latest
-      rangeFrom = latest - 9999
+      rangeFrom = latest - (10 * maxGap - 1)
       if (rangeFrom < 0) {
         rangeFrom = 0
       }
@@ -81,8 +82,8 @@ export default class ContractEvents extends PureComponent {
       if (rangeFrom >= rangeTo) {
         notification.error('Invalid Range', 'The value of <b>from</b> must be smaller than the value of <b>to</b>.')
         return
-      } else if (rangeTo - rangeFrom > 49999) {
-        notification.error('Invalid Range', 'The range span cannot be larger than 50000.')
+      } else if (rangeTo - rangeFrom > (50 * maxGap - 1)) {
+        notification.error('Invalid Range', `The range span cannot be larger than ${50 * maxGap}.`)
         return
       }
     }
@@ -91,7 +92,7 @@ export default class ContractEvents extends PureComponent {
 
     const { contract } = this.props
     let to = rangeTo
-    let from = rangeTo - 999 > rangeFrom ? rangeTo - 999 : rangeFrom
+    let from = rangeTo - (maxGap - 1) > rangeFrom ? rangeTo - (maxGap - 1) : rangeFrom
     let hasMore = true
     while (hasMore) {
       let logs
@@ -115,7 +116,7 @@ export default class ContractEvents extends PureComponent {
 
       if (from > rangeFrom) {
         to = from - 1
-        from = to - 999 > rangeFrom ? to - 999 : rangeFrom
+        from = to - (maxGap - 1) > rangeFrom ? to - (maxGap - 1) : rangeFrom
       } else {
         hasMore = false
       }
@@ -235,6 +236,7 @@ export default class ContractEvents extends PureComponent {
 
   render () {
     const events = this.props.abi
+    const maxGap = this.props.contract.maxGap
 
     if (!events?.length) {
       return <Screen><p>No events found</p></Screen>
@@ -242,12 +244,12 @@ export default class ContractEvents extends PureComponent {
     
     const { rangeFrom, rangeTo } = this.state
 
-    let placeholderFrom = 'latest - 9999'
+    let placeholderFrom = `latest - ${10 * maxGap - 1}`
     let placeholderTo = 'latest'
     if (typeof rangeFrom === 'number') {
-      placeholderTo = rangeFrom + 9999
+      placeholderTo = rangeFrom + 10 * maxGap - 1
     } else if (typeof rangeTo === 'number') {
-      placeholderFrom = rangeTo - 9999
+      placeholderFrom = rangeTo - (10 * maxGap - 1)
       if (placeholderFrom < 0) {
         placeholderFrom = 0
       }
