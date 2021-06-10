@@ -11,7 +11,7 @@ import { CompilerSelectors } from '@obsidians/compiler'
 
 export default function BottomBar (props) {
   return <>
-    <KeypairButton secretName='Private Key' chains={props.chains}>
+    <KeypairButton secretName='Private Key / Mnemonic' chains={props.chains} mnemonic={props.mnemonic}>
       <div className='btn btn-primary btn-sm btn-flat'>
         <i className='fas fa-key' />
       </div>
