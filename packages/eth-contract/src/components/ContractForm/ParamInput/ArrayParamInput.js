@@ -8,9 +8,14 @@ import {
 import ActionParamFormGroup from '../ActionParamFormGroup'
 
 const optionItemFromValue = (item, type, index) => {
+  console.log({ item, type })
   let icon = null
-  let label = item.display || typeof item.value === 'object' ? item.value.raw : item.value
+  let label = item.display || (typeof item.value === 'object' ? item.value.raw : item.value)
   label = label.length > 10 ? `${label.substr(0, 8)}...` : label
+
+  if (type === 'address') {
+    icon = <i className='fas fa-map-marker-alt mr-1' />
+  }
 
   return {
     value: `item-${index}`,
@@ -57,7 +62,9 @@ export default class ArrayParamInput extends PureComponent {
   }
 
   onConfirm = () => {
-    this.onResolve(optionItemFromValue(this.state.item, this.props.type, this.state.index))
+    const { type } = this.props
+    const { item, index } = this.state
+    this.onResolve(optionItemFromValue(item, type.replace('[]', ''), index))
     this.setState({ item: {} })
     this.modal.current.closeModal()
   }
