@@ -226,7 +226,7 @@ export default class DeployerButton extends PureComponent {
         textConfirm={needEstimate ? 'Estimate & Deploy' : 'Deploy'}
         pending={pending && 'Deploying...'}
         onConfirm={this.confirmDeployment}
-        textActions={[`Estimate ${txOptions.title}`]}
+        textActions={needEstimate ? undefined : ['Re-estimate']}
         onActions={[this.estimate]}
       >
         <DropdownInput
