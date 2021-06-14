@@ -30,6 +30,7 @@ export default class DeployerButton extends PureComponent {
       pending: false,
     }
     this.modal = React.createRef()
+    this.form = React.createRef()
   }
 
   componentDidMount () {
@@ -138,7 +139,7 @@ export default class DeployerButton extends PureComponent {
     let parameters = { array: [], obj: {} }
     if (this.state.constructorAbi) {
       try {
-        parameters = this.form?.getParameters()
+        parameters = this.form.current?.getParameters()
       } catch (e) {
         notification.error('Error in Constructor Parameters', e.message)
         return
@@ -195,7 +196,8 @@ export default class DeployerButton extends PureComponent {
       constructorParameters = <>
         <Label>Constructor Parameters</Label>
         <ContractForm
-          ref={form => { this.form = form }}
+          ref={this.form}
+          key={selected}
           size='sm'
           {...constructorAbi}
           Empty={<div className='small'>(None)</div>}
@@ -218,13 +220,13 @@ export default class DeployerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>
-        { pending ? 'Deploying' : `Deploy`}
+        { pending ? (needEstimate ? 'Estimating...' : 'Deploying...') : `Deploy`}
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
         title={<span>Deploy Contract <b>{contractName}</b></span>}
         textConfirm={needEstimate ? 'Estimate & Deploy' : 'Deploy'}
-        pending={pending && 'Deploying...'}
+        pending={pending && (needEstimate ? 'Estimating...' : 'Deploying...')}
         onConfirm={this.confirmDeployment}
         textActions={needEstimate ? undefined : ['Re-estimate']}
         onActions={[this.estimate]}

@@ -114,6 +114,8 @@ function makeProjectManager (Base) {
   
       const { parameters } = allParameters
 
+      this.deployButton.setState({ pending: true })
+
       let result
       try {
         const tx = await networkManager.sdk.getDeployTransaction({
@@ -127,8 +129,11 @@ function makeProjectManager (Base) {
         result = await networkManager.sdk.estimate(tx)
       } catch (e) {
         notification.error('Estimate Error', e.message)
+        this.deployButton.setState({ pending: false })
         return
       }
+
+      this.deployButton.setState({ pending: false })
 
       return result
     }
