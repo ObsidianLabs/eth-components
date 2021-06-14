@@ -8,7 +8,6 @@ import {
 import ActionParamFormGroup from '../ActionParamFormGroup'
 
 const optionItemFromValue = (item, type, index) => {
-  console.log({ item, type })
   let icon = null
   let label = item.display || (typeof item.value === 'object' ? item.value.raw : item.value)
   label = label.length > 10 ? `${label.substr(0, 8)}...` : label

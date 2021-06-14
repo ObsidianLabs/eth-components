@@ -17,14 +17,6 @@ export default class ContractForm extends PureComponent {
     }
   }
 
-  componentWillReceiveProps (props) {
-    if (props.inputs !== this.props.inputs) {
-      this.setState({
-        params: props.inputs?.map(({ value }) => ({ value: value || '' })) || []
-      })
-    }
-  }
-
   getParameters = () => {
     const array = []
     const json = {}

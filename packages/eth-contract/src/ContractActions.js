@@ -23,17 +23,18 @@ import ContractForm from './components/ContractForm'
 import ActionParamFormGroup from './components/ContractForm/ActionParamFormGroup'
 
 export default class ContractActions extends Component {
-  state = {
-    selected: 0,
-    amount: '',
-    signer: '',
-    executing: false,
-    actionError: '',
-    actionResult: '',
-  }
-
   constructor (props) {
     super(props)
+    
+    this.state = {
+      selected: 0,
+      amount: '',
+      signer: '',
+      executing: false,
+      actionError: '',
+      actionResult: '',
+    }
+    this.form = React.createRef()
   }
 
   selectAction (index) {
@@ -54,7 +55,7 @@ export default class ContractActions extends Component {
 
     let parameters = { array: [], obj: {} }
     try {
-      parameters = this.form.getParameters()
+      parameters = this.form.current.getParameters()
     } catch (e) {
       notification.error('Error in Parameters', e.message)
       return
@@ -90,7 +91,7 @@ export default class ContractActions extends Component {
 
     let parameters = { array: [], obj: {} }
     try {
-      parameters = this.form.getParameters()
+      parameters = this.form.current.getParameters()
     } catch (e) {
       notification.error('Error in Parameters', e.message)
       return
@@ -231,7 +232,8 @@ export default class ContractActions extends Component {
             title='Parameters'
           >
             <ContractForm
-              ref={form => { this.form = form }}
+              ref={this.form}
+              key={selectedAction.name}
               size='sm'
               {...selectedAction}
               Empty={<div className='small'>(None)</div>}
