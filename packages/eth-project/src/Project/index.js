@@ -31,7 +31,7 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
   if (node.name.endsWith('.json')) {
     const path = fileOps.current.path
     const { dir, name } = path.parse(node.path)
-    if (!name.endsWith('.abi') && dir.endsWith(path.join('build', 'contracts'))) {
+    if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
       const cloned = [...contextMenu]
       cloned.splice(platform.isDesktop ? 5: 3, 0, {
         text: 'Deploy',
