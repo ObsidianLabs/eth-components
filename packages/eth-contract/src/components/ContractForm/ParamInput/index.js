@@ -29,7 +29,7 @@ export default function ParamInput (props) {
     return <StringParamInput {...props} />
   } else if (type === 'byte' || type.startsWith('bytes')) {
     return <BytesParamInput {...props} />
-  } else if (type === 'address') {
+  } else if (type === 'address' || type === 'FixedHash<20>') {
     return <AddressParamInput {...props} />
   } else {
     return `Unsupported type ${type}`
