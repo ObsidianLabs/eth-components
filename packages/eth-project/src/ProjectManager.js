@@ -114,7 +114,7 @@ function makeProjectManager (Base) {
   
       const { parameters } = allParameters
 
-      this.deployButton.setState({ pending: true })
+      this.deployButton.setState({ pending: 'Estimating...' })
 
       let result
       try {
@@ -147,7 +147,7 @@ function makeProjectManager (Base) {
         return
       }
   
-      this.deployButton.setState({ pending: true, result: '' })
+      this.deployButton.setState({ pending: 'Deploying...', result: '' })
   
       const networkId = networkManager.sdk.networkId
       const { contractName, parameters, ...override } = allParameters

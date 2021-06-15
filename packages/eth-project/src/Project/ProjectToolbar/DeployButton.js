@@ -125,6 +125,9 @@ export default class DeployerButton extends PureComponent {
   }
 
   needEstimate = () => {
+    if (this.props.skipEstimate) {
+      return false
+    }
     if (txOptions.list?.length) {
       const option = txOptions.list[0]
       const value = this.state[option.name]
@@ -133,6 +136,18 @@ export default class DeployerButton extends PureComponent {
       }
     }
     return false
+  }
+
+  renderTextActions = () => {
+    if (this.state.pending) {
+      return
+    } else if (this.props.skipEstimate) {
+      return [`Estimate ${txOptions.title}`]
+    } else if (this.needEstimate()) {
+      return
+    } else {
+      return ['Re-estimate']
+    }
   }
 
   prepare = () => {
@@ -182,7 +197,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   render () {
-    const signer = this.props.signer
+    const { signer } = this.props
     const { contracts, selected, contractName, pending } = this.state
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
@@ -220,15 +235,15 @@ export default class DeployerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>
-        { pending ? (needEstimate ? 'Estimating...' : 'Deploying...') : `Deploy`}
+        { pending || `Deploy`}
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
         title={<span>Deploy Contract <b>{contractName}</b></span>}
         textConfirm={needEstimate ? 'Estimate & Deploy' : 'Deploy'}
-        pending={pending && (needEstimate ? 'Estimating...' : 'Deploying...')}
+        pending={pending}
         onConfirm={this.confirmDeployment}
-        textActions={needEstimate ? undefined : ['Re-estimate']}
+        textActions={this.renderTextActions()}
         onActions={[this.estimate]}
       >
         <DropdownInput

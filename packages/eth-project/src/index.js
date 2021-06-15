@@ -7,3 +7,4 @@ export { navbarItem } from '@obsidians/workspace'
 export { default as redux } from './redux'
 
 export { default as NewProjectModal } from './components/NewProjectModal'
+export { default as DeployButton } from './Project/ProjectToolbar/DeployButton'
