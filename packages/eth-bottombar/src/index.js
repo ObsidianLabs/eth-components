@@ -7,6 +7,7 @@ import Auth from '@obsidians/auth'
 import { KeypairButton } from '@obsidians/keypair'
 import { TerminalButton } from '@obsidians/workspace'
 
+import { NetworkStatus } from '@obsidians/eth-network'
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
@@ -36,6 +37,7 @@ export default connect(['queue', 'network', 'uiState'])(function BottomBar (prop
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
+    <NetworkStatus network={network} />
     <QueueButton txs={txs} />
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>

@@ -17,6 +17,7 @@
     "prepare": "yarn build"
   },
   "dependencies": {
+    "@obsidians/eth-contract": "^0.3.0",
     "@obsidians/eth-header": "^0.3.0",
     "@obsidians/eth-node": "^0.3.0",
     "@obsidians/docker": "^0.3.0",
