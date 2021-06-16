@@ -55,12 +55,17 @@ export default class DeployerButton extends PureComponent {
       this.getConstructorAbiArgs = option.getConstructorAbiArgs
     }
     const { dir: contractsFolder, base: selected } = fileOps.current.path.parse(contractPath)
-    const files = await fileOps.current.listFolder(contractsFolder)
-    this.setState({
-      selected,
-      contractsFolder,
-      contracts: contracts || files.map(f => f.name).filter(name => name.endsWith('.json')),
-    })
+    try {
+      const files = await fileOps.current.listFolder(contractsFolder)
+      this.setState({
+        selected,
+        contractsFolder,
+        contracts: contracts || files.map(f => f.name).filter(name => name.endsWith('.json')),
+      })
+    } catch {
+      notification.error('ABI File Not Found', `Cannot open the file <b>${contractPath}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid ABI file in the Project Settings.`)
+      return
+    }
 
     this.modal.current.openModal()
     await this.updateAbi(contractPath)
@@ -85,7 +90,7 @@ export default class DeployerButton extends PureComponent {
     try {
       contractObj = await this.readContractJson(contractPath)
     } catch (e) {
-      notification.error('ABI File Error', e.message)
+      notification.error('ABI File Not Found', `Cannot open the file <b>${contractPath}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid ABI file in the Project Settings.`)
       return
     }
 
@@ -249,6 +254,7 @@ export default class DeployerButton extends PureComponent {
         <DropdownInput
           label='Contract ABI'
           options={contracts.map(c => ({ id: c, display: c }))}
+          placeholder='No ABI Selected'
           value={selected}
           onChange={this.updateContract}
         />
