@@ -32,8 +32,9 @@ export default class AbiActionForm extends PureComponent {
   constructor (props) {
     super(props)
     
+    const selected = Math.max(props.actions.findIndex(item => !item.header && !item.divider), 0)
     this.state = {
-      selected: 0,
+      selected,
       amount: '',
       signer: '',
       executing: false,
@@ -67,6 +68,7 @@ export default class AbiActionForm extends PureComponent {
     const selectedAction = this.selectedAction
     const {
       inModal,
+      smDropdown,
       selectorHeader = 'actions',
       selectorIcon = 'fas fa-function',
       actions,
@@ -82,17 +84,24 @@ export default class AbiActionForm extends PureComponent {
             <i className={selectorIcon} />
             <code className='ml-2 mr-1'><b>{selectedAction.name}</b></code>
           </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem header>{selectorHeader}</DropdownItem>
-            {actions.map((item, index) => (
-              <DropdownItem
-                key={item.name}
-                className={classnames({ active: index === this.state.selected })}
-                onClick={() => this.selectAction(index)}
-              >
-                <code>{item.name}</code>
-              </DropdownItem>
-            ))}
+          <DropdownMenu className={classnames(smDropdown && 'dropdown-menu-sm')}>
+            { selectorHeader && <DropdownItem header>{selectorHeader}</DropdownItem> }
+            {actions.map((item, index) => {
+              if (item.header) {
+                return <DropdownItem key={item.header} header>{item.header}</DropdownItem>
+              } else if (item.divider) {
+                return <DropdownItem key={`divider-${index}`} divider />
+              }
+              return (
+                <DropdownItem
+                  key={item.name}
+                  className={classnames({ active: index === this.state.selected })}
+                  onClick={() => this.selectAction(index)}
+                >
+                  <code>{item.name}</code>
+                </DropdownItem>
+              )
+            })}
           </DropdownMenu>
         </UncontrolledButtonDropdown>
         <ToolbarButton

@@ -8,9 +8,10 @@ export default class RpcActionForm extends AbiActionForm {
   static defaultProps = {
     FormSection: AbiActionForm.FormSection,
     inModal: true,
+    smDropdown: true,
     actions: rpc.methods,
-    selectorHeader: 'rpc methods',
-    selectorIcon: 'far fa-eye',
+    selectorHeader: '',
+    selectorIcon: 'fas fa-exchange-alt',
     showResult: true,
   }
 
