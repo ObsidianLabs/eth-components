@@ -7,6 +7,7 @@ import AbiActionForm from './components/AbiActionForm'
 
 export default class ContractActions extends AbiActionForm {
   static defaultProps = {
+    toolbarId: 'contract-execute-write',
     FormSection: AbiActionForm.MarginlessFormSection,
     selectorHeader: 'write functions',
     selectorIcon: 'fas fa-function',

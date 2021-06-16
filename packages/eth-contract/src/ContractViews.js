@@ -4,6 +4,7 @@ import AbiActionForm from './components/AbiActionForm'
 
 export default class ContractViews extends AbiActionForm {
   static defaultProps = {
+    toolbarId: 'contract-execute-view',
     FormSection: AbiActionForm.MarginlessFormSection,
     selectorHeader: 'view functions',
     selectorIcon: 'far fa-eye',

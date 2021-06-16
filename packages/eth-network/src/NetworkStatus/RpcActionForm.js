@@ -6,6 +6,7 @@ import networkManager from '../networkManager'
 
 export default class RpcActionForm extends AbiActionForm {
   static defaultProps = {
+    toolbarId: 'execute-rpc-method',
     FormSection: AbiActionForm.FormSection,
     inModal: true,
     smDropdown: true,

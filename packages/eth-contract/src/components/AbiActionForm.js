@@ -105,7 +105,7 @@ export default class AbiActionForm extends PureComponent {
           </DropdownMenu>
         </UncontrolledButtonDropdown>
         <ToolbarButton
-          id='contract-execute-action'
+          id={this.props.toolbarId}
           rounded={inModal}
           className={!inModal && 'border-right-1'}
           color={inModal ? 'primary' : 'default'}
