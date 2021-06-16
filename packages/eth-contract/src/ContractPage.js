@@ -264,7 +264,7 @@ export default class ContractPage extends PureComponent {
         >
           <ContractActions
             value={value}
-            abi={actions}
+            actions={actions}
             contract={contractInstance}
             signer={signer}
             // network={network}
@@ -278,7 +278,7 @@ export default class ContractPage extends PureComponent {
           >
             <ContractViews
               value={value}
-              abi={views}
+              actions={views}
               contract={contractInstance}
               // network={network}
               // history={contractCalls.getIn(['table', 'history'])}

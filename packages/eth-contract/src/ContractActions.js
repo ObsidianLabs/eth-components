@@ -1,50 +1,17 @@
-import React, { Component } from 'react'
-import classnames from 'classnames'
-
-import {
-  Screen,
-  UncontrolledButtonDropdown,
-  ToolbarButton,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Badge,
-} from '@obsidians/ui-components'
-
 import notification from '@obsidians/notification'
 import { txOptions, utils } from '@obsidians/sdk'
-import { KeypairInputSelector } from '@obsidians/keypair'
 import queue from '@obsidians/eth-queue'
 import { networkManager } from '@obsidians/eth-network'
-import Highlight from 'react-highlight'
 
-import DropdownCard from './components/DropdownCard'
-import ContractForm from './components/ContractForm'
-import ActionParamFormGroup from './components/ContractForm/ActionParamFormGroup'
+import AbiActionForm from './components/AbiActionForm'
 
-export default class ContractActions extends Component {
-  constructor (props) {
-    super(props)
-    
-    this.state = {
-      selected: 0,
-      amount: '',
-      signer: '',
-      executing: false,
-      actionError: '',
-      actionResult: '',
-    }
-    this.form = React.createRef()
-  }
-
-  selectAction (index) {
-    this.setState({
-      selected: index,
-      amount: '',
-      executing: false,
-      actionError: '',
-      actionResult: '',
-    })
+export default class ContractActions extends AbiActionForm {
+  static defaultProps = {
+    FormSection: AbiActionForm.MarginlessFormSection,
+    selectorHeader: 'write functions',
+    selectorIcon: 'fas fa-function',
+    signerSelector: true,
+    txOptions,
   }
 
   estimate = async actionName => {
@@ -148,154 +115,5 @@ export default class ContractActions extends Component {
       actionError: '',
       actionResult: JSON.stringify(result, null, 2)
     })
-  }
-
-  renderActionSelector = () => {
-    const actions = this.props.abi
-    const selectedAction = actions[this.state.selected] || {}
-
-    return <>
-      <UncontrolledButtonDropdown size='sm'>
-        <DropdownToggle color='primary' caret className='rounded-0 border-0 px-2 border-right-1'>
-          <i className='fas fa-function' />
-          <code className='ml-2 mr-1'><b>{selectedAction.name}</b></code>
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem header>write functions</DropdownItem>
-          {actions.map((item, index) => (
-            <DropdownItem
-              key={item.name}
-              className={classnames({ active: index === this.state.selected })}
-              onClick={() => this.selectAction(index)}
-            >
-              <code>{item.name}</code>
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </UncontrolledButtonDropdown>
-      <ToolbarButton
-        id='contract-execute-action'
-        key={this.state.executing ? 'action-executing' : 'action-execute'}
-        icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
-        tooltip='Execute'
-        className='border-right-1'
-        onClick={() => this.executeAction(selectedAction.name)}
-      />
-    </>
-  }
-
-  renderResult = () => {
-    const { actionError, actionResult } = this.state
-    if (actionError) {
-      return (
-        <div>
-          <span className='user-select'>{actionError}</span>
-        </div>
-      )
-    }
-
-    if (actionResult) {
-      return (
-        <Highlight
-          language='javascript'
-          className='pre-box bg2 pre-wrap break-all small user-select'
-          element='pre'
-        >
-          <code>{actionResult}</code>
-        </Highlight>
-      )
-    }
-
-    return <div className='small'>(None)</div>
-  }
-
-  render () {
-    const { abi, signer } = this.props
-    const selectedAction = abi[this.state.selected] || {}
-
-    if (!abi.length) {
-      return (
-        <Screen>
-          <p>No actions found</p>
-        </Screen>
-      )
-    }
-
-    return (
-      <div className='d-flex flex-column align-items-stretch h-100'>
-        <div className='d-flex border-bottom-1'>
-          {this.renderActionSelector()}
-        </div>
-        <div className='d-flex flex-column flex-grow-1 overflow-auto'>
-          <DropdownCard
-            isOpen
-            title='Parameters'
-          >
-            <ContractForm
-              ref={this.form}
-              key={selectedAction.name}
-              size='sm'
-              {...selectedAction}
-              Empty={<div className='small'>(None)</div>}
-            />
-            {
-              (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
-              <ActionParamFormGroup
-                size='sm'
-                label={`${process.env.TOKEN_SYMBOL} to Transfer`}
-                icon='fas fa-coins'
-                value={this.state.amount}
-                onChange={amount => this.setState({ amount })}
-                placeholder='Default: 0'
-              /> : null
-            }
-          </DropdownCard>
-          {
-            txOptions.list?.length &&
-            <DropdownCard
-              isOpen
-              title={txOptions.title}
-              right={
-                <Badge color='primary' onClick={evt => {
-                  evt.stopPropagation()
-                  this.estimate(selectedAction.name)
-                }}>Estimate</Badge>
-              }
-            >
-              {
-                txOptions.list.map(option => (
-                  <ActionParamFormGroup
-                    size='sm'
-                    key={`param-${option.name}`}
-                    label={option.label}
-                    icon={option.icon}
-                    value={this.state[option.name]}
-                    onChange={value => this.setState({ [option.name]: value })}
-                    placeholder={option.placeholder}
-                  />
-                ))
-              }
-            </DropdownCard>
-          }
-          <DropdownCard
-            isOpen
-            title='Authorization'
-            overflow
-          >
-            <KeypairInputSelector
-              size='sm'
-              label='Signer'
-              extra={networkManager.browserExtension?.isEnabled && signer && [{
-                group: networkManager.browserExtension.name.toLowerCase(),
-                badge: networkManager.browserExtension.name,
-                children: [{ address: signer, name: networkManager.browserExtension.name }],
-              }]}
-              value={this.state.signer}
-              onChange={signer => this.setState({ signer })}
-            />
-          </DropdownCard>
-        </div>
-      </div>
-    )
   }
 }

@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom'
 
 import notification from '@obsidians/notification'
 
-import DropdownCard from './components/DropdownCard'
+import FormSection from './components/MarginlessFormSection'
 
 import { networkManager } from '@obsidians/eth-network'
 
@@ -261,7 +261,7 @@ export default class ContractEvents extends PureComponent {
           {this.renderEventSelector()}
         </div>
         <div className='d-flex flex-column flex-grow-1 overflow-auto'>
-          <DropdownCard isOpen title='Parameters'>
+          <FormSection title='Parameters'>
             <div className='row'>
               <FormGroup className='mb-2 col-12'>
                 <Label className='mb-1 small'>Range</Label>
@@ -299,15 +299,10 @@ export default class ContractEvents extends PureComponent {
                 </InputGroup>
               </FormGroup>
             </div>
-          </DropdownCard>
-          <DropdownCard
-            isOpen
-            title='Event Logs'
-            overflow
-            flex={1}
-          >
+          </FormSection>
+          <FormSection title='Event Logs' flex={1}>
             {this.renderLogsTable()}
-          </DropdownCard>
+          </FormSection>
         </div>
       </div>
     )
