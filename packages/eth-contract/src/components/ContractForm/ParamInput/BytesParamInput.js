@@ -8,7 +8,7 @@ import {
 import { utils } from '@obsidians/sdk'
 
 export default function BytesParamInput ({ size, label, type, value, onChange, placeholder, disabled }) {
-  const { raw = '', encoding = 'utf8' } = value || {}
+  const { raw = '', encoding = 'hex' } = value || {}
 
   let invalid, feedback
   if (encoding === 'hex') {
@@ -73,15 +73,15 @@ export default function BytesParamInput ({ size, label, type, value, onChange, p
         invalid={invalid}
       >
         <Badge
-          color={encoding === 'utf8' ? 'primary' : 'secondary'}
-          style={{ position: 'absolute', right: '38px', bottom: '5px', height: '18px', zIndex: 100, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-          onClick={() => onChangeValue(raw, 'utf8')}
-        >UTF8</Badge>
-        <Badge
           color={encoding === 'hex' ? 'primary' : 'secondary'}
-          style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          style={{ position: 'absolute', right: '45px', bottom: '5px', height: '18px', zIndex: 100, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
           onClick={() => onChangeValue(raw, 'hex')}
         >HEX</Badge>
+        <Badge
+          color={encoding === 'utf8' ? 'primary' : 'secondary'}
+          style={{ position: 'absolute', right: '5px', bottom: '5px', height: '18px', zIndex: 100, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          onClick={() => onChangeValue(raw, 'utf8')}
+        >UTF8</Badge>
       </DebouncedInput>
     </div>
   )
