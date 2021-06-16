@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 
 import utils from './utils'
 import Client from './Client'
+import rpc from './rpc'
 import Contract from './Contract'
 import signatureProvider from './signatureProvider'
 import BrowserExtension from './BrowserExtension'
@@ -33,6 +34,11 @@ export default class Sdk {
 
   isValidAddress (address) {
     return ethers.utils.isAddress(address)
+  }
+
+  async callRpc (method, parameters) {
+    const params = rpc.prepare(parameters)
+    return await this.provider.send(method, params)
   }
 
   async networkInfo () {

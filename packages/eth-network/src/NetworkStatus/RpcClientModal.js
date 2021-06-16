@@ -18,7 +18,7 @@ export default class RpcClientModal extends PureComponent {
 
   render () {
     return (
-      <Modal ref={this.modal} overflow title='RPC Client'>
+      <Modal ref={this.modal} h100 title='RPC Client'>
         <RpcActionForm />
       </Modal>
     )

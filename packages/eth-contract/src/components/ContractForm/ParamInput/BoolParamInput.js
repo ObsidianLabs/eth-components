@@ -7,11 +7,11 @@ import {
 export default function BoolParamInput ({ size, value, onChange, placeholder, disabled }) {
   const onChangeValue = value => {
     if (!value) {
-      onChange(value, { display: 'false', raw: false, empty: true })
+      onChange(value, { display: false, raw: false, empty: true })
     } else if (value === '0' || value === 'false' || value === 'False' || value === 'FALSE') {
-      onChange(value, { display: 'false', raw: false })
+      onChange(value, { display: false, raw: false })
     } else {
-      onChange(value, { display: 'true', raw: true })
+      onChange(value, { display: true, raw: true })
     }
   }
 

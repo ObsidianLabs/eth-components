@@ -1,8 +1,8 @@
 export default [
-  { name: 'eth_getBalance', inputs: [{ name: 'address', type: 'address' }, { name: 'block', type: 'uint256' }] },
-  { name: 'eth_getTransactionCount', inputs: [{ name: 'address', type: 'address' }, { name: 'block', type: 'uint256' }] },
-  { name: 'eth_getCode', inputs: [{ name: 'address', type: 'address' }, { name: 'block', type: 'uint256' }] },
-  { name: 'eth_getStorageAt', inputs: [{ name: 'address', type: 'address' }, { name: 'position', type: 'uint256' }, { name: 'block', type: 'uint256' }] },
+  { name: 'eth_getBalance', inputs: [{ name: 'address', type: 'address' }, { name: 'blockNumber', type: 'uint256' }] },
+  { name: 'eth_getTransactionCount', inputs: [{ name: 'address', type: 'address' }, { name: 'blockNumber', type: 'uint256' }] },
+  { name: 'eth_getCode', inputs: [{ name: 'address', type: 'address' }, { name: 'blockNumber', type: 'uint256' }] },
+  { name: 'eth_getStorageAt', inputs: [{ name: 'address', type: 'address' }, { name: 'position', type: 'uint256' }, { name: 'blockNumber', type: 'uint256' }] },
   { name: 'eth_getLogs', inputs: [{ name: 'filter', type: 'tuple', components: [{ name: 'topic', type: 'bytes[]' }] }] },
 
   { name: 'eth_blockNumber', inputs: [] },
@@ -32,7 +32,7 @@ export default [
     { name: 'gasPrice', type: 'uint256' },
     { name: 'value', type: 'uint256' },
     { name: 'data', type: 'bytes' },
-  ] }, { name: 'block', type: 'uint256' }] },
+  ] }, { name: 'blockNumber', type: 'uint256' }] },
 
   { name: 'web3_clientVersion', inputs: [] },
   { name: 'web3_sha3', inputs: [{ name: 'data', type: 'bytes' }] },
