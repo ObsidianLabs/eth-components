@@ -12,7 +12,8 @@ class NetworkManager {
     this.network = undefined
     this.networks = []
 
-    if (platform.isWeb && Sdk.InitBrowserExtension) {
+    const enable = !(process.env.REACT_APP_DISABLE_BROWSER_EXTENSION === 'true')
+    if (platform.isWeb && enable && Sdk.InitBrowserExtension) {
       this.browserExtension = Sdk.InitBrowserExtension(this)
     }
   }
