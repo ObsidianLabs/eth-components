@@ -7,8 +7,22 @@ import solidityPlugin from 'prettier-plugin-solidity'
 import SolidityHighlightRules from './SolidityHighlightRules'
 
 export default function () {
-  monaco.languages.register({
-    id: 'solidity'
+  monaco.languages.register({ id: 'solidity' })
+  monaco.languages.setLanguageConfiguration('solidity', {
+    comments: {
+      lineComment: '//',
+      blockComment: ['/*', '*/'],
+    },
+    brackets: [
+      ['(', ')'],
+      ['[', ']'],
+      ['{', '}'],
+    ],
+    autoClosingPairs: [
+      { open: '(', close: ')' },
+      { open: '[', close: ']' },
+      { open: '{', close: '}' },
+    ]
   })
   registerRulesForLanguage('solidity', new SolidityHighlightRules())
 
