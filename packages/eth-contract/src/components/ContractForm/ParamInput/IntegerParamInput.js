@@ -7,7 +7,11 @@ import {
 export default function IntegerParamInput ({ size, label, type, value, onChange, placeholder, disabled }) {
   let invalid
   if (value) {
-    invalid = value !== parseInt(value).toString()
+    try {
+      BigInt(value)
+    } catch {
+      invalid = true
+    }
     if (type.startsWith('uint') && value < 0) {
       invalid = true
     }
