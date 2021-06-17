@@ -13,7 +13,7 @@ class SolcjsChannel extends DockerImageChannel {
   }
 
   versions () {
-    const versions = Object.keys(window.soljsonReleases).map(Tag => ({ Tag }))
+    const versions = Object.entries(window.soljsonReleases).map(([Tag, Name]) => ({ Tag, Name }))
     const event = new CustomEvent('versions', { detail: versions })
     this.eventTarget.dispatchEvent(event)
     return versions
@@ -27,14 +27,11 @@ export class CompilerManager {
 
   constructor () {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
-    if (platform.isDesktop) {
-      this.solc = new DockerImageChannel('ethereum/solc', {
-        filter: v => semver.valid(v) && !v.endsWith('alpine'),
-        size: 50,
-      })
-    } else {
-      this.solc = new SolcjsChannel()
-    }
+    this.solc = new SolcjsChannel()
+    // this.solc = new DockerImageChannel('ethereum/solc', {
+    //   filter: v => semver.valid(v) && !v.endsWith('alpine'),
+    //   size: 50,
+    // })
     this.notification = null
     if (platform.isWeb) {
       this.solcjsCompiler = new SolcjsCompiler()
@@ -271,7 +268,8 @@ export class CompilerManager {
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
-      '-v /var/run/docker.sock:/var/run/docker.sock',
+      // '-v /var/run/docker.sock:/var/run/docker.sock',
+      `-v "${fileOps.current.homePath}/.config/truffle/compilers:/root/.config/truffle/compilers"`,
       `-v "${projectDir}:${projectDir}"`,
       `-w "${projectDir}"`,
       `${process.env.DOCKER_IMAGE_COMPILER}:${compilers[process.env.COMPILER_VERSION_KEY]}`,
@@ -280,7 +278,7 @@ export class CompilerManager {
     
     if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
-      cmd.push(`--compilers.solc.docker 1`)
+      // cmd.push(`--compilers.solc.docker 1`)
     }
 
     if (sourceFile) {

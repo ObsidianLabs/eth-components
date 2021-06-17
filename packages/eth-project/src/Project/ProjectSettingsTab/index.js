@@ -99,12 +99,10 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 disableAutoSelection
                 bg='bg-black'
                 label='Solc version'
-                noneName='solc'
-                modalTitle='Solc Manager'
-                downloadingTitle='Downloading Solc'
+                noManager
                 extraOptions={platform.isDesktop ? [{
                   id: 'default',
-                  display: 'Default Solc',
+                  display: 'From truffle-config.js',
                   onClick: () => this.onChange('compilers.solc')('default')
                 }] : undefined}
                 selected={projectSettings?.get('compilers.solc')}
