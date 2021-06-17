@@ -59,7 +59,6 @@ export default class AccountPage extends PureComponent {
     let account
     try {
       account = await networkManager.sdk.accountFrom(value)
-      account.count = await networkManager.sdk.getTransactionsCount(value)
       this.setState({ loading: false, error: null, account })
       this.forceUpdate()
     } catch (e) {

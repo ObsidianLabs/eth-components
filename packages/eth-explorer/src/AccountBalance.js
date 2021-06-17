@@ -10,19 +10,19 @@ export default class AccountBalance extends PureComponent {
     const { account } = this.props
 
     return (
-      <TableCard title='Balance'>
+      <TableCard title='Account'>
         <TableCardRow
-          name='Total'
-          icon='far fa-wallet'
+          name='Balance'
+          icon='far fa-coins'
           badge={`${account.balance} ${process.env.TOKEN_SYMBOL}`}
           badgeColor='success'
         />
         {
-          account.count !== undefined &&
+          account.txCount !== undefined &&
           <TableCardRow
-            name='Transactions'
-            icon='far fa-wallet'
-            badge={account.count}
+            name='Transaction Count'
+            icon='fas fa-hashtag'
+            badge={account.txCount}
           />
         }
       </TableCard>
