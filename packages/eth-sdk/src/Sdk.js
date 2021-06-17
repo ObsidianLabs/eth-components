@@ -59,6 +59,7 @@ export default class Sdk {
     return {
       address,
       balance: utils.unit.fromValue(account.balance),
+      txCount: BigInt(account.txCount).toString(10),
       codeHash: account.codeHash,
     }
   }
@@ -81,9 +82,12 @@ export default class Sdk {
   }
 
   async estimate (tx) {
-    const gasPrice = BigInt(await this.callRpc('eth_gasPrice')).toString(10)
+    const gasPrice = await this.callRpc('eth_gasPrice')
     const result = await this.provider.estimateGas(tx)
-    return { gasLimit: result.toString(), gasPrice }
+    return {
+      gasLimit: result.toString(),
+      gasPrice: BigInt(gasPrice).toString(10),
+    }
   }
 
   sendTransaction (tx) {
@@ -131,10 +135,6 @@ export default class Sdk {
     promise.confirmed = () => pendingTx.then(res => res.wait(10))
 
     return promise
-  }
-
-  async getTransactionsCount () {
-    return
   }
 
   async getTransactions (address, page = 0, size = 10) {
