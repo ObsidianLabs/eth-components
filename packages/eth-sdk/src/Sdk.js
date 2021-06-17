@@ -81,8 +81,9 @@ export default class Sdk {
   }
 
   async estimate (tx) {
+    const gasPrice = BigInt(await this.callRpc('eth_gasPrice')).toString(10)
     const result = await this.provider.estimateGas(tx)
-    return { gasLimit: result.toString() }
+    return { gasLimit: result.toString(), gasPrice }
   }
 
   sendTransaction (tx) {

@@ -1,4 +1,7 @@
 function prepare (parameters, asObject) {
+  if (!parameters) {
+    return []
+  }
   const obj = parameters.obj
   const keys = Object.keys(obj)
   const values = keys.map(key => {
