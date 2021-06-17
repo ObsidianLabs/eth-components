@@ -22,6 +22,7 @@ export default [
 
   { header: 'transaction' },
   { name: 'eth_getTransactionByHash', inputs: [{ name: 'hash', type: 'bytes32' }] },
+  { name: 'eth_getTransactionReceipt', inputs: [{ name: 'hash', type: 'bytes32' }] },
   { name: 'eth_sendTransaction', inputs: [{ name: 'transaction', type: 'tuple', components: [
     { name: 'from', type: 'address' },
     { name: 'to', type: 'address' },
@@ -30,7 +31,18 @@ export default [
     { name: 'value', type: 'uint256' },
     { name: 'data', type: 'bytes' },
   ] }] },
-  { name: 'eth_call', inputs: [{ name: 'call', type: 'tuple', components: [
+  { name: 'eth_sendRawTransaction', inputs: [{ name: 'transaction', type: 'tuple', components: [
+    { name: 'data', type: 'bytes' },
+  ] }] },
+  { name: 'eth_call', inputs: [{ name: 'call', type: 'transaction', components: [
+    { name: 'from', type: 'address' },
+    { name: 'to', type: 'address' },
+    { name: 'gas', type: 'uint256' },
+    { name: 'gasPrice', type: 'uint256' },
+    { name: 'value', type: 'uint256' },
+    { name: 'data', type: 'bytes' },
+  ] }, { name: 'blockNumber', type: 'uint256' }] },
+  { name: 'eth_estimateGas', inputs: [{ name: 'transaction', type: 'tuple', components: [
     { name: 'from', type: 'address' },
     { name: 'to', type: 'address' },
     { name: 'gas', type: 'uint256' },
