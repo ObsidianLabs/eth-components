@@ -1,25 +1,21 @@
 import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
-
 import utils from './utils'
 
 const channel = new IpcChannel('keypair')
 
 export default {
   async newKeypair (_, secretType) {
+    const secret = await channel.invoke('post', 'new-secret')
     if (secretType === 'mnemonic') {
-      const extraEntropy = utils.format.bytesFromHex(await channel.invoke('post', 'new-secret'))
+      const extraEntropy = utils.format.bytesFromHex(secret)
       const wallet = ethers.Wallet.createRandom({ extraEntropy })
-      const { address, mnemonic } = wallet
-      const secret = mnemonic.phrase
-      console.log(mnemonic.path)
       return {
-        address: address.toLowerCase(),
-        secret,
+        address: wallet.address.toLowerCase(),
+        secret: wallet.mnemonic.phrase,
         secretName: 'Mnemonic',
       }
     } else {
-      const secret = await channel.invoke('post', 'new-secret')
       const address = ethers.utils.computeAddress(secret)
       return {
         address: address.toLowerCase(),
@@ -38,10 +34,9 @@ export default {
       }
     } else {
       const wallet = ethers.Wallet.fromMnemonic(secret)
-      const { address, mnemonic } = wallet
       return {
-        address: address.toLowerCase(),
-        secret: mnemonic.phrase,
+        address: wallet.address.toLowerCase(),
+        secret: wallet.mnemonic.phrase,
         secretName: 'Mnemonic',
       }
     }
