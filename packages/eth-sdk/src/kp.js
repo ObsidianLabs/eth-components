@@ -25,7 +25,10 @@ export default {
     }
   },
   importKeypair (secret) {
-    if (secret.startsWith('0x')) {
+    if (secret.startsWith('0x') || /^[0-9a-zA-Z]{64}$/.test(secret)) {
+      if (!secret.startsWith('0x')) {
+        secret = '0x' + secret
+      }
       const address = ethers.utils.computeAddress(secret)
       return {
         address: address.toLowerCase(),
