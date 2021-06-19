@@ -21,6 +21,8 @@ export default connect(['queue', 'network', 'uiState'])(function BottomBar (prop
     mnemonic = true,
     secretName = mnemonic ? 'Private Key / Mnemonic' : 'Private Key',
     chains,
+
+    noNetwork,
   } = props
 
   const localNetwork = uiState.get('localNetwork')
@@ -37,7 +39,7 @@ export default connect(['queue', 'network', 'uiState'])(function BottomBar (prop
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
-    <NetworkStatus network={network} />
+    { !noNetwork && <NetworkStatus network={network} /> }
     <QueueButton txs={txs} />
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
