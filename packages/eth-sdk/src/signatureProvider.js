@@ -1,5 +1,4 @@
 import keypairManager from '@obsidians/keypair'
-import { ethers } from 'ethers'
 
 import kp from './kp'
 
