@@ -82,7 +82,7 @@ export default class TransferButton extends PureComponent {
             'failed-timeout': reject,
             failed: reject,
           }
-        )
+        ).catch(reject)
       })
     } catch (e) {
       console.warn(e)
