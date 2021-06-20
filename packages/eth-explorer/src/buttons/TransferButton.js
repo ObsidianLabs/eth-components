@@ -47,7 +47,7 @@ export default class TransferButton extends PureComponent {
       try {
         await keypairManager.getKeypair(from)
       } catch {
-        notification.error('Cannot Transfer', `Please add the address <b>${from}</b> in the keypair manager or select it in ${process.env.BROWSER_EXTENSION_NAME}.`)
+        notification.error('Cannot Transfer', `Please add the address <b>${from}</b> in the keypair manager or select it in ${networkManager.browserExtension.name}.`)
         this.setState({ loading: false })
         return
       }
