@@ -98,7 +98,7 @@ export default class ContractActions extends AbiActionForm {
           value,
           ...options,
         }
-      ).catch(reject)
+      )
     } catch (e) {
       console.warn(e)
       if (e.data) {
