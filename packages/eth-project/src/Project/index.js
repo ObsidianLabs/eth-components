@@ -35,7 +35,7 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
       const cloned = [...contextMenu]
       cloned.splice(platform.isDesktop ? 5: 3, 0, {
         text: 'Deploy',
-        onClick: () => projectManager.deploy(node.path),
+        onClick: () => projectManager.deploy(node),
       }, null)
       return cloned
     }

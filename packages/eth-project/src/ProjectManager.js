@@ -39,7 +39,12 @@ function makeProjectManager (Base) {
       await this.project.saveAll()
       this.toggleTerminal(true)
   
-      const result = await compilerManager.build(settings, this, sourceFile)
+      let result
+      try {
+        result = await compilerManager.build(settings, this, sourceFile)
+      } catch {
+        return false
+      }
       if (result?.decorations) {
         modelSessionManager.updateDecorations(result.decorations)
       }
@@ -50,16 +55,20 @@ function makeProjectManager (Base) {
       return true
     }
 
-    async getDefaultContract () {
+    async getDefaultContractFileNode () {
       const settings = await this.checkSettings()
       if (!settings?.deploy) {
         throw new Error('Please set the smart contract to deploy in project settings.')
       }
-      return this.pathForProjectFile(settings.deploy)
+      const filePath = this.pathForProjectFile(settings.deploy)
+      const pathInProject = this.pathInProject(filePath)
+      return { path: filePath, pathInProject }
     }
   
-    async deploy (contractPath) {
-      this.deployButton.getDeploymentParameters(contractPath || await this.getDefaultContract(),
+    async deploy (contractFileNode) {
+      this.deployButton.getDeploymentParameters({
+        contractFileNode: contractFileNode || await this.getDefaultContractFileNode(),
+      },
         (contractObj, allParameters) => this.pushDeployment(contractObj, allParameters),
         (contractObj, allParameters) => this.estimate(contractObj, allParameters)
       )

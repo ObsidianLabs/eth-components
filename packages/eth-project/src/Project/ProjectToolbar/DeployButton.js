@@ -45,14 +45,11 @@ export default class DeployerButton extends PureComponent {
   }
 
   getDeploymentParameters = async (option, callback, estimate) => {
-    let contractPath, contracts
-    if (typeof option === 'string') {
-      contractPath = option
-      this.getConstructorAbiArgs = contractObj => [contractObj.abi]
-    } else {
-      contractPath = option.contractPath
-      contracts = option.contracts
+    const { path: contractPath, pathInProject = contractPath } = option.contractFileNode
+    if (option.getConstructorAbiArgs) {
       this.getConstructorAbiArgs = option.getConstructorAbiArgs
+    } else {
+      this.getConstructorAbiArgs = contractObj => [contractObj.abi]
     }
     const { dir: contractsFolder, base: selected } = fileOps.current.path.parse(contractPath)
     try {
@@ -60,15 +57,15 @@ export default class DeployerButton extends PureComponent {
       this.setState({
         selected,
         contractsFolder,
-        contracts: contracts || files.map(f => f.name).filter(name => name.endsWith('.json')),
+        contracts: option.contracts || files.map(f => f.name).filter(name => name.endsWith('.json')),
       })
     } catch {
-      notification.error('ABI File Not Found', `Cannot open the file <b>${contractPath}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid ABI file in the Project Settings.`)
+      notification.error('ABI File Not Found', `Cannot open the file <b>${pathInProject}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid ABI file in the Project Settings.`)
       return
     }
 
     this.modal.current.openModal()
-    await this.updateAbi(contractPath)
+    await this.updateAbi(contractPath, pathInProject)
     const options = {}
     txOptions.list && txOptions.list.forEach(opt => options[opt.name] = '')
     this.setState(options)
@@ -83,14 +80,14 @@ export default class DeployerButton extends PureComponent {
     await this.updateAbi(contractPath)
   }
 
-  updateAbi = async contractPath => {
+  updateAbi = async (contractPath, pathInProject) => {
     const contractName = fileOps.current.path.parse(contractPath).name
 
     let contractObj
     try {
-      contractObj = await this.readContractJson(contractPath)
+      contractObj = await this.readContractJson(contractPath, pathInProject)
     } catch (e) {
-      notification.error('ABI File Not Found', `Cannot open the file <b>${contractPath}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid ABI file in the Project Settings.`)
+      notification.error('ABI File Not Found', `Cannot open the file <b>${pathInProject}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid ABI file in the Project Settings.`)
       return
     }
 
@@ -109,13 +106,13 @@ export default class DeployerButton extends PureComponent {
     })
   }
   
-  readContractJson = async contractPath => {
+  readContractJson = async (contractPath, pathInProject) => {
     const contractJson = await fileOps.current.readFile(contractPath)
 
     try {
       return JSON.parse(contractJson)
     } catch (e) {
-      throw new Error(`Error in reading <b>${contractPath}</b>. Not a valid JSON file.`)
+      throw new Error(`Error in reading <b>${pathInProject}</b>. Not a valid JSON file.`)
     }
   }
 
