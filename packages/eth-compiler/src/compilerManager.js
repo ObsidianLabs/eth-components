@@ -28,10 +28,6 @@ export class CompilerManager {
   constructor () {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
     this.solc = new SolcjsChannel()
-    // this.solc = new DockerImageChannel('ethereum/solc', {
-    //   filter: v => semver.valid(v) && !v.endsWith('alpine'),
-    //   size: 50,
-    // })
     this.notification = null
     if (platform.isWeb) {
       this.solcjsCompiler = new SolcjsCompiler()
@@ -81,7 +77,16 @@ export class CompilerManager {
 
     CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
     this.notification = notification.info(`Building Project`, `Building...`, 0)
-    const output = await this.solcjsCompiler.compile(solcUrl, projectManager)
+
+    let output
+    try {
+      output = await this.solcjsCompiler.compile(solcUrl, projectManager)
+    } catch (e) {
+      this.notification.dismiss()
+      notification.error('Build Failed', e.message)
+      CompilerManager.button.setState({ building: false })
+      throw e
+    }
 
     if (!output) {
       this.notification.dismiss()
