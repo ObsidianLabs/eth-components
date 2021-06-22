@@ -12,13 +12,17 @@ export default class Contract {
     const result = await this.instance.functions[method](...array)
     const methodAbi = this.abi.find(item => item.name === method)
     const outputs = methodAbi && methodAbi.outputs
-    return Object.fromEntries(outputs.map(({ name, type }, index) => {
+    const parsedOutputs = outputs.map(({ name, type }, index) => {
       let value = result[index]
       if (type.startsWith('uint') || type.startsWith('int')) {
         value = value.toString()
       }
       return [name || `(param${index})`, { type, value }]
-    }))
+    })
+    if (parsedOutputs.length === 1) {
+      return parsedOutputs[0][1]
+    }
+    return Object.fromEntries(parsedOutputs)
   }
 
   async execute (method, { array }, override) {
