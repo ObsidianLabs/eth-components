@@ -18,6 +18,9 @@ export default class TransactionRow extends PureComponent {
 
     const amount = `${utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL}`
 
+    const gasUsed = new Intl.NumberFormat().format(tx.gasUsed)
+    const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
+
     return (
       <tr onClick={this.onClick}>
         <td><small>{moment(tx.timeStamp * 1000).format('MM/DD HH:mm:ss')}</small></td>
@@ -31,25 +34,24 @@ export default class TransactionRow extends PureComponent {
           <Address addr={tx.from} showTooltip={false}/>
         </td>
         <td>
-          {
-            tx.contractAddress
-              ? <>
-                  <Badge color='success' className='mr-1'>contract creation</Badge>
-                  <Address addr={tx.contractAddress} route='contract' showTooltip={false}/>
-                </>
-              : <Address addr={tx.to} showTooltip={false}/>
-          }
+          <Badge color='success' className='mr-1'>{tx.contractAddress && 'contract creation'}</Badge>
+          <Address
+            addr={tx.contractAddress || tx.to}
+            route={tx.contractAddress || tx.method ? 'contract' : 'account'}
+            showTooltip={false}
+          />
+          <Badge color='secondary'>{tx.method}</Badge>
         </td>
         <td align='right'>
-          <Badge pill color={tx.from === owner ? 'danger' : 'success'}>
+          <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'danger' : 'success'}>
             {amount}
           </Badge>
         </td>
         <td align='right'>
-          <Badge pill>{new Intl.NumberFormat().format(tx.gasUsed)}</Badge>
+          <Badge pill>{gasUsed}</Badge>
         </td>
         <td align='right'>
-          <TransactionFee value={(BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0)).toString()}/>
+          <TransactionFee value={gasFee}/>
         </td>
       </tr>
     )
