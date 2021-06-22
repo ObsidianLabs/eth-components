@@ -14,6 +14,7 @@ import {
 import { networkManager } from '@obsidians/eth-network'
 import fileOps from '@obsidians/file-ops'
 import redux from '@obsidians/redux'
+import { BaseProjectManager } from '@obsidians/workspace'
 
 import ContractActions from './ContractActions'
 import ContractViews from './ContractViews'
@@ -114,24 +115,31 @@ export default class ContractPage extends PureComponent {
 
   refreshProjectAbis = async () => {
     const projectRoot = this.props.projectRoot
-    if (!projectRoot) {
+    if (!projectRoot || !BaseProjectManager.instance) {
       this.setState({ projectAbis: null })
     } else {
       const { path, fs } = fileOps.current
-      const contractsFolder = path.join(projectRoot, 'build', 'contracts')
+      const contractsFolder = BaseProjectManager.instance.pathForProjectFile('build/contracts')
       const files = await fileOps.current.listFolder(contractsFolder)
       const contracts = await Promise.all(files
         .map(f => f.name)
         .filter(name => name.endsWith('.json'))
         .map(name => path.join(contractsFolder, name))
         .map(contractPath => fs.readFile(contractPath, 'utf8')
-          .then(content => ({ contractPath, contract: JSON.parse(content) }))
+          .then(content => ({
+            contractPath,
+            pathInProject: BaseProjectManager.instance.pathInProject(contractPath),
+            contract: JSON.parse(content)
+          }))
           .catch(() => null)
         )
       )
       const projectAbis = contracts
         .filter(Boolean)
-        .map(({ contractPath, contract }) => [contractPath, { name: contract.contractName, abi: contract.abi }])
+        .map(({ contractPath, pathInProject, contract }) => {
+          const contractName = contract.contractName || fileOps.current.path.parse(contractPath).name
+          return [pathInProject || contractPath, { name: contractName, abi: contract.abi }]
+        })
       this.setState({ projectAbis })
     }
   }
@@ -157,6 +165,9 @@ export default class ContractPage extends PureComponent {
   renderAbiDropdownItem = abis => {
     if (!abis) {
       return null
+    }
+    if (!abis.length) {
+      return <DropdownItem disabled>(No ABI found)</DropdownItem>
     }
     return abis.map(abiItem => {
       const [codeHash, abiObj] = abiItem
