@@ -11,6 +11,7 @@ import {
 import { networkManager } from '@obsidians/eth-network'
 import notification from '@obsidians/notification'
 import keypairManager, { KeypairInputSelector } from '@obsidians/keypair'
+import { txOptions } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 export default class TransferButton extends PureComponent {
@@ -62,8 +63,9 @@ export default class TransferButton extends PureComponent {
     const { recipient: to, amount } = this.state
     const from = this.props.from
 
+    const override = Object.fromEntries(txOptions.list.map(option => [option.name, option.default]))
     try {
-      const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount })
+      const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount }, override)
       await new Promise((resolve, reject) => {
         queue.add(
           () => networkManager.sdk.sendTransaction(tx),
