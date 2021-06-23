@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - develop
     paths:
       - 'packages/eth-project/main/templates/**'
       - '.github/workflows/templates.yml'
