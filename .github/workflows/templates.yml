@@ -18,6 +18,7 @@ env:
   destination: /templates/eth/
 
 jobs:
+  templates:
     - uses: actions/checkout@master
 
     - uses: jakejarvis/s3-sync-action@master
