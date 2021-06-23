@@ -88,7 +88,10 @@ class AccountExplorer extends TabbedExplorer {
       subroute: network,
       signer: uiState.get('signer'),
       getTabText: tab => {
-        let { value = '', temp } = tab
+        let { text, value = '' } = tab
+        if (text) {
+          return text
+        }
         const address = valueFormatter(value)
         let tabText = ''
         if (this.keypairs[address]) {

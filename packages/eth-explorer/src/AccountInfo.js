@@ -6,28 +6,33 @@ import {
   Badge,
 } from '@obsidians/ui-components'
 
-export default class AccountInfo extends PureComponent {
-  render () {
-    const { account } = this.props
-
-    let codeHash = null
-    if (account.codeHash !== '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470') {
-      codeHash = <>
-        <Badge color='info' className='mr-2'>Hash</Badge>
-        <code>{account.codeHash}</code>
-      </>
-    }
-
-    return (
-      <TableCard title='Information'>
-        <TableCardRow
-          name='Code'
-          icon='fas fa-code'
-          badge={codeHash ? null : '(None)'}
-        >
-          {codeHash}
-        </TableCardRow>
-      </TableCard>
-    )
+export default function AccountInfo ({ account, tokenInfo }) {
+  let tokenInfoRows = null
+  if (tokenInfo) {
+    console.log(tokenInfo)
+    tokenInfoRows = <>
+      <TableCardRow
+        name='ERC20 Token'
+        icon='far fa-coin'
+        badgeColor='primary'
+        badge={`${tokenInfo.name} (${tokenInfo.symbol})`}
+      />
+      <TableCardRow
+        name='Total Supply'
+        icon='far fa-box-alt'
+        badge={new Intl.NumberFormat().format(tokenInfo.totalSupply / 10 ** tokenInfo.decimals)}
+      />
+    </>
   }
+    
+  return (
+    <TableCard title='Information'>
+      {tokenInfoRows}
+      <TableCardRow
+        name={account.codeHash ? 'Code Hash' : 'Code'}
+        icon='fas fa-code'
+        badge={account.codeHash ? account.codeHash : '(None)'}
+      />
+    </TableCard>
+  )
 }

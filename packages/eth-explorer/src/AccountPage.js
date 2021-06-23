@@ -15,6 +15,7 @@ export default class AccountPage extends PureComponent {
   state = {
     error: null,
     account: null,
+    tokenInfo: null,
     loading: true,
   }
 
@@ -59,6 +60,11 @@ export default class AccountPage extends PureComponent {
     let account
     try {
       account = await networkManager.sdk.accountFrom(value)
+      if (account.codeHash) {
+        this.getTokenInfo(account)
+      } else {
+        this.setState({ tokenInfo: null })
+      }
       this.setState({ loading: false, error: null, account })
       this.forceUpdate()
     } catch (e) {
@@ -67,10 +73,20 @@ export default class AccountPage extends PureComponent {
     }
   }
 
+  getTokenInfo = async account => {
+    const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
+    if (tokenInfo) {
+      this.props.tabs?.updateTab({
+        text: <span key={`token-${account.address}`}><i className='fas fa-coin text-muted mr-1'/>{tokenInfo.symbol}</span>
+      })
+    }
+    this.setState({ tokenInfo })
+  }
+
   render () {
-    const { AccountInfo } = this.props
-    const { error, account } = this.state
-    
+    const { AccountInfo, history } = this.props
+    const { error, account, tokenInfo } = this.state
+
     if (!networkManager.sdk) {
       return null
     }
@@ -106,10 +122,10 @@ export default class AccountPage extends PureComponent {
       <div className='d-flex flex-1 flex-column overflow-auto' key={account.address}>
         <div className='d-flex'>
           <div className='col-4 p-0 border-right-black'>
-            <AccountBalance account={account} />
+            <AccountBalance account={account} history={history} />
           </div>
           <div className='col-8 p-0 overflow-auto' style={{ maxHeight: 250 }}>
-            <AccountInfo account={account} />
+            <AccountInfo account={account} tokenInfo={tokenInfo} />
           </div>
         </div>
         <div className='d-flex flex-fill overflow-hidden'>

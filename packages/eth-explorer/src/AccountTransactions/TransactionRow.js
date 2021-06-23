@@ -16,8 +16,7 @@ export default class TransactionRow extends PureComponent {
   render () {
     const { tx, owner } = this.props
 
-    const amount = `${utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL}`
-
+    const amount = new Intl.NumberFormat().format(utils.unit.fromValue(tx.value))
     const gasUsed = new Intl.NumberFormat().format(tx.gasUsed)
     const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
 
@@ -44,7 +43,7 @@ export default class TransactionRow extends PureComponent {
         </td>
         <td align='right'>
           <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'danger' : 'success'}>
-            {amount}
+            {amount} {process.env.TOKEN_SYMBOL}
           </Badge>
         </td>
         <td align='right'>

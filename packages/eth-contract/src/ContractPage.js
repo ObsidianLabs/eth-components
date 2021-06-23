@@ -29,6 +29,7 @@ export default class ContractPage extends PureComponent {
     this.state = {
       error: null,
       errorType: null,
+      tokenInfo: null,
       abi: {},
       abis: [],
       projectAbis: null,
@@ -88,8 +89,10 @@ export default class ContractPage extends PureComponent {
       return
     }
 
-    if (account.codeHash === '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470') {
-      this.setState({ loading: false, error: 'No contract deployed.' })
+    if (account.codeHash) {
+      this.getTokenInfo(account)
+    } else {
+      this.setState({ loading: false, error: 'No contract deployed.', tokenInfo: null })
       return
     }
 
@@ -111,6 +114,16 @@ export default class ContractPage extends PureComponent {
       errorType: 'ABI_NOT_FOUND',
       abis: Object.entries(redux.getState().abis.toJS()),
     })
+  }
+
+  getTokenInfo = async account => {
+    const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
+    if (tokenInfo) {
+      this.props.tabs?.updateTab({
+        text: <span key={`token-${account.address}`}><i className='fas fa-coin text-muted mr-1'/>{tokenInfo.symbol}</span>
+      })
+    }
+    this.setState({ tokenInfo })
   }
 
   refreshProjectAbis = async () => {

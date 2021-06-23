@@ -74,7 +74,10 @@ class Contract extends TabbedExplorer {
       signer: uiState.get('signer'),
       projectRoot,
       getTabText: tab => {
-        let { value = '', temp } = tab
+        let { text, value = '' } = tab
+        if (text) {
+          return text
+        }
         const address = valueFormatter(value)
         let tabText = ''
         if (namedContracts[address]) {
