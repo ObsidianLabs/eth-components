@@ -15,7 +15,7 @@ env:
   bucket: webideuserdata
   region: cn-northwest-1
   source: ./packages/eth-project/main/templates/
-  destination: /templates/eth/
+  destination: templates/eth/
 
 jobs:
   templates:
