@@ -5,6 +5,7 @@ import {
   LoadingScreen,
 } from '@obsidians/ui-components'
 
+import redux from '@obsidians/redux'
 import { networkManager } from '@obsidians/eth-network'
 
 import AccountBalance from './AccountBalance'
@@ -63,7 +64,6 @@ export default class AccountPage extends PureComponent {
       account = await networkManager.sdk.accountFrom(value)
       this.getTokenInfo(account)
       this.setState({ loading: false, error: null, account })
-      this.forceUpdate()
     } catch (e) {
       this.setState({ loading: false, error: e.message, account: null })
       return
@@ -81,20 +81,19 @@ export default class AccountPage extends PureComponent {
     }
 
     networkManager.sdk.tokenInfo(account.address).then(tokenInfo => {
-      if (tokenInfo) {
-        const icon = tokenInfo.icon
-          ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
-          : <i className='fas fa-coin text-muted mr-1' />
-        this.props.tabs?.updateTab({
-          text: (
-            <div key={`token-${account.address}`} className='d-flex flex-row align-items-center'>
-              {icon}
-              {tokenInfo.symbol}
-            </div>
-          )
+      this.setState({ tokenInfo })
+      if (tokenInfo?.transferType === 'ERC20') {
+        redux.dispatch('ADD_TOKEN_INFO', {
+          network: networkManager.networkId,
+          address: account.address,
+          tokenInfo,
+        })
+      } else {
+        redux.dispatch('REMOVE_TOKEN_INFO', {
+          network: networkManager.networkId,
+          address: account.address,
         })
       }
-      this.setState({ tokenInfo })
     })
   }
 

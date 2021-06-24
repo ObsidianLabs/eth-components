@@ -51,7 +51,7 @@ class Contract extends TabbedExplorer {
   }
 
   render () {
-    const { history, route, network, uiState, projects, contracts, valueFormatter } = this.props
+    const { history, route, network, uiState, projects, contracts, tokens, valueFormatter } = this.props
 
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
@@ -80,12 +80,28 @@ class Contract extends TabbedExplorer {
         }
         const address = valueFormatter(value)
         let tabText = ''
+        const tokenInfo = tokens.getIn([network, address])?.toJS()
         if (namedContracts[address]) {
-          tabText = namedContracts[address]
+          tabText = (
+            <div key={`token-${address}`} className='d-flex flex-row align-items-center'>
+              <i className='fas fa-file-invoice text-muted mr-1' />
+              {namedContracts[address]}
+            </div>
+          )
+        } else if (tokenInfo) {
+          const icon = tokenInfo.icon
+            ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
+            : <i className='fas fa-coin text-muted mr-1' />
+          tabText = (
+            <div key={`token-${address}`} className='d-flex flex-row align-items-center'>
+              {icon}
+              {tokenInfo.symbol}
+            </div>
+          )
         } else if (address.length < 10) {
-          tabText = address
+          tabText = <code>{address}</code>
         } else {
-          tabText = `${address.substr(0, 6)}...${address.slice(-4)}`
+          tabText = <code>{address.substr(0, 6)}...{address.slice(-4)}</code>
         }
         return tabText
       },
@@ -110,4 +126,5 @@ export default connect([
   'network',
   'projects',
   'contracts',
+  'tokens',
 ])(withRouter(Contract))

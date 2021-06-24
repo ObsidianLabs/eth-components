@@ -118,20 +118,19 @@ export default class ContractPage extends PureComponent {
 
   getTokenInfo = async account => {
     const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
-    if (tokenInfo) {
-      const icon = tokenInfo.icon
-        ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
-        : <i className='fas fa-coin text-muted mr-1' />
-      this.props.tabs?.updateTab({
-        text: (
-          <div key={`token-${account.address}`} className='d-flex flex-row align-items-center'>
-            {icon}
-            {tokenInfo.symbol}
-          </div>
-        )
+    this.setState({ tokenInfo })
+    if (tokenInfo?.transferType === 'ERC20') {
+      redux.dispatch('ADD_TOKEN_INFO', {
+        network: networkManager.networkId,
+        address: account.address,
+        tokenInfo,
+      })
+    } else {
+      redux.dispatch('REMOVE_TOKEN_INFO', {
+        network: networkManager.networkId,
+        address: account.address,
       })
     }
-    this.setState({ tokenInfo })
   }
 
   refreshProjectAbis = async () => {

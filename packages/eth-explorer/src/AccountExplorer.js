@@ -67,7 +67,7 @@ class AccountExplorer extends TabbedExplorer {
   }
 
   render () {
-    const { history, route, network, uiState, accounts, valueFormatter } = this.props
+    const { history, route, network, uiState, accounts, tokens, valueFormatter } = this.props
 
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
@@ -94,12 +94,24 @@ class AccountExplorer extends TabbedExplorer {
         }
         const address = valueFormatter(value)
         let tabText = ''
+        const tokenInfo = tokens.getIn([network, address])?.toJS()
         if (this.keypairs[address]) {
-          tabText = this.keypairs[address]
+          tabText = <>
+            <i className='fas fa-map-marker-alt text-muted mr-1' />
+            {this.keypairs[address]}
+          </>
+        } else if (tokenInfo) {
+          const icon = tokenInfo.icon
+            ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
+            : <i className='fas fa-coin text-muted mr-1' />
+          tabText = <>
+            {icon}
+            {tokenInfo.symbol}
+          </>
         } else if (address.length < 10) {
-          tabText = address
+          tabText = <code>{address}</code>
         } else {
-          tabText = `${address.substr(0, 6)}...${address.slice(-4)}`
+          tabText = <code>{address.substr(0, 6)}...{address.slice(-4)}</code>
         }
         return tabText
       },
@@ -123,4 +135,5 @@ export default connect([
   'uiState',
   'network',
   'accounts',
+  'tokens',
 ])(withRouter(AccountExplorer))
