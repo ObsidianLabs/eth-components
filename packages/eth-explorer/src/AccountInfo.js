@@ -8,8 +8,7 @@ import {
 
 export default function AccountInfo ({ account, tokenInfo }) {
   let tokenInfoRows = null
-  if (tokenInfo) {
-    console.log(tokenInfo)
+  if (tokenInfo?.transferType === 'ERC20') {
     tokenInfoRows = <>
       <TableCardRow
         name='ERC20 Token'

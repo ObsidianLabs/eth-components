@@ -9,17 +9,7 @@ import {
   DropdownItem,
 } from '@obsidians/ui-components'
 
-import { networkManager } from '@obsidians/eth-network'
-
-export default function AccountBalance ({ account, history }) {
-  const [tokens, setTokens] = React.useState([])
-  React.useEffect(() => {
-    networkManager.sdk.getTokens(account.address).then(tokens => {
-      console.log(tokens)
-      setTokens(tokens)
-    })
-  }, [])
-  
+export default function AccountBalance ({ account, tokens, history }) {
   return (
     <TableCard title='Account' tableScroll>
       <TableCardRow
@@ -29,7 +19,7 @@ export default function AccountBalance ({ account, history }) {
         badgeColor='success'
       />
       {
-        Boolean(tokens.length) &&
+        Boolean(tokens?.length) &&
         <TableCardRow
           name='Tokens'
           icon='far fa-coins'
@@ -42,13 +32,18 @@ export default function AccountBalance ({ account, history }) {
                 <DropdownItem header>token balance</DropdownItem>
                 {tokens.map(t => (
                   <DropdownItem key={t.address} onClick={() => history.push(`/account/${t.address}`) }>
-                    <div className='d-flex flex-row justify-content-between align-items-end'>
-                      <span>
-                        <b>{new Intl.NumberFormat().format(t.balance / 10 ** t.decimals)} {t.symbol}</b>
-                      </span>
-                      <span className='small'>{t.name}</span>
+                    <div className='d-flex flex-row align-items-center'>
+                      <img src={t.icon} className='token-icon-lg mr-2' />
+                      <div className='d-flex flex-column'>
+                        <div className='d-flex flex-row justify-content-between align-items-end'>
+                          <span>
+                            <b>{new Intl.NumberFormat().format(t.balance / 10 ** t.decimals)} {t.symbol}</b>
+                          </span>
+                          <span className='small'>{t.name}</span>
+                        </div>
+                        <div className='small text-alpha-50'><code>{t.address}</code></div>
+                      </div>
                     </div>
-                    <div className='small text-alpha-50'><code>{t.address}</code></div>
                   </DropdownItem>
                 ))}
               </DropdownMenu>

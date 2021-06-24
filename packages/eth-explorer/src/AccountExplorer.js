@@ -20,7 +20,7 @@ class AccountExplorer extends TabbedExplorer {
     route: 'account',
     Page: AccountPage,
     valueFormatter: value => value.toLowerCase(),
-    ToolbarButtons: ({ explorer, value, ...otherProps }) => <>
+    ToolbarButtons: ({ value, ...otherProps }) => <>
       <TransferButton from={value} {...otherProps} />
       <FaucetButton address={value} {...otherProps} />
     </>,

@@ -119,8 +119,16 @@ export default class ContractPage extends PureComponent {
   getTokenInfo = async account => {
     const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
     if (tokenInfo) {
+      const icon = tokenInfo.icon
+        ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
+        : <i className='fas fa-coin text-muted mr-1' />
       this.props.tabs?.updateTab({
-        text: <span key={`token-${account.address}`}><i className='fas fa-coin text-muted mr-1'/>{tokenInfo.symbol}</span>
+        text: (
+          <div key={`token-${account.address}`} className='d-flex flex-row align-items-center'>
+            {icon}
+            {tokenInfo.symbol}
+          </div>
+        )
       })
     }
     this.setState({ tokenInfo })

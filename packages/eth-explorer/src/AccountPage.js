@@ -15,6 +15,7 @@ export default class AccountPage extends PureComponent {
   state = {
     error: null,
     account: null,
+    tokens: [],
     tokenInfo: null,
     loading: true,
   }
@@ -60,11 +61,7 @@ export default class AccountPage extends PureComponent {
     let account
     try {
       account = await networkManager.sdk.accountFrom(value)
-      if (account.codeHash) {
-        this.getTokenInfo(account)
-      } else {
-        this.setState({ tokenInfo: null })
-      }
+      this.getTokenInfo(account)
       this.setState({ loading: false, error: null, account })
       this.forceUpdate()
     } catch (e) {
@@ -73,19 +70,37 @@ export default class AccountPage extends PureComponent {
     }
   }
 
-  getTokenInfo = async account => {
-    const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
-    if (tokenInfo) {
-      this.props.tabs?.updateTab({
-        text: <span key={`token-${account.address}`}><i className='fas fa-coin text-muted mr-1'/>{tokenInfo.symbol}</span>
-      })
+  getTokenInfo = account => {
+    networkManager.sdk.getTokens(account.address).then(tokens => {
+      this.setState({ tokens })
+    })
+
+    if (!account.codeHash) {
+      this.setState({ tokenInfo: null })
+      return
     }
-    this.setState({ tokenInfo })
+
+    networkManager.sdk.tokenInfo(account.address).then(tokenInfo => {
+      if (tokenInfo) {
+        const icon = tokenInfo.icon
+          ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
+          : <i className='fas fa-coin text-muted mr-1' />
+        this.props.tabs?.updateTab({
+          text: (
+            <div key={`token-${account.address}`} className='d-flex flex-row align-items-center'>
+              {icon}
+              {tokenInfo.symbol}
+            </div>
+          )
+        })
+      }
+      this.setState({ tokenInfo })
+    })
   }
 
   render () {
     const { AccountInfo, history } = this.props
-    const { error, account, tokenInfo } = this.state
+    const { error, account, tokens, tokenInfo } = this.state
 
     if (!networkManager.sdk) {
       return null
@@ -122,7 +137,7 @@ export default class AccountPage extends PureComponent {
       <div className='d-flex flex-1 flex-column overflow-auto' key={account.address}>
         <div className='d-flex'>
           <div className='col-4 p-0 border-right-black'>
-            <AccountBalance account={account} history={history} />
+            <AccountBalance account={account} tokens={tokens} history={history} />
           </div>
           <div className='col-8 p-0 overflow-auto' style={{ maxHeight: 250 }}>
             <AccountInfo account={account} tokenInfo={tokenInfo} />

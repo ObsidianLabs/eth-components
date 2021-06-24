@@ -6,12 +6,14 @@ import {
   DebouncedFormGroup,
   FormGroup,
   Label,
+  DropdownInput,
+  Badge,
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
 import notification from '@obsidians/notification'
 import keypairManager, { KeypairInputSelector } from '@obsidians/keypair'
-import { txOptions } from '@obsidians/sdk'
+import { txOptions, utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 export default class TransferButton extends PureComponent {
@@ -20,6 +22,9 @@ export default class TransferButton extends PureComponent {
 
     this.state = {
       loading: false,
+      accountBalance: '',
+      tokens: [],
+      token: 'core',
       amount: '',
       recipient: '',
       pushing: false,
@@ -34,6 +39,12 @@ export default class TransferButton extends PureComponent {
     if (!await this.refresh()) {
       return
     }
+    const { account, tokens } = this.props.explorer.currentPage?.state
+    this.setState({
+      accountBalance: account.balance,
+      token: 'core',
+      tokens: tokens?.length ? tokens : null
+    })
     this.modal.current.openModal()
     setTimeout(() => this.amountInput.current.focus(), 100)
   }
@@ -60,17 +71,17 @@ export default class TransferButton extends PureComponent {
   push = async () => {
     this.setState({ pushing: true })
 
-    const { recipient: to, amount } = this.state
+    const { recipient: to, token, amount } = this.state
     const from = this.props.from
 
     const override = Object.fromEntries(txOptions.list.map(option => [option.name, option.default]))
     try {
-      const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount }, override)
+      const tx = await networkManager.sdk.getTransferTransaction({ from, to, token, amount }, override)
       await new Promise((resolve, reject) => {
         queue.add(
           () => networkManager.sdk.sendTransaction(tx),
           {
-            name: 'Transfer',
+            name: token === 'core' ? 'Transfer' : `${token.symbol} Transfer`,
             signer: from,
             address: from,
             params: { from, to, amount },
@@ -94,10 +105,60 @@ export default class TransferButton extends PureComponent {
     }
   }
 
+  renderTokens () {
+    const { accountBalance, tokens, token } = this.state
+    if (!tokens) {
+      return null
+    }
+
+    const accountBadge = `${new Intl.NumberFormat().format(accountBalance)} ${process.env.TOKEN_SYMBOL}`
+
+    return (
+      <DropdownInput
+        label='Token'
+        renderText={option => option.text}
+        options={[
+          {
+            id: 'core',
+            text: process.env.TOKEN_SYMBOL,
+            display: (
+              <div className='d-flex align-items-center justify-content-between'>
+                {process.env.TOKEN_SYMBOL}<Badge color='info'>{accountBadge}</Badge>
+              </div>
+            ),
+            badge: accountBadge,
+          },
+          ...tokens.map(t => {
+            const badge = `${new Intl.NumberFormat().format(t.balance / 10 ** t.decimals)} ${t.symbol}`
+            return {
+              id: t,
+              text: t.name,
+              display: (
+                <div className='d-flex align-items-center justify-content-between'>
+                  <div className='d-flex align-items-center'>
+                    <img src={t.icon} className='token-icon mr-2' />
+                    {t.name}
+                  </div>
+                  <Badge color='info'>{badge}</Badge>
+                </div>
+              ),
+              badge,
+            }
+          })
+        ]}
+        value={token}
+        onChange={token => this.setState({ token })}
+      />
+    )
+  }
+
   render () {
     const { addressLength = 42 } = this.props
-    const { loading, amount, recipient, pushing } = this.state
-
+    const { loading, accountBalance, token, amount, recipient, pushing } = this.state
+    const max = token === 'core'
+      ? `${accountBalance} ${process.env.TOKEN_SYMBOL}`
+      : `${utils.format.big(token.balance).div(10 ** token.decimals).toString()} ${token.symbol}`
+    
     return <>
       <ToolbarButton
         id='navbar-transfer'
@@ -116,10 +177,12 @@ export default class TransferButton extends PureComponent {
         onConfirm={this.push}
         pending={pushing && 'Pushing...'}
       >
+        {this.renderTokens()}
         <DebouncedFormGroup
           ref={this.amountInput}
           label='Amount'
           maxLength='50'
+          placeholder={`Max: ${max}`}
           value={amount}
           onChange={amount => this.setState({ amount })}
         />
