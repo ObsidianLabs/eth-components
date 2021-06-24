@@ -77,7 +77,7 @@ export default class Sdk {
       const voidSigner = new ethers.VoidSigner(from, this.provider)
       return await voidSigner.populateTransaction({ to, value })
       } else {
-      const value = utils.format.big(amount).mul(10 ** token.decimals).toString()
+      const value = utils.format.big(amount).mul(utils.format.big(10).pow(token.decimals)).toString()
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
       return contract.execute('transfer', { array: [to, value] }, { ...override, from })
     }

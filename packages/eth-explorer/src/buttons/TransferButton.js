@@ -163,7 +163,7 @@ export default class TransferButton extends PureComponent {
     const { loading, accountBalance, token, amount, recipient, pushing } = this.state
     const max = token === 'core'
       ? `${accountBalance} ${process.env.TOKEN_SYMBOL}`
-      : `${utils.format.big(token.balance).div(10 ** token.decimals).toString()} ${token.symbol}`
+      : `${utils.format.big(token.balance).div(utils.format.big(10).pow(token.decimals)).toString()} ${token.symbol}`
     
     return <>
       <ToolbarButton
