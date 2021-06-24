@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import { IpcChannel } from '@obsidians/ipc'
 
 import utils from './utils'
 import Client from './Client'
@@ -6,6 +7,7 @@ import rpc from './rpc'
 import Contract from './Contract'
 import signatureProvider from './signatureProvider'
 import BrowserExtension from './BrowserExtension'
+import ERC20 from './redux/abi/ERC20.json'
 import tokenList from './token/tokenlist.json'
 
 let browserExtension
@@ -69,13 +71,13 @@ export default class Sdk {
     return new Contract({ address, abi }, this.provider)
   }
 
-  async getTransferTransaction ({ from, to, amount }) {
+  async getTransferTransaction ({ from, to, token, amount }, override) {
     if (token === 'core' || !token) {
       const value = utils.unit.toValue(amount)
       const voidSigner = new ethers.VoidSigner(from, this.provider)
       return await voidSigner.populateTransaction({ to, value })
       } else {
-      const value = utils.format.big(amount).times(10 ** token.decimals).toString()
+      const value = utils.format.big(amount).mul(10 ** token.decimals).toString()
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
       return contract.execute('transfer', { array: [to, value] }, { ...override, from })
     }
@@ -99,7 +101,7 @@ export default class Sdk {
 
   sendTransaction (tx) {
     let pendingTx
-    if (this.provider.isMetaMask && browserExtension && browserExtension.currentAccount === tx.from) {
+    if (this.provider.isMetaMask && browserExtension && browserExtension.currentAccount === tx.from.toLowerCase()) {
       const signer = this.provider.getSigner(tx.from)
       pendingTx = signer.sendTransaction(tx)
     } else {
@@ -162,6 +164,31 @@ export default class Sdk {
   }
 
   async getTokens (address) {
-    return
+    if (this.chainId !== 1) {
+      return
+    }
+    const ipc = new IpcChannel()
+    const url = `https://services.tokenview.com/vipapi/eth/address/tokenbalance/${address}?apikey=${process.env.TOKENVIEW_API_TOKEN}`
+    let json
+    try {
+      const result = await ipc.invoke('fetch', url)
+      json = JSON.parse(result)
+    } catch {
+      return
+    }
+    if (json.code !== 1) {
+      return
+    }
+    return json.data.map(t => {
+      const token = tokenList.tokens.find(token => token.address.toLowerCase() === t.tokenInfo.h)
+      return {
+        balance: t.balance,
+        name: t.tokenInfo.f,
+        symbol: t.tokenInfo.s,
+        decimals: Number(t.tokenInfo.d),
+        address: t.tokenInfo.h,
+        icon: token && token.logoURI,
+      }
+    })
   }
 }

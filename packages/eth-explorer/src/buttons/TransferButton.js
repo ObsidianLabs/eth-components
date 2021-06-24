@@ -111,7 +111,13 @@ export default class TransferButton extends PureComponent {
       return null
     }
 
-    const accountBadge = `${new Intl.NumberFormat().format(accountBalance)} ${process.env.TOKEN_SYMBOL}`
+    let formattedBalance
+    if (accountBalance > 1e14) {
+      formattedBalance = accountBalance.toExponential()
+    } else {
+      formattedBalance = new Intl.NumberFormat().format(accountBalance)
+    }
+    const accountBadge = `${formattedBalance} ${process.env.TOKEN_SYMBOL}`
 
     return (
       <DropdownInput
@@ -134,7 +140,7 @@ export default class TransferButton extends PureComponent {
               id: t,
               text: <div className='d-flex align-items-center'><img src={t.icon} className='token-icon mr-2' />{t.name}</div>,
               display: (
-                <div className='d-flex align-items-center justify-content-between'>
+                <div className='d-flex align-items-center justify-content-between overflow-hidden'>
                   <div className='d-flex align-items-center'>
                     <img src={t.icon} className='token-icon mr-2' />
                     {t.name}
