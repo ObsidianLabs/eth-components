@@ -132,7 +132,7 @@ export default class TransferButton extends PureComponent {
             const badge = `${new Intl.NumberFormat().format(t.balance / 10 ** t.decimals)} ${t.symbol}`
             return {
               id: t,
-              text: t.name,
+              text: <div className='d-flex align-items-center'><img src={t.icon} className='token-icon mr-2' />{t.name}</div>,
               display: (
                 <div className='d-flex align-items-center justify-content-between'>
                   <div className='d-flex align-items-center'>
