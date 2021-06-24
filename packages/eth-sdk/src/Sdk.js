@@ -6,6 +6,7 @@ import rpc from './rpc'
 import Contract from './Contract'
 import signatureProvider from './signatureProvider'
 import BrowserExtension from './BrowserExtension'
+import tokenList from './token/tokenlist.json'
 
 let browserExtension
 
@@ -69,9 +70,15 @@ export default class Sdk {
   }
 
   async getTransferTransaction ({ from, to, amount }) {
-    const value = utils.unit.toValue(amount)
-    const voidSigner = new ethers.VoidSigner(from, this.provider)
-    return await voidSigner.populateTransaction({ to, value })
+    if (token === 'core' || !token) {
+      const value = utils.unit.toValue(amount)
+      const voidSigner = new ethers.VoidSigner(from, this.provider)
+      return await voidSigner.populateTransaction({ to, value })
+      } else {
+      const value = utils.format.big(amount).times(10 ** token.decimals).toString()
+      const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
+      return contract.execute('transfer', { array: [to, value] }, { ...override, from })
+    }
   }
 
   async getDeployTransaction ({ abi, bytecode, parameters }, override) {
@@ -142,7 +149,16 @@ export default class Sdk {
   }
 
   async tokenInfo (address) {
-    return
+    if (this.chainId !== 1) {
+      return
+    }
+    const token = tokenList.tokens.find(t => t.address.toLowerCase() === address)
+    if (token) {
+      token.icon = token.logoURI
+      token.address = token.address.toLowerCase()
+      token.totalSupply = await this.client.getTokenTotalSupply(address)
+      return token
+    }
   }
 
   async getTokens (address) {

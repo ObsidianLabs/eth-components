@@ -17,6 +17,7 @@ export default {
     sha3: ethers.utils.keccak256
   },
   format: {
+    big: v => v,
     bytes: str => ethers.utils.toUtf8Bytes(str),
     bytesFromHex: hex => ethers.utils.arrayify(hex),
   },

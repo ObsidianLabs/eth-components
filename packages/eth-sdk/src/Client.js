@@ -33,6 +33,11 @@ export default class Client {
       list: result.result
     }
   }
+
+  async getTokenTotalSupply (address) {
+    const result = await this.etherscan.getTokenTotalSupply(address)
+    return result.result
+  }
 }
 
 
@@ -52,6 +57,15 @@ class EtherscanProxy {
       page: page + 1,
       offset: size,
       sort: 'desc'
+    }
+    return await this.channel.invoke('GET', this.networkId, query)
+  }
+
+  async getTokenTotalSupply (address) {
+    const query = {
+      module: 'stats',
+      action: 'tokensupply',
+      contractaddress: address,
     }
     return await this.channel.invoke('GET', this.networkId, query)
   }
