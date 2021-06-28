@@ -2,10 +2,10 @@ import platform from '@obsidians/platform'
 import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
-import semver from 'semver'
 import stripAnsi from 'strip-ansi'
 
 import SolcjsCompiler from './SolcjsCompiler'
+import soljsonReleases from './soljsonReleases.json'
 
 class SolcjsChannel extends DockerImageChannel {
   installed () {
@@ -13,7 +13,7 @@ class SolcjsChannel extends DockerImageChannel {
   }
 
   versions () {
-    const versions = Object.entries(window.soljsonReleases).map(([Tag, Name]) => ({ Tag, Name }))
+    const versions = Object.entries(soljsonReleases).map(([Tag, Name]) => ({ Tag, Name }))
     const event = new CustomEvent('versions', { detail: versions })
     this.eventTarget.dispatchEvent(event)
     return versions
