@@ -52,14 +52,14 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
 
   render () {
     const { noSolc } = this.props
-    const { projectRoot, projectSettings } = this.context
+    const { projectRoot, projectManager, projectSettings } = this.context
 
     return (
       <div className='custom-tab bg2'>
         <div className='jumbotron bg-transparent text-body'>
           <div className='container'>
             <h1>Project Settings</h1>
-            <ProjectPath projectRoot={projectRoot} />
+            <ProjectPath projectRoot={projectRoot} remote={projectManager.remote} />
 
             <h4 className='mt-4'>General</h4>
             {this.renderLanguageOption(projectSettings)}

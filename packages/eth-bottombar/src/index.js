@@ -12,10 +12,11 @@ import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
 
-export default connect(['queue', 'network', 'uiState'])(function BottomBar (props) {
+export default connect(['network', 'queue', 'projects', 'uiState'])(function BottomBar (props) {
   const {
     network,
     queue,
+    projects,
     uiState,
 
     mnemonic = true,
@@ -33,6 +34,21 @@ export default connect(['queue', 'network', 'uiState'])(function BottomBar (prop
     txs = queue.getIn([localNetwork.params.id, 'txs'])
   }
 
+  const loaded = projects.getIn(['selected', 'loaded'])
+  let projectButtons
+  if (loaded) {
+    projectButtons = <>
+      <CacheRoute
+        path={[`/${Auth.username}/:project`, '/local/:project']}
+        component={CompilerSelectors}
+      />
+      <CacheRoute
+        path={[`/${Auth.username}/:project`, '/local/:project']}
+        component={TerminalButton}
+      />
+    </>
+  }
+
   return <>
     <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains}>
       <div className='btn btn-primary btn-sm btn-flat'>
@@ -48,13 +64,6 @@ export default connect(['queue', 'network', 'uiState'])(function BottomBar (prop
       </div>
     </AbiStorage>
     <div className='flex-1' />
-    <CacheRoute
-      path={`/${Auth.username || 'local'}/:project`}
-      component={CompilerSelectors}
-    />
-    <CacheRoute
-      path={`/${Auth.username || 'local'}/:project`}
-      component={TerminalButton}
-    />
+    {projectButtons}
   </>
 })

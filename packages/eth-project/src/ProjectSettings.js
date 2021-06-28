@@ -3,8 +3,8 @@ import { ProjectSettings } from '@obsidians/workspace'
 export default class ExtendedProjectSettings extends ProjectSettings {
   static configFileName = 'config.json'
 
-  constructor (settingFilePath, channel) {
-    super(settingFilePath, channel)
+  constructor (projectManager, settingFilePath, channel) {
+    super(projectManager, settingFilePath, channel)
   }
 
   trimSettings = (rawSettings = {}) => {
