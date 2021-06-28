@@ -1,5 +1,3 @@
-import platform from '@obsidians/platform'
-import fileOps from '@obsidians/file-ops'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 
@@ -88,7 +86,7 @@ function makeProjectManager (Base) {
 
     validateDeployment (contractObj) {  
       let bytecode, deployedBytecode
-      if (platform.isDesktop) {
+      if (!this.remote) {
         bytecode = contractObj.bytecode
         deployedBytecode = contractObj.deployedBytecode
         if (typeof deployedBytecode !== 'string') {
@@ -225,9 +223,9 @@ function makeProjectManager (Base) {
         abi: JSON.stringify(deploy.abi),
       })
   
-      const deployResultPath = fileOps.current.path.join(this.projectRoot, 'deploys', `${result.network}_${moment().format('YYYYMMDD_HHmmss')}.json`)
-      await fileOps.current.ensureFile(deployResultPath)
-      await fileOps.current.writeFile(deployResultPath, JSON.stringify(result, null, 2))
+      const deployResultPath = this.path.join(this.projectRoot, 'deploys', `${result.network}_${moment().format('YYYYMMDD_HHmmss')}.json`)
+      await this.ensureFile(deployResultPath)
+      await this.writeFile(deployResultPath, JSON.stringify(result, null, 2))
     }
   }
 }

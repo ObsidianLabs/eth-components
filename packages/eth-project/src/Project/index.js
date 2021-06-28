@@ -28,8 +28,7 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
     return contextMenu
   }
   if (node.name.endsWith('.json')) {
-    const path = fileOps.current.path
-    const { dir, name } = path.parse(node.path)
+    const { dir, name } = projectManager.path.parse(node.path)
     if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
       const cloned = [...contextMenu]
       cloned.splice(projectManager.remote ? 3 : 5, 0, {

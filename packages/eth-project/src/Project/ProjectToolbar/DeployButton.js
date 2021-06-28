@@ -8,7 +8,6 @@ import {
   Label,
 } from '@obsidians/ui-components'
 
-import fileOps from '@obsidians/file-ops'
 import notification from '@obsidians/notification'
 import { KeypairInputSelector } from '@obsidians/keypair'
 import { txOptions } from '@obsidians/sdk'
@@ -51,9 +50,9 @@ export default class DeployerButton extends PureComponent {
     } else {
       this.getConstructorAbiArgs = contractObj => [contractObj.abi]
     }
-    const { dir: contractsFolder, base: selected } = fileOps.current.path.parse(contractPath)
+    const { dir: contractsFolder, base: selected } = this.props.projectManager.path.parse(contractPath)
     try {
-      const files = await fileOps.current.listFolder(contractsFolder)
+      const files = await this.props.projectManager.listFolder(contractsFolder)
       this.setState({
         selected,
         contractsFolder,
@@ -76,12 +75,12 @@ export default class DeployerButton extends PureComponent {
   updateContract = async selected => {
     const txOptionObj = Object.fromEntries(txOptions.list.map(option => [option.name, '']))
     this.setState({ selected, ...txOptionObj })
-    const contractPath = fileOps.current.path.join(this.state.contractsFolder, selected)
+    const contractPath = this.props.projectManager.path.join(this.state.contractsFolder, selected)
     await this.updateAbi(contractPath)
   }
 
   updateAbi = async (contractPath, pathInProject) => {
-    const contractName = fileOps.current.path.parse(contractPath).name
+    const contractName = this.props.projectManager.path.parse(contractPath).name
 
     let contractObj
     try {
@@ -107,7 +106,7 @@ export default class DeployerButton extends PureComponent {
   }
   
   readContractJson = async (contractPath, pathInProject) => {
-    const contractJson = await fileOps.current.readFile(contractPath)
+    const contractJson = await this.props.projectManager.readFile(contractPath)
 
     try {
       return JSON.parse(contractJson)
