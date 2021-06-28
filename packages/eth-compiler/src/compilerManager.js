@@ -29,9 +29,7 @@ export class CompilerManager {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
     this.solc = new SolcjsChannel()
     this.notification = null
-    if (platform.isWeb) {
-      this.solcjsCompiler = new SolcjsCompiler()
-    }
+    this.solcjsCompiler = new SolcjsCompiler()
   }
 
   get projectRoot () {
@@ -131,7 +129,7 @@ export class CompilerManager {
   }
 
   async build (settings, projectManager, sourceFile) {
-    if (platform.isWeb) {
+    if (projectManager.remote) {
       return await this.buildBySolcjs(projectManager)
     }
 

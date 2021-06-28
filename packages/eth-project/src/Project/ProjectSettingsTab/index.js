@@ -14,7 +14,6 @@ import {
   ProjectPath,
 } from '@obsidians/workspace'
 
-import platform from '@obsidians/platform'
 import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
 
@@ -79,7 +78,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             />
             <h4 className='mt-4'>Compilers</h4>
             {
-              platform.isDesktop &&
+              !projectManager.remote &&
               <DockerImageInputSelector
                 channel={compilerManager.truffle}
                 disableAutoSelection
@@ -100,7 +99,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 bg='bg-black'
                 label='Solc version'
                 noManager
-                extraOptions={platform.isDesktop ? [{
+                extraOptions={!projectManager.remote ? [{
                   id: 'default',
                   display: 'From truffle-config.js',
                   onClick: () => this.onChange('compilers.solc')('default')

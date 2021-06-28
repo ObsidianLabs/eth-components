@@ -34,13 +34,14 @@ export default connect(['network', 'queue', 'projects', 'uiState'])(function Bot
     txs = queue.getIn([localNetwork.params.id, 'txs'])
   }
 
-  const loaded = projects.getIn(['selected', 'loaded'])
+  const selectedProject = projects.get('selected')
+  const loaded = selectedProject?.get('loaded')
   let projectButtons
   if (loaded) {
     projectButtons = <>
       <CacheRoute
         path={[`/${Auth.username}/:project`, '/local/:project']}
-        component={CompilerSelectors}
+        render={() => <CompilerSelectors author={selectedProject.get('author')} />}
       />
       <CacheRoute
         path={[`/${Auth.username}/:project`, '/local/:project']}
