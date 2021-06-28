@@ -5,7 +5,6 @@ import {
 } from '@obsidians/ui-components'
 
 import semver from 'semver'
-import platform from '@obsidians/platform'
 import fileOps from '@obsidians/file-ops'
 import notification from '@obsidians/notification'
 
@@ -45,15 +44,15 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       const createProject = this.props.createProject.bind(this)
       return createProject({ projectRoot, name, template, group })
     }
+    
+    if (this.state.remote) {
+      return super.createProject({ projectRoot, name, template, compilerVersion })
+    }
 
     const { compilerVersion, openZeppelinVersion } = this.state
     if (!this.props.noCompilerOption && !compilerVersion) {
       notification.error('Cannot Create the Project', `Please install ${process.env.COMPILER_NAME_IN_LABEL} and select a version.`)
       return false
-    }
-    
-    if (platform.isWeb) {
-      return super.createProject({ projectRoot, name, template, compilerVersion })
     }
 
     if (group === 'open zeppelin') {
@@ -130,7 +129,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
   }
 
   renderOtherOptions = () => {
-    if (this.props.noCompilerOption) {
+    if (this.props.noCompilerOption || this.state.remote) {
       return null
     }
     return (
@@ -162,23 +161,23 @@ const templates = [
   { id: 'empty', display: 'Empty Project' },
   { id: 'coin', display: 'Coin' },
   { id: 'erc20', display: 'ERC20 Token' },
-]
-if (platform.isDesktop) {
-  templates.push({
+  {
     group: 'open zeppelin',
     badge: 'Open Zeppelin',
+    local: true,
     children: [
       { id: 'openzeppelin', display: 'Basics - ERC20, ERC721 & ERC1155 (v3.1+)' },
     ],
-  })
-  templates.push({
+  },
+  {
     group: `${process.env.COMPILER_NAME}`,
     badge: `${process.env.COMPILER_NAME}`,
+    local: true,
     children: [
       { id: 'metacoin', display: 'Metacoin' },
     ],
-  })
-}
+  }
+]
 
 ExtendedNewProjectModal.defaultProps = {
   defaultTemplate: 'coin',
