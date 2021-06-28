@@ -69,7 +69,7 @@ export class CompilerManager {
     }
 
     const solcVersion = projectManager.projectSettings.get('compilers.solc')
-    const solcFileName = window.soljsonReleases[solcVersion]
+    const solcFileName = soljsonReleases[solcVersion]
     const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
 
     CompilerManager.button.setState({ building: true })
