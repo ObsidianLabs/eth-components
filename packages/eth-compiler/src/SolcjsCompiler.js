@@ -1,3 +1,6 @@
+import platform from '@obsidians/platform'
+import fileOps from '@obsidians/file-ops'
+
 export default class SolcjsCompiler {
   constructor () {
     this.reqs = new Map()
@@ -15,7 +18,10 @@ export default class SolcjsCompiler {
     }
     this.solcUrl = solcUrl
     if (!this.worker) {
-      this.worker = new Worker('/solc.js')
+      const solcFile = (platform.isWeb || process.env.NODE_ENV === 'development')
+        ? '/solc.js'
+        : fileOps.current.path.join(fileOps.current.appPath, `build/solc.js`)
+      this.worker = new Worker(solcFile)
       this.worker.onmessage = this.onMessage.bind(this)
     }
     return this.worker
