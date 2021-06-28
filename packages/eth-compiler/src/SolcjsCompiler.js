@@ -1,5 +1,3 @@
-import fileOps from '@obsidians/file-ops'
-
 export default class SolcjsCompiler {
   constructor () {
     this.reqs = new Map()
@@ -52,7 +50,7 @@ export default class SolcjsCompiler {
 
     let mainFileContent
     try {
-      mainFileContent = await fileOps.current.readFile(projectManager.mainFilePath)
+      mainFileContent = await projectManager.readFile(projectManager.mainFilePath)
     } catch (e) {
       console.warn(e)
       throw new Error(`Cannot read the main file <b>${mainFilePath}</b>.`)
@@ -105,7 +103,7 @@ export default class SolcjsCompiler {
     try {
       const completePath = this.projectManager.pathForProjectFile(path)
       if (!this.fileCache.has(completePath)) {
-        this.fileCache.set(completePath, await fileOps.current.readFile(completePath))
+        this.fileCache.set(completePath, await this.projectManager.readFile(completePath))
       }
       return this.fileCache.get(completePath)
     } catch (e) {

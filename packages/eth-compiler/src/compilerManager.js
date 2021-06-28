@@ -1,4 +1,3 @@
-import platform from '@obsidians/platform'
 import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
@@ -99,7 +98,7 @@ export class CompilerManager {
           const json = output.contracts[file][contractName]
           const contractJsonPath = projectManager.pathForProjectFile(`build/contracts/${contractName}.json`)
           const contractJson = JSON.stringify(json, null, 2)
-          await fileOps.current.writeFile(contractJsonPath, contractJson)
+          await projectManager.writeFile(contractJsonPath, contractJson)
         }
       }
       projectManager.refreshDirectory()
