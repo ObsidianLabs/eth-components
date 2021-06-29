@@ -80,7 +80,7 @@ class Contract extends TabbedExplorer {
         }
         const address = valueFormatter(value)
         let tabText = ''
-        const tokenInfo = tokens.getIn([network, address])?.toJS()
+        const tokenInfo = tokens?.getIn([network, address])?.toJS()
         if (namedContracts[address]) {
           tabText = (
             <div key={`token-${address}`} className='d-flex flex-row align-items-center'>

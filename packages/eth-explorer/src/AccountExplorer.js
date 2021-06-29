@@ -94,7 +94,7 @@ class AccountExplorer extends TabbedExplorer {
         }
         const address = valueFormatter(value)
         let tabText = ''
-        const tokenInfo = tokens.getIn([network, address])?.toJS()
+        const tokenInfo = tokens?.getIn([network, address])?.toJS()
         if (this.keypairs[address]) {
           tabText = <>
             <i className='fas fa-map-marker-alt text-muted mr-1' />
