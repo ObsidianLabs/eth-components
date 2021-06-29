@@ -10,6 +10,8 @@ import {
 } from '@obsidians/ui-components'
 
 export default function AccountBalance ({ account, tokens, history }) {
+  const erc20Tokens = tokens?.filter(t => t.type === 'ERC20')
+
   return (
     <TableCard title='Account' tableScroll>
       <TableCardRow
@@ -19,18 +21,18 @@ export default function AccountBalance ({ account, tokens, history }) {
         badgeColor='success'
       />
       {
-        Boolean(tokens?.length) &&
+        Boolean(erc20Tokens?.length) &&
         <TableCardRow
           name='Tokens'
           icon='far fa-coins'
           right={
             <UncontrolledDropdown>
               <DropdownToggle caret className='badge badge-pill d-flex align-items-center' color='info'>
-                {tokens.length}
+                {erc20Tokens.length}
               </DropdownToggle>
               <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 360 }}>
                 <DropdownItem header>token balance</DropdownItem>
-                {tokens.map(t => {
+                {erc20Tokens.map(t => {
                   const balance = t.balance / 10 ** t.decimals
                   let formattedBalance
                   if (balance > 1e14) {

@@ -134,7 +134,7 @@ export default class TransferButton extends PureComponent {
             ),
             badge: accountBadge,
           },
-          ...tokens.map(t => {
+          ...tokens.filter(t => t.type === 'ERC20').map(t => {
             const badge = `${new Intl.NumberFormat().format(t.balance / 10 ** t.decimals)} ${t.symbol}`
             return {
               id: t,

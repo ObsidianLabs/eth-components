@@ -77,7 +77,7 @@ export default class Sdk {
       const voidSigner = new ethers.VoidSigner(from, this.provider)
       return await voidSigner.populateTransaction({ to, value })
       } else {
-      const value = utils.format.big(amount).mul(utils.format.big(10).pow(token.decimals)).toString()
+      const value = utils.format.big(amount).times(utils.format.big(10).pow(token.decimals)).toString()
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
       return contract.execute('transfer', { array: [to, value] }, { ...override, from })
     }
@@ -182,6 +182,7 @@ export default class Sdk {
     return json.data.map(t => {
       const token = tokenList.tokens.find(token => token.address.toLowerCase() === t.tokenInfo.h)
       return {
+        type: 'ERC20',
         balance: t.balance,
         name: t.tokenInfo.f,
         symbol: t.tokenInfo.s,
