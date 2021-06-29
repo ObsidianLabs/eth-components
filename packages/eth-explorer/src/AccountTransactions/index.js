@@ -16,7 +16,8 @@ export default class AccountTransactions extends PureComponent {
     page: 0,
     total: -1,
     size: 10,
-    hide: false
+    hide: false,
+    error: '',
   }
 
   componentDidMount () {
@@ -30,31 +31,43 @@ export default class AccountTransactions extends PureComponent {
   }
 
   refresh = async account => {
-    this.setState({ txs: [], loading: true, page: 0 })
+    this.setState({ txs: [], loading: true, page: 0, error: '' })
     const { total, list: txs, noExplorer } = await networkManager.sdk.getTransactions(account.address, 0, this.state.size)
     if (noExplorer) {
       this.setState({ hide: true })
       return
     }
+    if (Array.isArray(txs)) {
+      this.setState({
+        txs,
+        page: 1,
+        hasMore: total ? txs.length < total : txs.length === this.state.size,
+      })
+    } else {
+      this.setState({ error: txs })
+    }
     this.setState({
-      txs,
-      page: 1,
-      hasMore: total ? txs.length < total : txs.length === this.state.size,
       loading: false
     })
   }
 
   loadMore = async () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true, error: '' })
     const { total, list: txs, noExplorer } = await networkManager.sdk.getTransactions(this.props.account.address, this.state.page, this.state.size)
     if (noExplorer) {
       this.setState({ hide: true })
       return
     }
+    if (Array.isArray(txs)) {
+      this.setState({
+        txs: [...this.state.txs, ...txs],
+        page: this.state.page + 1,
+        hasMore: total ? (this.state.txs.length + txs.length) < total : txs.length === this.state.size,
+      })
+    } else {
+      this.setState({ error: txs })
+    }
     this.setState({
-      txs: [...this.state.txs, ...txs],
-      page: this.state.page + 1,
-      hasMore: total ? (this.state.txs.length + txs.length) < total : txs.length === this.state.size,
       loading: false,
     })
   }
@@ -70,6 +83,14 @@ export default class AccountTransactions extends PureComponent {
         <tr key='txs-loading' className='bg-transparent'>
           <td align='middle' colSpan={8}>
             <i className='fas fa-spin fa-spinner mr-1' />Loading...
+          </td>
+        </tr>
+      )
+    } else if (this.state.error) {
+      rows.push(
+        <tr key='txs-loadmore' className='bg-transparent'>
+          <td align='middle' colSpan={8}>
+            {this.state.error}
           </td>
         </tr>
       )
