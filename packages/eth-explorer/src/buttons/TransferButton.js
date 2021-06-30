@@ -88,7 +88,7 @@ export default class TransferButton extends PureComponent {
           },
           {
             pushing: () => {
-              this.setState({ pushing: false })
+              this.setState({ pushing: false, amount: '' })
               this.modal.current.closeModal()
             },
             executed: resolve,
@@ -106,6 +106,7 @@ export default class TransferButton extends PureComponent {
   }
 
   renderTokens () {
+    const { network } = this.props
     const { accountBalance, tokens, token } = this.state
     if (!tokens) {
       return null
@@ -117,7 +118,7 @@ export default class TransferButton extends PureComponent {
     } else {
       formattedBalance = new Intl.NumberFormat().format(accountBalance)
     }
-    const accountBadge = `${formattedBalance} ${process.env.TOKEN_SYMBOL}`
+    const accountBadge = `${formattedBalance} ${process.env.TOKEN_SYMBOL(network)}`
 
     return (
       <DropdownInput
@@ -126,10 +127,10 @@ export default class TransferButton extends PureComponent {
         options={[
           {
             id: 'core',
-            text: process.env.TOKEN_SYMBOL,
+            text: process.env.TOKEN_SYMBOL(network),
             display: (
               <div className='d-flex align-items-center justify-content-between'>
-                {process.env.TOKEN_SYMBOL}<Badge color='info'>{accountBadge}</Badge>
+                {process.env.TOKEN_SYMBOL(network)}<Badge color='info'>{accountBadge}</Badge>
               </div>
             ),
             badge: accountBadge,
@@ -159,10 +160,10 @@ export default class TransferButton extends PureComponent {
   }
 
   render () {
-    const { addressLength = 42 } = this.props
+    const { network, addressLength = 42 } = this.props
     const { loading, accountBalance, token, amount, recipient, pushing } = this.state
     const max = token === 'core'
-      ? `${accountBalance} ${process.env.TOKEN_SYMBOL}`
+      ? `${accountBalance} ${process.env.TOKEN_SYMBOL(network)}`
       : `${utils.format.big(token.balance).div(utils.format.big(10).pow(token.decimals)).toString()} ${token.symbol}`
     
     return <>

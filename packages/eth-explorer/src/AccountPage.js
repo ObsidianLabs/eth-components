@@ -98,7 +98,7 @@ export default class AccountPage extends PureComponent {
   }
 
   render () {
-    const { AccountInfo, history } = this.props
+    const { network, AccountInfo, history } = this.props
     const { error, account, tokens, tokenInfo } = this.state
 
     if (!networkManager.sdk) {
@@ -136,7 +136,7 @@ export default class AccountPage extends PureComponent {
       <div className='d-flex flex-1 flex-column overflow-auto' key={account.address}>
         <div className='d-flex'>
           <div className='col-4 p-0 border-right-black'>
-            <AccountBalance account={account} tokens={tokens} history={history} />
+            <AccountBalance network={network} account={account} tokens={tokens} history={history} />
           </div>
           <div className='col-8 p-0 overflow-auto' style={{ maxHeight: 250 }}>
             <AccountInfo account={account} tokenInfo={tokenInfo} />
@@ -144,7 +144,7 @@ export default class AccountPage extends PureComponent {
         </div>
         <div className='d-flex flex-fill overflow-hidden'>
           <div className='col-12 p-0 border-top-black overflow-auto'>
-            <AccountTransactions account={account} ref={this.accountTransactions}/>
+            <AccountTransactions network={network} account={account} ref={this.accountTransactions}/>
           </div>
         </div>
       </div>

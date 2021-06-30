@@ -9,7 +9,7 @@ import {
   DropdownItem,
 } from '@obsidians/ui-components'
 
-export default function AccountBalance ({ account, tokens, history }) {
+export default function AccountBalance ({ network, account, tokens, history }) {
   const erc20Tokens = tokens?.filter(t => t.type === 'ERC20')
 
   return (
@@ -17,7 +17,7 @@ export default function AccountBalance ({ account, tokens, history }) {
       <TableCardRow
         name='Balance'
         icon='far fa-wallet'
-        badge={`${new Intl.NumberFormat().format(account.balance)} ${process.env.TOKEN_SYMBOL}`}
+        badge={`${new Intl.NumberFormat().format(account.balance)} ${process.env.TOKEN_SYMBOL(network)}`}
         badgeColor='success'
       />
       {

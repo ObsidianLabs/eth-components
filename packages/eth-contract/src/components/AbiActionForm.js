@@ -209,7 +209,7 @@ export default class AbiActionForm extends PureComponent {
   }
 
   render () {
-    const { FormSection, inModal, actions } = this.props
+    const { network, FormSection, inModal, actions } = this.props
 
     if (!actions.length) {
       return <Screen><p>No actions found</p></Screen>
@@ -234,7 +234,7 @@ export default class AbiActionForm extends PureComponent {
               (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
               <ActionParamFormGroup
                 size='sm'
-                label={`${process.env.TOKEN_SYMBOL} to Transfer`}
+                label={`${process.env.TOKEN_SYMBOL(network)} to Transfer`}
                 icon='fas fa-coins'
                 value={this.state.amount}
                 onChange={amount => this.setState({ amount })}
