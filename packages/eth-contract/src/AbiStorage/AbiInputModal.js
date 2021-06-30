@@ -9,8 +9,7 @@ import {
   DropdownItem,
 } from '@obsidians/ui-components'
 
-import fileOps from '@obsidians/file-ops'
-import redux from '@obsidians/redux'
+import { BaseProjectManager } from '@obsidians/workspace'
 
 export default class AbiInputModal extends PureComponent {
   constructor (props) {
@@ -37,34 +36,17 @@ export default class AbiInputModal extends PureComponent {
     if (abi) {
       this.onChangeAbi(abi)
     }
-    this.refreshProjectAbis()
+    this.loadProjectAbis()
     this.modal.current.openModal()
     setTimeout(() => this.nameInput.current?.focus(), 100)
     return new Promise(resolve => { this.onResolve = resolve })
   }
 
-  refreshProjectAbis = async () => {
-    const projectRoot = redux.getState().projects.getIn(['selected', 'path'])
-    if (!projectRoot) {
-      this.setState({ projectAbis: null })
-    } else {
-      const { path, fs } = fileOps.current
-      const contractsFolder = path.join(projectRoot, 'build', 'contracts')
-      const files = await fileOps.current.listFolder(contractsFolder)
-      const contracts = await Promise.all(files
-        .map(f => f.name)
-        .filter(name => name.endsWith('.json'))
-        .map(name => path.join(contractsFolder, name))
-        .map(contractPath => fs.readFile(contractPath, 'utf8')
-          .then(content => ({ contractPath, contract: JSON.parse(content) }))
-          .catch(() => null)
-        )
-      )
-      const projectAbis = contracts
-        .filter(Boolean)
-        .map(({ contractPath, contract }) => [contractPath, { name: contract.contractName, abi: contract.abi }])
-      this.setState({ projectAbis })
-    }
+  loadProjectAbis = async () => {
+    const projectAbis = await BaseProjectManager.instance?.readProjectAbis()
+    this.setState({
+      projectAbis: projectAbis?.map(item => ({ ...item, id: item.pathInProject || item.contractPath }))
+    })
   }
 
   onConfirm = () => {
@@ -108,18 +90,17 @@ export default class AbiInputModal extends PureComponent {
     if (!abis) {
       return null
     }
-    return abis.map(abiItem => {
-      const [filePath, abiObj] = abiItem
+    return abis.map(item => {
       return (
         <DropdownItem
-          key={filePath}
+          key={item.id}
           onClick={() => {
-            this.setState({ name: abiObj.name })
-            this.onChangeAbi(JSON.stringify(abiObj.abi, null, 2))
+            this.setState({ name: item.name })
+            this.onChangeAbi(JSON.stringify(item.abi, null, 2))
           }}
         >
-          <b>{abiObj.name}</b>
-          <div className='text-muted small'><code>{filePath}</code></div>
+          <b>{item.name}</b>
+          <div className='text-muted small'><code>{item.id}</code></div>
         </DropdownItem>
       )
     })

@@ -26,6 +26,30 @@ function makeProjectManager (Base) {
       return this.pathForProjectFile('config.json')
     }
 
+    async readProjectAbis () {
+      const contractsFolder = this.pathForProjectFile('build/contracts')
+      const files = await this.listFolder(contractsFolder)
+      const contracts = await Promise.all(files
+        .map(f => f.name)
+        .filter(name => name.endsWith('.json'))
+        .map(name => this.path.join(contractsFolder, name))
+        .map(contractPath => this.readFile(contractPath, 'utf8')
+          .then(content => ({
+            contractPath,
+            pathInProject: this.pathInProject(contractPath),
+            abi: JSON.parse(content)
+          }))
+          .catch(() => null)
+        )
+      )
+      return contracts
+        .filter(Boolean)
+        .map(({ contractPath, pathInProject, abi }) => {
+          const name = abi.contractName || this.path.parse(contractPath).name
+          return { contractPath, pathInProject, name, abi }
+        })
+    }
+
     async compile (sourceFile) {
       if (CompilerManager.button.state.building) {
         notification.error('Build Failed', 'Another build task is running now.')

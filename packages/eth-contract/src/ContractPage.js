@@ -12,7 +12,6 @@ import {
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
-import fileOps from '@obsidians/file-ops'
 import redux from '@obsidians/redux'
 import { BaseProjectManager } from '@obsidians/workspace'
 
@@ -50,7 +49,7 @@ export default class ContractPage extends PureComponent {
       this.refresh()
     }
     if (prevProps.projectRoot !== this.props.projectRoot) {
-      this.refreshProjectAbis()
+      this.loadProjectAbis()
     }
   }
 
@@ -106,13 +105,17 @@ export default class ContractPage extends PureComponent {
       this.setState({ loading: false, error: e.message })
     }
 
-    this.refreshProjectAbis()
+    this.loadProjectAbis()
 
     this.setState({
       loading: false,
       error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
       errorType: 'ABI_NOT_FOUND',
-      abis: Object.entries(redux.getState().abis.toJS()),
+      abis: Object.entries(redux.getState().abis.toJS()).map(item => ({
+        id: item[0],
+        name: item[1].name,
+        abi: JSON.parse(item[1].abi),
+      })),
     })
   }
 
@@ -133,35 +136,11 @@ export default class ContractPage extends PureComponent {
     }
   }
 
-  refreshProjectAbis = async () => {
-    const projectRoot = this.props.projectRoot
-    if (!projectRoot || !BaseProjectManager.instance) {
-      this.setState({ projectAbis: null })
-    } else {
-      const { path, fs } = fileOps.current
-      const contractsFolder = BaseProjectManager.instance.pathForProjectFile('build/contracts')
-      const files = await fileOps.current.listFolder(contractsFolder)
-      const contracts = await Promise.all(files
-        .map(f => f.name)
-        .filter(name => name.endsWith('.json'))
-        .map(name => path.join(contractsFolder, name))
-        .map(contractPath => fs.readFile(contractPath, 'utf8')
-          .then(content => ({
-            contractPath,
-            pathInProject: BaseProjectManager.instance.pathInProject(contractPath),
-            contract: JSON.parse(content)
-          }))
-          .catch(() => null)
-        )
-      )
-      const projectAbis = contracts
-        .filter(Boolean)
-        .map(({ contractPath, pathInProject, contract }) => {
-          const contractName = contract.contractName || fileOps.current.path.parse(contractPath).name
-          return [pathInProject || contractPath, { name: contractName, abi: contract.abi }]
-        })
-      this.setState({ projectAbis })
-    }
+  loadProjectAbis = async () => {
+    const projectAbis = await BaseProjectManager.instance?.readProjectAbis()
+    this.setState({
+      projectAbis: projectAbis?.map(item => ({ ...item, id: item.pathInProject || item.contractPath }))
+    })
   }
 
   getAbiData (codeHash) {
@@ -189,19 +168,14 @@ export default class ContractPage extends PureComponent {
     if (!abis.length) {
       return <DropdownItem disabled>(No ABI found)</DropdownItem>
     }
-    return abis.map(abiItem => {
-      const [codeHash, abiObj] = abiItem
-      let abi
-      try {
-        abi = typeof abiObj.abi === 'string' ? JSON.parse(abiObj.abi) : abiObj.abi
-      } catch (error) {}
+    return abis.map(item => {
       return (
         <DropdownItem
-          key={codeHash}
-          onClick={() => this.setState({ abi: { abi }, error: null })}
+          key={item.id}
+          onClick={() => this.setState({ abi: item, error: null })}
         >
-          <b>{abiObj.name}</b>
-          <div className='text-muted small'><code>{codeHash}</code></div>
+          <b>{item.name}</b>
+          <div className='text-muted small'><code>{item.id}</code></div>
         </DropdownItem>
       )
     })
@@ -225,8 +199,16 @@ export default class ContractPage extends PureComponent {
     )
   }
 
+  separateAbi = abi => {
+    const functions = abi.abi.filter(item => item.type === 'function')
+    const events = abi.abi.filter(item => item.type === 'event')
+    const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
+    const views = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) > -1)
+    return { actions, views, events }
+  }
+
   render () {
-    const { value, signer } = this.props
+    const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
 
     if (!networkManager.sdk) {
@@ -281,10 +263,7 @@ export default class ContractPage extends PureComponent {
     }
 
     const contractInstance = networkManager.sdk.contractFrom({ ...abi, address: value })
-    const functions = abi.abi.filter(item => item.type === 'function')
-    const events = abi.abi.filter(item => item.type === 'event')
-    const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
-    const views = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) > -1)
+    const { actions, views, events } = this.separateAbi(abi)
 
     return (
       <div className='d-flex p-relative h-100 w-100'>
@@ -294,11 +273,11 @@ export default class ContractPage extends PureComponent {
           minSize={200}
         >
           <ContractActions
+            network={network}
             value={value}
             actions={actions}
             contract={contractInstance}
             signer={signer}
-            // network={network}
             // history={contractCalls.getIn(['action', 'history'])}
             // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
           />
@@ -308,10 +287,10 @@ export default class ContractPage extends PureComponent {
             minSize={200}
           >
             <ContractViews
+              network={network}
               value={value}
               actions={views}
               contract={contractInstance}
-              // network={network}
               // history={contractCalls.getIn(['table', 'history'])}
               // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}
             />
