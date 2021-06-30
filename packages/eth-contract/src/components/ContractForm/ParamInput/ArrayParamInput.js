@@ -63,7 +63,7 @@ export default class ArrayParamInput extends PureComponent {
   onConfirm = () => {
     const { type } = this.props
     const { item, index } = this.state
-    this.onResolve(optionItemFromValue(item, type.replace('[]', ''), index))
+    this.onResolve(optionItemFromValue(item, type.replace(/\[\d*\]/, ''), index))
     this.setState({ item: {} })
     this.modal.current.closeModal()
   }
@@ -82,7 +82,7 @@ export default class ArrayParamInput extends PureComponent {
   render () {
     const { size, label, type } = this.props
     const { index } = this.state
-    const itemType = type.replace('[]', '')
+    const itemType = type.replace(/\[\d*\]/, '')
 
     return <>
       <MultiSelect

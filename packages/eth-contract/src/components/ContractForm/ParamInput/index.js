@@ -17,7 +17,7 @@ export default function ParamInput (props) {
     return <DebouncedInput {...props} addon={<span key={icon.replace(/ /g, '-')}><i className={icon} /></span>} />
   } else if (!type) {
     return `No type given`
-  } else if (type.endsWith('[]')) {
+  } else if (type.endsWith(']')) {
     return <ArrayParamInput {...props} />
   } else if (type === 'tuple') {
     return <TupleInput {...props} />
