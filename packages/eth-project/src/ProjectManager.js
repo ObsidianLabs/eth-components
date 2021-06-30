@@ -37,16 +37,16 @@ function makeProjectManager (Base) {
           .then(content => ({
             contractPath,
             pathInProject: this.pathInProject(contractPath),
-            abi: JSON.parse(content)
+            content: JSON.parse(content)
           }))
           .catch(() => null)
         )
       )
       return contracts
         .filter(Boolean)
-        .map(({ contractPath, pathInProject, abi }) => {
+        .map(({ contractPath, pathInProject, content }) => {
           const name = abi.contractName || this.path.parse(contractPath).name
-          return { contractPath, pathInProject, name, abi }
+          return { contractPath, pathInProject, name, abi: content?.abi, content }
         })
     }
 
