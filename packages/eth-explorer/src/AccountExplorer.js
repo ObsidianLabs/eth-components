@@ -49,8 +49,11 @@ class AccountExplorer extends TabbedExplorer {
   }
 
   init = () => {
-    const { network, accounts } = this.props
+    const { history, route, network, accounts, match } = this.props
     const value = accounts.getIn([network, 'selected'])
+    if (match?.params && value !== match?.params?.value) {
+      history.push(value ? `/${route}/${value}` : `/${route}`)
+    }
     const tabs = accounts.getIn([network, 'tabs'])?.toArray() || []
     this.initialize({ value, tabs, subroute: network })
   }
