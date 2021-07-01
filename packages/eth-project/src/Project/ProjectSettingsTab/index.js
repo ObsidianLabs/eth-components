@@ -108,6 +108,39 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 onSelected={solc => this.onChange('compilers.solc')(solc)}
               />
             }
+            <FormGroup>
+              <Label>EVM version</Label>
+              <CustomInput
+                id='settings-evm-version'
+                type='select'
+                className='bg-black'
+                value={projectSettings?.get('compilers.evmVersion') || 'istanbul'}
+                onChange={event => this.onChange('compilers.evmVersion')(event.target.value)}
+              >
+                <option value='berlin'>Berlin</option>
+                <option value='istanbul'>Istanbul</option>
+                <option value='petersburg'>Petersburg</option>
+                <option value='constantinople'>Constantinople</option>
+                <option value='byzantium'>Byzantium</option>
+                <option value='spuriousDragon'>Spurious Dragon</option>
+                <option value='tangerineWhistle'>Tangerine Whistle</option>
+                <option value='homestead'>Homestead</option>
+              </CustomInput>
+            </FormGroup>
+            <DebouncedFormGroup
+              label='Optimizer runs'
+              className='bg-black'
+              placeholder='Default: disabled'
+              value={projectSettings?.get('compilers.optimizer.runs') || ''}
+              onChange={value => {
+                const runs = Number(value)
+                if (runs) {
+                  this.onChange('compilers.optimizer')({ enabled: true, runs })
+                } else {
+                  this.onChange('compilers.optimizer')({ enabled: false })
+                }
+              }}
+            />
             <AbstractProjectSettingsTab.DeleteButton context={this.context} />
           </div>
         </div>

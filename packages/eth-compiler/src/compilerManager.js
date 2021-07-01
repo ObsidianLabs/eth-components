@@ -280,7 +280,13 @@ export class CompilerManager {
     
     if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
-      // cmd.push(`--compilers.solc.docker 1`)
+    }
+    if (compilers.evmVersion) {
+      cmd.push(`--compilers.solc.settings.evmVersion '${compilers.evmVersion}'`)
+    }
+    if (compilers.optimizer?.enabled) {
+      cmd.push(`--compilers.solc.settings.optimizer.enabled`)
+      cmd.push(`--compilers.solc.settings.optimizer.runs ${compilers.optimizer.runs}`)
     }
 
     if (sourceFile) {
