@@ -14,7 +14,6 @@ export default props => {
 
   React.useEffect(BaseProjectManager.effect('settings:compilers.solc', v => {
     if (!props.remote) {
-      n?.dismiss()
       if (v === 'default') {
         n = notification.info('Solc from truffle-config.js Selected', 'The version of solc used in compilation will be determined by <b>truffle-config.js</b>.', 4)
       } else if (v) {

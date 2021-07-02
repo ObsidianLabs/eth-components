@@ -53,7 +53,7 @@ Workspace.defaultProps = {
   compilerManager,
   ProjectToolbar,
   CompilerTerminal,
-  addLanguages: () => addSolidityLanguage(),
+  addLanguages: addSolidityLanguage,
   makeContextMenu,
 }
 

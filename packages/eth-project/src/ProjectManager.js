@@ -10,10 +10,16 @@ import { utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 import moment from 'moment'
+import solhint from 'solhint'
 
 import ProjectSettings from './ProjectSettings'
 
 BaseProjectManager.ProjectSettings = ProjectSettings
+
+const severityTypes = {
+  2: 'error',
+  3: 'warning',
+}
 
 function makeProjectManager (Base) {
   return class ExtendedProjectManager extends Base {
@@ -48,6 +54,25 @@ function makeProjectManager (Base) {
           const name = content.contractName || this.path.parse(contractPath).name
           return { contractPath, pathInProject, name, abi: content?.abi, content }
         })
+    }
+
+    lint () {
+      const editor = modelSessionManager._editor
+      const code = editor.getValue()
+      const solcVersion = this.projectSettings.get('compilers.solc')
+      const rules = {}
+      if (solcVersion) {
+        rules['compiler-version'] = ['error', solcVersion]
+      }
+      const result = solhint.processStr(code, { rules })
+      const decorations = result.reports.map(item => ({
+        filePath: modelSessionManager.currentFilePath,
+        type: severityTypes[item.severity],
+        row: item.line,
+        column: item.column + 1,
+        text: item.message,
+      }))
+      modelSessionManager.updateDecorations(decorations)
     }
 
     async compile (sourceFile) {

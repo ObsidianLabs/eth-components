@@ -22,6 +22,7 @@ export default {
     '@obsidians/sdk',
     'prettier/standalone',
     'prettier-plugin-solidity',
+    'solhint',
     ...Object.keys(pkg.dependencies),
     ...Object.keys(pkg.peerDependencies),
   ],

@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "@obsidians/code-editor": "^0.3.0",
+    "@obsidians/docker": "^0.3.0",
     "@obsidians/eth-contract": "^0.3.0",
     "@obsidians/eth-network": "^0.3.0",
     "@obsidians/eth-queue": "^0.3.0",
-    "@obsidians/docker": "^0.3.0",
     "@obsidians/file-ops": "^0.3.0",
     "@obsidians/filetree": "^0.3.0",
     "@obsidians/keypair": "^0.3.0",
@@ -61,7 +61,8 @@
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-highlight": "^0.12.0",
-    "react-router-dom": "^5.1.2"
+    "react-router-dom": "^5.1.2",
+    "solhint": "^3.3.6"
   },
   "eslintConfig": {
     "extends": "react-app"

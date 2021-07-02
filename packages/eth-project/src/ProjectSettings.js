@@ -20,4 +20,11 @@ export default class ExtendedProjectSettings extends ProjectSettings {
       }
     }
   }
+
+  async set (key, value) {
+    await super.set(key, value)
+    if (key === 'compilers.solc') {
+      this.projectManager.lint()
+    }
+  }
 }
