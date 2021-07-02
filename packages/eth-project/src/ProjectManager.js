@@ -14,6 +14,8 @@ import solhint from 'solhint'
 
 import ProjectSettings from './ProjectSettings'
 
+import solhintRules from './Project/languages/.solhint.json'
+
 BaseProjectManager.ProjectSettings = ProjectSettings
 
 const severityTypes = {
@@ -59,8 +61,8 @@ function makeProjectManager (Base) {
     lint () {
       const editor = modelSessionManager._editor
       const code = editor.getValue()
+      const rules = { ...solhintRules.rules }
       const solcVersion = this.projectSettings.get('compilers.solc')
-      const rules = {}
       if (solcVersion) {
         rules['compiler-version'] = ['error', solcVersion]
       }

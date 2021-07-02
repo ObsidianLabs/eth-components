@@ -8,16 +8,16 @@ import solidityPlugin from 'prettier-plugin-solidity'
 import SolidityHighlightRules from './SolidityHighlightRules'
 
 export default function (editor, editorComponent) {
-  editor.addAction({
-    id: 'solhint',
-    label: 'Solhint',
-    keybindings: null,
-    precondition: null,
-    keybindingContext: null,
-    contextMenuGroupId: 'navigation',
-    contextMenuOrder: 1.5,
-    run: () => BaseProjectManager.instance.lint(),
-  })
+  // editor.addAction({
+  //   id: 'solhint',
+  //   label: 'Solhint',
+  //   keybindings: null,
+  //   precondition: null,
+  //   keybindingContext: null,
+  //   contextMenuGroupId: 'navigation',
+  //   contextMenuOrder: 1.5,
+  //   run: () => BaseProjectManager.instance.lint(),
+  // })
 
   editor.addCommand(
     monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
