@@ -3,6 +3,7 @@ import redux from '@obsidians/redux'
 
 import { ProjectManager, BaseProjectManager } from '@obsidians/workspace'
 import { modelSessionManager } from '@obsidians/code-editor'
+import premiumEditor from '@obsidians/premium-editor'
 
 import { networkManager } from '@obsidians/eth-network'
 import compilerManager, { CompilerManager } from '@obsidians/compiler'
@@ -10,18 +11,10 @@ import { utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 import moment from 'moment'
-import solhint from 'solhint'
 
 import ProjectSettings from './ProjectSettings'
 
-import solhintRules from './Project/languages/.solhint.json'
-
 BaseProjectManager.ProjectSettings = ProjectSettings
-
-const severityTypes = {
-  2: 'error',
-  3: 'warning',
-}
 
 function makeProjectManager (Base) {
   return class ExtendedProjectManager extends Base {
@@ -32,6 +25,18 @@ function makeProjectManager (Base) {
 
     get settingsFilePath () {
       return this.pathForProjectFile('config.json')
+    }
+
+    onEditorReady (editor, editorComponent) {
+      editor.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+        () => {
+          editorComponent.props.onCommand('save')
+          this.lint()
+        }
+      )
+
+      setTimeout(() => this.lint(), 100)
     }
 
     async readProjectAbis () {
@@ -59,22 +64,19 @@ function makeProjectManager (Base) {
     }
 
     lint () {
-      const editor = modelSessionManager._editor
-      const code = editor.getValue()
-      const rules = { ...solhintRules.rules }
-      const solcVersion = this.projectSettings.get('compilers.solc')
-      if (solcVersion) {
-        rules['compiler-version'] = ['error', solcVersion]
+      if (!premiumEditor.solidity) {
+        return
       }
-      const result = solhint.processStr(code, { rules })
-      const decorations = result.reports.map(item => ({
+      if (!modelSessionManager.currentFilePath.endsWith('.sol')) {
+        return
+      }
+      const code = modelSessionManager._editor.getValue()
+      const solcVersion = this.projectSettings.get('compilers.solc')
+      const result = premiumEditor.solidity.lint(code, { solcVersion })
+      modelSessionManager.updateDecorations(result.map(item => ({
+        ...item,
         filePath: modelSessionManager.currentFilePath,
-        type: severityTypes[item.severity],
-        row: item.line,
-        column: item.column + 1,
-        text: item.message,
-      }))
-      modelSessionManager.updateDecorations(decorations)
+      })))
     }
 
     async compile (sourceFile) {

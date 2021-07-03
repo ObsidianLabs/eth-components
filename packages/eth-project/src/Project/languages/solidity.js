@@ -1,36 +1,14 @@
 import * as monaco from 'monaco-editor'
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer'
-import { BaseProjectManager } from '@obsidians/workspace'
 
 import prettier from 'prettier/standalone'
 import solidityPlugin from 'prettier-plugin-solidity'
 
+import premiumEditor from '@obsidians/premium-editor'
+
 import SolidityHighlightRules from './SolidityHighlightRules'
 
-export default function (editor, editorComponent) {
-  // editor.addAction({
-  //   id: 'solhint',
-  //   label: 'Solhint',
-  //   keybindings: null,
-  //   precondition: null,
-  //   keybindingContext: null,
-  //   contextMenuGroupId: 'navigation',
-  //   contextMenuOrder: 1.5,
-  //   run: () => BaseProjectManager.instance.lint(),
-  // })
-
-  editor.addCommand(
-    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-    () => {
-      editorComponent.props.onCommand('save')
-      BaseProjectManager.instance.lint()
-    }
-  )
-
-  setTimeout(() => {
-    BaseProjectManager.instance.lint()
-  }, 100)
-
+export default function () {
   monaco.languages.register({ id: 'solidity' })
   monaco.languages.setLanguageConfiguration('solidity', {
     comments: {
@@ -50,8 +28,12 @@ export default function (editor, editorComponent) {
   })
   registerRulesForLanguage('solidity', new SolidityHighlightRules())
 
+  if (premiumEditor.solidity) {
+    premiumEditor.solidity.installSupport()
+  }
+
   monaco.languages.registerDocumentFormattingEditProvider('solidity', {
-    async provideDocumentFormattingEdits (model) {
+    async provideDocumentFormattingEdits(model) {
       const code = model.getValue()
 
       const formatted = prettier.format(code, {
