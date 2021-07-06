@@ -62,6 +62,7 @@ export default class AbiActionForm extends PureComponent {
   }
 
   executeAction = async actionName => {
+    await this.props.executeAction(actionName, this)
   }
 
   renderActionSelector = () => {
@@ -119,12 +120,12 @@ export default class AbiActionForm extends PureComponent {
   }
 
   renderGasOptions = selectedAction => {
-    const { FormSection, txOptions } = this.props
-    if (!txOptions) {
+    const { noGasOptions, FormSection } = this.props
+    if (noGasOptions) {
       return null
     }
-
-    if (!txOptions.list?.length) {
+    const txOptions = networkManager.sdk?.txOptions
+    if (!txOptions?.list.length) {
       return null
     }
     const estimate = (

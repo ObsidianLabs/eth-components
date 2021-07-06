@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 
 import { Badge } from '@obsidians/ui-components'
-import { utils } from '@obsidians/sdk'
+import { networkManager } from '@obsidians/eth-network'
 
 import moment from 'moment'
 
@@ -16,7 +16,7 @@ export default class TransactionRow extends PureComponent {
   render () {
     const { network, tx, owner } = this.props
 
-    const amount = new Intl.NumberFormat().format(utils.unit.fromValue(tx.value))
+    const amount = new Intl.NumberFormat().format(networkManager.sdk?.utils.unit.fromValue(tx.value))
     const gasUsed = new Intl.NumberFormat().format(tx.gasUsed)
     const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Badge } from '@obsidians/ui-components'
-import { utils } from '@obsidians/sdk'
+import { networkManager } from '@obsidians/eth-network'
 
 export default props => {
-  return <Badge pill>{utils.display(props.value)}</Badge>
+  return <Badge pill>{networkManager.sdk?.utils.display(props.value)}</Badge>
 }

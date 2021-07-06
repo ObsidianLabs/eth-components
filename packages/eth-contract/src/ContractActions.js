@@ -1,5 +1,4 @@
 import notification from '@obsidians/notification'
-import { txOptions, utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 import { networkManager } from '@obsidians/eth-network'
 
@@ -12,7 +11,6 @@ export default class ContractActions extends AbiActionForm {
     selectorHeader: 'write functions',
     selectorIcon: 'fas fa-function',
     signerSelector: true,
-    txOptions,
   }
 
   estimate = async actionName => {
@@ -31,7 +29,7 @@ export default class ContractActions extends AbiActionForm {
 
     let result
     try {
-      const value = utils.unit.toValue(this.state.amount || '0')
+      const value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
       const tx = await this.props.contract.execute(actionName, parameters, {
         from: this.state.signer,
         value,
@@ -77,11 +75,11 @@ export default class ContractActions extends AbiActionForm {
     const signer = this.state.signer
 
     const options = {}
-    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    networkManager.sdk.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
     let result = {}
     try {
-      const value = utils.unit.toValue(this.state.amount || '0')
+      const value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
       const tx = await this.props.contract.execute(actionName, parameters, {
         from: signer,
         value,

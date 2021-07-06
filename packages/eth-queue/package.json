@@ -17,6 +17,7 @@
     "prepare": "yarn build"
   },
   "dependencies": {
+    "@obsidians/eth-network": "^0.3.0",
     "@obsidians/notification": "^0.3.0",
     "@obsidians/queue": "^0.3.0",
     "@obsidians/redux": "^0.3.0",

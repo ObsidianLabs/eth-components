@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
 
 import utils from './utils'
+import txOptions from './txOptions'
 import Client from './Client'
 import rpc from './rpc'
 import Contract from './Contract'
@@ -26,6 +27,11 @@ export default class Sdk {
       return browserExtension
     }
   }
+
+  get utils () { return utils }
+  get txOptions () { return txOptions }
+  get rpc () { return rpc }
+  get namedContracts () { return {} }
 
   get url () {
     return this.provider && this.provider.connection && this.provider.connection.url

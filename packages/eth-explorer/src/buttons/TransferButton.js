@@ -13,7 +13,6 @@ import {
 import { networkManager } from '@obsidians/eth-network'
 import notification from '@obsidians/notification'
 import keypairManager, { KeypairInputSelector } from '@obsidians/keypair'
-import { txOptions, utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 export default class TransferButton extends PureComponent {
@@ -74,7 +73,7 @@ export default class TransferButton extends PureComponent {
     const { recipient: to, token, amount } = this.state
     const from = this.props.from
 
-    const override = Object.fromEntries(txOptions.list.map(option => [option.name, option.default]))
+    const override = Object.fromEntries(networkManager.sdk?.txOptions.list.map(option => [option.name, option.default]))
     try {
       const tx = await networkManager.sdk.getTransferTransaction({ from, to, token, amount }, override)
       await new Promise((resolve, reject) => {
@@ -162,9 +161,10 @@ export default class TransferButton extends PureComponent {
   render () {
     const { network, addressLength = 42 } = this.props
     const { loading, accountBalance, token, amount, recipient, pushing } = this.state
+    const big = networkManager.sdk?.utils.format.big
     const max = token === 'core'
       ? `${accountBalance} ${process.env.TOKEN_SYMBOL(network)}`
-      : `${utils.format.big(token.balance).div(utils.format.big(10).pow(token.decimals)).toString()} ${token.symbol}`
+      : `${big(token.balance).div(big(10).pow(token.decimals)).toString()} ${token.symbol}`
     
     return <>
       <ToolbarButton

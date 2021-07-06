@@ -1,54 +1,61 @@
+import React, { PureComponent } from 'react'
+
 import notification from '@obsidians/notification'
 import { AbiActionForm } from '@obsidians/eth-contract'
-import { rpc } from '@obsidians/sdk'
 
 import networkManager from '../networkManager'
 
-export default class RpcActionForm extends AbiActionForm {
-  static defaultProps = {
-    toolbarId: 'execute-rpc-method',
-    FormSection: AbiActionForm.FormSection,
-    inModal: true,
-    smDropdown: true,
-    actions: rpc.methods,
-    selectorHeader: '',
-    selectorIcon: 'fas fa-exchange-alt',
-    showResult: true,
-  }
-
-  executeAction = async method => {
-    if (this.state.executing) {
+export default class RpcActionForm extends PureComponent {
+  executeAction = async (method, abiForm) => {
+    if (abiForm.state.executing) {
       return
     }
 
     if (!networkManager.sdk) {
-      notification.error('Call RPC Failed', 'No running node. Please start one first.')
+      notification.error('Call RPC Failed', 'No connected network. Please start a local network or switch to a remote network.')
       return
     }
 
     let parameters = { array: [], obj: {} }
     try {
-      parameters = this.form.current.getParameters()
+      parameters = abiForm.form.current.getParameters()
     } catch (e) {
       notification.error('Error in Parameters', e.message)
       return
     }
 
-    this.setState({ executing: true, actionError: '', actionResult: '' })
+    abiForm.setState({ executing: true, actionError: '', actionResult: '' })
 
     let result
     try {
       result = await networkManager.sdk.callRpc(method, parameters)
     } catch (e) {
       console.warn(e)
-      this.setState({ executing: false, actionError: e.message, actionResult: '' })
+      abiForm.setState({ executing: false, actionError: e.message, actionResult: '' })
       return
     }
 
-    this.setState({
+    abiForm.setState({
       executing: false,
       actionError: '',
       actionResult: JSON.stringify(result, null, 2),
     })
+  }
+
+  render () {
+    return (
+      <AbiActionForm
+        toolbarId='execute-rpc-method'
+        FormSection={AbiActionForm.FormSection}
+        inModal
+        smDropdown
+        selectorHeader
+        selectorIcon='fas fa-exchange-alt'
+        noGasOptions
+        showResult
+        actions={networkManager.sdk?.rpc.methods || []}
+        executeAction={this.executeAction}
+      />
+    )
   }
 }

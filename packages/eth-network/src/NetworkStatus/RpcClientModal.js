@@ -4,7 +4,10 @@ import {
   Modal,
 } from '@obsidians/ui-components'
 
+import notification from '@obsidians/notification'
+
 import RpcActionForm from './RpcActionForm'
+import networkManager from '../networkManager'
 
 export default class RpcClientModal extends PureComponent {
   constructor (props) {
@@ -13,6 +16,10 @@ export default class RpcClientModal extends PureComponent {
   }
 
   openModal = () => {
+    if (!networkManager.sdk) {
+      notification.error('No Network', 'No connected network. Please start a local network or switch to a remote network.')
+      return
+    }
     this.modal.current.openModal()
   }
 

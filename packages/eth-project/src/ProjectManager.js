@@ -7,7 +7,6 @@ import premiumEditor from '@obsidians/premium-editor'
 
 import { networkManager } from '@obsidians/eth-network'
 import compilerManager, { CompilerManager } from '@obsidians/compiler'
-import { utils } from '@obsidians/sdk'
 import queue from '@obsidians/eth-queue'
 
 import moment from 'moment'
@@ -117,6 +116,11 @@ function makeProjectManager (Base) {
     }
   
     async deploy (contractFileNode) {
+      if (!networkManager.sdk) {
+        notification.error('Cannot Deploy', 'No connected network. Please start a local network or switch to a remote network.')
+        return true
+      }
+
       this.deployButton.getDeploymentParameters({
         contractFileNode: contractFileNode || await this.getDefaultContractFileNode(),
       },
@@ -127,7 +131,7 @@ function makeProjectManager (Base) {
 
     checkSdkAndSigner (allParameters) {
       if (!networkManager.sdk) {
-        notification.error('Deployment Error', 'No running node. Please start one first.')
+        notification.error('No Network', 'No connected network. Please start a local network or switch to a remote network.')
         return true
       }
   
@@ -211,7 +215,7 @@ function makeProjectManager (Base) {
   
       const networkId = networkManager.sdk.networkId
       const { contractName, parameters, ...override } = allParameters
-      const codeHash = utils.sign.sha3(deploy.deployedBytecode)
+      const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode)
   
       let result
       try {

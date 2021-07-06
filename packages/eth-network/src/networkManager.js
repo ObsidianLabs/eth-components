@@ -7,6 +7,8 @@ import Sdk from '@obsidians/sdk'
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
 class NetworkManager {
+  static Sdk = Sdk
+
   constructor () {
     this._sdk = null
     this.network = undefined

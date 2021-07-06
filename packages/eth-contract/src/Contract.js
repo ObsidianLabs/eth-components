@@ -8,7 +8,7 @@ import {
 
 import { withRouter } from 'react-router-dom'
 import redux, { connect } from '@obsidians/redux'
-import { namedContracts } from '@obsidians/sdk'
+import { networkManager } from '@obsidians/eth-network'
 
 import ContractPage from './ContractPage'
 
@@ -84,11 +84,11 @@ class Contract extends TabbedExplorer {
         const address = valueFormatter(value)
         let tabText = ''
         const tokenInfo = tokens?.getIn([network, address])?.toJS()
-        if (namedContracts[address]) {
+        if (networkManager.sdk?.namedContracts[address]) {
           tabText = (
             <div key={`token-${address}`} className='d-flex flex-row align-items-center'>
               <i className='fas fa-file-invoice text-muted mr-1' />
-              {namedContracts[address]}
+              {networkManager.sdk?.namedContracts[address]}
             </div>
           )
         } else if (tokenInfo) {

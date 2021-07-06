@@ -5,8 +5,6 @@ import {
   Badge,
 } from '@obsidians/ui-components'
 
-import { utils } from '@obsidians/sdk'
-
 export default function BytesParamInput ({ size, label, type, value, onChange, placeholder, disabled }) {
   const { raw = '', encoding = 'hex' } = value || {}
 
@@ -31,13 +29,13 @@ export default function BytesParamInput ({ size, label, type, value, onChange, p
         hex = '0x' + hex
       }
       try {
-        bytes = utils.format.bytesFromHex(hex)
+        bytes = networkManager.sdk?.utils.format.bytesFromHex(hex)
       } catch {
         onChange({ encoding, raw }, { error: new Error(`Not a valid hex string for parameter <b>${label}</b>.`) })
         return
       }
     } else {
-      bytes = utils.format.bytes(raw)
+      bytes = networkManager.sdk?.utils.format.bytes(raw)
     }
 
     const length = typeLength || bytes.length

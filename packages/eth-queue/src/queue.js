@@ -1,6 +1,5 @@
 import notification from '@obsidians/notification'
 import { BaseQueueManager } from '@obsidians/queue'
-import { utils } from '@obsidians/sdk'
 
 class Queue extends BaseQueueManager {
   async process (pendingTransaction, txHash, data, callbacks) {
