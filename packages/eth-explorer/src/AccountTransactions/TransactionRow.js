@@ -14,7 +14,7 @@ export default class TransactionRow extends PureComponent {
   }
 
   render () {
-    const { network, tx, owner } = this.props
+    const { tx, owner } = this.props
 
     const amount = new Intl.NumberFormat().format(networkManager.sdk?.utils.unit.fromValue(tx.value))
     const gasUsed = new Intl.NumberFormat().format(tx.gasUsed)
@@ -43,7 +43,7 @@ export default class TransactionRow extends PureComponent {
         </td>
         <td align='right'>
           <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'danger' : 'success'}>
-            {amount} {process.env.TOKEN_SYMBOL(network)}
+            {amount} {networkManager.symbol}
           </Badge>
         </td>
         <td align='right'>

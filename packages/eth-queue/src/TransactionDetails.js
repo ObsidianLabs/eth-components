@@ -21,7 +21,6 @@ export default class TransactionDetails extends PureComponent {
   }
 
   renderContent = (tx, selected) => {
-    const network = this.props.network
     const { txHash, status, data = {} } = tx
     const {
       functionName,
@@ -86,9 +85,9 @@ export default class TransactionDetails extends PureComponent {
           {
             value &&
             <TableCardRow
-              name={`${process.env.TOKEN_SYMBOL(network)} Transfered`}
+              name={`${networkManager.symbol} Transfered`}
               icon='fas fa-coins'
-              badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${process.env.TOKEN_SYMBOL(network)}`}
+              badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkManager.symbol}`}
             />
           }
           {

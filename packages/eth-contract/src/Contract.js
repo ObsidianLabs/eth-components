@@ -59,8 +59,8 @@ class Contract extends TabbedExplorer {
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
         <Screen>
-          <h4 className='display-4'>Disconnected</h4>
-          <p className='lead'>Please start an {process.env.CHAIN_NAME} node.</p>
+          <h4 className='display-4'>No Network</h4>
+          <p className='lead'>No connected network. Please start a local network or switch to a remote network.</p>
           <hr />
           <span>
             <Button color='primary' onClick={() => history.push(`/network/${network}`)}>Go to Network</Button>

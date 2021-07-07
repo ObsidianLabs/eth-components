@@ -6,6 +6,7 @@ import {
 } from '@obsidians/ui-components'
 
 import moment from 'moment'
+import networkManager from '../networkManager'
 
 export default class RemoteNetworkInfo extends PureComponent {
   render () {
@@ -15,7 +16,7 @@ export default class RemoteNetworkInfo extends PureComponent {
       <div className='d-flex'>
         <div className='col-6 p-0 border-right-black'>
           <TableCard
-            title={`${process.env.CHAIN_NAME} Network (${networkId})`}
+            title={networkManager.current?.fullName}
             right={EditButton}
           >
             <TableCardRow name='Node URL' badge={url} badgeColor='primary' />

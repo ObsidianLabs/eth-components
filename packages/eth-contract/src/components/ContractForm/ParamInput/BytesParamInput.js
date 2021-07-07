@@ -5,6 +5,8 @@ import {
   Badge,
 } from '@obsidians/ui-components'
 
+import { networkManager } from '@obsidians/eth-network'
+
 export default function BytesParamInput ({ size, label, type, value, onChange, placeholder, disabled }) {
   const { raw = '', encoding = 'hex' } = value || {}
 

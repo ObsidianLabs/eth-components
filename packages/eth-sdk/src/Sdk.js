@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
 
+import networks, { customNetworks } from './networks'
 import utils from './utils'
 import txOptions from './txOptions'
 import Client from './Client'
@@ -20,6 +21,9 @@ export default class Sdk {
     this.chainId = chainId
     this.explorer = explorer
   }
+
+  static get networks () { return networks }
+  static get customNetworks () { return customNetworks }
 
   static InitBrowserExtension (networkManager) {
     if (window.ethereum && window.ethereum.isMetaMask) {

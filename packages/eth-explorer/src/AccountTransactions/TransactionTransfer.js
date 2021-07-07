@@ -5,8 +5,8 @@ import { networkManager } from '@obsidians/eth-network'
 
 import Address from './Address'
 
-export default function ({ network, tx, owner }) {
-  const amount = `${networkManager.sdk?.utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL(network)}`
+export default function ({ tx, owner }) {
+  const amount = `${networkManager.sdk?.utils.unit.fromValue(tx.value)} ${networkManager.symbol}`
   return (
     <div className='d-flex flex-row align-items-center'>
       <div className='flex-1 overflow-hidden'>

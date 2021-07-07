@@ -3,27 +3,29 @@ import platform from '@obsidians/platform'
 const networks = [
   {
     id: 'ropsten',
-    group: 'testnet',
+    group: 'ethereum',
     name: 'Ropsten',
     fullName: 'Ropsten Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Ropsten Testnet</b>.',
     url: '/',
     chainId: 3,
+    symbol: 'ETH',
   },
   {
     id: 'rinkeby',
-    group: 'testnet',
+    group: 'ethereum',
     name: 'Rinkeby',
     fullName: 'Rinkeby Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Rinkeby Testnet</b>.',
     url: '/',
     chainId: 4,
+    symbol: 'ETH',
   },
   // {
   //   id: 'gorli',
-  //   group: 'testnet',
+  //   group: 'ethereum',
   //   name: 'Gorli',
   //   fullName: 'Gorli Testnet',
   //   icon: 'fas fa-vial',
@@ -33,32 +35,26 @@ const networks = [
   // },
   {
     id: 'kovan',
-    group: 'testnet',
+    group: 'ethereum',
     name: 'Kovan',
     fullName: 'Kovan Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Kovan Testnet</b>.',
     url: '/',
     chainId: 42,
+    symbol: 'ETH',
   },
   {
     id: 'homestead',
-    group: 'mainnet',
-    name: 'Homestead',
+    group: 'ethereum',
+    name: 'Mainnet',
     fullName: 'Homestead Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Homestead Mainnet</b>.',
     url: '/',
     chainId: 1,
+    symbol: 'ETH',
   },
-  {
-    id: 'custom',
-    group: 'others',
-    name: 'Custom',
-    fullName: 'Custom Network',
-    icon: 'fas fa-edit',
-    notification: 'Switched to <b>Custom</b> network.',
-  }
 ]
 
 if (platform.isDesktop) {
@@ -66,12 +62,25 @@ if (platform.isDesktop) {
     id: 'dev',
     group: 'default',
     name: 'Development',
-    fullName: 'Development Network',
+    fullName: 'Ethereum Instances for Development',
     icon: 'fas fa-laptop-code',
     notification: 'Switched to <b>Development</b> network.',
     url: 'http://localhost:8545',
     chainId: 0,
+    symbol: 'ETH',
   })
 }
 
 export default networks
+
+export const customNetworks = [
+  {
+    id: 'custom',
+    group: 'others',
+    name: 'Custom',
+    fullName: 'Custom Network',
+    icon: 'fas fa-edit',
+    notification: 'Switched to <b>Custom</b> network.',
+    symbol: 'ETH',
+  }
+]

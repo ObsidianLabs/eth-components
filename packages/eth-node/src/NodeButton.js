@@ -65,7 +65,7 @@ export default class NodeButton extends PureComponent {
   renderStartBtn () {
     return (
       <div key='node-btn-stopped-no-miner' className='btn-group btn-group-sm'>
-        <button type='button' className='btn btn-success' onClick={() => this.start(false)}>
+        <button type='button' className='btn btn-success' onClick={this.start}>
           <i className='fas fa-play mr-1' />Start
         </button>
       </div>

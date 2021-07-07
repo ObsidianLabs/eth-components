@@ -56,8 +56,8 @@ export default connect(['network', 'queue', 'projects', 'uiState'])(function Bot
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
-    { !noNetwork && <NetworkStatus network={network} /> }
-    <QueueButton network={network} txs={txs} />
+    { !noNetwork && <NetworkStatus /> }
+    <QueueButton txs={txs} />
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
         <i className='fas fa-list mr-1' />

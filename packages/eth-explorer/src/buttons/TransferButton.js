@@ -105,7 +105,6 @@ export default class TransferButton extends PureComponent {
   }
 
   renderTokens () {
-    const { network } = this.props
     const { accountBalance, tokens, token } = this.state
     if (!tokens) {
       return null
@@ -117,7 +116,7 @@ export default class TransferButton extends PureComponent {
     } else {
       formattedBalance = new Intl.NumberFormat().format(accountBalance)
     }
-    const accountBadge = `${formattedBalance} ${process.env.TOKEN_SYMBOL(network)}`
+    const accountBadge = `${formattedBalance} ${networkManager.symbol}`
 
     return (
       <DropdownInput
@@ -126,10 +125,10 @@ export default class TransferButton extends PureComponent {
         options={[
           {
             id: 'core',
-            text: process.env.TOKEN_SYMBOL(network),
+            text: networkManager.symbol,
             display: (
               <div className='d-flex align-items-center justify-content-between'>
-                {process.env.TOKEN_SYMBOL(network)}<Badge color='info'>{accountBadge}</Badge>
+                {networkManager.symbol}<Badge color='info'>{accountBadge}</Badge>
               </div>
             ),
             badge: accountBadge,
@@ -159,11 +158,11 @@ export default class TransferButton extends PureComponent {
   }
 
   render () {
-    const { network, addressLength = 42 } = this.props
+    const { addressLength = 42 } = this.props
     const { loading, accountBalance, token, amount, recipient, pushing } = this.state
     const big = networkManager.sdk?.utils.format.big
     const max = token === 'core'
-      ? `${accountBalance} ${process.env.TOKEN_SYMBOL(network)}`
+      ? `${accountBalance} ${networkManager.symbol}`
       : `${big(token.balance).div(big(10).pow(token.decimals)).toString()} ${token.symbol}`
     
     return <>

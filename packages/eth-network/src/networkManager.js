@@ -2,16 +2,21 @@ import platform from '@obsidians/platform'
 import headerActions from '@obsidians/eth-header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
-import Sdk from '@obsidians/sdk'
 
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
 class NetworkManager {
-  static Sdk = Sdk
-
   constructor () {
+    this.networks = []
+
     this._sdk = null
     this.network = undefined
+    this.Sdks = new Map()
+  }
+
+  addSdk (Sdk, networks) {
+    networks.forEach(n => this.Sdks.set(n.id, Sdk))
+    this.networks = [...this.networks, ...networks]
 
     if (platform.isWeb && Sdk.InitBrowserExtension) {
       this.browserExtension = Sdk.InitBrowserExtension(this)
@@ -26,8 +31,25 @@ class NetworkManager {
     return this._sdk
   }
 
+  get current () {
+    return this.networks.find(n => n.id === this.networkId)
+  }
+
+  get symbol () {
+    return this.current?.symbol
+  }
+
+  newSdk (params) {
+    const networkId = params.id.split('.')[0]
+    const Sdk = this.Sdks.get(networkId)
+    if (!Sdk) {
+      return null
+    }
+    return new Sdk(params)
+  }
+
   async updateSdk (params) {
-    this._sdk = new Sdk({ ...this.network, ...params })
+    this._sdk = this.newSdk({ ...this.network, ...params })
     await new Promise(resolve => {
       const h = setInterval(() => {
         if (!this.sdk) {
@@ -71,7 +93,7 @@ class NetworkManager {
 
     this.network = network
     if (network.url && network.id && network.id !== 'dev') {
-      this._sdk = new Sdk(network)
+      this._sdk = this.newSdk(network)
     } else {
       this._sdk = null
     }
@@ -101,7 +123,7 @@ class NetworkManager {
   }
 
   async createSdk (params) {
-    const sdk = new Sdk(params)
+    const sdk = this.newSdk(params)
     try {
       const status = await sdk.getStatus()
       this._sdk = sdk
