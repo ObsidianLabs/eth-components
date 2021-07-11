@@ -141,6 +141,21 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 }
               }}
             />
+
+            <h4 className='mt-4'>Linter</h4>
+            <FormGroup>
+              <CustomInput
+                id='settings-linter'
+                type='select'
+                className='bg-black'
+                value={projectSettings?.get('linter') || 'solhint'}
+                onChange={event => this.onChange('linter')(event.target.value)}
+              >
+                <option value='solhint'>Solhint</option>
+                <option value='solium'>Solium/Ethlint</option>
+              </CustomInput>
+            </FormGroup>
+
             <AbstractProjectSettingsTab.DeleteButton context={this.context} />
           </div>
         </div>

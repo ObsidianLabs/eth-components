@@ -9,16 +9,22 @@ export default class ExtendedProjectSettings extends ProjectSettings {
 
   trimSettings = (rawSettings = {}) => {
     const compilers = rawSettings.compilers || {}
-    return {
-      language: rawSettings.language || '',
+    const settings = {
       main: rawSettings.main || './contracts/Contract.sol',
       deploy: rawSettings.deploy || './build/contracts/Contract.json',
       compilers: {
         ...compilers,
         [process.env.COMPILER_VERSION_KEY]: compilers[process.env.COMPILER_VERSION_KEY] || '',
         solc: compilers.solc || '',
-      }
+        evmVersion: compilers.evmVersion || 'istanbul',
+        optimizer: compilers.optimizer,
+      },
+      linter: rawSettings.linter || 'solhint',
     }
+    if (rawSettings.language) {
+      settings.language = rawSettings.language
+    }
+    return settings
   }
 
   async set (key, value) {
