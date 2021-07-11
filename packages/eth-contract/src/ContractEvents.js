@@ -196,7 +196,9 @@ export default class ContractEvents extends PureComponent {
         {columns.map(({ name, type }, index2) => {
 
           let content = item.args[index2]
-          content = content ? content.toString() : ''
+          content = content
+            ? (content.toString ? content.toString() : JSON.stringify(content))
+            : ''
 
           if (type === 'address') {
             content = (

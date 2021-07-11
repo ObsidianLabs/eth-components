@@ -27,6 +27,10 @@ class NetworkManager {
     return this.network?.id
   }
 
+  get Sdk () {
+    return this.Sdks.get(this.networkId)
+  }
+
   get sdk () {
     return this._sdk
   }

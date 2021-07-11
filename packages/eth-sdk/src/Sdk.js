@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
 
 import networks, { customNetworks } from './networks'
+import kp from './kp'
 import utils from './utils'
 import txOptions from './txOptions'
 import Client from './Client'
@@ -22,6 +23,7 @@ export default class Sdk {
     this.explorer = explorer
   }
 
+  static get kp () { return kp }
   static get networks () { return networks }
   static get customNetworks () { return customNetworks }
 
@@ -72,7 +74,7 @@ export default class Sdk {
     return {
       address,
       balance: utils.unit.fromValue(account.balance),
-      txCount: BigInt(account.txCount).toString(10),
+      nonce: BigInt(account.nonce).toString(10),
       codeHash: account.codeHash === '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470' ? null : account.codeHash,
     }
   }

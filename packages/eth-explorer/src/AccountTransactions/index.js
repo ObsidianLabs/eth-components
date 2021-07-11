@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 
 import {
   TableCard,
+  Badge,
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
@@ -40,15 +41,14 @@ export default class AccountTransactions extends PureComponent {
     if (Array.isArray(txs)) {
       this.setState({
         txs,
+        total,
         page: 1,
         hasMore: total ? txs.length < total : txs.length === this.state.size,
       })
     } else {
       this.setState({ error: txs })
     }
-    this.setState({
-      loading: false
-    })
+    this.setState({ loading: false })
   }
 
   loadMore = async () => {
@@ -61,15 +61,14 @@ export default class AccountTransactions extends PureComponent {
     if (Array.isArray(txs)) {
       this.setState({
         txs: [...this.state.txs, ...txs],
+        total,
         page: this.state.page + 1,
         hasMore: total ? (this.state.txs.length + txs.length) < total : txs.length === this.state.size,
       })
     } else {
       this.setState({ error: txs })
     }
-    this.setState({
-      loading: false,
-    })
+    this.setState({ loading: false })
   }
 
   renderTableBody = () => {
@@ -121,9 +120,15 @@ export default class AccountTransactions extends PureComponent {
     if (this.state.hide) {
       return null
     }
+    const total = Math.max(0, this.state.total) || ''
     return (
       <TableCard
-        title='Transactions'
+        title={
+          <div className='d-flex flex-row align-items-end'>
+            <h4 className='mb-0'>Transactions</h4>
+            <Badge pill className='ml-1 mb-1'>{total}</Badge>
+          </div>
+        }
         tableSm
         TableHead={<TransactionHeader />}
       >

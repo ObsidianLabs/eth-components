@@ -65,11 +65,11 @@ export default function AccountBalance ({ account, tokens, history }) {
         />
       }
       {
-        account.txCount !== undefined &&
+        account.nonce !== undefined &&
         <TableCardRow
-          name='Transaction Count'
+          name='Nonce'
           icon='fas fa-hashtag'
-          badge={account.txCount}
+          badge={account.nonce}
         />
       }
     </TableCard>

@@ -9,6 +9,15 @@ import ActionParamFormGroup from '../ActionParamFormGroup'
 
 const optionItemFromValue = (item, type, index) => {
   let icon = null
+  if (type === 'tuple') {
+    return {
+      value: `item-${index}`,
+      item,
+      type,
+      label: <span key={`item-${index}`}><i className='fas fa-brackets-curly mr-1' />Object</span>
+    }
+  }
+
   let label = item.display || (typeof item.value === 'object' ? item.value.raw : item.value)
   label = label.length > 10 ? `${label.substr(0, 8)}...` : label
 
@@ -80,7 +89,7 @@ export default class ArrayParamInput extends PureComponent {
   }
 
   render () {
-    const { size, label, type } = this.props
+    const { size, label, type, components } = this.props
     const { index } = this.state
     const itemType = type.replace(/\[\d*\]/, '')
 
@@ -106,6 +115,7 @@ export default class ArrayParamInput extends PureComponent {
           ref={this.input}
           label={`${label}[${index}]`}
           type={itemType}
+          components={components}
           value={this.state.item.value}
           onChange={(value, extra) => this.setState({ item: { value, ...extra } })}
         />

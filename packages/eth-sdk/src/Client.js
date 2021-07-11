@@ -21,9 +21,9 @@ export default class Client {
   async getAccount (address) {
     const balance = await this.provider.getBalance(address)
     const code = await this.provider.getCode(address)
-    const txCount = await this.provider.getTransactionCount(address)
+    const nonce = await this.provider.getTransactionCount(address)
     const codeHash = ethers.utils.keccak256(code)
-    return { balance, txCount, codeHash }
+    return { balance, nonce, codeHash }
   }
 
   async getTransactions (address, page, size) {
