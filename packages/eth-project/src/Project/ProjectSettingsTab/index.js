@@ -114,7 +114,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 id='settings-evm-version'
                 type='select'
                 className='bg-black'
-                value={projectSettings?.get('compilers.evmVersion') || 'istanbul'}
+                value={projectSettings?.get('compilers.evmVersion')}
                 onChange={event => this.onChange('compilers.evmVersion')(event.target.value)}
               >
                 <option value='berlin'>Berlin</option>
@@ -148,7 +148,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 id='settings-linter'
                 type='select'
                 className='bg-black'
-                value={projectSettings?.get('linter') || 'solhint'}
+                value={projectSettings?.get('linter')}
                 onChange={event => this.onChange('linter')(event.target.value)}
               >
                 <option value='solhint'>Solhint</option>
