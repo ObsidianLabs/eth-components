@@ -62,13 +62,18 @@ export default class SolcjsCompiler {
       throw new Error(`Cannot read the main file <b>${mainFilePath}</b>.`)
     }
 
+    const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
+    const optimizer = projectManager.projectSettings.get('compilers.optimizer')
+
     const data = {
       language: 'Solidity',
       sources: {
         [mainFilePath]: { content: mainFileContent }
       },
       settings: {
-        outputSelection: { '*': { '*': ['*'] } }
+        outputSelection: { '*': { '*': ['*'] } },
+        optimizer: optimizer || { enabled: false },
+        evmVersion,
       }
     }
 

@@ -69,6 +69,9 @@ export class CompilerManager {
     const solcFileName = soljsonReleases[solcVersion]
     const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
 
+    const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
+    const optimizer = projectManager.projectSettings.get('compilers.optimizer')
+
     CompilerManager.button.setState({ building: true })
     await this.cacheSolcBin(solcUrl, solcFileName)
 
