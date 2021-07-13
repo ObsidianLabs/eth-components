@@ -34,7 +34,7 @@ function makeProjectManager (Base) {
           this.lint()
         }
       )
-
+      editor.onDidChangeModel(() => setTimeout(() => this.lint(), 100))
       setTimeout(() => this.lint(), 100)
     }
 
