@@ -12,9 +12,9 @@ export default class ContractForm extends PureComponent {
   }
 
   componentDidMount () {
-    if (this.props.params) {
-      this.setState({ params: [...this.props.params] })
-    }
+    // if (this.props.params) {
+    //   this.setState({ params: [...this.props.params] })
+    // }
   }
 
   getParameters = () => {
@@ -27,12 +27,13 @@ export default class ContractForm extends PureComponent {
       const param = this.state.params[index]
       const key = name || `(param${index})`
       if (!type) {
-        if (param.value) {
+        const value = param.value || ''
+        if (value) {
           allEmpty = false
         }
-        array.push(param.value)
-        json[key] = param.value.toString()
-        obj[key] = { value: param.value }
+        array.push(value)
+        json[key] = value.toString()
+        obj[key] = { value }
       } else {
         const { error, raw, display, empty } = param
         if (error) {
@@ -47,6 +48,7 @@ export default class ContractForm extends PureComponent {
         obj[key] = { type, value: display }
       }
     })
+    console.log(this.state.params, { array, json, obj })
 
     return { array, json, obj, empty: allEmpty }
   }
@@ -64,17 +66,20 @@ export default class ContractForm extends PureComponent {
       return Empty || null
     }
 
+    const params = this.state.params
+    const values = inputs.map((_, i) => params[i]?.value || '')
+
     return (
       <div>
-        {inputs.map(({ name, type, components, value }, index) => (
+        {inputs.map(({ name, type, components, value }, i) => (
           <ActionParamFormGroup
-            key={`${methodName}-${index}`}
+            key={`${methodName}-${i}`}
             size={size}
-            label={name || `(param${index})`}
+            label={name || `(param${i})`}
             type={type}
             components={components}
-            value={this.state.params[index].value}
-            onChange={this.setParamValue(index)}
+            value={values[i]}
+            onChange={this.setParamValue(i)}
             disabled={disabled || !!value}
           />
         ))}
