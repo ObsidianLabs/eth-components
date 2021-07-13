@@ -48,8 +48,6 @@ export default class ContractForm extends PureComponent {
         obj[key] = { type, value: display }
       }
     })
-    console.log(this.state.params, { array, json, obj })
-
     return { array, json, obj, empty: allEmpty }
   }
 
