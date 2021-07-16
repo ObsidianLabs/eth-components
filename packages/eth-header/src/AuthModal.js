@@ -35,9 +35,10 @@ export default class AuthModal extends PureComponent {
         ref={this.modal}
         title={title}
         textConfirm={textConfirm}
-        onConfirm={() => {
+        onConfirm={async () => {
           const providers = process.env.LOGIN_PROVIDERS ? process.env.LOGIN_PROVIDERS.split(',') : ['github']
-          Auth.login(this.props.history, providers[0])
+          await Auth.login(this.props.history, providers[0])
+          this.modal.current.closeModal()
         }}
       >
         {content}
