@@ -9,8 +9,8 @@ import BrowserExtension from './BrowserExtension'
 let browserExtension
 
 export default class Sdk {
-  constructor ({ url, chainId, explorer, id }) {
-    this.client = new Client(id, url)
+  constructor ({ id, url, chainId, explorer }) {
+    this.client = new Client({ networkId: id, url })
     this.networkId = id
     this.url = url
     this.chainId = chainId

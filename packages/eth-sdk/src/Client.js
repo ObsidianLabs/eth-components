@@ -2,8 +2,8 @@ import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
 
 export default class Client {
-  constructor (networkId = '', url) {
-    if (networkId.startsWith('dev') || networkId.startsWith('bsn')) {
+  constructor ({ networkId = '', url }) {
+    if (url) {
       this.provider = ethers.getDefaultProvider(url)
     } else {
       if (window.ethereum) {
