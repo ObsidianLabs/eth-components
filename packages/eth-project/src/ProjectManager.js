@@ -9,6 +9,7 @@ import { networkManager } from '@obsidians/eth-network'
 import compilerManager, { CompilerManager } from '@obsidians/compiler'
 import queue from '@obsidians/eth-queue'
 
+import debounce from 'lodash/debounce'
 import moment from 'moment'
 
 import ProjectSettings from './ProjectSettings'
@@ -20,6 +21,7 @@ function makeProjectManager (Base) {
     constructor (project, projectRoot) {
       super(project, projectRoot)
       this.deployButton = null
+      this.onFileChanged = debounce(this.onFileChanged, 1500).bind(this)
     }
 
     get settingsFilePath () {
@@ -60,6 +62,10 @@ function makeProjectManager (Base) {
           const name = content.contractName || this.path.parse(contractPath).name
           return { contractPath, pathInProject, name, abi: content?.abi, content }
         })
+    }
+
+    onFileChanged () {
+      this.lint()
     }
 
     lint () {
