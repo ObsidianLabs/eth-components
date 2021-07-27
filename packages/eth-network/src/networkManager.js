@@ -96,7 +96,7 @@ class NetworkManager {
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
 
     this.network = network
-    if (network.url && network.id && network.id !== 'dev') {
+    if (network.id && network.id !== 'dev') {
       this._sdk = this.newSdk(network)
     } else {
       this._sdk = null
