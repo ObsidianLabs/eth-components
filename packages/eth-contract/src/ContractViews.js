@@ -53,7 +53,7 @@ export default class ContractViews extends Component {
 
     let result
     try {
-      result = await this.props.contract.query(actionName, parameters.array, {
+      result = await this.props.contract.query(actionName, parameters, {
         from: this.state.signer
       })
     } catch (e) {
@@ -111,7 +111,7 @@ export default class ContractViews extends Component {
         </div>
       )
     }
-    
+
     if (actionResult) {
       return (
         <pre className='text-body pre-wrap break-all small user-select'>
@@ -133,7 +133,7 @@ export default class ContractViews extends Component {
         </Screen>
       )
     }
-    
+
     const selectedAction = actions[this.state.selected] || {}
 
     return (

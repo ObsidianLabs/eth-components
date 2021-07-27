@@ -8,12 +8,12 @@ export default class Contract {
     this.instance = new ethers.Contract(address, abi, provider)
   }
 
-  async query (method, parameters) {
-    return await this.instance.functions[method](...parameters.array)
+  async query (method, { array }) {
+    return await this.instance.functions[method](...array)
   }
 
-  async execute (method, parameters, override) {
-    const tx = await this.instance.populateTransaction[method](...parameters.array, override)
+  async execute (method, { array }, override) {
+    const tx = await this.instance.populateTransaction[method](...array, override)
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
     return await voidSigner.populateTransaction(tx)
   }
