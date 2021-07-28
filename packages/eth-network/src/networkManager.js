@@ -97,7 +97,11 @@ class NetworkManager {
 
     this.network = network
     if (network.id && network.id !== 'dev') {
-      this._sdk = this.newSdk(network)
+      try {
+        this._sdk = this.newSdk(network)
+      } catch (error) {
+        this._sdk = null
+      }
     } else {
       this._sdk = null
     }
@@ -117,7 +121,7 @@ class NetworkManager {
       return
     }
     const status = await this.createSdk({ id: 'custom', url, option })
-    
+
     if (status) {
       redux.dispatch('SELECT_NETWORK', `custom`)
       notification.success(`Network Connected`, `Connected to network at <b>${url}</b>`)
