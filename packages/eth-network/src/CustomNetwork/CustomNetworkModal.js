@@ -12,12 +12,12 @@ import networkManager from '../networkManager'
 export default class CustomNetworkModal extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = { ...props.customNetwork }
+    this.state = { ...props.customNetwork, pending: false }
     this.modal = React.createRef()
   }
 
   openModal (customNetwork = {}) {
-    this.setState({ ...customNetwork })
+    this.setState({ ...customNetwork, pending: false })
     this.modal.current?.openModal()
   }
 
@@ -27,7 +27,9 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   tryCreateSdk = async customNetwork => {
+    this.setState({ pending: true })
     const status = await networkManager.updateCustomNetwork(customNetwork)
+    this.setState({ pending: false })
     return !!status
   }
 
@@ -45,13 +47,14 @@ export default class CustomNetworkModal extends PureComponent {
     const {
       placeholder = 'http(s)://...',
     } = this.props
-    const { url } = this.state
+    const { url, pending } = this.state
 
     return (
       <Modal
         ref={this.modal}
         title='Custom Network'
         onConfirm={this.onConfirmCustomNetwork}
+        pending={pending}
       >
         <DebouncedFormGroup
           label='URL of node rpc'
