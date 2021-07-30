@@ -156,6 +156,51 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               </CustomInput>
             </FormGroup>
 
+            <h4 className='mt-4'>Editor</h4>
+            <FormGroup>
+              <Label>Font Family</Label>
+              <CustomInput
+                id='settings-font-family'
+                type='select'
+                className='bg-black'
+                value={projectSettings?.get('editor.fontFamily')}
+                onChange={event => this.onChange('editor.fontFamily')(event.target.value)}
+              >
+                <option value='Hack'>Hack</option>
+                <option value='Fira Code'>Fira Code</option>
+              </CustomInput>
+            </FormGroup>
+            <FormGroup>
+              <Label>Font Size</Label>
+              <CustomInput
+                id='settings-font-size'
+                type='select'
+                className='bg-black'
+                value={projectSettings?.get('editor.fontSize')}
+                onChange={event => this.onChange('editor.fontSize')(event.target.value)}
+              >
+                <option value='11px'>11px</option>
+                <option value='12px'>12px</option>
+                <option value='13px'>13px</option>
+                <option value='14px'>14px</option>
+                <option value='15px'>15px</option>
+                <option value='16px'>16px</option>
+              </CustomInput>
+            </FormGroup>
+            <FormGroup>
+              <Label>Font Ligatures</Label>
+              <CustomInput
+                id='settings-ligatures'
+                type='select'
+                className='bg-black'
+                value={projectSettings?.get('editor.ligatures')}
+                onChange={event => this.onChange('editor.ligatures')(event.target.value === 'true')}
+              >
+                <option value='false'>Disabled</option>
+                <option value='true'>Enabled</option>
+              </CustomInput>
+            </FormGroup>
+
             <AbstractProjectSettingsTab.DeleteButton context={this.context} />
           </div>
         </div>

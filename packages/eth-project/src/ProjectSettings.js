@@ -20,6 +20,11 @@ export default class ExtendedProjectSettings extends ProjectSettings {
         optimizer: compilers.optimizer,
       },
       linter: rawSettings.linter || 'solhint',
+      editor: {
+        fontFamily: rawSettings.editor?.fontFamily || 'Hack',
+        fontSize: rawSettings.editor?.fontSize || '13px',
+        ligatures: Boolean(rawSettings.editor?.ligatures),
+      }
     }
     if (rawSettings.language) {
       settings.language = rawSettings.language
