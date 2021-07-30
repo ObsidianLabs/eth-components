@@ -247,9 +247,9 @@ export default class DeployerButton extends PureComponent {
         onActions={[this.estimate]}
       >
         <DropdownInput
-          label='Contract ABI'
+          label='Compiled contract (compiler output JSON)'
           options={contracts.map(c => ({ id: c, display: c }))}
-          placeholder='No ABI Selected'
+          placeholder='No Contract Selected'
           value={selected}
           onChange={this.updateContract}
         />
