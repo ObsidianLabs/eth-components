@@ -135,22 +135,23 @@ export class CompilerManager {
       return await this.buildBySolcjs(projectManager)
     }
 
-    const { compilers = {} } = settings
+    const { framework, compilers = {} } = settings
 
     const projectRoot = this.projectRoot
     CompilerManager.button.setState({ building: 'checking' })
 
-    if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
-      notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
-      CompilerManager.button.setState({ building: false })
-      throw new Error(`No ${process.env.COMPILER_NAME} version.`)
-    }
-
-    const allVersions = await this.truffle.versions()
-    if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
-      notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
-      CompilerManager.button.setState({ building: false })
-      throw new Error(`${process.env.COMPILER_NAME} version not installed`)
+    if (framework === 'truffle') {
+      if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
+        notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
+        CompilerManager.button.setState({ building: false })
+        throw new Error(`No ${process.env.COMPILER_NAME} version.`)
+      }
+      const allVersions = await this.truffle.versions()
+      if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
+        notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
+        CompilerManager.button.setState({ building: false })
+        throw new Error(`${process.env.COMPILER_NAME} version not installed`)
+      }
     }
 
     // if (!compilers.solc) {
@@ -269,18 +270,21 @@ export class CompilerManager {
   }
 
   generateBuildCmd ({ projectRoot, settings, sourceFile }) {
-    const compilers = settings.compilers
+    const { framework, compilers } = settings
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
+
+    if (framework === 'hardhat') {
+      return 'npx hardhat compile --config hardhat.override.js'
+    }
+
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
-      // '-v /var/run/docker.sock:/var/run/docker.sock',
       `-v "${fileOps.current.homePath}/.config/truffle/compilers:/root/.config/truffle/compilers"`,
       `-v "${projectDir}:${projectDir}"`,
       `-w "${projectDir}"`,
       `${process.env.DOCKER_IMAGE_COMPILER}:${compilers[process.env.COMPILER_VERSION_KEY]}`,
       `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
-    
     if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
     }

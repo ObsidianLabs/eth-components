@@ -14,6 +14,7 @@ import {
   ProjectPath,
 } from '@obsidians/workspace'
 
+import notification from '@obsidians/notification'
 import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
 
@@ -52,6 +53,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   render () {
     const { noSolc } = this.props
     const { projectRoot, projectManager, projectSettings } = this.context
+    const framework = projectSettings?.get('framework')
 
     return (
       <div className='custom-tab bg2'>
@@ -74,11 +76,30 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               className='bg-black'
               value={projectSettings?.get('deploy')}
               onChange={this.onChange('deploy')}
-              placeholder={`Required`}
+              placeholder={`Path to the built contract to deploy`}
             />
             <h4 className='mt-4'>Compilers</h4>
             {
               !projectManager.remote &&
+              <FormGroup>
+                <Label>Framework</Label>
+                <CustomInput
+                  id='settings-framework'
+                  type='select'
+                  className='bg-black'
+                  value={framework}
+                  onChange={event => {
+                    notification.warning('Warning', 'Change framework is not recommended. The project may fail to compile and deploy unless you know how to set it up properly.', 5000)
+                    this.onChange('framework')(event.target.value)
+                  }}
+                >
+                  <option value='truffle'>Truffle</option>
+                  <option value='hardhat'>Hardhat</option>
+                </CustomInput>
+              </FormGroup>
+            }
+            {
+              !projectManager.remote && framework === 'truffle' &&
               <DockerImageInputSelector
                 channel={compilerManager.truffle}
                 disableAutoSelection
@@ -99,11 +120,11 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 bg='bg-black'
                 label='Solc version'
                 noManager
-                extraOptions={!projectManager.remote ? [{
+                extraOptions={!projectManager.remote && framework === 'truffle' && [{
                   id: 'default',
                   display: 'From truffle-config.js',
                   onClick: () => this.onChange('compilers.solc')('default')
-                }] : undefined}
+                }]}
                 selected={projectSettings?.get('compilers.solc')}
                 onSelected={solc => this.onChange('compilers.solc')(solc)}
               />

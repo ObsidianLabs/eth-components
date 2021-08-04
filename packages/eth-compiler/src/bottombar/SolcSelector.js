@@ -10,8 +10,17 @@ import compilerManager from '../compilerManager'
 let n
 
 export default props => {
+  const [hasDefault, setHasDefault] = React.useState(!props.remote)
   const [selected, onSelected] = React.useState('')
 
+  React.useEffect(BaseProjectManager.effect(`settings:framework`, framework => {
+    if (props.remote) {
+      setHasDefault(false)
+      return
+    }
+    setHasDefault(framework === 'truffle')
+  }), [])
+  
   React.useEffect(BaseProjectManager.effect('settings:compilers.solc', v => {
     if (!props.remote) {
       if (v === 'default') {
@@ -36,7 +45,7 @@ export default props => {
       onSelected={v => BaseProjectManager.instance.projectSettings?.set('compilers.solc', v)}
     >
       {
-        !props.remote &&
+        hasDefault &&
         <>
           <DropdownItem
             active={selected === 'default'}

@@ -11,7 +11,8 @@ export default class ExtendedProjectSettings extends ProjectSettings {
     const compilers = rawSettings.compilers || {}
     const settings = {
       main: rawSettings.main || './contracts/Contract.sol',
-      deploy: rawSettings.deploy || './build/contracts/Contract.json',
+      deploy: rawSettings.deploy,
+      framework: rawSettings.framework || 'truffle',
       compilers: {
         ...compilers,
         [process.env.COMPILER_VERSION_KEY]: compilers[process.env.COMPILER_VERSION_KEY] || '',

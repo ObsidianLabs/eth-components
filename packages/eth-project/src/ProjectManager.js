@@ -40,30 +40,6 @@ function makeProjectManager (Base) {
       setTimeout(() => this.lint(), 100)
     }
 
-    async readProjectAbis () {
-      const contractsFolder = this.pathForProjectFile('build/contracts')
-      const files = await this.listFolder(contractsFolder)
-      const contracts = await Promise.all(files
-        .map(f => f.name)
-        .filter(name => name.endsWith('.json'))
-        .map(name => this.path.join(contractsFolder, name))
-        .map(contractPath => this.readFile(contractPath, 'utf8')
-          .then(content => ({
-            contractPath,
-            pathInProject: this.pathInProject(contractPath),
-            content: JSON.parse(content)
-          }))
-          .catch(() => null)
-        )
-      )
-      return contracts
-        .filter(Boolean)
-        .map(({ contractPath, pathInProject, content }) => {
-          const name = content.contractName || this.path.parse(contractPath).name
-          return { contractPath, pathInProject, name, abi: content?.abi, content }
-        })
-    }
-
     onFileChanged () {
       this.lint()
     }
@@ -111,16 +87,6 @@ function makeProjectManager (Base) {
   
       return true
     }
-
-    async getDefaultContractFileNode () {
-      const settings = await this.checkSettings()
-      if (!settings?.deploy) {
-        throw new Error('Please set the smart contract to deploy in project settings.')
-      }
-      const filePath = this.pathForProjectFile(settings.deploy)
-      const pathInProject = this.pathInProject(filePath)
-      return { path: filePath, pathInProject }
-    }
   
     async deploy (contractFileNode) {
       if (!networkManager.sdk) {
@@ -128,12 +94,78 @@ function makeProjectManager (Base) {
         return true
       }
 
+      let contracts
+      if (contractFileNode) {
+        contractFileNode.pathInProject = this.pathInProject(contractFileNode.path)
+        contracts = [contractFileNode]
+      } else {
+        try {
+          contracts = await this.getBuiltContracts()
+        } catch {
+          notification.error('Cannot Deploy', `Cannot locate the built folder. Please make sure you have built the project successfully.`)
+          return
+        }
+      }
+
+      if (!contracts.length) {
+        notification.error('Cannot Deploy', `No built contracts found. Please make sure you have built the project successfully.`)
+        return
+      }
+
       this.deployButton.getDeploymentParameters({
         contractFileNode: contractFileNode || await this.getDefaultContractFileNode(),
+        contracts,
       },
         (contractObj, allParameters) => this.pushDeployment(contractObj, allParameters),
         (contractObj, allParameters) => this.estimate(contractObj, allParameters)
       )
+    }
+
+    async getDefaultContractFileNode () {
+      const settings = await this.checkSettings()
+      if (!settings?.deploy) {
+        return
+      }
+      const filePath = this.pathForProjectFile(settings.deploy)
+      const pathInProject = this.pathInProject(filePath)
+      return { path: filePath, pathInProject }
+    }
+
+    async getBuiltContracts () {
+      const settings = await this.checkSettings()
+      const builtFolder = this.path.join(
+        this.projectRoot,
+        settings.framework === 'truffle' ? 'build' : 'artifacts',
+        'contracts'
+      )
+      let stopCriteria
+      if (settings.framework === 'truffle') {
+        stopCriteria = child => child.type === 'file' && child.name.endsWith('.json')
+      } else {
+        stopCriteria = child => child.type === 'file' && child.name.endsWith('.json') && !child.name.endsWith('.dbg.json')
+      }
+      const files = await this.listFolderRecursively(builtFolder, stopCriteria)
+      return files.map(f => ({ ...f, pathInProject: this.pathInProject(f.path) }))
+    }
+
+    async readProjectAbis () {
+      const contracts = await this.getBuiltContracts()
+      const abis = await Promise.all(contracts
+        .map(contract => this.readFile(contract.path, 'utf8')
+          .then(content => ({
+            contractPath: contract.path,
+            pathInProject: this.pathInProject(contract.path),
+            content: JSON.parse(content)
+          }))
+          .catch(() => null)
+        )
+      )
+      return abis
+        .filter(Boolean)
+        .map(({ contractPath, pathInProject, content }) => {
+          const name = content.contractName || this.path.parse(contractPath).name
+          return { contractPath, pathInProject, name, abi: content?.abi, content }
+        })
     }
 
     checkSdkAndSigner (allParameters) {
