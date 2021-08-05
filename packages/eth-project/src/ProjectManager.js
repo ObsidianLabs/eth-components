@@ -321,7 +321,7 @@ function makeProjectManager (Base) {
   
       const deployResultPath = this.path.join(this.projectRoot, 'deploys', `${result.network}_${moment().format('YYYYMMDD_HHmmss')}.json`)
       await this.ensureFile(deployResultPath)
-      await this.writeFile(deployResultPath, JSON.stringify(result, null, 2))
+      await this.saveFile(deployResultPath, JSON.stringify(result, null, 2))
     }
   }
 }
