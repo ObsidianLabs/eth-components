@@ -101,7 +101,7 @@ export class CompilerManager {
           const json = output.contracts[file][contractName]
           const contractJsonPath = projectManager.pathForProjectFile(`build/contracts/${contractName}.json`)
           const contractJson = JSON.stringify(json, null, 2)
-          await projectManager.writeFile(contractJsonPath, contractJson)
+          await projectManager.saveFile(contractJsonPath, contractJson)
         }
       }
       projectManager.refreshDirectory()
