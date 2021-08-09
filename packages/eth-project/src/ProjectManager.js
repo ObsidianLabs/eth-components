@@ -135,14 +135,14 @@ function makeProjectManager (Base) {
       const settings = await this.checkSettings()
       const builtFolder = this.path.join(
         this.projectRoot,
-        settings.framework === 'truffle' ? 'build' : 'artifacts',
+        settings.framework === 'hardhat' ? 'artifacts' : 'build',
         'contracts'
       )
       let stopCriteria
-      if (settings.framework === 'truffle') {
-        stopCriteria = child => child.type === 'file' && child.name.endsWith('.json')
-      } else {
+      if (settings.framework === 'hardhat') {
         stopCriteria = child => child.type === 'file' && child.name.endsWith('.json') && !child.name.endsWith('.dbg.json')
+      } else {
+        stopCriteria = child => child.type === 'file' && child.name.endsWith('.json')
       }
       const files = await this.listFolderRecursively(builtFolder, stopCriteria)
       return files.map(f => ({ ...f, pathInProject: this.pathInProject(f.path) }))
@@ -181,22 +181,21 @@ function makeProjectManager (Base) {
     }
 
     validateDeployment (contractObj) {  
-      let bytecode, deployedBytecode
-      if (!this.remote) {
-        bytecode = contractObj.bytecode
-        deployedBytecode = contractObj.deployedBytecode
-        if (typeof deployedBytecode !== 'string') {
-          notification.error('Deployment Error', `Invalid <b>deployedBytecode</b> field in the built contract JSON. Please make sure you used ${process.env.COMPILER_NAME} to build the contract.`)
-          return
-        }
-      } else {
-        bytecode = contractObj.evm?.bytecode?.object
-        deployedBytecode = contractObj.evm?.deployedBytecode?.object
-        if (typeof deployedBytecode !== 'string') {
-          notification.error('Deployment Error', `Invalid <b>evm.bytecode.object</b> field in the built contract JSON. Please make sure you selected a correct JSON file for a built smart contract.`)
-          return
-        }
+      let bytecode = contractObj.bytecode || contractObj.evm?.bytecode?.object
+      let deployedBytecode = contractObj.deployedBytecode || contractObj.evm?.deployedBytecode?.object
+
+      if (!deployedBytecode) {
+        notification.error('Deployment Error', `Invalid <b>deployedBytecode</b> and <b>evm.deployedBytecode.object</b> fields in the built contract JSON. Please make sure you selected a correct built contract JSON file.`)
+        return
+      }
+      if (!deployedBytecode) {
+        notification.error('Deployment Error', `Invalid <b>bytecode</b> and <b>evm.bytecode.object</b> fields in the built contract JSON. Please make sure you selected a correct built contract JSON file.`)
+        return
+      }
+      if (!bytecode.startsWith('0x')) {
         bytecode = '0x' + bytecode
+      }
+      if (!deployedBytecode.startsWith('0x')) {
         deployedBytecode = '0x' + deployedBytecode
       }
       return {

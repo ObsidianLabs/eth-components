@@ -1,8 +1,11 @@
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
+const config = require('./config.json')
+
 module.exports = {
   solidity: {
-    version: '#solc'
+    version: config.compilers.solc,
+    settings: {
+      optimizer: config.compilers.optimizer,
+      evmVersion: config.compilers.evmVersion,
+    },
   },
 }

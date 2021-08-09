@@ -95,6 +95,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 >
                   <option value='truffle'>Truffle</option>
                   <option value='hardhat'>Hardhat</option>
+                  <option value='waffle'>Waffle</option>
                 </CustomInput>
               </FormGroup>
             }

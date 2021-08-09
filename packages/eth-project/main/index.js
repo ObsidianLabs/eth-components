@@ -69,16 +69,15 @@ class ProjectChannel extends FileTreeChannel {
 
       config.compilers = { truffle: compilerVersion, ...config.compilers }
       fs.writeFileSync(path.join(projectRoot, 'config.json'), JSON.stringify(config, null, 2))
-    } else {
+    } else if (framework === 'hardhat') {
       let hardhatConfig = fs.readFileSync(path.join(__dirname, 'templates', 'hardhat.config.js'), 'utf8')
-      hardhatConfig = hardhatConfig.replace('#solc', config.compilers.solc)
       fs.writeFileSync(path.join(projectRoot, 'hardhat.config.js'), hardhatConfig)
       
-      const hardhatOverride = fs.readFileSync(path.join(__dirname, 'templates', 'hardhat.override.js'), 'utf8')
-      fs.writeFileSync(path.join(projectRoot, 'hardhat.override.js'), hardhatOverride)
-    
       config.deploy = ''
       fs.writeFileSync(path.join(projectRoot, 'config.json'), JSON.stringify(config, null, 2))
+    } else if (framework === 'waffle') {
+      let waffleConfig = fs.readFileSync(path.join(__dirname, 'templates', 'waffle.js'), 'utf8')
+      fs.writeFileSync(path.join(projectRoot, 'waffle.js'), waffleConfig)
     }
 
     return { projectRoot, name }

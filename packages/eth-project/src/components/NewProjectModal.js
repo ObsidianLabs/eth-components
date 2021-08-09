@@ -39,6 +39,13 @@ const hardhatVersions = [
   { id: 'v2.2.1', display: 'v2.2.1' },
 ]
 
+const waffleVersions = [
+  { id: 'v3.4.0', display: 'v3.4.0' },
+  { id: 'v3.3.0', display: 'v3.3.0' },
+  { id: 'v3.2.2', display: 'v3.2.2' },
+  { id: 'v3.1.2', display: 'v3.1.2' },
+]
+
 export default class ExtendedNewProjectModal extends NewProjectModal {
   constructor (props) {
     super(props)
@@ -48,6 +55,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       framework: 'truffle',
       truffleVersion: '',
       hardhatVersion: 'v2.5.0',
+      waffleVersion: 'v3.4.0',
       openZeppelinVersion: 'v4.2.0',
     }
   }
@@ -65,10 +73,10 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       return createProject({ projectRoot, name, template, group })
     }
 
-    const { framework, truffleVersion, hardhatVersion, openZeppelinVersion } = this.state
-    const compilerVersion = framework === 'truffle' ? truffleVersion : hardhatVersion
-    const compilerName = framework === 'truffle' ? process.env.COMPILER_NAME_IN_LABEL : 'hardhat'
-    
+    const { framework, truffleVersion, hardhatVersion, waffleVersion, openZeppelinVersion } = this.state
+    const compilerVersion = this.state[`${framework}Version`]
+    const compilerName = framework === 'truffle' ? process.env.COMPILER_NAME_IN_LABEL : framework
+
     if (this.state.remote) {
       return super.createProject({ projectRoot, name, template, framework, compilerVersion })
     }
@@ -132,9 +140,12 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       }
     }
 
-    await super.createProject({ projectRoot, name, template, framework, compilerVersion })
+    const result = await super.createProject({ projectRoot, name, template, framework, compilerVersion })
+    if (!result) {
+      return false
+    }
 
-    if (group === 'open zeppelin' || framework === 'hardhat') {
+    if (group === 'open zeppelin' || framework === 'hardhat' || framework === 'waffle') {
       this.setState({ showTerminal: true })
       const result = await this.terminal.current.exec(`npm init -y`, { cwd: projectRoot })
       if (result.code) {
@@ -144,16 +155,22 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     }
 
     if (group === 'open zeppelin') {
-      const result = await this.terminal.current.exec(`npm i -S ${openZeppelinPackage}@${openZeppelinVersion}`, { cwd: projectRoot })
+      const result = await this.terminal.current.exec(`npm i -D ${openZeppelinPackage}@${openZeppelinVersion}`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Fail to Install OpenZeppelin')
         return false
       }
     }
     if (framework === 'hardhat') {
-      const result = await this.terminal.current.exec(`npm i -save-dev hardhat@${hardhatVersion}`, { cwd: projectRoot })
+      const result = await this.terminal.current.exec(`npm i -D hardhat@${hardhatVersion}`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Fail to Install Hardhat')
+        return false
+      }
+    } else if (framework === 'waffle') {
+      const result = await this.terminal.current.exec(`npm i -D ethereum-waffle@${waffleVersion}`, { cwd: projectRoot })
+      if (result.code) {
+        notification.error('Fail to Install Waffle')
         return false
       }
     }
@@ -162,7 +179,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
   }
 
   renderFrameworkSelector = () => {
-    if (this.state.framework === 'truffle') {
+    const { framework, truffleVersion, hardhatVersion, waffleVersion } = this.state
+    if (framework === 'truffle') {
       return (
         <DockerImageInputSelector
           key='truffle-selector'
@@ -171,20 +189,30 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
           noneName={`${process.env.COMPILER_NAME}`}
           modalTitle={`${process.env.COMPILER_NAME} Manager`}
           downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-          selected={this.state.truffleVersion}
+          selected={truffleVersion}
           onSelected={truffleVersion => this.setState({ truffleVersion })}
         />
       )
+    } else if (framework === 'hardhat') {
+      return (
+        <DropdownInput
+          label='Hardhat Version'
+          options={hardhatVersions}
+          value={hardhatVersion}
+          onChange={hardhatVersion => this.setState({ hardhatVersion })}
+        />
+      )
+    } else if (framework === 'waffle') {
+      return (
+        <DropdownInput
+          label='Waffle Version'
+          options={waffleVersions}
+          value={waffleVersion}
+          onChange={waffleVersion => this.setState({ waffleVersion })}
+        />
+      )
     }
-
-    return (
-      <DropdownInput
-        label='Hardhat Version'
-        options={hardhatVersions}
-        value={this.state.hardhatVersion}
-        onChange={hardhatVersion => this.setState({ hardhatVersion })}
-      />
-    )
+    return null
   }
  
   renderOtherOptions = () => {
@@ -195,6 +223,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     const options = [{ key: 'truffle', text: process.env.COMPILER_NAME }]
     if (this.state.group !== 'Truffle') {
       options.push({ key: 'hardhat', text: 'Hardhat' })
+      options.push({ key: 'waffle', text: 'Waffle' })
     }
     return (
       <>

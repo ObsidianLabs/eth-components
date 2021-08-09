@@ -274,7 +274,9 @@ export class CompilerManager {
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
 
     if (framework === 'hardhat') {
-      return 'npx hardhat compile --config hardhat.override.js'
+      return 'npx hardhat compile --config hardhat.config.js'
+    } else if (framework === 'waffle') {
+      return 'npx waffle waffle.js'
     }
 
     const cmd = [
