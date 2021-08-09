@@ -89,7 +89,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                   className='bg-black'
                   value={framework}
                   onChange={event => {
-                    notification.warning('Warning', 'Change framework is not recommended. The project may fail to compile and deploy unless you know how to set it up properly.', 5000)
+                    notification.warning('Warning', 'Change framework is not recommended. The project may fail to compile and deploy unless you know how to set it up properly.')
                     this.onChange('framework')(event.target.value)
                   }}
                 >
