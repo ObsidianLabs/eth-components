@@ -1,11 +1,10 @@
-import platform from '@obsidians/platform'
 import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
-import semver from 'semver'
 import stripAnsi from 'strip-ansi'
 
 import SolcjsCompiler from './SolcjsCompiler'
+import soljsonReleases from './soljsonReleases.json'
 
 class SolcjsChannel extends DockerImageChannel {
   installed () {
@@ -13,7 +12,7 @@ class SolcjsChannel extends DockerImageChannel {
   }
 
   versions () {
-    const versions = Object.keys(window.soljsonReleases).map(Tag => ({ Tag }))
+    const versions = Object.entries(soljsonReleases).map(([Tag, Name]) => ({ Tag, Name }))
     const event = new CustomEvent('versions', { detail: versions })
     this.eventTarget.dispatchEvent(event)
     return versions
@@ -27,18 +26,9 @@ export class CompilerManager {
 
   constructor () {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
-    if (platform.isDesktop) {
-      this.solc = new DockerImageChannel('ethereum/solc', {
-        filter: v => semver.valid(v) && !v.endsWith('alpine'),
-        size: 50,
-      })
-    } else {
-      this.solc = new SolcjsChannel()
-    }
+    this.solc = new SolcjsChannel()
     this.notification = null
-    if (platform.isWeb) {
-      this.solcjsCompiler = new SolcjsCompiler()
-    }
+    this.solcjsCompiler = new SolcjsCompiler()
   }
 
   get projectRoot () {
@@ -76,15 +66,27 @@ export class CompilerManager {
     }
 
     const solcVersion = projectManager.projectSettings.get('compilers.solc')
-    const solcFileName = window.soljsonReleases[solcVersion]
+    const solcFileName = soljsonReleases[solcVersion]
     const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
+
+    const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
+    const optimizer = projectManager.projectSettings.get('compilers.optimizer')
 
     CompilerManager.button.setState({ building: true })
     await this.cacheSolcBin(solcUrl, solcFileName)
 
     CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
     this.notification = notification.info(`Building Project`, `Building...`, 0)
-    const output = await this.solcjsCompiler.compile(solcUrl, projectManager)
+
+    let output
+    try {
+      output = await this.solcjsCompiler.compile(solcUrl, projectManager)
+    } catch (e) {
+      this.notification.dismiss()
+      notification.error('Build Failed', e.message)
+      CompilerManager.button.setState({ building: false })
+      throw e
+    }
 
     if (!output) {
       this.notification.dismiss()
@@ -99,7 +101,7 @@ export class CompilerManager {
           const json = output.contracts[file][contractName]
           const contractJsonPath = projectManager.pathForProjectFile(`build/contracts/${contractName}.json`)
           const contractJson = JSON.stringify(json, null, 2)
-          await fileOps.current.writeFile(contractJsonPath, contractJson)
+          await projectManager.saveFile(contractJsonPath, contractJson)
         }
       }
       projectManager.refreshDirectory()
@@ -129,23 +131,27 @@ export class CompilerManager {
   }
 
   async build (settings, projectManager, sourceFile) {
-    if (platform.isWeb) {
+    if (projectManager.remote) {
       return await this.buildBySolcjs(projectManager)
     }
 
-    const { compilers = {} } = settings
+    const { framework, compilers = {} } = settings
 
     const projectRoot = this.projectRoot
+    CompilerManager.button.setState({ building: 'checking' })
 
-    if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
-      notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
-      throw new Error(`No ${process.env.COMPILER_NAME} version.`)
-    }
-
-    const allVersions = await this.truffle.versions()
-    if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
-      notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
-      throw new Error(`${process.env.COMPILER_NAME} version not installed`)
+    if (framework === 'truffle') {
+      if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
+        notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
+        CompilerManager.button.setState({ building: false })
+        throw new Error(`No ${process.env.COMPILER_NAME} version.`)
+      }
+      const allVersions = await this.truffle.versions()
+      if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
+        notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
+        CompilerManager.button.setState({ building: false })
+        throw new Error(`${process.env.COMPILER_NAME} version not installed`)
+      }
     }
 
     // if (!compilers.solc) {
@@ -156,6 +162,7 @@ export class CompilerManager {
     const allSolcVersions = await this.solc.versions()
     if (compilers.solc && compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
       notification.error(`Solc ${compilers.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
+      CompilerManager.button.setState({ building: false })
       throw new Error('Solc version not installed')
     }
 
@@ -191,7 +198,7 @@ export class CompilerManager {
       return { errors, decorations }
     }
 
-    const buildFolder = fileOps.current.path.join('build', 'contracts')
+    const buildFolder = projectManager.path.join('build', 'contracts')
     if (!sourceFile) {
       notification.success('Build Project Successful', `Please find the generated ABI and bytecode in the <b>${buildFolder}</b> folder.`)
     } else {
@@ -204,7 +211,7 @@ export class CompilerManager {
     if (CompilerManager.terminal) {
       CompilerManager.terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
       await CompilerManager.terminal.stop()
-      await CompilerManager.terminal.execAsChildProcess(`docker rm $(docker ps --filter status=exited --filter ancestor=ethereum/solc:${compilers.solc} -q)`)
+      // await CompilerManager.terminal.execAsChildProcess(`docker rm $(docker ps --filter status=exited --filter ancestor=ethereum/solc:${compilers.solc} -q)`)
     }
   }
 
@@ -263,20 +270,32 @@ export class CompilerManager {
   }
 
   generateBuildCmd ({ projectRoot, settings, sourceFile }) {
-    const compilers = settings.compilers
+    const { framework, compilers } = settings
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
+
+    if (framework === 'hardhat') {
+      return 'npx hardhat compile --config hardhat.config.js'
+    } else if (framework === 'waffle') {
+      return 'npx waffle waffle.js'
+    }
+
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
-      '-v /var/run/docker.sock:/var/run/docker.sock',
+      `-v "${fileOps.current.homePath}/.config/truffle/compilers:/root/.config/truffle/compilers"`,
       `-v "${projectDir}:${projectDir}"`,
       `-w "${projectDir}"`,
       `${process.env.DOCKER_IMAGE_COMPILER}:${compilers[process.env.COMPILER_VERSION_KEY]}`,
       `${process.env.COMPILER_EXECUTABLE_NAME} compile`,
     ]
-    
     if (compilers.solc && compilers.solc !== 'default') {
       cmd.push(`--compilers.solc.version '${compilers.solc}'`)
-      cmd.push(`--compilers.solc.docker 1`)
+    }
+    if (compilers.evmVersion) {
+      cmd.push(`--compilers.solc.settings.evmVersion '${compilers.evmVersion}'`)
+    }
+    if (compilers.optimizer?.enabled) {
+      cmd.push(`--compilers.solc.settings.optimizer.enabled`)
+      cmd.push(`--compilers.solc.settings.optimizer.runs ${compilers.optimizer.runs}`)
     }
 
     if (sourceFile) {

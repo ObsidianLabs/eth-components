@@ -40,8 +40,20 @@ export default class AbiStorageModal extends PureComponent {
     this.setState({ abis, loading: false })
   }
 
-  viewAbi = abi => {
-    this.viewAbiModal.current.openModal(abi)
+  viewAbi = async data => {
+    let formattedAbi = ''
+    try {
+      formattedAbi = JSON.stringify(JSON.parse(data.abi), null, 2)
+    } catch {
+      notification.error('Failed to parse ABI', 'The saved ABI is not a valid JSON.')
+    }
+    const { name, codeHash, abi } = await this.abiInputModal.current.openModal(data.name, data.codeHash, formattedAbi)
+    redux.dispatch('ABI_UPDATE', { name, codeHash, abi })
+    notification.success(
+      'ABI Updated',
+      `The ABI record is updated in the storage.`
+    )
+    this.refresh()
   }
 
   newAbi = async (inputName, inputCodeHash) => {
@@ -88,15 +100,14 @@ export default class AbiStorageModal extends PureComponent {
   renderAbiRow = (item, index) => {
     const [codeHash, obj] = item
     const abi = obj.get('abi')
+    const name = obj.get('name')
     try {
       abi = JSON.stringify(JSON.parse(abi), null, 2)
     } catch (e) {}
     return (
       <tr key={`abi-${codeHash}`} className='hover-flex'>
         <td>
-          <div className='text-overflow-dots'>
-            {obj.get('name') || 'asdkfasdhflkjasdhflkjasdhfkjlasfhsdakjfkfas'}
-          </div>
+          <div className='text-overflow-dots'>{name}</div>
         </td>
         <td className='pr-0'>
           <code className='small'>{codeHash}</code>
@@ -107,11 +118,11 @@ export default class AbiStorageModal extends PureComponent {
               color='transparent'
               id={`show-abi-${index}`}
               className='text-muted'
-              icon='fas fa-eye'
-              onClick={() => this.viewAbi(abi)}
+              icon='fas fa-pencil-alt'
+              onClick={() => this.viewAbi({ name, codeHash, abi })}
             >
               <UncontrolledTooltip delay={0} placement='top' target={`show-abi-${index}`}>
-                Show ABI
+                Edit
               </UncontrolledTooltip>
             </IconButton>
             <DeleteButton
@@ -127,18 +138,19 @@ export default class AbiStorageModal extends PureComponent {
     return <>
       <Modal
         ref={this.modal}
+        wide
         title='ABI Storage'
         textActions={['New']}
         textCancel='Close'
-        onActions={[this.newAbi]}
+        onActions={[() => this.newAbi()]}
       >
         <Table
           tableSm
           TableHead={(
             <tr>
-              <th style={{ width: '16%' }}>Name</th>
-              <th style={{ width: '75%' }}>Code Hash / Address</th>
-              <th style={{ width: '9%' }}></th>
+              <th style={{ width: '20%' }}>Name</th>
+              <th style={{ width: '70%' }}>Code Hash / Address</th>
+              <th style={{ width: '10%' }}></th>
             </tr>
           )}
         >

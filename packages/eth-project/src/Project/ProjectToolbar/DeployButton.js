@@ -8,10 +8,8 @@ import {
   Label,
 } from '@obsidians/ui-components'
 
-import fileOps from '@obsidians/file-ops'
 import notification from '@obsidians/notification'
 import { KeypairInputSelector } from '@obsidians/keypair'
-import { txOptions } from '@obsidians/sdk'
 
 import { networkManager } from '@obsidians/eth-network'
 import { ContractForm, ActionParamFormGroup } from '@obsidians/eth-contract'
@@ -21,7 +19,6 @@ export default class DeployerButton extends PureComponent {
     super(props)
     this.state = {
       selected: '',
-      contractsFolder: '',
       contracts: [],
       contractName: '',
       contractObj: null,
@@ -30,6 +27,7 @@ export default class DeployerButton extends PureComponent {
       pending: false,
     }
     this.modal = React.createRef()
+    this.form = React.createRef()
   }
 
   componentDidMount () {
@@ -43,46 +41,44 @@ export default class DeployerButton extends PureComponent {
     this.props.projectManager.deploy()
   }
 
-  getDeploymentParameters = async (contractPath, callback, estimate) => {
-    const { dir: contractsFolder, base: selected } = fileOps.current.path.parse(contractPath)
-    const files = await fileOps.current.listFolder(contractsFolder)
-    this.setState({
-      selected,
-      contractsFolder,
-      contracts: files.map(f => f.name).filter(name => name.endsWith('.json')),
-    })
+  getDeploymentParameters = async (option, callback, estimate) => {
+    this.getConstructorAbiArgs = option.getConstructorAbiArgs || (contractObj => [contractObj.abi])
+    const contractFileNode = option.contractFileNode || option.contracts[0]
+    
+    this.setState({ selected: contractFileNode.path, contracts: option.contracts })
 
     this.modal.current.openModal()
-    await this.updateAbi(contractPath)
+    await this.updateAbi(contractFileNode)
     const options = {}
-    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = '')
+    networkManager.sdk?.txOptions?.list.forEach(opt => options[opt.name] = '')
     this.setState(options)
     this.callback = callback
     this.estimateCallback = estimate
   }
 
   updateContract = async selected => {
-    this.setState({ selected })
-    const contractPath = fileOps.current.path.join(this.state.contractsFolder, selected)
-    await this.updateAbi(contractPath)
+    const txOptionObj = Object.fromEntries(networkManager.sdk?.txOptions?.list.map(option => [option.name, '']))
+    this.setState({ selected, ...txOptionObj })
+    const selectedContract = this.state.contracts.find(c => c.path === selected)
+    await this.updateAbi(selectedContract)
   }
 
-  updateAbi = async contractPath => {
-    const contractName = fileOps.current.path.parse(contractPath).name
+  updateAbi = async fileNode => {
+    const contractName = this.props.projectManager.path.parse(fileNode.path).name
 
     let contractObj
     try {
-      contractObj = await this.readContractJson(contractPath)
+      contractObj = await this.readContractJson(fileNode)
     } catch (e) {
-      notification.error('ABI File Error', e.message)
+      notification.error('Built Contract Not Found', `Cannot open the file <b>${fileNode.pathInProject}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid built contract in the Project Settings.`)
       return
     }
 
     let constructorAbi
     try {
-      constructorAbi = await this.getConstructorAbi(contractObj.abi)
+      constructorAbi = await this.getConstructorAbi(...this.getConstructorAbiArgs(contractObj))
     } catch (e) {
-      notification.error('ABI File Error', e.message)
+      notification.error('Built Contract File Error', e.message)
       return
     }
 
@@ -93,52 +89,57 @@ export default class DeployerButton extends PureComponent {
     })
   }
   
-  readContractJson = async contractPath => {
-    const contractJson = await fileOps.current.readFile(contractPath)
+  readContractJson = async fileNode => {
+    const contractJson = await this.props.projectManager.readFile(fileNode.path)
 
     try {
       return JSON.parse(contractJson)
     } catch (e) {
-      throw new Error(`Error in reading <b>${contractPath}</b>. Not a valid JSON file.`)
+      throw new Error(`Error in reading <b>${fileNode.pathInProject}</b>. Not a valid JSON file.`)
     }
   }
 
   getConstructorAbi = (contractAbi, { key = 'type', value = 'constructor' } = {}) => {
     if (!contractAbi) {
-      throw new Error(`Error in reading the ABI. Does not have the field abi.`)
+      throw new Error(`Error in reading the built contract file.`)
     }
     if (!Array.isArray(contractAbi)) {
-      throw new Error(`Error in reading the ABI. Field abi is not an array.`)
+      throw new Error(`Error in reading the built contract file. Field abi is not an array.`)
     }
     return contractAbi.find(item => item[key] === value)
   }
 
-  estimate = async () => {
-    let parameters = { array: [], obj: {} }
-    if (this.state.constructorAbi) {
-      try {
-        parameters = this.form.getParameters()
-      } catch (e) {
-        return
+  needEstimate = () => {
+    if (this.props.skipEstimate) {
+      return false
+    }
+    if (networkManager.sdk?.txOptions?.list.length) {
+      const option = networkManager.sdk.txOptions.list[0]
+      const value = this.state[option.name]
+      if (!value) {
+        return true
       }
     }
+    return false
+  }
 
-    const { contractName, contractObj, signer } = this.state
-    const options = {}
-    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
-
-    const result = await this.estimateCallback(contractObj, { parameters, contractName, signer, ...options })
-
-    if (result) {
-      this.setState(result)
+  renderTextActions = () => {
+    if (this.state.pending) {
+      return
+    } else if (this.props.skipEstimate) {
+      return [`Estimate ${networkManager.sdk?.txOptions?.title}`]
+    } else if (this.needEstimate()) {
+      return
+    } else {
+      return ['Re-estimate']
     }
   }
 
-  confirmDeploymentParameters = () => {
+  prepare = () => {
     let parameters = { array: [], obj: {} }
     if (this.state.constructorAbi) {
       try {
-        parameters = this.form.getParameters()
+        parameters = this.form.current?.getParameters()
       } catch (e) {
         notification.error('Error in Constructor Parameters', e.message)
         return
@@ -147,9 +148,33 @@ export default class DeployerButton extends PureComponent {
 
     const { contractName, contractObj, signer } = this.state
     const options = {}
-    txOptions.list && txOptions.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    networkManager.sdk?.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    this.callback(contractObj, { parameters, contractName, signer, ...options })
+    return [contractObj, { parameters, contractName, signer, ...options }]
+  }
+
+  estimate = async () => {
+    const args = this.prepare()
+    if (!args) {
+      return
+    }
+    const result = await this.estimateCallback(...args)
+    if (result) {
+      this.setState(result)
+    }
+  }
+
+  confirmDeployment = async () => {
+    if (this.needEstimate()) {
+      this.estimate()
+      return
+    }
+
+    const args = this.prepare()
+    if (!args) {
+      return
+    }
+    this.callback(...args)
   }
 
   closeModal = () => {
@@ -157,7 +182,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   render () {
-    const signer = this.props.signer
+    const { signer } = this.props
     const { contracts, selected, contractName, pending } = this.state
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
@@ -171,7 +196,8 @@ export default class DeployerButton extends PureComponent {
       constructorParameters = <>
         <Label>Constructor Parameters</Label>
         <ContractForm
-          ref={form => { this.form = form }}
+          ref={this.form}
+          key={selected}
           size='sm'
           {...constructorAbi}
           Empty={<div className='small'>(None)</div>}
@@ -179,6 +205,8 @@ export default class DeployerButton extends PureComponent {
         <div className='mb-2' />
       </>
     }
+    
+    const needEstimate = this.needEstimate()
 
     return <>
       <Button
@@ -192,21 +220,21 @@ export default class DeployerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>
-        { pending ? 'Deploying' : `Deploy`}
+        { pending || `Deploy`}
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
-        overflow
         title={<span>Deploy Contract <b>{contractName}</b></span>}
-        textConfirm='Deploy'
-        pending={pending && 'Deploying...'}
-        onConfirm={this.confirmDeploymentParameters}
-        textActions={[`Estimate ${txOptions.title}`]}
+        textConfirm={needEstimate ? 'Estimate & Deploy' : 'Deploy'}
+        pending={pending}
+        onConfirm={this.confirmDeployment}
+        textActions={this.renderTextActions()}
         onActions={[this.estimate]}
       >
         <DropdownInput
-          label='Contract ABI'
-          options={contracts.map(c => ({ id: c, display: c }))}
+          label='Compiled contract (compiler output JSON)'
+          options={contracts.map(c => ({ id: c.path, display: c.relative || c.pathInProject }))}
+          placeholder='No Contract Selected'
           value={selected}
           onChange={this.updateContract}
         />
@@ -223,16 +251,15 @@ export default class DeployerButton extends PureComponent {
         />
         <div className='row'>
           {
-            txOptions.list?.length &&
-            txOptions.list.map(option => (
+            networkManager.sdk?.txOptions?.list.map(option => (
               <ActionParamFormGroup
                 key={`deploy-param-${option.name}`}
                 className={option.className}
                 label={option.label}
                 icon={option.icon}
-                placeholder={option.placeholder}
                 value={this.state[option.name]}
                 onChange={value => this.setState({ [option.name]: value })}
+                placeholder={option.placeholder}
               />
             ))
           }

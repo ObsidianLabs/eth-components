@@ -1,5 +1,4 @@
 import Workspace from '@obsidians/workspace'
-import platform from '@obsidians/platform'
 import fileOps from '@obsidians/file-ops'
 import { useBuiltinCustomTabs, modelSessionManager, defaultModeDetector } from '@obsidians/code-editor'
 import compilerManager, { CompilerTerminal } from '@obsidians/compiler'
@@ -29,19 +28,18 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
     return contextMenu
   }
   if (node.name.endsWith('.json')) {
-    const path = fileOps.current.path
-    const dir = path.parse(node.path).dir
-    if (dir.endsWith(path.join('build', 'contracts'))) {
+    const { dir, name } = projectManager.path.parse(node.path)
+    if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
       const cloned = [...contextMenu]
-      cloned.splice(platform.isDesktop ? 5: 3, 0, {
+      cloned.splice(projectManager.remote ? 3 : 5, 0, {
         text: 'Deploy',
-        onClick: () => projectManager.deploy(node.path),
+        onClick: () => projectManager.deploy(node),
       }, null)
       return cloned
     }
-  } else if (node.name.endsWith('.sol') && platform.isDesktop) {
+  } else if (node.name.endsWith('.sol') && !projectManager.remote) {
     const cloned = [...contextMenu]
-    cloned.splice(platform.isDesktop ? 5: 3, 0, {
+    cloned.splice(projectManager.remote ? 3: 5, 0, {
       text: 'Compile',
       onClick: () => projectManager.compile(node.path),
     }, null)
@@ -55,7 +53,7 @@ Workspace.defaultProps = {
   compilerManager,
   ProjectToolbar,
   CompilerTerminal,
-  addLanguages: () => addSolidityLanguage(),
+  addLanguages: addSolidityLanguage,
   makeContextMenu,
 }
 

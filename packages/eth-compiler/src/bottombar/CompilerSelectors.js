@@ -1,16 +1,15 @@
 import React from 'react'
 
-import platform from '@obsidians/platform'
 import TruffleSelector from './TruffleSelector'
 import SolcSelector from './SolcSelector'
 
-export default () => {
-  if (platform.isDesktop) {
+export default props => {
+  if (props.author === 'local') {
     return <>
       <TruffleSelector />
       <SolcSelector />
     </>
   }
 
-  return <SolcSelector />
+  return <SolcSelector remote />
 }

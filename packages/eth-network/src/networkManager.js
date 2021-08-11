@@ -1,16 +1,23 @@
 import platform from '@obsidians/platform'
-import headerActions from '@obsidians/header'
+import headerActions from '@obsidians/eth-header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
-import Sdk from '@obsidians/sdk'
 
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
 class NetworkManager {
   constructor () {
+    this.networks = []
+
     this._sdk = null
     this.network = undefined
     this.networks = []
+    this.Sdks = new Map()
+  }
+
+  addSdk (Sdk, networks) {
+    networks.forEach(n => this.Sdks.set(n.id, Sdk))
+    this.networks = [...this.networks, ...networks]
 
     const enable = !(process.env.REACT_APP_DISABLE_BROWSER_EXTENSION === 'true')
     if (platform.isWeb && enable && Sdk.InitBrowserExtension) {
@@ -22,16 +29,51 @@ class NetworkManager {
     return this.network?.id
   }
 
+  get Sdk () {
+    return this.Sdks.get(this.networkId)
+  }
+
   get sdk () {
     return this._sdk
   }
 
+  get current () {
+    return this.networks.find(n => n.id === this.networkId)
+  }
+
+  get symbol () {
+    return this.current?.symbol
+  }
+
+  newSdk (params) {
+    const networkId = params.id.split('.')[0]
+    const Sdk = this.Sdks.get(networkId)
+    if (!Sdk) {
+      return null
+    }
+    return new Sdk(params)
+  }
+
   async updateSdk (params) {
-    this._sdk = new Sdk({ ...this.network, ...params })
+    this._sdk = this.newSdk({ ...this.network, ...params })
+    await new Promise(resolve => {
+      const h = setInterval(() => {
+        if (!this.sdk) {
+          clearInterval(h)
+          return
+        }
+        this.sdk.getStatus().then(() => {
+          clearInterval(h)
+          resolve()
+        }).catch(() => null)
+      }, 1000)
+    })
   }
 
   async disposeSdk (params) {
-    this._sdk = null
+    if (this.networkId === 'dev') {
+      this._sdk = null
+    }
     if (this.onSdkDisposedCallback) {
       this.onSdkDisposedCallback()
     }
@@ -57,8 +99,12 @@ class NetworkManager {
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
 
     this.network = network
-    if (network.url && network.id && network.id !== 'dev') {
-      this._sdk = new Sdk(network)
+    if (network.id && network.id !== 'dev') {
+      try {
+        this._sdk = this.newSdk(network)
+      } catch (error) {
+        this._sdk = null
+      }
     } else {
       this._sdk = null
     }
@@ -72,7 +118,7 @@ class NetworkManager {
     }
   }
 
-  async updateCustomNetwork ({ url, option }) {
+  async updateCustomNetwork ({ url, option = '{}' }) {
     try {
       if (option) {
         option = JSON.parse(option)
@@ -92,7 +138,7 @@ class NetworkManager {
   }
 
   async createSdk (params) {
-    const sdk = new Sdk(params)
+    const sdk = this.newSdk(params)
     try {
       const status = await sdk.getStatus()
       this._sdk = sdk

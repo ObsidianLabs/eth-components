@@ -17,6 +17,7 @@
     "prepare": "yarn build"
   },
   "dependencies": {
+    "@obsidians/eth-network": "^0.3.0",
     "@obsidians/notification": "^0.3.0",
     "@obsidians/queue": "^0.3.0",
     "@obsidians/redux": "^0.3.0",
@@ -43,8 +44,8 @@
     "rollup-plugin-postcss": "^2.3.0"
   },
   "peerDependencies": {
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
     "react-highlight": "^0.12.0",
     "react-router-dom": "^5.1.2"
   },

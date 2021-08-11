@@ -1,3 +1,4 @@
+import platform from '@obsidians/platform'
 import fileOps from '@obsidians/file-ops'
 
 export default class SolcjsCompiler {
@@ -17,7 +18,10 @@ export default class SolcjsCompiler {
     }
     this.solcUrl = solcUrl
     if (!this.worker) {
-      this.worker = new Worker('/solc.js')
+      const solcFile = (platform.isWeb || process.env.NODE_ENV === 'development')
+        ? '/solc.js'
+        : fileOps.current.path.join(fileOps.current.appPath, `build/solc.js`)
+      this.worker = new Worker(solcFile)
       this.worker.onmessage = this.onMessage.bind(this)
     }
     return this.worker
@@ -49,7 +53,17 @@ export default class SolcjsCompiler {
     this.fileCache = new Map()
     this.projectManager = projectManager
     const mainFilePath = projectManager.projectSettings.get('main')
-    const mainFileContent = await fileOps.current.readFile(projectManager.mainFilePath)
+
+    let mainFileContent
+    try {
+      mainFileContent = await projectManager.readFile(projectManager.mainFilePath)
+    } catch (e) {
+      console.warn(e)
+      throw new Error(`Cannot read the main file <b>${mainFilePath}</b>.`)
+    }
+
+    const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
+    const optimizer = projectManager.projectSettings.get('compilers.optimizer')
 
     const data = {
       language: 'Solidity',
@@ -57,7 +71,9 @@ export default class SolcjsCompiler {
         [mainFilePath]: { content: mainFileContent }
       },
       settings: {
-        outputSelection: { '*': { '*': ['*'] } }
+        outputSelection: { '*': { '*': ['*'] } },
+        optimizer: optimizer || { enabled: false },
+        evmVersion,
       }
     }
 
@@ -98,7 +114,7 @@ export default class SolcjsCompiler {
     try {
       const completePath = this.projectManager.pathForProjectFile(path)
       if (!this.fileCache.has(completePath)) {
-        this.fileCache.set(completePath, await fileOps.current.readFile(completePath))
+        this.fileCache.set(completePath, await this.projectManager.readFile(completePath))
       }
       return this.fileCache.get(completePath)
     } catch (e) {

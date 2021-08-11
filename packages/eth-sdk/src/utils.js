@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import Big from 'big.js'
 
 const display = value => {
   const amount = ethers.utils.formatEther(value)
@@ -12,18 +13,14 @@ const display = value => {
   }
 }
 
-const util = {
-  format: {
-    bytes: () => ''
-  }
-}
-
 export default {
   sign: {
     sha3: ethers.utils.keccak256
   },
   format: {
-    bytes: util.format.bytes
+    big: value => Big(value),
+    bytes: str => ethers.utils.toUtf8Bytes(str),
+    bytesFromHex: hex => ethers.utils.arrayify(hex),
   },
   unit: {
     fromValue: ethers.utils.formatEther,

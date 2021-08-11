@@ -21,7 +21,9 @@ export default class CompilerButton extends PureComponent {
 
   onClick = () => {
     if (this.state.building) {
-      CompilerManager.stop()
+      if (typeof this.state.building === 'boolean') {
+        CompilerManager.stop()
+      }
     } else if (this.props.onClick) {
       this.props.onClick()
     }

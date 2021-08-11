@@ -1,8 +1,8 @@
 {
   "main": "./contracts/GLDToken.sol",
   "deploy": "./build/contracts/GLDToken.json",
+  "framework": "#framework",
   "compilers": {
-    "#compiler_name": "#compiler_version",
     "solc": "0.5.17"
   }
 }

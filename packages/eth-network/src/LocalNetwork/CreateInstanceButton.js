@@ -11,6 +11,7 @@ import { DockerImageInputSelector } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 
 import instanceChannel from './instanceChannel'
+import networkManager from '../networkManager'
 
 export default class CreateInstanceButton extends PureComponent {
   constructor (props) {
@@ -45,10 +46,17 @@ export default class CreateInstanceButton extends PureComponent {
         notification.error('Failed', 'Please create or import a keypair in the keypair manager first.')
         return
       }
-      keys = await Promise.all(keypairs.map(k => keypairManager.getSecret(k.address)))
+      const kp = networkManager.Sdk?.kp
+      if (kp) {
+        keys = await Promise.all(keypairs.filter(k => k.address.startsWith('0x')).map(async k => {
+          const secret = await keypairManager.getSecret(k.address)
+          const wallet = kp.walletFrom(secret)
+          return wallet.privateKey
+        }))
 
-      const secret = await keypairManager.getSecret(this.state.miner)
-      miner = { address: this.state.miner, secret }
+        const secret = await keypairManager.getSecret(this.state.miner)
+        miner = { address: this.state.miner, secret }
+      }
     } else {
       keys = keypairs.map(k => k.address)
     }
@@ -109,9 +117,10 @@ export default class CreateInstanceButton extends PureComponent {
           <DebouncedFormGroup
             label='Instance name'
             placeholder='Can only contain alphanumeric characters, dots, hyphens or underscores.'
-            maxLength='50'
+            maxLength='30'
             value={this.state.name}
             onChange={name => this.setState({ name })}
+            validator={v => !/^[0-9a-z\-_]*$/.test(v) && 'Instance name can only contain letters, digits, dash or underscore'}
           />
           <DockerImageInputSelector
             channel={instanceChannel.node}

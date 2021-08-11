@@ -8,10 +8,19 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Card,
+  FormGroup,
+  Label,
+  InputGroup,
+  Input,
+  InputGroupAddon,
+  Button,
 } from '@obsidians/ui-components'
 
 import { Link } from 'react-router-dom'
+
+import notification from '@obsidians/notification'
+
+import FormSection from './components/MarginlessFormSection'
 
 import { networkManager } from '@obsidians/eth-network'
 
@@ -19,6 +28,8 @@ export default class ContractEvents extends PureComponent {
   state = {
     selected: 0,
     loading: false,
+    rangeFrom: '',
+    rangeTo: '',
     error: '',
     logs: '',
   }
@@ -36,23 +47,82 @@ export default class ContractEvents extends PureComponent {
     if (this.state.loading) {
       return
     }
-    this.setState({ loading: true, error: '', logs: '' })
 
-    const { contract } = this.props
-    let logs
-    try {
-      logs = await contract.getLogs(selectedEvent)
-    } catch (e) {
-      console.warn(e)
-      this.setState({ loading: false, error: e.message, logs: '' })
+    const latest = await networkManager.sdk.latest()
+    let { rangeFrom, rangeTo } = this.state
+
+    if (rangeFrom > latest || rangeTo > latest) {
+      notification.error('Invalid Range', `The range cannot exceed the latest (${latest}).`)
       return
     }
 
-    this.setState({
-      loading: false,
-      error: '',
-      logs: logs.reverse()
-    })
+    const maxGap = this.props.contract.maxGap
+    if (typeof rangeFrom === 'number' && typeof rangeTo !== 'number') {
+      rangeTo = rangeFrom + 10 * maxGap - 1
+      if (rangeTo > latest) {
+        rangeTo = latest
+      }
+      this.setState({ rangeTo })
+    }
+    if (typeof rangeTo === 'number' && typeof rangeFrom !== 'number') {
+      rangeFrom = rangeTo - (10 * maxGap - 1)
+      if (rangeFrom < 0) {
+        rangeFrom = 0
+      }
+      this.setState({ rangeFrom })
+    }
+    if (typeof rangeTo !== 'number') {
+      rangeTo = latest
+      rangeFrom = latest - (10 * maxGap - 1)
+      if (rangeFrom < 0) {
+        rangeFrom = 0
+      }
+      this.setState({ rangeFrom, rangeTo })
+    } else {
+      if (rangeFrom >= rangeTo) {
+        notification.error('Invalid Range', 'The value of <b>from</b> must be smaller than the value of <b>to</b>.')
+        return
+      } else if (rangeTo - rangeFrom > (50 * maxGap - 1)) {
+        notification.error('Invalid Range', `The range span cannot be larger than ${50 * maxGap}.`)
+        return
+      }
+    }
+
+    this.setState({ loading: true, error: '', logs: [] })
+
+    const { contract } = this.props
+    let to = rangeTo
+    let from = rangeTo - (maxGap - 1) > rangeFrom ? rangeTo - (maxGap - 1) : rangeFrom
+    let hasMore = true
+    while (hasMore) {
+      let logs
+      try {
+        logs = await contract.getLogs(selectedEvent, { from, to })
+      } catch (e) {
+        console.warn(e)
+        notification.error('Get Event Log Failed', e.message)
+        this.setState({ loading: false, error: e.message })
+        return
+      }
+
+      await new Promise(resolve => {
+        let allLogs = [...this.state.logs, ...logs.reverse()]
+        if (allLogs.length > 100) {
+          allLogs = allLogs.slice(0, 100)
+          hasMore = false
+        }
+        this.setState({ logs: allLogs }, resolve)
+      })
+
+      if (from > rangeFrom) {
+        to = from - 1
+        from = to - (maxGap - 1) > rangeFrom ? to - (maxGap - 1) : rangeFrom
+      } else {
+        hasMore = false
+      }
+    }
+
+    this.setState({ loading: false })
   }
 
   renderEventSelector = () => {
@@ -62,8 +132,8 @@ export default class ContractEvents extends PureComponent {
     return <>
       <UncontrolledButtonDropdown size='sm'>
         <DropdownToggle color='primary' caret className='rounded-0 border-0 px-2 border-right-1'>
-          <i className='fas fa-function' />
-          <code className='mx-1'><b>{selectedEvent.name}</b></code>
+          <i className='far fa-calendar-alt' />
+          <code className='ml-2 mr-1'><b>{selectedEvent.name}</b></code>
         </DropdownToggle>
         <DropdownMenu>
           <DropdownItem header>events</DropdownItem>
@@ -79,8 +149,8 @@ export default class ContractEvents extends PureComponent {
         </DropdownMenu>
       </UncontrolledButtonDropdown>
       <ToolbarButton
-        id='contract-event'
-        icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
+        key={this.state.loading ? 'event-loading' : 'event-query'}
+        icon={this.state.loading ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
         tooltip='Get event logs'
         className='border-right-1'
         onClick={() => this.getEventLogs(selectedEvent)}
@@ -117,19 +187,18 @@ export default class ContractEvents extends PureComponent {
   }
 
   renderTableBody = (rows, columns) => {
-    if (this.state.loading) {
-      return <tr><td align='middle' colSpan={columns.length + 1}>Loading...</td></tr>
+    if (!rows.length && !this.state.loading) {
+      return <tr className='bg-transparent'><td align='middle' colSpan={columns.length + 1}>(no data)</td></tr>
     }
-    if (!rows.length) {
-      return <tr><td align='middle' colSpan={columns.length + 1}>(no data)</td></tr>
-    }
-    return rows.map((item, index) => (
+    const list = rows.map((item, index) => (
       <tr key={`table-row-${index}`}>
         <td><code><small>{item.blockNumber}</small></code></td>
         {columns.map(({ name, type }, index2) => {
 
           let content = item.args[index2]
-          content = content ? content.toString() : ''
+          content = content
+            ? (content.toString ? content.toString() : JSON.stringify(content))
+            : ''
 
           if (type === 'address') {
             content = (
@@ -146,17 +215,46 @@ export default class ContractEvents extends PureComponent {
         })}
       </tr>
     ))
+    if (this.state.loading) {
+      list.push(
+        <tr key='loading' className='bg-transparent'>
+          <td align='middle' colSpan={columns.length + 1}>
+            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+          </td>
+        </tr>
+      )
+    }
+    if (rows.length >= 100) {
+      list.push(
+        <tr key='too-many-records' className='bg-transparent text-muted'>
+          <td align='middle' colSpan={columns.length + 1}>
+            (too many records; hide after 100)
+          </td>
+        </tr>
+      )
+    }
+    return list
   }
 
   render () {
     const events = this.props.abi
+    const maxGap = this.props.contract.maxGap
 
     if (!events?.length) {
-      return (
-        <Screen>
-          <p>No events found</p>
-        </Screen>
-      )
+      return <Screen><p>No events found</p></Screen>
+    }
+    
+    const { rangeFrom, rangeTo } = this.state
+
+    let placeholderFrom = `latest - ${10 * maxGap - 1}`
+    let placeholderTo = 'latest'
+    if (typeof rangeFrom === 'number') {
+      placeholderTo = rangeFrom + 10 * maxGap - 1
+    } else if (typeof rangeTo === 'number') {
+      placeholderFrom = rangeTo - (10 * maxGap - 1)
+      if (placeholderFrom < 0) {
+        placeholderFrom = 0
+      }
     }
 
     return (
@@ -164,15 +262,50 @@ export default class ContractEvents extends PureComponent {
         <div className='d-flex border-bottom-1'>
           {this.renderEventSelector()}
         </div>
-        <div
-          className='btn-secondary d-flex align-items-center justify-content-between border-0 rounded-0 px-2 py-0'
-          style={{ flex: 'none', height: '28px' }}
-        >
-          Event Logs
+        <div className='d-flex flex-column flex-grow-1 overflow-auto'>
+          <FormSection title='Parameters'>
+            <div className='row'>
+              <FormGroup className='mb-2 col-12'>
+                <Label className='mb-1 small'>Range</Label>
+                <InputGroup size='sm'>
+                  <Input
+                    innerRef={this.input}
+                    bsSize='sm'
+                    placeholder={placeholderFrom}
+                    value={rangeFrom}
+                    onChange={event => {
+                      const value = Math.abs(parseInt(event.target.value))
+                      this.setState({ rangeFrom: isNaN(value) ? '' : value })
+                    }}
+                  />
+                  <InputGroupAddon addonType='prepend'>
+                    <Button color='dark' size='sm' className='text-muted'>
+                      <i className='fas fa-minus' />
+                    </Button>
+                  </InputGroupAddon>
+                  <Input
+                    innerRef={this.input}
+                    bsSize='sm'
+                    placeholder={placeholderTo}
+                    value={rangeTo}
+                    onChange={event => {
+                      const value = Math.abs(parseInt(event.target.value))
+                      this.setState({ rangeTo: isNaN(value) ? '' : value })
+                    }}
+                  />
+                  <InputGroupAddon addonType='append'>
+                    <Button color='secondary' size='sm' onClick={() => this.setState({ rangeFrom: '', rangeTo: '' })}>
+                      Clear
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+              </FormGroup>
+            </div>
+          </FormSection>
+          <FormSection title='Event Logs' flex={1}>
+            {this.renderLogsTable()}
+          </FormSection>
         </div>
-        <Card body>
-          {this.renderLogsTable()}
-        </Card>
       </div>
     )
   }

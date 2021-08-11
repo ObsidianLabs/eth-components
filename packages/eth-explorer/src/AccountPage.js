@@ -5,6 +5,7 @@ import {
   LoadingScreen,
 } from '@obsidians/ui-components'
 
+import redux from '@obsidians/redux'
 import { networkManager } from '@obsidians/eth-network'
 
 import AccountBalance from './AccountBalance'
@@ -15,6 +16,8 @@ export default class AccountPage extends PureComponent {
   state = {
     error: null,
     account: null,
+    tokens: [],
+    tokenInfo: null,
     loading: true,
   }
 
@@ -59,19 +62,45 @@ export default class AccountPage extends PureComponent {
     let account
     try {
       account = await networkManager.sdk.accountFrom(value)
-      account.count = await networkManager.sdk.getTransactionsCount(value)
+      this.getTokenInfo(account)
       this.setState({ loading: false, error: null, account })
-      this.forceUpdate()
     } catch (e) {
       this.setState({ loading: false, error: e.message, account: null })
       return
     }
   }
 
+  getTokenInfo = account => {
+    networkManager.sdk.getTokens(account.address).then(tokens => {
+      this.setState({ tokens })
+    })
+
+    if (!account.codeHash) {
+      this.setState({ tokenInfo: null })
+      return
+    }
+
+    networkManager.sdk.tokenInfo(account.address).then(tokenInfo => {
+      this.setState({ tokenInfo })
+      if (tokenInfo?.type === 'ERC20') {
+        redux.dispatch('ADD_TOKEN_INFO', {
+          network: networkManager.networkId,
+          address: account.address,
+          tokenInfo,
+        })
+      } else {
+        redux.dispatch('REMOVE_TOKEN_INFO', {
+          network: networkManager.networkId,
+          address: account.address,
+        })
+      }
+    })
+  }
+
   render () {
-    const { AccountInfo } = this.props
-    const { error, account } = this.state
-    
+    const { AccountInfo, history } = this.props
+    const { error, account, tokens, tokenInfo } = this.state
+
     if (!networkManager.sdk) {
       return null
     }
@@ -80,7 +109,7 @@ export default class AccountPage extends PureComponent {
       return (
         <Screen>
           <h4 className='display-4'>New Page</h4>
-          <p className='lead'>Please enter an {process.env.CHAIN_NAME} address.</p>
+          <p className='lead'>No connected network. Please start a local network or switch to a remote network.</p>
         </Screen>
       )
     }
@@ -107,10 +136,10 @@ export default class AccountPage extends PureComponent {
       <div className='d-flex flex-1 flex-column overflow-auto' key={account.address}>
         <div className='d-flex'>
           <div className='col-4 p-0 border-right-black'>
-            <AccountBalance account={account} />
+            <AccountBalance account={account} tokens={tokens} history={history} />
           </div>
           <div className='col-8 p-0 overflow-auto' style={{ maxHeight: 250 }}>
-            <AccountInfo account={account} />
+            <AccountInfo account={account} tokenInfo={tokenInfo} />
           </div>
         </div>
         <div className='d-flex flex-fill overflow-hidden'>

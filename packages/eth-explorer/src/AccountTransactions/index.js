@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 
 import {
   TableCard,
+  Badge,
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
@@ -16,7 +17,8 @@ export default class AccountTransactions extends PureComponent {
     page: 0,
     total: -1,
     size: 10,
-    hide: false
+    hide: false,
+    error: '',
   }
 
   componentDidMount () {
@@ -30,37 +32,47 @@ export default class AccountTransactions extends PureComponent {
   }
 
   refresh = async account => {
-    this.setState({ txs: [], loading: true, page: 0 })
+    this.setState({ txs: [], loading: true, page: 0, error: '' })
     const { total, list: txs, noExplorer } = await networkManager.sdk.getTransactions(account.address, 0, this.state.size)
     if (noExplorer) {
       this.setState({ hide: true })
       return
     }
-    this.setState({
-      txs,
-      page: 1,
-      hasMore: total ? txs.length < total : txs.length === this.state.size,
-      loading: false
-    })
+    if (Array.isArray(txs)) {
+      this.setState({
+        txs,
+        total,
+        page: 1,
+        hasMore: total ? txs.length < total : txs.length === this.state.size,
+      })
+    } else {
+      this.setState({ error: txs })
+    }
+    this.setState({ loading: false })
   }
 
   loadMore = async () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true, error: '' })
     const { total, list: txs, noExplorer } = await networkManager.sdk.getTransactions(this.props.account.address, this.state.page, this.state.size)
     if (noExplorer) {
       this.setState({ hide: true })
       return
     }
-    this.setState({
-      txs: [...this.state.txs, ...txs],
-      page: this.state.page + 1,
-      hasMore: total ? (this.state.txs.length + txs.length) < total : txs.length === this.state.size,
-      loading: false,
-    })
+    if (Array.isArray(txs)) {
+      this.setState({
+        txs: [...this.state.txs, ...txs],
+        total,
+        page: this.state.page + 1,
+        hasMore: total ? (this.state.txs.length + txs.length) < total : txs.length === this.state.size,
+      })
+    } else {
+      this.setState({ error: txs })
+    }
+    this.setState({ loading: false })
   }
 
   renderTableBody = () => {
-    const TransactionRow = this.props.TransactionRow
+    const { TransactionRow } = this.props
     const rows = this.state.txs.map(tx => (
       <TransactionRow key={`tx-${tx.hash}`} tx={tx} owner={this.props.account.address} />
     ))
@@ -70,6 +82,14 @@ export default class AccountTransactions extends PureComponent {
         <tr key='txs-loading' className='bg-transparent'>
           <td align='middle' colSpan={8}>
             <i className='fas fa-spin fa-spinner mr-1' />Loading...
+          </td>
+        </tr>
+      )
+    } else if (this.state.error) {
+      rows.push(
+        <tr key='txs-loadmore' className='bg-transparent'>
+          <td align='middle' colSpan={8}>
+            {this.state.error}
           </td>
         </tr>
       )
@@ -100,9 +120,15 @@ export default class AccountTransactions extends PureComponent {
     if (this.state.hide) {
       return null
     }
+    const total = Math.max(0, this.state.total) || ''
     return (
       <TableCard
-        title='Transactions'
+        title={
+          <div className='d-flex flex-row align-items-end'>
+            <h4 className='mb-0'>Transactions</h4>
+            <Badge pill className='ml-1 mb-1'>{total}</Badge>
+          </div>
+        }
         tableSm
         TableHead={<TransactionHeader />}
       >

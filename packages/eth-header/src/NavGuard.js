@@ -78,12 +78,8 @@ export default class NavGuard {
       return
     }
 
-    const project = {
-      pathname,
-      author,
-      id,
-    }
-
+    const project = { pathname, author, id }
+  
     // try to find projects from local
     const found = projects.get('local').find(p => p.get('id') === id)
     if (found) {

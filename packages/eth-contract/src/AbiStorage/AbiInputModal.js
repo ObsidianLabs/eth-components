@@ -3,8 +3,13 @@ import React, { PureComponent } from 'react'
 import {
   Modal,
   DebouncedFormGroup,
+  UncontrolledButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from '@obsidians/ui-components'
 
+import { BaseProjectManager } from '@obsidians/workspace'
 
 export default class AbiInputModal extends PureComponent {
   constructor (props) {
@@ -15,21 +20,33 @@ export default class AbiInputModal extends PureComponent {
     this.state = {
       name: '',
       codeHash: '',
+      codeHashEditable: true,
       abi: '',
+      projectAbis: null,
       validJson: false,
     }
   }
 
   openModal = (name, codeHash, abi) => {
     if (name || codeHash) {
-      this.setState({ name, codeHash })
+      this.setState({ name, codeHash, abi: '', codeHashEditable: !codeHash })
+    } else {
+      this.setState({ name: '', codeHash: '', abi: '', validJson: false, codeHashEditable: true })
     }
     if (abi) {
       this.onChangeAbi(abi)
     }
+    this.loadProjectAbis()
     this.modal.current.openModal()
-    setTimeout(() => this.nameInput.current.focus(), 100)
+    setTimeout(() => this.nameInput.current?.focus(), 100)
     return new Promise(resolve => { this.onResolve = resolve })
+  }
+
+  loadProjectAbis = async () => {
+    const projectAbis = await BaseProjectManager.instance?.readProjectAbis()
+    this.setState({
+      projectAbis: projectAbis?.map(item => ({ ...item, id: item.pathInProject || item.contractPath }))
+    })
   }
 
   onConfirm = () => {
@@ -52,13 +69,51 @@ export default class AbiInputModal extends PureComponent {
     this.setState({ abi, validJson: true })
   }
 
+  renderAbiSelectionButton = () => {
+    const abis = this.state.projectAbis
+    if (!abis) {
+      return null
+    }
+    return (
+      <UncontrolledButtonDropdown>
+        <DropdownToggle caret color='success'>
+          Select from the current project
+        </DropdownToggle>
+        <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
+          {this.renderAbiDropdownItem(abis)}
+        </DropdownMenu>
+      </UncontrolledButtonDropdown>
+    )
+  }
+
+  renderAbiDropdownItem = abis => {
+    if (!abis) {
+      return null
+    }
+    return abis.map(item => {
+      return (
+        <DropdownItem
+          key={item.id}
+          onClick={() => {
+            this.setState({ name: item.name })
+            this.onChangeAbi(JSON.stringify(item.abi, null, 2))
+          }}
+        >
+          <b>{item.name}</b>
+          <div className='text-muted small'><code>{item.id}</code></div>
+        </DropdownItem>
+      )
+    })
+  }
+
   render () {
-    const { name, codeHash, validJson } = this.state
+    const { name, codeHash, codeHashEditable, validJson } = this.state
     return (
       <Modal
         ref={this.modal}
         h100
         title='Enter New ABI'
+        ActionBtn={this.renderAbiSelectionButton()}
         onConfirm={this.onConfirm}
         confirmDisabled={!name || !codeHash || !validJson}
       >
@@ -72,6 +127,7 @@ export default class AbiInputModal extends PureComponent {
           label='Code hash / Address'
           value={codeHash}
           onChange={codeHash => this.setState({ codeHash })}
+          disabled={!codeHashEditable}
         />
         <DebouncedFormGroup
           size='sm'

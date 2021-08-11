@@ -5,9 +5,15 @@ import { BaseProjectManager } from '@obsidians/workspace'
 import compilerManager from '../compilerManager'
 
 export default () => {
+  const [framework, setFramework] = React.useState('')
   const [selected, onSelected] = React.useState('')
 
+  React.useEffect(BaseProjectManager.effect(`settings:framework`, setFramework), [])
   React.useEffect(BaseProjectManager.effect(`settings:compilers.${process.env.COMPILER_VERSION_KEY}`, onSelected), [])
+
+  if (framework !== 'truffle') {
+    return null
+  }
 
   return (
     <DockerImageSelector

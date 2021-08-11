@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 
 import { Badge } from '@obsidians/ui-components'
-import { utils } from '@obsidians/sdk'
+import { networkManager } from '@obsidians/eth-network'
 
 import moment from 'moment'
 
@@ -16,7 +16,9 @@ export default class TransactionRow extends PureComponent {
   render () {
     const { tx, owner } = this.props
 
-    const amount = `${utils.unit.fromValue(tx.value)} ${process.env.TOKEN_SYMBOL}`
+    const amount = new Intl.NumberFormat().format(networkManager.sdk?.utils.unit.fromValue(tx.value))
+    const gasUsed = new Intl.NumberFormat().format(tx.gasUsed)
+    const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
 
     return (
       <tr onClick={this.onClick}>
@@ -31,25 +33,24 @@ export default class TransactionRow extends PureComponent {
           <Address addr={tx.from} showTooltip={false}/>
         </td>
         <td>
-          {
-            tx.contractAddress
-              ? <>
-                  <Badge color='success' className='mr-1'>contract creation</Badge>
-                  <Address addr={tx.contractAddress} route='contract' showTooltip={false}/>
-                </>
-              : <Address addr={tx.to} showTooltip={false}/>
-          }
+          <Badge color='success' className='mr-1'>{tx.contractAddress && 'contract creation'}</Badge>
+          <Address
+            addr={tx.contractAddress || tx.to}
+            route={tx.contractAddress || tx.method ? 'contract' : 'account'}
+            showTooltip={false}
+          />
+          <Badge color='secondary'>{tx.method}</Badge>
         </td>
         <td align='right'>
-          <Badge pill color={tx.from === owner ? 'danger' : 'success'}>
-            {amount}
+          <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'danger' : 'success'}>
+            {amount} {networkManager.symbol}
           </Badge>
         </td>
         <td align='right'>
-          <Badge pill>{new Intl.NumberFormat().format(tx.gasUsed)}</Badge>
+          <Badge pill>{gasUsed}</Badge>
         </td>
         <td align='right'>
-          <TransactionFee value={(BigInt(tx.gasPrice) * BigInt(tx.gasUsed)).toString()}/>
+          <TransactionFee value={gasFee}/>
         </td>
       </tr>
     )

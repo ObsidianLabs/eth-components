@@ -7,7 +7,7 @@ import {
   Badge,
 } from '@obsidians/ui-components'
 
-import { utils } from '@obsidians/sdk'
+import { networkManager } from '@obsidians/eth-network'
 import { Link } from 'react-router-dom'
 import Highlight from 'react-highlight'
 
@@ -85,9 +85,9 @@ export default class TransactionDetails extends PureComponent {
           {
             value &&
             <TableCardRow
-              name={`${process.env.TOKEN_SYMBOL} Transfered`}
+              name={`${networkManager.symbol} Transfered`}
               icon='fas fa-coins'
-              badge={`${utils.unit.fromValue(value)} ${process.env.TOKEN_SYMBOL}`}
+              badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkManager.symbol}`}
             />
           }
           {

@@ -10,5 +10,5 @@ This is a sample project of [OpenZeppelin contracts](https://openzeppelin.com/co
 
 ## Reference
 
-- GitHub: https://github.com/OpenZeppelin/openzeppelin-contracts
-- Documentation: https://docs.openzeppelin.com/contracts
+- GitHub: https://github.com/OpenZeppelin/openzeppelin-contracts/tree/release-v3.4
+- Documentation: https://docs.openzeppelin.com/contracts/3.x/

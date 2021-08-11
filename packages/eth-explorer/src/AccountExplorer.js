@@ -20,7 +20,7 @@ class AccountExplorer extends TabbedExplorer {
     route: 'account',
     Page: AccountPage,
     valueFormatter: value => value.toLowerCase(),
-    ToolbarButtons: ({ explorer, value, ...otherProps }) => <>
+    ToolbarButtons: ({ value, ...otherProps }) => <>
       <TransferButton from={value} {...otherProps} />
       <FaucetButton address={value} {...otherProps} />
     </>,
@@ -49,8 +49,11 @@ class AccountExplorer extends TabbedExplorer {
   }
 
   init = () => {
-    const { network, accounts } = this.props
+    const { history, route, network, accounts, match } = this.props
     const value = accounts.getIn([network, 'selected'])
+    if (match?.params && value !== match?.params?.value) {
+      history.push(value ? `/${route}/${value}` : `/${route}`)
+    }
     const tabs = accounts.getIn([network, 'tabs'])?.toArray() || []
     this.initialize({ value, tabs, subroute: network })
   }
@@ -67,13 +70,13 @@ class AccountExplorer extends TabbedExplorer {
   }
 
   render () {
-    const { history, route, network, uiState, accounts, valueFormatter } = this.props
+    const { history, route, network, uiState, accounts, tokens, valueFormatter } = this.props
 
     if (network === 'dev' && !uiState.get('localNetwork')) {
       return (
         <Screen>
-          <h4 className='display-4'>Disconnected</h4>
-          <p className='lead'>Please start an {process.env.CHAIN_NAME} node.</p>
+          <h4 className='display-4'>No Network</h4>
+          <p className='lead'>No connected network. Please start a local network or switch to a remote network.</p>
           <hr />
           <span>
             <Button color='primary' onClick={() => history.push(`/network/${network}`)}>Go to Network</Button>
@@ -88,15 +91,30 @@ class AccountExplorer extends TabbedExplorer {
       subroute: network,
       signer: uiState.get('signer'),
       getTabText: tab => {
-        let { value = '', temp } = tab
+        let { text, value = '' } = tab
+        if (text) {
+          return text
+        }
         const address = valueFormatter(value)
         let tabText = ''
+        const tokenInfo = tokens?.getIn([network, address])?.toJS()
         if (this.keypairs[address]) {
-          tabText = this.keypairs[address]
+          tabText = <>
+            <i className='fas fa-map-marker-alt text-muted mr-1' />
+            {this.keypairs[address]}
+          </>
+        } else if (tokenInfo) {
+          const icon = tokenInfo.icon
+            ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
+            : <i className='fas fa-coin text-muted mr-1' />
+          tabText = <>
+            {icon}
+            {tokenInfo.symbol}
+          </>
         } else if (address.length < 10) {
-          tabText = address
+          tabText = <code>{address}</code>
         } else {
-          tabText = `${address.substr(0, 6)}...${address.slice(-4)}`
+          tabText = <code>{address.substr(0, 6)}...{address.slice(-4)}</code>
         }
         return tabText
       },
@@ -120,4 +138,5 @@ export default connect([
   'uiState',
   'network',
   'accounts',
+  'tokens',
 ])(withRouter(AccountExplorer))

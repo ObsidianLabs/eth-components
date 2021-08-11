@@ -1,19 +1,31 @@
 import React from 'react'
 
+import { connect } from '@obsidians/redux'
+
+import networkManager from './networkManager'
 import LocalNetwork from './LocalNetwork'
 import CustomNetwork from './CustomNetwork'
-import { default as DefaultRemoteNetwork } from './RemoteNetwork'
+import RemoteNetwork from './RemoteNetwork'
+import { default as DefaultCustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
-export default props => {
+export default connect(['network', 'globalConfig'])(props => {
   const {
-    active,
-    networkId = 'dev',
+    network: networkId = 'dev',
+    globalConfig,
     configButton,
+    tabs,
     minerKey,
-    minerTerminal,
-    RemoteNetwork = DefaultRemoteNetwork,
-    customNetwork,
+    CustomNetworkModal = DefaultCustomNetworkModal,
+    cacheLifecycles,
   } = props
+
+  const [active, setActive] = React.useState(true)
+  React.useEffect(() => {
+    cacheLifecycles.didCache(() => setActive(false))
+    cacheLifecycles.didRecover(() => setActive(true))
+  })
+
+  const customNetwork = globalConfig.get('customNetwork')
   
   if (networkId === 'dev') {
     return (
@@ -21,13 +33,20 @@ export default props => {
         networkId={networkId}
         active={active}
         configButton={configButton}
+        tabs={tabs}
         minerKey={minerKey}
-        minerTerminal={minerTerminal}
       />
     )
   } else if (networkId.startsWith('custom')) {
-    return <CustomNetwork networkId={networkId} customNetwork={customNetwork} RemoteNetwork={RemoteNetwork} />
+    return (
+      <CustomNetwork
+        networkId={networkId}
+        customNetwork={customNetwork}
+        CustomNetworkModal={CustomNetworkModal}
+      />
+    )
   } else {
-    return <RemoteNetwork networkId={networkId} />
+    const url = networkManager.sdk?.url
+    return <RemoteNetwork networkId={networkId} url={url} />
   }
-}
+})

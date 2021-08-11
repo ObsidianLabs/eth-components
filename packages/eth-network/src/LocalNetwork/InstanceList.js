@@ -12,6 +12,7 @@ import InstanceRow from './InstanceRow'
 import InstanceConfigModal from './InstanceConfigModal'
 
 import instanceChannel from './instanceChannel'
+import networkManager from '../networkManager'
 
 export default class InstanceList extends PureComponent {
   static defaultProps = {
@@ -95,7 +96,7 @@ export default class InstanceList extends PureComponent {
     return (
       <>
         <Card
-          title={`${process.env.CHAIN_NAME} Instances (${this.props.networkId})`}
+          title={networkManager.current?.fullName}
           right={(
             <>
               <DockerImageButton

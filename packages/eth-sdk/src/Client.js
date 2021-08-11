@@ -21,8 +21,9 @@ export default class Client {
   async getAccount (address) {
     const balance = await this.provider.getBalance(address)
     const code = await this.provider.getCode(address)
+    const nonce = await this.provider.getTransactionCount(address)
     const codeHash = ethers.utils.keccak256(code)
-    return { balance, codeHash }
+    return { balance, nonce, codeHash }
   }
 
   async getTransactions (address, page, size) {
@@ -31,6 +32,11 @@ export default class Client {
       length: 0,
       list: result.result
     }
+  }
+
+  async getTokenTotalSupply (address) {
+    const result = await this.etherscan.getTokenTotalSupply(address)
+    return result.result
   }
 }
 
@@ -51,6 +57,15 @@ class EtherscanProxy {
       page: page + 1,
       offset: size,
       sort: 'desc'
+    }
+    return await this.channel.invoke('GET', this.networkId, query)
+  }
+
+  async getTokenTotalSupply (address) {
+    const query = {
+      module: 'stats',
+      action: 'tokensupply',
+      contractaddress: address,
     }
     return await this.channel.invoke('GET', this.networkId, query)
   }

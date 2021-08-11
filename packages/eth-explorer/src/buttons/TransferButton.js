@@ -6,6 +6,8 @@ import {
   DebouncedFormGroup,
   FormGroup,
   Label,
+  DropdownInput,
+  Badge,
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
@@ -19,6 +21,9 @@ export default class TransferButton extends PureComponent {
 
     this.state = {
       loading: false,
+      accountBalance: '',
+      tokens: [],
+      token: 'core',
       amount: '',
       recipient: '',
       pushing: false,
@@ -33,6 +38,12 @@ export default class TransferButton extends PureComponent {
     if (!await this.refresh()) {
       return
     }
+    const { account, tokens } = this.props.explorer.currentPage?.state
+    this.setState({
+      accountBalance: account.balance,
+      token: 'core',
+      tokens: tokens?.length ? tokens : null
+    })
     this.modal.current.openModal()
     setTimeout(() => this.amountInput.current.focus(), 100)
   }
@@ -47,7 +58,7 @@ export default class TransferButton extends PureComponent {
       try {
         await keypairManager.getKeypair(from)
       } catch {
-        notification.error('Cannot Transfer', `Please add the address <b>${from}</b> in the keypair manager or select it in ${process.env.BROWSER_EXTENSION_NAME}.`)
+        notification.error('Cannot Transfer', `Please add the address <b>${from}</b> in the keypair manager or select it in ${networkManager.browserExtension.name}.`)
         this.setState({ loading: false })
         return
       }
@@ -59,34 +70,101 @@ export default class TransferButton extends PureComponent {
   push = async () => {
     this.setState({ pushing: true })
 
-    const { recipient: to, amount } = this.state
+    const { recipient: to, token, amount } = this.state
     const from = this.props.from
 
+    const override = Object.fromEntries(networkManager.sdk?.txOptions.list.map(option => [option.name, option.default]))
     try {
-      const tx = await networkManager.sdk.getTransferTransaction({ from, to, amount })
-      await queue.add(
-        () => networkManager.sdk.sendTransaction(tx),
-        {
-          name: 'Transfer',
-          signer: from,
-          address: from,
-          params: { from, to, amount },
-        }
-      )
+      const tx = await networkManager.sdk.getTransferTransaction({ from, to, token, amount }, override)
+      await new Promise((resolve, reject) => {
+        queue.add(
+          () => networkManager.sdk.sendTransaction(tx),
+          {
+            name: token === 'core' ? 'Transfer' : `${token.symbol} Transfer`,
+            signer: from,
+            address: from,
+            params: { from, to, amount },
+          },
+          {
+            pushing: () => {
+              this.setState({ pushing: false, amount: '' })
+              this.modal.current.closeModal()
+            },
+            executed: resolve,
+            'failed-timeout': reject,
+            failed: reject,
+          }
+        ).catch(reject)
+      })
     } catch (e) {
       console.warn(e)
       notification.error('Push Transaction Failed', e.message)
       this.setState({ pushing: false })
       return
     }
+  }
 
-    this.setState({ pushing: false })
-    this.modal.current.closeModal()
+  renderTokens () {
+    const { accountBalance, tokens, token } = this.state
+    if (!tokens) {
+      return null
+    }
+
+    let formattedBalance
+    if (accountBalance > 1e14) {
+      formattedBalance = accountBalance.toExponential()
+    } else {
+      formattedBalance = new Intl.NumberFormat().format(accountBalance)
+    }
+    const accountBadge = `${formattedBalance} ${networkManager.symbol}`
+
+    return (
+      <DropdownInput
+        label='Token'
+        renderText={option => option.text}
+        options={[
+          {
+            id: 'core',
+            text: networkManager.symbol,
+            display: (
+              <div className='d-flex align-items-center justify-content-between'>
+                {networkManager.symbol}<Badge color='info'>{accountBadge}</Badge>
+              </div>
+            ),
+            badge: accountBadge,
+          },
+          ...tokens.filter(t => t.type === 'ERC20').map(t => {
+            const badge = `${new Intl.NumberFormat().format(t.balance / 10 ** t.decimals)} ${t.symbol}`
+            return {
+              id: t,
+              text: <div className='d-flex align-items-center'><img src={t.icon} className='token-icon mr-2' />{t.name}</div>,
+              display: (
+                <div className='d-flex align-items-center justify-content-between overflow-hidden'>
+                  <div className='d-flex align-items-center'>
+                    <img src={t.icon} className='token-icon mr-2' />
+                    {t.name}
+                  </div>
+                  <Badge color='info'>{badge}</Badge>
+                </div>
+              ),
+              badge,
+            }
+          })
+        ]}
+        value={token}
+        onChange={token => this.setState({ token })}
+      />
+    )
   }
 
   render () {
-    const { loading, amount, recipient, pushing } = this.state
-
+    const { addressLength = 42 } = this.props
+    const { loading, accountBalance, token, amount, recipient, pushing } = this.state
+    const big = networkManager.sdk?.utils.format.big
+    const max = token === 'core'
+      ? `${accountBalance} ${networkManager.symbol}`
+      : `${big(token.balance).div(big(10).pow(token.decimals)).toString()} ${token.symbol}`
+    
     return <>
       <ToolbarButton
         id='navbar-transfer'
@@ -105,10 +183,12 @@ export default class TransferButton extends PureComponent {
         onConfirm={this.push}
         pending={pushing && 'Pushing...'}
       >
+        {this.renderTokens()}
         <DebouncedFormGroup
           ref={this.amountInput}
           label='Amount'
           maxLength='50'
+          placeholder={`Max: ${max}`}
           value={amount}
           onChange={amount => this.setState({ amount })}
         />
@@ -119,7 +199,7 @@ export default class TransferButton extends PureComponent {
             editable
             icon='fas fa-map-marker-alt'
             placeholder='Recipient address'
-            maxLength={42}
+            maxLength={addressLength}
             extra={networkManager.browserExtension?.isEnabled && [{
               group: networkManager.browserExtension.name.toLowerCase(),
               badge: networkManager.browserExtension.name,

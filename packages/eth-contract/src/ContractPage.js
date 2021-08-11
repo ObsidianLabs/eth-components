@@ -13,6 +13,7 @@ import {
 
 import { networkManager } from '@obsidians/eth-network'
 import redux from '@obsidians/redux'
+import { BaseProjectManager } from '@obsidians/workspace'
 
 import ContractActions from './ContractActions'
 import ContractViews from './ContractViews'
@@ -27,8 +28,10 @@ export default class ContractPage extends PureComponent {
     this.state = {
       error: null,
       errorType: null,
+      tokenInfo: null,
       abi: {},
       abis: [],
+      projectAbis: null,
       selectedAbi: null,
       account: null,
       loading: true,
@@ -44,6 +47,9 @@ export default class ContractPage extends PureComponent {
   componentDidUpdate (prevProps) {
     if (prevProps.value !== this.props.value) {
       this.refresh()
+    }
+    if (prevProps.projectRoot !== this.props.projectRoot) {
+      this.loadProjectAbis()
     }
   }
 
@@ -82,8 +88,10 @@ export default class ContractPage extends PureComponent {
       return
     }
 
-    if (account.codeHash === '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470') {
-      this.setState({ loading: false, error: 'No contract deployed.' })
+    if (account.codeHash) {
+      this.getTokenInfo(account)
+    } else {
+      this.setState({ loading: false, error: 'No contract deployed.', tokenInfo: null })
       return
     }
 
@@ -97,11 +105,41 @@ export default class ContractPage extends PureComponent {
       this.setState({ loading: false, error: e.message })
     }
 
+    this.loadProjectAbis()
+
     this.setState({
       loading: false,
       error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
       errorType: 'ABI_NOT_FOUND',
-      abis: redux.getState().abis.toArray(),
+      abis: Object.entries(redux.getState().abis.toJS()).map(item => ({
+        id: item[0],
+        name: item[1].name,
+        abi: JSON.parse(item[1].abi),
+      })),
+    })
+  }
+
+  getTokenInfo = async account => {
+    const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
+    this.setState({ tokenInfo })
+    if (tokenInfo?.type === 'ERC20') {
+      redux.dispatch('ADD_TOKEN_INFO', {
+        network: networkManager.networkId,
+        address: account.address,
+        tokenInfo,
+      })
+    } else {
+      redux.dispatch('REMOVE_TOKEN_INFO', {
+        network: networkManager.networkId,
+        address: account.address,
+      })
+    }
+  }
+
+  loadProjectAbis = async () => {
+    const projectAbis = await BaseProjectManager.instance?.readProjectAbis()
+    this.setState({
+      projectAbis: projectAbis?.map(item => ({ ...item, id: item.pathInProject || item.contractPath }))
     })
   }
 
@@ -123,26 +161,54 @@ export default class ContractPage extends PureComponent {
     this.refresh()
   }
 
-  renderABIDropdownItem () {
-    return this.state.abis.map(abiItem => {
-      const [codeHash, abiObj] = abiItem
-      let abi
-      try {
-        abi = JSON.parse(abiObj.get('abi'))
-      } catch (error) {}
+  renderAbiDropdownItem = abis => {
+    if (!abis) {
+      return null
+    }
+    if (!abis.length) {
+      return <DropdownItem disabled>(No ABI found)</DropdownItem>
+    }
+    return abis.map(item => {
       return (
         <DropdownItem
-          key={codeHash}
-          onClick={() => this.setState({ abi: { abi }, error: null })}
+          key={item.id}
+          onClick={() => this.setState({ abi: item, error: null })}
         >
-          <b>{abiObj.get('name')}</b> - <small><code>{codeHash}</code></small>
+          <b>{item.name}</b>
+          <div className='text-muted small'><code>{item.id}</code></div>
         </DropdownItem>
       )
     })
   }
 
+  renderAbisFromProject = () => {
+    const abis = this.state.projectAbis
+    if (!abis) {
+      return null
+    }
+
+    return (
+      <UncontrolledButtonDropdown className='mr-2 mb-2'>
+        <DropdownToggle color='primary' caret>
+          Select from the current project
+        </DropdownToggle>
+        <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
+          {this.renderAbiDropdownItem(abis)}
+        </DropdownMenu>
+      </UncontrolledButtonDropdown>
+    )
+  }
+
+  separateAbi = abi => {
+    const functions = abi.abi.filter(item => item.type === 'function')
+    const events = abi.abi.filter(item => item.type === 'event')
+    const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
+    const views = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) > -1)
+    return { actions, views, events }
+  }
+
   render () {
-    const { value, signer } = this.props
+    const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
 
     if (!networkManager.sdk) {
@@ -169,22 +235,19 @@ export default class ContractPage extends PureComponent {
             <h4 className='display-4'>ABI Not Found</h4>
             <p>There is no associated ABI for the current contract at <kbd>{account.address}</kbd> with code hash <kbd>{account.codeHash}</kbd></p>
             <hr />
-            <div className='flex'>
-              <UncontrolledButtonDropdown>
+            <div className='d-flex flex-wrap align-items-start'>
+              <UncontrolledButtonDropdown className='mr-2 mb-2'>
                 <DropdownToggle color='primary' caret>
-                  Select an existing ABI
+                  Select from <b>ABI Storage</b>
                 </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem header>ABIs</DropdownItem>
-                  {this.renderABIDropdownItem()}
+                <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
+                  {/* <DropdownItem header>ABIs</DropdownItem> */}
+                  {this.renderAbiDropdownItem(this.state.abis)}
                 </DropdownMenu>
               </UncontrolledButtonDropdown>
-              <Button
-                color='primary'
-                style={{ marginLeft: '15px', height: '36px' }}
-                onClick={() => this.openAbiStorageModal(account.codeHash)}
-              >
-                Add ABI for code hash <code>{account.codeHash.substr(0, 4)}...{account.codeHash.substr(account.codeHash.length - 4, account.codeHash.length)}</code>
+              {this.renderAbisFromProject()}
+              <Button color='primary' onClick={() => this.openAbiStorageModal(account.codeHash)}>
+                Add ABI for code hash <small><code>{account.codeHash.substr(0, 6)}...{account.codeHash.substr(-4)}</code></small>
               </Button>
             </div>
             <AbiStorageModal ref={this.abiStorageModal}/>
@@ -200,10 +263,7 @@ export default class ContractPage extends PureComponent {
     }
 
     const contractInstance = networkManager.sdk.contractFrom({ ...abi, address: value })
-    const functions = abi.abi.filter(item => item.type === 'function')
-    const events = abi.abi.filter(item => item.type === 'event')
-    const actions = functions.filter(item => item.stateMutability !== 'view' && item.stateMutability !== 'pure')
-    const views = functions.filter(item => item.stateMutability === 'view' || item.stateMutability === 'pure')
+    const { actions, views, events } = this.separateAbi(abi)
 
     return (
       <div className='d-flex p-relative h-100 w-100'>
@@ -213,11 +273,11 @@ export default class ContractPage extends PureComponent {
           minSize={200}
         >
           <ContractActions
+            network={network}
             value={value}
-            abi={actions}
+            actions={actions}
             contract={contractInstance}
             signer={signer}
-            // network={network}
             // history={contractCalls.getIn(['action', 'history'])}
             // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
           />
@@ -227,10 +287,10 @@ export default class ContractPage extends PureComponent {
             minSize={200}
           >
             <ContractViews
+              network={network}
               value={value}
-              abi={views}
+              actions={views}
               contract={contractInstance}
-              // network={network}
               // history={contractCalls.getIn(['table', 'history'])}
               // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}
             />

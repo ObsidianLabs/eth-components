@@ -3,8 +3,9 @@ import React, { PureComponent } from 'react'
 import redux from '@obsidians/redux'
 import Navbar from '@obsidians/navbar'
 import keypairManager from '@obsidians/keypair'
-import { NewProjectModal, navbarItem } from '@obsidians/project'
-import { networkManager } from '@obsidians/network'
+import { navbarItem } from '@obsidians/workspace'
+import { NewProjectModal } from '@obsidians/eth-project'
+import { networkManager } from '@obsidians/eth-network'
 
 import headerActions from './headerActions'
 
@@ -31,6 +32,7 @@ export default class Header extends PureComponent {
       selectedProject,
       starred = [],
       starredContracts = starred,
+      keypairManagerFilter,
       browserAccounts = [],
       extraContractItems,
       selectedContract,
@@ -50,7 +52,7 @@ export default class Header extends PureComponent {
     const contractIcon = isSelected => isSelected ? 'fas fa-file-invoice' : 'far fa-file'
     const addressIcon = isSelected => isSelected ? 'fas fa-map-marker-alt' : 'far fa-map-marker'
 
-    const dropdownKeypairs = this.state.keypairs.map(k => {
+    let dropdownKeypairs = this.state.keypairs.map(k => {
       const address = k.address
       return {
         id: address,
@@ -58,6 +60,9 @@ export default class Header extends PureComponent {
         icon: addressIcon,
       }
     })
+    if (keypairManagerFilter) {
+      dropdownKeypairs = dropdownKeypairs.filter(keypairManagerFilter)
+    }
     if (!dropdownKeypairs.length) {
       dropdownKeypairs.push({ none: true })
     }

@@ -1,6 +1,5 @@
 import notification from '@obsidians/notification'
 import { BaseQueueManager } from '@obsidians/queue'
-import { utils } from '@obsidians/sdk'
 
 class Queue extends BaseQueueManager {
   async process (pendingTransaction, txHash, data, callbacks) {
@@ -38,23 +37,13 @@ class Queue extends BaseQueueManager {
     } catch (e) {
       console.warn(e)
       notification.error('Transaction Failed', e.message)
-      this.updateStatus(txHash, 'FAILED', { error: { error: e.message } }, callbacks)
+      this.updateStatus(txHash, 'FAILED', {
+        receipt: e.receipt,
+        error: { code: e.code, message: e.message, data: e.data },
+      }, callbacks)
       return
     }
-    if (receipt?.outcomeStatus) {
-      pendingTransaction.cfx.call(tx, tx.epochHeight - 1).catch(err => {
-        const decodedMessage = utils.decodeError(err.data.replace(/\"/g, ''))
-        notification.error('Transaction Failed', decodedMessage)
-
-        this.updateStatus(txHash, 'FAILED', { receipt, error: {
-          code: err.code,
-          message: err.message,
-          data: decodedMessage,
-        } }, callbacks)
-      })
-
-      return
-    } else if (receipt.gasUsed) {
+    if (receipt.gasUsed) {
       const gasUsed = receipt.gasUsed.toString()
       // const gasFee = receipt.gasFee.toString()
       notification.info('Transaction Executed', `Gas used ${gasUsed}.`)
