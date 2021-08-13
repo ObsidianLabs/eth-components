@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import utils from './utils'
 
 export default class Contract {
   constructor ({ address, abi }, provider) {
@@ -11,18 +12,45 @@ export default class Contract {
   async query (method, { array }) {
     const result = await this.instance.functions[method](...array)
     const methodAbi = this.abi.find(item => item.name === method)
-    const outputs = methodAbi && methodAbi.outputs
-    const parsedOutputs = outputs.map(({ name, type }, index) => {
-      let value = result[index]
-      if (type.startsWith('uint') || type.startsWith('int')) {
-        value = value.toString()
-      }
-      return [name || `(param${index})`, { type, value }]
-    })
-    if (parsedOutputs.length === 1) {
-      return parsedOutputs[0][1]
+    const abi = methodAbi && methodAbi.outputs
+    const parsed = this.parseObject(result, abi)
+    return {
+      raw: JSON.stringify(result, null, 2),
+      parsed: Object.values(parsed),
     }
+  }
+
+  parseObject (values, abi) {
+    const parsedOutputs = abi.map((param, index) => {
+      const value = values[index]
+      const { name, type, internalType } = param
+      const parsed = this.parseValue(value, param, index)
+      const result = { type, internalType, value: parsed }
+      return [name || `(${index})`, result]
+    })
     return Object.fromEntries(parsedOutputs)
+  }
+
+  parseValue (value, param) {
+    const { type, internalType, components } = param
+    if (type === 'tuple') {
+      return this.parseObject(value, components)
+    } else if (type.endsWith(']')) {
+      const itemParam = {
+        type: type.replace(/\[\d*\]/, ''),
+        internalType: internalType.replace(/\[\d*\]/, ''),
+        components,
+      }
+      return value.map(v => {
+        const parsed = this.parseValue(v, itemParam)
+        return { value: parsed, type: itemParam.type, internalType: itemParam.internalType }
+      })
+    } else if (type.startsWith('uint') || type.startsWith('int')) {
+      return value.toString()
+    } else if (type.startsWith('byte')) {
+      return { hex: value, utf8: utils.format.utf8(value) }
+    }
+    return value
   }
 
   async execute (method, { array }, override) {

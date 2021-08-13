@@ -20,6 +20,13 @@ export default {
   format: {
     big: value => Big(value),
     bytes: str => ethers.utils.toUtf8Bytes(str),
+    utf8: hex => {
+      try {
+        return ethers.utils.toUtf8String(hex)
+      } catch {
+        return
+      }
+    },
     bytesFromHex: hex => ethers.utils.arrayify(hex),
   },
   unit: {
