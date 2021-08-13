@@ -127,7 +127,7 @@ export default class AbiInputModal extends PureComponent {
           label='Code hash / Address'
           value={codeHash}
           onChange={codeHash => this.setState({ codeHash })}
-          disabled={!codeHashEditable}
+          // disabled={!codeHashEditable}
         />
         <DebouncedFormGroup
           size='sm'

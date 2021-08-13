@@ -48,7 +48,7 @@ export default class AbiStorageModal extends PureComponent {
       notification.error('Failed to parse ABI', 'The saved ABI is not a valid JSON.')
     }
     const { name, codeHash, abi } = await this.abiInputModal.current.openModal(data.name, data.codeHash, formattedAbi)
-    redux.dispatch('ABI_UPDATE', { name, codeHash, abi })
+    redux.dispatch('ABI_UPDATE', [data.codeHash, { name, codeHash, abi }])
     notification.success(
       'ABI Updated',
       `The ABI record is updated in the storage.`

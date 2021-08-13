@@ -11,7 +11,8 @@ export default {
     },
     ABI_UPDATE: {
       reducer: (state, { payload }) => {
-        return state.update(payload.codeHash, () => Map(payload))
+        const [oldCodeHash, newItem] = payload
+        return state.remove(oldCodeHash).set(newItem.codeHash, Map(newItem))
       }
     },
     ABI_DELETE: {
