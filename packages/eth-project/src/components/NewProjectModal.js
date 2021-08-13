@@ -53,6 +53,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     this.state = {
       ...this.state,
       framework: 'truffle',
+      npmClient: 'npm',
       truffleVersion: '',
       hardhatVersion: 'v2.5.0',
       waffleVersion: 'v3.4.0',
@@ -73,7 +74,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       return createProject({ projectRoot, name, template, group })
     }
 
-    const { framework, truffleVersion, hardhatVersion, waffleVersion, openZeppelinVersion } = this.state
+    const { framework, npmClient, truffleVersion, hardhatVersion, waffleVersion, openZeppelinVersion } = this.state
     const compilerVersion = this.state[`${framework}Version`]
     const compilerName = framework === 'truffle' ? process.env.COMPILER_NAME_IN_LABEL : framework
 
@@ -147,28 +148,29 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
     if (group === 'open zeppelin' || framework === 'hardhat' || framework === 'waffle') {
       this.setState({ showTerminal: true })
-      const result = await this.terminal.current.exec(`npm init -y`, { cwd: projectRoot })
+      const result = await this.terminal.current.exec(`${npmClient} init -y`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Cannot Create the Project', 'Please make sure you have node installed.')
         return false
       }
     }
 
+    const installCommand = npmClient === 'yarn' ? 'add --dev' : 'i -D'
     if (group === 'open zeppelin') {
-      const result = await this.terminal.current.exec(`npm i -D ${openZeppelinPackage}@${openZeppelinVersion}`, { cwd: projectRoot })
+      const result = await this.terminal.current.exec(`${npmClient} ${installCommand} ${openZeppelinPackage}@${openZeppelinVersion}`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Fail to Install OpenZeppelin')
         return false
       }
     }
     if (framework === 'hardhat') {
-      const result = await this.terminal.current.exec(`npm i -D hardhat@${hardhatVersion}`, { cwd: projectRoot })
+      const result = await this.terminal.current.exec(`${npmClient} ${installCommand} hardhat@${hardhatVersion}`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Fail to Install Hardhat')
         return false
       }
     } else if (framework === 'waffle') {
-      const result = await this.terminal.current.exec(`npm i -D ethereum-waffle@${waffleVersion}`, { cwd: projectRoot })
+      const result = await this.terminal.current.exec(`${npmClient} ${installCommand} ethereum-waffle@${waffleVersion}`, { cwd: projectRoot })
       if (result.code) {
         notification.error('Fail to Install Waffle')
         return false
@@ -216,39 +218,63 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
   }
  
   renderOtherOptions = () => {
-    if (this.props.noCompilerOption || this.state.remote) {
+    const { remote, group, openZeppelinVersion, framework, npmClient } = this.state
+    if (this.props.noCompilerOption || remote) {
       return null
     }
 
     const options = [{ key: 'truffle', text: process.env.COMPILER_NAME }]
-    if (this.state.group !== 'Truffle') {
+    if (group !== 'Truffle') {
       options.push({ key: 'hardhat', text: 'Hardhat' })
       options.push({ key: 'waffle', text: 'Waffle' })
     }
     return (
       <>
         {
-          this.state.group === 'open zeppelin' &&
+          group === 'open zeppelin' &&
           <DropdownInput
             label='Open Zeppelin Version'
             options={openZeppelinVersions}
-            value={this.state.openZeppelinVersion}
+            value={openZeppelinVersion}
             onChange={openZeppelinVersion => this.setState({ openZeppelinVersion })}
           />
         }
-        <FormGroup>
-          <Label>Framework</Label>
-          <div>
-            <ButtonOptions
-              size='sm'
-              className='mb-0'
-              options={options}
-              selected={this.state.framework}
-              onSelect={key => this.setState({ framework: key })}
-            />
+        <div className='row'>
+          <div className='col-12 col-sm-5'>
+            <FormGroup>
+              <Label>Framework</Label>
+              <div>
+                <ButtonOptions
+                  className='mb-0'
+                  options={options}
+                  selected={framework}
+                  onSelect={framework => this.setState({ framework })}
+                />
+              </div>
+            </FormGroup>
           </div>
-        </FormGroup>
-        {this.renderFrameworkSelector()}
+          <div className='col-12 col-sm-7'>
+            {this.renderFrameworkSelector()}
+          </div>
+        </div>
+        {
+            (group === 'open zeppelin' || framework !== 'truffle') &&
+            <FormGroup>
+              <Label>Npm Client</Label>
+              <div>
+                <ButtonOptions
+                  className='mb-0'
+                  options={[
+                    { key: 'npm', text: 'npm' },
+                    { key: 'yarn', text: 'yarn' },
+                    { key: 'cnpm', text: 'cnpm' },
+                  ]}
+                  selected={npmClient}
+                  onSelect={npmClient => this.setState({ npmClient })}
+                />
+              </div>
+            </FormGroup>
+          }
       </>
     )
   }
