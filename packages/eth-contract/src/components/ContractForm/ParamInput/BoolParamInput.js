@@ -1,32 +1,31 @@
 import React from 'react'
 
 import {
-  DebouncedInput,
+  ButtonOptions,
 } from '@obsidians/ui-components'
 
 export default function BoolParamInput ({ size, value, onChange, placeholder, disabled }) {
   const onChangeValue = value => {
-    if (!value) {
-      onChange(value, { display: false, raw: false, empty: true })
-    } else if (value === '0' || value === 'false' || value === 'False' || value === 'FALSE') {
-      onChange(value, { display: false, raw: false })
+    if (!value || value === 'false') {
+      onChange('false', { display: false, raw: false })
     } else {
-      onChange(value, { display: true, raw: true })
+      onChange('true', { display: true, raw: true })
     }
   }
-
+  
   React.useEffect(() => {
     onChangeValue(value)
   }, [])
 
   return (
-    <DebouncedInput
-      size={size}
-      addon={<span key='icon-bool-param'><i className='fas fa-check' /></span>}
-      value={value}
-      onChange={onChangeValue}
-      placeholder={placeholder}
-      disabled={disabled}
-    />
+    <div>
+      <ButtonOptions
+        size={size}
+        className='mb-0'
+        options={[{ key: 'true', text: 'True' }, { key: 'false', text: 'False' }]}
+        selected={value}
+        onSelect={onChangeValue}
+      />
+    </div>
   )
 }
