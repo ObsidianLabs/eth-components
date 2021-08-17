@@ -18,7 +18,7 @@ export default props => {
       setHasDefault(false)
       return
     }
-    setHasDefault(framework === 'truffle')
+    setHasDefault(framework === 'truffle-docker')
   }), [])
   
   React.useEffect(BaseProjectManager.effect('settings:compilers.solc', v => {

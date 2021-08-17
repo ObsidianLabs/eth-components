@@ -3,6 +3,7 @@ export default {
   list: [
     {
       name: 'gasLimit',
+      alias: 'gas',
       className: 'col-6',
       label: 'Gas Limit',
       icon: 'fas fa-burn',

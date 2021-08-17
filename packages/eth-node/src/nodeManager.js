@@ -5,17 +5,12 @@ import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
 class NodeManager {
   constructor () {
-    this._sdk = null
     this._nodeButton = null
     this._terminal = null
     this._minerTerminal = null
     this._indexerTerminal = null
     this._configModal = null
     this.network = null
-  }
-
-  get sdk () {
-    return this._sdk
   }
 
   set terminal (v) {

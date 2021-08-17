@@ -69,6 +69,7 @@ class NetworkManager {
   }
 
   async disposeSdk (params) {
+    this._sdk && this._sdk.dispose()
     if (this.networkId === 'dev') {
       this._sdk = null
     }
@@ -100,9 +101,11 @@ class NetworkManager {
       try {
         this._sdk = this.newSdk(network)
       } catch (error) {
+        this._sdk && this._sdk.dispose()
         this._sdk = null
       }
     } else {
+      this._sdk && this._sdk.dispose()
       this._sdk = null
     }
 

@@ -23,6 +23,10 @@ export default class Sdk {
     this.explorer = explorer
   }
 
+  dispose () {
+    this.client.dispose()
+  }
+
   static get kp () { return kp }
   static get networks () { return networks }
   static get customNetworks () { return customNetworks }

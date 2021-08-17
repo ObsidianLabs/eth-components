@@ -12,7 +12,7 @@ export default class ExtendedProjectSettings extends ProjectSettings {
     const settings = {
       main: rawSettings.main || './contracts/Contract.sol',
       deploy: rawSettings.deploy,
-      framework: rawSettings.framework || 'truffle',
+      framework: rawSettings.framework || 'truffle-docker',
       compilers: {
         ...compilers,
         [process.env.COMPILER_VERSION_KEY]: compilers[process.env.COMPILER_VERSION_KEY] || '',

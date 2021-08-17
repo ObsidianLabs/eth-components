@@ -16,6 +16,9 @@
     "@obsidians/platform": "^0.3.0",
     "@obsidians/redux": "^0.3.0",
     "big.js": "^6.1.1",
+    "ethers": "^5.4.4",
+    "fastify": "^3.20.2",
+    "json-rpc-engine": "^6.1.0",
     "url-parse": "^1.4.7"
   },
   "devDependencies": {
@@ -29,7 +32,6 @@
     "cross-env": "^6.0.3"
   },
   "peerDependencies": {
-    "ethers": "^5.0.30",
     "immutable": "^4.0.0-rc.12"
   }
 }

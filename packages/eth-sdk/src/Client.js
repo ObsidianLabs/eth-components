@@ -2,7 +2,8 @@ import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
 
 export default class Client {
-  constructor ({ networkId = '', url }) {
+  constructor (option) {
+    const { networkId = '', url } = option
     if (url) {
       this.provider = ethers.getDefaultProvider(url)
     } else {
@@ -16,6 +17,11 @@ export default class Client {
       }
     }
     this.etherscan = new EtherscanProxy(networkId)
+    this.etherscan.setNetwork(option)
+  }
+
+  dispose () {
+    this.etherscan.dispose()
   }
 
   async getAccount (address) {
@@ -45,6 +51,14 @@ class EtherscanProxy {
   constructor (networkId) {
     this.networkId = networkId
     this.channel = new IpcChannel('etherscan')
+  }
+
+  setNetwork (option) {
+    this.channel.invoke('setNetwork', option)
+  }
+
+  dispose () {
+    this.channel.invoke('unsetNetwork')
   }
 
   async getHistory (address, page = 0, size = 10) {

@@ -3,8 +3,10 @@ import React, { PureComponent } from 'react'
 import { WorkspaceContext } from '@obsidians/workspace'
 import { ToolbarButton } from '@obsidians/ui-components'
 import { CompilerButton } from '@obsidians/compiler'
+import keypairManager from '@obsidians/keypair'
 
 import DeployButton from './DeployButton'
+import SignRequestModal from './SignRequestModal'
 
 export default class ProjectToolbar extends PureComponent {
   static contextType = WorkspaceContext
@@ -33,6 +35,7 @@ export default class ProjectToolbar extends PureComponent {
         tooltip='Project Settings'
         onClick={() => projectManager.openProjectSettings()}
       />
+      <SignRequestModal ref={keypairManager.signReqModal} />
     </>
   }
 }
