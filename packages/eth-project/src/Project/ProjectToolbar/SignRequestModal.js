@@ -102,7 +102,10 @@ export default class SignRequestModal extends PureComponent {
             />
           : <DebouncedFormGroup label='To' value='Contract Creation' disabled />
         }
-        <DebouncedFormGroup label='Data' value={`${prefix}... (${(data.length/2 - 1)} Bytes)`} disabled />
+        {
+          data && data !== '0x' &&
+          <DebouncedFormGroup label='Data' value={`${prefix}... (${(data.length/2 - 1)} Bytes)`} disabled />
+        }
         <ActionParamFormGroup
           label={`${networkManager.symbol} to Transfer`}
           icon='fas fa-coins'

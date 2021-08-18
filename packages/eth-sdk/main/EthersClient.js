@@ -15,6 +15,12 @@ module.exports = class EthersClient {
     return await this.provider.send(method, params)
   }
 
+  async sign (tx, secret) {
+    const wallet = this.walletFrom(secret)
+    const populated = await wallet.populateTransaction(tx)
+    return await wallet.signTransaction(populated)
+  }
+
   walletFrom (secret) {
     let wallet
     if (secret.startsWith('0x')) {
@@ -25,7 +31,7 @@ module.exports = class EthersClient {
     return wallet.connect(this.provider)
   }
 
-  async send (tx) {
-    return await this.provider.sendTransaction(tx)
+  async sendRawTransaction (tx) {
+    return this.rpc('eth_sendRawTransaction', [tx])
   }
 }

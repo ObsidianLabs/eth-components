@@ -16,12 +16,15 @@ export default class Client {
         })
       }
     }
+    
+    this.channel = new IpcChannel('sdk')
+    this.channel.invoke('setNetwork', option)
+
     this.etherscan = new EtherscanProxy(networkId)
-    this.etherscan.setNetwork(option)
   }
 
   dispose () {
-    this.etherscan.dispose()
+    this.channel.invoke('unsetNetwork')
   }
 
   async getAccount (address) {
@@ -51,14 +54,6 @@ class EtherscanProxy {
   constructor (networkId) {
     this.networkId = networkId
     this.channel = new IpcChannel('etherscan')
-  }
-
-  setNetwork (option) {
-    this.channel.invoke('setNetwork', option)
-  }
-
-  dispose () {
-    this.channel.invoke('unsetNetwork')
   }
 
   async getHistory (address, page = 0, size = 10) {
