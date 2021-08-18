@@ -1,4 +1,5 @@
-export { default } from './Contract'
+export { default, BaseContract } from './Contract'
+
 export { default as ContractPage } from './ContractPage'
 
 export { default as AbiStorage } from './AbiStorage'

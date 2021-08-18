@@ -131,3 +131,7 @@ export default connect([
   'contracts',
   'tokens',
 ])(withRouter(Contract))
+
+export {
+  Contract as BaseContract
+}

@@ -11,6 +11,7 @@ class NetworkManager {
 
     this._sdk = null
     this.network = undefined
+    this.networks = []
     this.Sdks = new Map()
   }
 
@@ -18,7 +19,8 @@ class NetworkManager {
     networks.forEach(n => this.Sdks.set(n.id, Sdk))
     this.networks = [...this.networks, ...networks]
 
-    if (platform.isWeb && Sdk.InitBrowserExtension) {
+    const enable = !(process.env.REACT_APP_DISABLE_BROWSER_EXTENSION === 'true')
+    if (platform.isWeb && enable && Sdk.InitBrowserExtension) {
       this.browserExtension = Sdk.InitBrowserExtension(this)
     }
   }
@@ -82,13 +84,14 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  setNetwork (network, force) {
+  setNetwork (network, { force, redirect = true, notify = true } = {}) {
     if (this.browserExtension && !force) {
       if (redux.getState().network) {
         notification.info(`Please use ${this.browserExtension.name} to switch the network.`)
       }
       return
     }
+
     if (!network || network.id === redux.getState().network) {
       return
     }
@@ -110,8 +113,12 @@ class NetworkManager {
     }
 
     redux.dispatch('SELECT_NETWORK', network.id)
-    notification.success(`Network`, network.notification)
-    headerActions.updateNetwork(network.id)
+    if (notify) {
+      notification.success(`Network`, network.notification)
+    }
+    if (redirect) {
+      headerActions.updateNetwork(network.id)
+    }
   }
 
   async updateCustomNetwork ({ url, option = '{}' }) {

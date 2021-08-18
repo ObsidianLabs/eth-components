@@ -31,7 +31,7 @@ export default class NavGuard {
 
   preflight (pathname) {
     const state = redux.getState()
-  
+
     if (pathname === '/') {
       // go to seleted project
       const selected = state.projects.get('selected')
@@ -44,25 +44,25 @@ export default class NavGuard {
         }
       }
     }
-  
+
     return true
   }
 
   parsePathname (pathname) {
-    const [_, first, second] = pathname.split('/')
-    return [first || '', second || '']
+    const [_, ...args] = pathname.split('/')
+    return args.map(x => x || '')
   }
 
   updateSelectedContract (pathname) {
-    const [_, contract] = this.parsePathname(pathname)
+    const [_, ...rest] = this.parsePathname(pathname)
     const { network } = redux.getState()
-    redux.dispatch('SELECT_CONTRACT', { network, contract })
+    redux.dispatch('SELECT_CONTRACT', { network, contract: rest.join('/') })
   }
 
   updateSelectedAccount (pathname) {
-    const [_, account] = this.parsePathname(pathname)
+    const [_, ...rest] = this.parsePathname(pathname)
     const { network } = redux.getState()
-    redux.dispatch('SELECT_ACCOUNT', { network, account })
+    redux.dispatch('SELECT_ACCOUNT', { network, account:  rest.join('/') })
   }
 
   updateSelectedProject (pathname) {
@@ -77,7 +77,7 @@ export default class NavGuard {
     ) {
       return
     }
-  
+
     const project = { pathname, author, id }
   
     // try to find projects from local
