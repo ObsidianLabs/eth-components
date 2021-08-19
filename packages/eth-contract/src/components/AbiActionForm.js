@@ -40,6 +40,7 @@ export default class AbiActionForm extends PureComponent {
       executing: false,
       actionError: '',
       actionResult: '',
+      format: 'pretty',
     }
     this.form = React.createRef()
   }
@@ -176,17 +177,32 @@ export default class AbiActionForm extends PureComponent {
 
   renderResult = () => {
     const { FormSection, showResult } = this.props
+    const { format } = this.state
     if (!showResult) {
       return null
     }
 
-    const badge = this.state.actionError
-      ? <Badge color='danger'>Error</Badge>
-      : this.state.actionResult
-        ? <Badge color='success'>Success</Badge>
-        : null
+    let title = 'Result', badge
+    if (this.state.actionResult) {
+      title = <span key='success'>Result<i className='fas fa-check-circle text-success ml-1' /></span>
+      badge = (
+        <div className='badge-group'>
+          <Badge
+            className={format === 'pretty' ? 'bg-primary' : 'bg-hover'}
+            onClick={() => this.setState({ format: 'pretty' })}
+          >Pretty</Badge>
+          <Badge
+            className={format === 'raw' ? 'bg-primary' : 'bg-hover'}
+            onClick={() => this.setState({ format: 'raw' })}
+          >Raw</Badge>
+        </div>
+      )
+    } else if (this.state.actionError) {
+      title = <span key='success'>Result<i className='fas fa-exclamation-triangle text-danger ml-1' /></span>
+    }
+
     return (
-      <FormSection title='Result' right={badge}>
+      <FormSection title={title} right={badge}>
         {this.renderResultContent()}
       </FormSection>
     )

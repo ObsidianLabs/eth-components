@@ -135,47 +135,54 @@ export default class Sdk {
     })
 
     promise.mined = async () => {
-      const res = await pendingTx
+      const tx = await pendingTx
+      const res = {}
+
+      let transaction, height
       try {
-        await res.wait(1)
+        await tx.wait(1)
+        transaction = await this.provider.getTransaction(tx.hash)
+        height = transaction.blockNumber - 1
       } catch (err) {
-        const { code, transaction, receipt } = err
-        let reason = err.reason
-        transaction.value = transaction.value.toString()
-        transaction.gasPrice = transaction.gasPrice.toString()
-        transaction.gasLimit = transaction.gasLimit.toString()
+        transaction = err.transaction
+        const { code, receipt, reason } = err
+
+        height = receipt.blockNumber - 1
         receipt.gasUsed = receipt.gasUsed.toString()
         receipt.cumulativeGasUsed = receipt.cumulativeGasUsed.toString()
-        if (getResult) {
-          try {
-            await getResult(transaction, receipt.blockNumber - 1)
-          } catch (e) {
-            reason = e.message
-          }
-        }
-        return { error: reason, code, tx: transaction, receipt }
+
+        res.code = code
+        res.receipt = receipt
+        res.error = reason
       }
-      const tx = await this.provider.getTransaction(res.hash)
+
+      delete transaction.confirmations
+      transaction.value = transaction.value.toString()
+      transaction.gasPrice = transaction.gasPrice.toString()
+      transaction.gasLimit = transaction.gasLimit.toString()
+
       if (getResult) {
-        await getResult(tx, tx.blockNumber - 1)
+        try {
+          res.result = await getResult(transaction, height)
+        } catch (e) {
+          res.error = e.message
+        }
       }
-      delete tx.confirmations
-      tx.value = tx.value.toString()
-      tx.gasPrice = tx.gasPrice.toString()
-      tx.gasLimit = tx.gasLimit.toString()
-      return tx
+
+      res.transaction = transaction
+      return res
     }
 
     promise.executed = async () => {
-      const res = await pendingTx
-      const receipt = await this.provider.getTransactionReceipt(res.hash)
+      const tx = await pendingTx
+      const receipt = await this.provider.getTransactionReceipt(tx.hash)
       delete receipt.confirmations
       receipt.gasUsed = receipt.gasUsed.toString()
       receipt.cumulativeGasUsed = receipt.cumulativeGasUsed.toString()
       return receipt
     }
 
-    promise.confirmed = () => pendingTx.then(res => res.wait(10))
+    promise.confirmed = () => pendingTx.then(tx => tx.wait(10))
 
     return promise
   }

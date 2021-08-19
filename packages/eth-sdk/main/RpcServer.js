@@ -25,7 +25,6 @@ module.exports = class RpcServer {
       if (rpcMap[req.method]) {
         req.method = rpcMap[req.method]
       }
-      console.log(req)
       if (!this.client) {
         throw new Error('No network is running.')
       } else if (req.method === 'eth_accounts') {

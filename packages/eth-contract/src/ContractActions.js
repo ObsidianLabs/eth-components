@@ -1,8 +1,11 @@
+import React from 'react'
+
 import notification from '@obsidians/notification'
 import queue from '@obsidians/eth-queue'
 import { networkManager } from '@obsidians/eth-network'
 
 import AbiActionForm from './components/AbiActionForm'
+import ResultContent from './ResultContent'
 
 export default class ContractActions extends AbiActionForm {
   static defaultProps = {
@@ -11,6 +14,7 @@ export default class ContractActions extends AbiActionForm {
     selectorHeader: 'write functions',
     selectorIcon: 'fas fa-function',
     signerSelector: true,
+    showResult: true,
   }
 
   estimate = async actionName => {
@@ -77,7 +81,6 @@ export default class ContractActions extends AbiActionForm {
     const options = {}
     networkManager.sdk.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    let result = {}
     try {
       const value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
       const tx = await this.props.contract.execute(actionName, parameters, {
@@ -95,6 +98,10 @@ export default class ContractActions extends AbiActionForm {
           params: parameters.obj,
           value,
           ...options,
+        },
+        {
+          mined: res => this.setState({ executing: false, actionResult: res.result }),
+          failed: ({ error }) => this.setState({ executing: false, actionError: error.message }),
         }
       )
     } catch (e) {
@@ -105,14 +112,8 @@ export default class ContractActions extends AbiActionForm {
         notification.error('Error', e.message)
       }
       this.setState({ executing: false, actionError: e.message, actionResult: '' })
-      return
     }
-
-    // notification.success('Success', 'Transaction is confirmed.')
-    this.setState({
-      executing: false,
-      actionError: '',
-      actionResult: JSON.stringify(result, null, 2)
-    })
   }
+
+  renderResultContent = () => <ResultContent {...this.state} />
 }

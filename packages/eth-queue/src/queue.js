@@ -10,26 +10,26 @@ class Queue extends BaseQueueManager {
       notification.info(`Pushing transaction...`, `Transaction hash <b>${txHash}</b>...`)
     }
 
-    let tx
+    let res
     try {
-      tx = await pendingTransaction.mined()
+      res = await pendingTransaction.mined()
     } catch (e) {
       console.warn(e)
       this.updateStatus(txHash, 'FAILED-TIMEOUT', { error: { message: e.message } }, callbacks)
       notification.error('Transaction Timeout', e.message)
       return
     }
-    if (tx && tx.error) {
-      notification.error('Transaction Failed', tx.error)
+    if (res && res.error) {
+      notification.error('Transaction Failed', res.error)
 
       this.updateStatus(txHash, 'FAILED', {
-        tx: tx.tx,
-        receipt: tx.receipt,
-        error: { code: tx.code, message: tx.error }
+        tx: res.tx,
+        receipt: res.receipt,
+        error: { code: res.code, message: res.error }
       }, callbacks)
       return
     }
-    this.updateStatus(txHash, 'MINED', { tx }, callbacks)
+    this.updateStatus(txHash, 'MINED', res, callbacks)
 
     let receipt
     try {

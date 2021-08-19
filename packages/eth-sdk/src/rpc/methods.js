@@ -50,7 +50,13 @@ export default [
     { name: 'value', type: 'uint256' },
     { name: 'data', type: 'bytes' },
   ] }, { name: 'blockNumber', type: 'uint256' }] },
-  { name: 'eth_getLogs', inputs: [{ name: 'filter', type: 'tuple', components: [{ name: 'topic', type: 'bytes[]' }] }] },
+  { name: 'eth_getLogs', inputs: [{ name: 'filter', type: 'tuple', components: [
+    { name: 'fromBlock', type: 'uint256' },
+    { name: 'toBlock', type: 'uint256' },
+    { name: 'address', type: 'address' },
+    { name: 'topic', type: 'bytes[]' },
+    // { name: 'blockhash', type: 'bytes' },
+  ] }] },
   { divider: true },
 
   { header: 'info' },
