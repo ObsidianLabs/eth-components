@@ -1,3 +1,4 @@
+import platform from '@obsidians/platform'
 import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
 
@@ -17,14 +18,18 @@ export default class Client {
       }
     }
     
-    this.channel = new IpcChannel('sdk')
-    this.channel.invoke('setNetwork', option)
-
     this.etherscan = new EtherscanProxy(networkId)
+
+    if (platform.isDesktop) {
+      this.channel = new IpcChannel('sdk')
+      this.channel.invoke('setNetwork', option)
+    }
   }
 
   dispose () {
-    this.channel.invoke('unsetNetwork')
+    if (platform.isDesktop) {
+      this.channel.invoke('unsetNetwork')
+    }
   }
 
   async getAccount (address) {
