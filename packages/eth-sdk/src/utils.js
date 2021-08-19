@@ -36,4 +36,10 @@ export default {
   },
   display,
   decodeError: () => '',
+  parseError: e => {
+    if (e.reason) {
+      e.message = e.reason
+    }
+    return e
+  },
 }

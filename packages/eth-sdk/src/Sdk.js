@@ -91,7 +91,7 @@ export default class Sdk {
     if (token === 'core' || !token) {
       const value = utils.unit.toValue(amount)
       const voidSigner = new ethers.VoidSigner(from, this.provider)
-      return await voidSigner.populateTransaction({ to, value })
+      return { tx: await voidSigner.populateTransaction({ to, value }) }
       } else {
       const value = utils.format.big(amount).times(utils.format.big(10).pow(token.decimals)).toString()
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
@@ -103,7 +103,7 @@ export default class Sdk {
     const factory = new ethers.ContractFactory(abi, bytecode)
     const tx = await factory.getDeployTransaction(...parameters)
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
-    return await voidSigner.populateTransaction(tx)
+    return { tx: await voidSigner.populateTransaction(tx) }
   }
 
   async estimate (tx) {
@@ -115,7 +115,7 @@ export default class Sdk {
     }
   }
 
-  sendTransaction (tx) {
+  sendTransaction ({ tx, getResult }) {
     let pendingTx
     if (this.provider.isMetaMask && browserExtension && browserExtension.currentAccount === tx.from.toLowerCase()) {
       const signer = this.provider.getSigner(tx.from)
@@ -125,22 +125,40 @@ export default class Sdk {
       pendingTx = sp(tx).then(signedTx => this.provider.sendTransaction(signedTx))
     }
 
-    const promise = pendingTx.then(res => res.hash)
+    const promise = pendingTx.then(res => res.hash).catch(e => {
+      if (e.code === 'INSUFFICIENT_FUNDS') {
+        throw utils.parseError(e)
+      } else if (e.error) {
+        throw utils.parseError(e.error)
+      }
+      throw utils.parseError(e)
+    })
 
     promise.mined = async () => {
       const res = await pendingTx
       try {
         await res.wait(1)
       } catch (err) {
-        const { reason, code, transaction: tx, receipt } = err
-        tx.value = tx.value.toString()
-        tx.gasPrice = tx.gasPrice.toString()
-        tx.gasLimit = tx.gasLimit.toString()
+        const { code, transaction, receipt } = err
+        let reason = err.reason
+        transaction.value = transaction.value.toString()
+        transaction.gasPrice = transaction.gasPrice.toString()
+        transaction.gasLimit = transaction.gasLimit.toString()
         receipt.gasUsed = receipt.gasUsed.toString()
         receipt.cumulativeGasUsed = receipt.cumulativeGasUsed.toString()
-        return { error: reason, code, tx, receipt }
+        if (getResult) {
+          try {
+            await getResult(transaction, receipt.blockNumber - 1)
+          } catch (e) {
+            reason = e.message
+          }
+        }
+        return { error: reason, code, tx: transaction, receipt }
       }
       const tx = await this.provider.getTransaction(res.hash)
+      if (getResult) {
+        await getResult(tx, tx.blockNumber - 1)
+      }
       delete tx.confirmations
       tx.value = tx.value.toString()
       tx.gasPrice = tx.gasPrice.toString()

@@ -10,7 +10,12 @@ export default class Contract {
   }
 
   async query (method, { array }) {
-    const result = await this.instance.functions[method](...array)
+    let result
+    try {
+      result = await this.instance.functions[method](...array)
+    } catch (e) {
+      throw utils.parseError(e)
+    }
     const methodAbi = this.abi.find(item => item.name === method)
     const abi = methodAbi && methodAbi.outputs
     const parsed = this.parseObject(result, abi)
@@ -54,17 +59,37 @@ export default class Contract {
   }
 
   async execute (method, { array }, override) {
-    const tx = await this.instance.populateTransaction[method](...array, override)
-    const voidSigner = new ethers.VoidSigner(override.from, this.provider)
-    return await voidSigner.populateTransaction(tx)
+    try {
+      const tx = await this.instance.populateTransaction[method](...array, override)
+      const voidSigner = new ethers.VoidSigner(override.from, this.provider)
+      return {
+        tx: await voidSigner.populateTransaction(tx),
+        getResult: async (tx, height) => {
+          const data = await this.provider.call(tx, height)
+          try {
+            const result = this.instance.interface.decodeFunctionResult(method, data)
+            return result
+          } catch (e) {
+            throw utils.parseError(e)
+          }
+        }
+      }
+    } catch (e) {
+      throw utils.parseError(e)
+    }
   }
 
   get maxGap () {
-    return 1000
+    return 100
   }
 
   async getLogs (event, { from, to }) {
-    const logs = await this.instance.queryFilter(event.name, from, to)
-    return logs
+    const filter = this.instance.filters[event.name]()
+    try {
+      const logs = await this.instance.queryFilter(filter, from, to)
+      return logs
+    } catch (e) {
+      throw utils.parseError(e)
+    }
   }
 }
