@@ -99,9 +99,16 @@ export default class Sdk {
     }
   }
 
-  async getDeployTransaction ({ abi, bytecode, parameters }, override) {
+  async getDeployTransaction ({ abi, bytecode, amount, parameters }, override) {
     const factory = new ethers.ContractFactory(abi, bytecode)
-    const tx = await factory.getDeployTransaction(...parameters)
+    let value
+    try {
+      value = utils.unit.toValue(amount || '0')
+    } catch {
+      throw new Error('The entered amount is invalid.')
+    }
+    const tx = await factory.getDeployTransaction(...parameters, { value })
+    console.log(tx)
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
     return { tx: await voidSigner.populateTransaction(tx) }
   }

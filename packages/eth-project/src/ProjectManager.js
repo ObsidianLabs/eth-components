@@ -214,7 +214,7 @@ function makeProjectManager (Base) {
         return
       }
   
-      const { parameters } = allParameters
+      const { amount, parameters } = allParameters
 
       this.deployButton.setState({ pending: 'Estimating...' })
 
@@ -224,7 +224,8 @@ function makeProjectManager (Base) {
           abi: deploy.abi,
           bytecode: deploy.bytecode,
           options: deploy.options,
-          parameters: parameters.array
+          parameters: parameters.array,
+          amount,
         }, {
           from: allParameters.signer,
         })
@@ -252,7 +253,7 @@ function makeProjectManager (Base) {
       this.deployButton.setState({ pending: 'Deploying...', result: '' })
   
       const networkId = networkManager.sdk.networkId
-      const { contractName, parameters, ...override } = allParameters
+      const { contractName, amount, parameters, ...override } = allParameters
       const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode)
   
       let result
@@ -261,7 +262,8 @@ function makeProjectManager (Base) {
           abi: deploy.abi,
           bytecode: deploy.bytecode,
           options: deploy.options,
-          parameters: parameters.array
+          parameters: parameters.array,
+          amount,
         }, {
           from: allParameters.signer,
           ...override
@@ -276,6 +278,7 @@ function makeProjectManager (Base) {
               contractName,
               signer: allParameters.signer,
               abi: deploy.abi,
+              value: networkManager.sdk.utils.unit.toValue(amount || '0'),
               params: parameters.obj,
               ...override,
               modalWhenExecuted: true,

@@ -23,6 +23,7 @@ export default class DeployerButton extends PureComponent {
       contractName: '',
       contractObj: null,
       constructorAbi: null,
+      amount: '',
       signer: '',
       pending: false,
     }
@@ -146,11 +147,11 @@ export default class DeployerButton extends PureComponent {
       }
     }
 
-    const { contractName, contractObj, signer } = this.state
+    const { contractName, contractObj, amount, signer } = this.state
     const options = {}
     networkManager.sdk?.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
-    return [contractObj, { parameters, contractName, signer, ...options }]
+    return [contractObj, { parameters, amount, contractName, signer, ...options }]
   }
 
   estimate = async () => {
@@ -178,6 +179,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   closeModal = () => {
+    this.setState({ amount: '' })
     this.modal.current.closeModal()
   }
 
@@ -194,6 +196,16 @@ export default class DeployerButton extends PureComponent {
     let constructorParameters = null
     if (constructorAbi) {
       constructorParameters = <>
+        {
+          (constructorAbi.payable || constructorAbi.stateMutability === 'payable') ?
+          <ActionParamFormGroup
+            label={`${networkManager.symbol} to Send`}
+            icon='fas fa-coins'
+            value={this.state.amount}
+            onChange={amount => this.setState({ amount })}
+            placeholder='Default: 0'
+          /> : null
+        }
         <Label>Constructor Parameters</Label>
         <ContractForm
           ref={this.form}
