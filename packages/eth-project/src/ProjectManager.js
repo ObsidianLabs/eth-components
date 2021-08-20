@@ -271,6 +271,7 @@ function makeProjectManager (Base) {
           queue.add(
             () => networkManager.sdk.sendTransaction(tx),
             {
+              title: 'Deploy a Contract',
               name: 'Deploy',
               contractName,
               signer: allParameters.signer,

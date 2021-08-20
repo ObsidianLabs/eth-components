@@ -80,9 +80,11 @@ export default class TransferButton extends PureComponent {
         queue.add(
           () => networkManager.sdk.sendTransaction(tx),
           {
-            name: token === 'core' ? 'Transfer' : `${token.symbol} Transfer`,
+            title: token === 'core' ? `Transfer ${networkManager.symbol}` : `Transfer ${token.symbol}`,
+            name: token === 'core' ? `Transfer` : `Transfer (${token.symbol})`,
             signer: from,
             address: from,
+            value: token === 'core' ? networkManager.sdk.utils.unit.toValue(amount) : undefined,
             params: { from, to, amount },
           },
           {

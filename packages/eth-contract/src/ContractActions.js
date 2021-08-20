@@ -91,8 +91,9 @@ export default class ContractActions extends AbiActionForm {
       await queue.add(
         () => networkManager.sdk.sendTransaction(tx),
         {
-          contractAddress: this.props.contract.address,
+          title: 'Call a Contract',
           name: actionName,
+          contractAddress: this.props.contract.address,
           functionName: actionName,
           signer,
           params: parameters.obj,
