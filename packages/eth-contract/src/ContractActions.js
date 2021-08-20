@@ -35,7 +35,7 @@ export default class ContractActions extends AbiActionForm {
     try {
       value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
     } catch {
-      notification.error('Estimate Error', `${networkManager.symbol} to send is invalid.`)
+      notification.error('Estimate Failed', `${networkManager.symbol} to send is invalid.`)
       return
     }
 
@@ -47,7 +47,7 @@ export default class ContractActions extends AbiActionForm {
       })
       result = await networkManager.sdk.estimate(tx)
     } catch (e) {
-      notification.error('Estimate Error', e.message)
+      notification.error('Estimate Failed', e.reason || e.message)
       return
     }
 
@@ -92,7 +92,7 @@ export default class ContractActions extends AbiActionForm {
     try {
       value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
     } catch {
-      notification.error('Estimate Error', `${networkManager.symbol} to send is invalid.`)
+      notification.error('Execute Contract Failed', `${networkManager.symbol} to send is invalid.`)
       this.setState({ executing: false })
       return
     }
@@ -122,12 +122,8 @@ export default class ContractActions extends AbiActionForm {
       )
     } catch (e) {
       console.warn(e)
-      if (e.data) {
-        notification.error('Error', `${e.message}<br />${e.data}`)
-      } else {
-        notification.error('Error', e.message)
-      }
-      this.setState({ executing: false, actionError: e.message, actionResult: '' })
+      notification.error('Execute Contract Failed', e.reason || e.message)
+      this.setState({ executing: false, actionError: e.reason || e.message, actionResult: '' })
     }
   }
 

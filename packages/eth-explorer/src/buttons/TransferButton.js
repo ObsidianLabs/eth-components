@@ -72,7 +72,7 @@ export default class TransferButton extends PureComponent {
     const from = this.props.from
 
     if (!amount) {
-      notification.error('Push Transaction Failed', 'The amount is empty.')
+      notification.error('Transfer Failed', 'The amount is empty.')
       return
     }
 
@@ -105,7 +105,7 @@ export default class TransferButton extends PureComponent {
       })
     } catch (e) {
       console.warn(e)
-      notification.error('Push Transaction Failed', e.message)
+      notification.error('Transfer Failed', e.reason || e.message)
       this.setState({ pushing: false })
       return
     }

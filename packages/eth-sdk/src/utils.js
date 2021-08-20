@@ -72,9 +72,12 @@ export default {
   display,
   decodeError: () => '',
   parseError: e => {
-    if (e.reason) {
-      e.message = e.reason
-    }
+    e.reason = ''
+    try {
+      const body = e.body || e.error.body || e.error.error.body
+      const res = JSON.parse(body)
+      e.reason = res.error.message
+    } catch {}
     return e
   },
   parseObject,

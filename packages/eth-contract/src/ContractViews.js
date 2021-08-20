@@ -37,7 +37,7 @@ export default class ContractViews extends AbiActionForm {
       })
     } catch (e) {
       console.warn(e)
-      this.setState({ executing: false, actionError: e.message, actionResult: null })
+      this.setState({ executing: false, actionError: e.reason || e.message, actionResult: null })
       return
     }
 

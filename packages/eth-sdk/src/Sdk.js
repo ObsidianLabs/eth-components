@@ -100,7 +100,11 @@ export default class Sdk {
     }
     if (token === 'core' || !token) {
       const voidSigner = new ethers.VoidSigner(from, this.provider)
-      return { tx: await voidSigner.populateTransaction({ to, value }) }
+      try {
+        return { tx: await voidSigner.populateTransaction({ to, value }) }
+      } catch (e) {
+        throw utils.parseError(e)
+      }
     } else {
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
       return contract.execute('transfer', { array: [to, value] }, { ...override, from })
@@ -116,12 +120,16 @@ export default class Sdk {
       throw new Error('The entered amount is invalid.')
     }
     const tx = await factory.getDeployTransaction(...parameters, { value })
-    console.log(tx)
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
-    return { tx: await voidSigner.populateTransaction(tx) }
+
+    try {
+      return { tx: await voidSigner.populateTransaction(tx) }
+    } catch (e) {
+      throw utils.parseError(e)
+    }
   }
 
-  async estimate (tx) {
+  async estimate ({ tx }) {
     const gasPrice = await this.callRpc('eth_gasPrice')
     const result = await this.provider.estimateGas(tx)
     return {
@@ -141,11 +149,6 @@ export default class Sdk {
     }
 
     const promise = pendingTx.then(res => res.hash).catch(e => {
-      if (e.code === 'INSUFFICIENT_FUNDS') {
-        throw utils.parseError(e)
-      } else if (e.error) {
-        throw utils.parseError(e.error)
-      }
       throw utils.parseError(e)
     })
 
@@ -180,7 +183,11 @@ export default class Sdk {
         try {
           res.result = await getResult(transaction, height)
         } catch (e) {
-          res.error = e.message
+          res.error = e.reason
+          const parsed = utils.parseError(e)
+          if (parsed.reason) {
+            res.error = parsed.reason
+          }
         }
       }
 

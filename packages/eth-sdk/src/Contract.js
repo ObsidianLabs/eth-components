@@ -27,15 +27,12 @@ export default class Contract {
         tx: await voidSigner.populateTransaction(tx),
         getResult: async (tx, height) => {
           const data = await this.provider.call(tx, height)
-          try {
-            const result = this.instance.interface.decodeFunctionResult(method, data)
-            return this.parseResult(result, method)
-          } catch (e) {
-            throw utils.parseError(e)
-          }
+          const result = this.instance.interface.decodeFunctionResult(method, data)
+          return this.parseResult(result, method)
         }
       }
     } catch (e) {
+      console.warn(e)
       throw utils.parseError(e)
     }
   }

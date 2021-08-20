@@ -231,7 +231,8 @@ function makeProjectManager (Base) {
         })
         result = await networkManager.sdk.estimate(tx)
       } catch (e) {
-        notification.error('Estimate Error', e.message)
+        console.warn(e)
+        notification.error('Estimate Failed', e.reason || e.message)
         this.deployButton.setState({ pending: false })
         return
       }
@@ -303,11 +304,7 @@ function makeProjectManager (Base) {
         })
       } catch (e) {
         console.warn(e)
-        if (e.data) {
-          notification.error('Deploy Failed', `${e.message}<br />${e.data}`)
-        } else {
-          notification.error('Deploy Failed', e.message)
-        }
+        notification.error('Deploy Failed', e.reason || e.message)
         this.deployButton.setState({ pending: false })
         return
       }
