@@ -88,12 +88,20 @@ export default class Sdk {
   }
 
   async getTransferTransaction ({ from, to, token, amount }, override) {
+    let value
+    try {
+      if (token === 'core' || !token) {
+        value = utils.unit.toValue(amount)
+      } else {
+        value = utils.format.big(amount).times(utils.format.big(10).pow(token.decimals)).toString()
+      }
+    } catch {
+      throw new Error('The entered amount is invalid.')
+    }
     if (token === 'core' || !token) {
-      const value = utils.unit.toValue(amount)
       const voidSigner = new ethers.VoidSigner(from, this.provider)
       return { tx: await voidSigner.populateTransaction({ to, value }) }
-      } else {
-      const value = utils.format.big(amount).times(utils.format.big(10).pow(token.decimals)).toString()
+    } else {
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.provider)
       return contract.execute('transfer', { array: [to, value] }, { ...override, from })
     }

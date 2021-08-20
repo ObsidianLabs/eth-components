@@ -31,9 +31,16 @@ export default class ContractActions extends AbiActionForm {
       return
     }
 
+    let value
+    try {
+      value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
+    } catch {
+      notification.error('Estimate Error', `${networkManager.symbol} to send is invalid.`)
+      return
+    }
+
     let result
     try {
-      const value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
       const tx = await this.props.contract.execute(actionName, parameters, {
         from: this.state.signer,
         value,
@@ -81,8 +88,16 @@ export default class ContractActions extends AbiActionForm {
     const options = {}
     networkManager.sdk.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
+    let value
     try {
-      const value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
+      value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
+    } catch {
+      notification.error('Estimate Error', `${networkManager.symbol} to send is invalid.`)
+      this.setState({ executing: false })
+      return
+    }
+
+    try {
       const tx = await this.props.contract.execute(actionName, parameters, {
         from: signer,
         value,

@@ -68,10 +68,15 @@ export default class TransferButton extends PureComponent {
   }
 
   push = async () => {
-    this.setState({ pushing: true })
-
     const { recipient: to, token, amount } = this.state
     const from = this.props.from
+
+    if (!amount) {
+      notification.error('Push Transaction Failed', 'The amount is empty.')
+      return
+    }
+
+    this.setState({ pushing: true })
 
     const override = Object.fromEntries(networkManager.sdk?.txOptions.list.map(option => [option.name, option.default]))
     try {
