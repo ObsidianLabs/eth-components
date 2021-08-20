@@ -56,7 +56,7 @@ export default class SignRequestModal extends PureComponent {
     try {
       tx.value = `0x${BigInt(value || 0).toString(16)}`
     } catch {
-      notification.error(`Invalid ${networkManager.symbol} to Transfer`, 'Please enter a valid number.')
+      notification.error(`Invalid ${networkManager.symbol} to Send`, 'Please enter a valid number.')
       return
     }
     try {
@@ -107,7 +107,7 @@ export default class SignRequestModal extends PureComponent {
           <DebouncedFormGroup label='Data' value={`${prefix}... (${(data.length/2 - 1)} Bytes)`} disabled />
         }
         <ActionParamFormGroup
-          label={`${networkManager.symbol} to Transfer`}
+          label={`${networkManager.symbol} to Send`}
           icon='fas fa-coins'
           value={this.state.value}
           onChange={value => this.setState({ value })}

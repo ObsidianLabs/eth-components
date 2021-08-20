@@ -240,6 +240,17 @@ export default class AbiActionForm extends PureComponent {
         </div>
         <div className={classnames(!inModal && 'd-flex flex-column flex-grow-1 overflow-auto')}>
           <FormSection title='Parameters'>
+            {
+              (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
+              <ActionParamFormGroup
+                size='sm'
+                label={`${networkManager.symbol} to Send`}
+                icon='fas fa-coins'
+                value={this.state.amount}
+                onChange={amount => this.setState({ amount })}
+                placeholder='Default: 0'
+              /> : null
+            }
             <ContractForm
               ref={this.form}
               key={selectedAction.name}
@@ -247,17 +258,6 @@ export default class AbiActionForm extends PureComponent {
               {...selectedAction}
               Empty={<div className='small'>(None)</div>}
             />
-            {
-              (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
-              <ActionParamFormGroup
-                size='sm'
-                label={`${networkManager.symbol} to Transfer`}
-                icon='fas fa-coins'
-                value={this.state.amount}
-                onChange={amount => this.setState({ amount })}
-                placeholder='Default: 0'
-              /> : null
-            }
           </FormSection>
           {this.renderGasOptions(selectedAction)}
           {this.renderAuthorization()}

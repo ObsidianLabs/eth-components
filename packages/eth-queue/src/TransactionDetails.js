@@ -90,7 +90,7 @@ export default class TransactionDetails extends PureComponent {
           {
             value &&
             <TableCardRow
-              name={`${networkManager.symbol} Transfered`}
+              name={`${networkManager.symbol} Sent`}
               icon='fas fa-coins'
               badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkManager.symbol}`}
             />
