@@ -8,6 +8,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
+import { ResultContent } from '@obsidians/eth-contract'
 import { Link } from 'react-router-dom'
 import Highlight from 'react-highlight'
 
@@ -16,11 +17,14 @@ export default class TransactionDetails extends PureComponent {
     super(props)
     this.state = {
       selected: 'basic',
+      format: 'pretty',
     }
     this.modal = React.createRef()
   }
 
-  renderContent = (tx, selected) => {
+  renderContent = () => {
+    const { tx = {}, closeModal } = this.props
+    const { selected, format } = this.state
     const { txHash, status, data = {} } = tx
     const {
       functionName,
@@ -149,11 +153,17 @@ export default class TransactionDetails extends PureComponent {
         </Highlight>
       )
     } else if (selected === 'result') {
-      return (
-        <Highlight language='javascript' className='pre-box bg2 pre-wrap break-all small my-0' element='pre'>
-          <code>{JSON.stringify(result.raw, null, 2)}</code>
-        </Highlight>
-      )
+      return <>
+        <div>
+          <ButtonOptions
+            size='sm'
+            options={[{ key: 'pretty', text: 'Pretty' }, { key: 'raw', text: 'Raw' }]}
+            selected={format}
+            onSelect={format => this.setState({ format })}
+          />
+        </div>
+        <ResultContent format={format} actionResult={result} onNavigate={closeModal} />
+      </>
     } else if (selected === 'error') {
       return (
         <Highlight language='javascript' className='pre-box bg2 pre-wrap break-all small my-0' element='pre'>
@@ -200,7 +210,7 @@ export default class TransactionDetails extends PureComponent {
 
   render () {
     const tx = this.props.tx || {}
-    const selected = this.state.selected
+    const { selected } = this.state
 
     const options = [
       { key: 'basic', text: 'Basic' },
@@ -232,7 +242,7 @@ export default class TransactionDetails extends PureComponent {
           onSelect={selected => this.setState({ selected })}
         />
       </div>
-      {this.renderContent(tx, selected)}
+      {this.renderContent()}
     </>
   }
 }

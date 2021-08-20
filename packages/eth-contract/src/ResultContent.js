@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom'
 import ReactJson from 'react-json-view'
 import Highlight from 'react-highlight'
 
-export default withRouter(({ format, actionError, actionResult, history }) => {
+export default withRouter(({ format, actionResult, actionError, history, onNavigate }) => {
   const [keypairs, setKeypairs] = React.useState({})
 
   const updateKeypairs = keyList => {
@@ -37,7 +37,10 @@ export default withRouter(({ format, actionError, actionResult, history }) => {
           displayArrayKey={false}
           enableClipboard={() => notification.info('Copied to Clipboard')}
           getLabel={addr => keypairs[addr.toLowerCase()]}
-          onRedirect={link => history.push(link)}
+          onRedirect={link => {
+            history.push(link)
+            onNavigate && onNavigate()
+          }}
         />
       )
     } else {

@@ -8,6 +8,7 @@ export { default as ContractActions } from './ContractActions'
 export { default as ContractViews } from './ContractViews'
 export { default as ContractEvents } from './ContractEvents'
 
+export { default as ResultContent } from './ResultContent'
 export { default as AbiActionForm } from './components/AbiActionForm'
 export { default as DropdownCard } from './components/MarginlessFormSection'
 export { default as ContractForm } from './components/ContractForm'
