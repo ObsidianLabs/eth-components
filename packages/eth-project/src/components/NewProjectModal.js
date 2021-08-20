@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 
 import {
   FormGroup,
@@ -80,8 +81,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
   componentDidUpdate () {
     const { group, framework } = this.state
-    if (group === 'Truffle' && framework !== 'truffle') {
-      this.setState({ framework: 'truffle' })
+    if (group === 'Truffle' && framework !== 'truffle-docker') {
+      this.setState({ framework: 'truffle-docker' })
     }
   }
 
@@ -214,6 +215,13 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     return { projectRoot, name }
   }
 
+  renderTemplate (renderSuper) {
+    if (renderSuper) {
+      return super.renderTemplate()
+    }
+    return null
+  }
+
   renderFrameworkSelector = () => {
     const { framework, truffleVersion, hardhatVersion, waffleVersion, truffleDockerVersion } = this.state
     if (framework === 'truffle') {
@@ -266,24 +274,31 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       return null
     }
 
-    const options = [{ key: 'truffle', text: frameworkNames.truffle }]
+    const options = [{ key: 'truffle-docker', text: frameworkNames['truffle-docker'] }]
     if (group !== 'Truffle') {
-      options.push({ key: 'hardhat', text: frameworkNames.hardhat })
-      options.push({ key: 'waffle', text: frameworkNames.waffle })
+      options.unshift({ key: 'waffle', text: frameworkNames.waffle })
+      options.unshift({ key: 'hardhat', text: frameworkNames.hardhat })
+      options.unshift({ key: 'truffle', text: frameworkNames.truffle })
     }
-    options.push({ key: 'truffle-docker', text: frameworkNames['truffle-docker'] })
 
     return (
       <>
-        {
-          group === 'open zeppelin' &&
-          <DropdownInput
-            label='Open Zeppelin Version'
-            options={openZeppelinVersions}
-            value={openZeppelinVersion}
-            onChange={openZeppelinVersion => this.setState({ openZeppelinVersion })}
-          />
-        }
+        <div className='row'>
+          <div className={classnames(group === 'open zeppelin' ? 'col-12 col-sm-8' : 'col-12')}>
+            {this.renderTemplate(true)}
+          </div>
+          {
+            group === 'open zeppelin' &&
+            <div className='col-12 col-sm-4'>
+              <DropdownInput
+                label='Open Zeppelin Version'
+                options={openZeppelinVersions}
+                value={openZeppelinVersion}
+                onChange={openZeppelinVersion => this.setState({ openZeppelinVersion })}
+              />
+          </div>
+          }
+        </div>
         <div className='row'>
           <div className='col-12 col-sm-8'>
             <FormGroup>
