@@ -2,12 +2,12 @@ const fastify = require('fastify')({ logger: false })
 const { JsonRpcEngine, createAsyncMiddleware } = require('json-rpc-engine')
 
 module.exports = class RpcServer {
-  constructor (Client, keypairManager, rpcNames) {
+  constructor (Client, keypairManager, rpcMap) {
     this.Client = Client
     this.keypairManager = keypairManager
 
     this.client = null
-    this.engine = this._startJsonRpcEngine(rpcNames)
+    this.engine = this._startJsonRpcEngine(rpcMap)
     this._start(this.engine)
   }
 
