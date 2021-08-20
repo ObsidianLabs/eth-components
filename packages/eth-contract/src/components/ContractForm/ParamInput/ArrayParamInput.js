@@ -50,7 +50,13 @@ export default class ArrayParamInput extends PureComponent {
   }
 
   componentDidMount () {
-    this.props.onChange([], { raw: [], display: [], empty: true })
+    if (this.props.value?.length) {
+      const { type } = this.props
+      const values = this.props.value.map((v, index) => optionItemFromValue(v, type.replace(/\[\d*\]/, ''), index))
+      this.onChange(values)
+    } else {
+      this.onChange([])
+    }
   }
 
   enterNewItem = async () => {

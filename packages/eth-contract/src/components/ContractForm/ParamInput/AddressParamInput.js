@@ -4,7 +4,7 @@ import { networkManager } from '@obsidians/eth-network'
 import { KeypairInputSelector } from '@obsidians/keypair'
 
 export default function AddressParamInput ({ size, value, onChange, disabled, maxLength = 128 }) {
-  const onChangeValue = value => {
+  const onChangeValue = (value = '') => {
     onChange(value, { raw: value, display: value, empty: !value })
   }
 
