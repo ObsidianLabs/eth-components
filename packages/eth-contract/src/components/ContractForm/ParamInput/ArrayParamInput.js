@@ -63,7 +63,7 @@ export default class ArrayParamInput extends PureComponent {
 
   onClickItem = async value => {
     const index = this.state.values.indexOf(value)
-    this.setState({ item: value.item, index, title: 'Modiry an Item' })
+    this.setState({ item: value.item, index, title: 'Modify an Item' })
     this.modal.current.openModal()
     // setTimeout(() => this.input.current.focus(), 100)
     return new Promise(resolve => this.onResolve = resolve)
