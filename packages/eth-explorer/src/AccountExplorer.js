@@ -34,8 +34,7 @@ class AccountExplorer extends TabbedExplorer {
 
   componentDidMount () {
     this.init()
-    keypairManager.loadAllKeypairs().then(this.updateKeypairs)
-    keypairManager.onUpdated(this.updateKeypairs)
+    keypairManager.onUpdated(() => this.forceUpdate())
   }
 
   componentDidUpdate (props) {
@@ -61,12 +60,6 @@ class AccountExplorer extends TabbedExplorer {
   checkLocation = () => {
     const value = this.props.match?.params?.value || ''
     return value && this.openTab(value)
-  }
-
-  updateKeypairs = keypairs => {
-    this.keypairs = {}
-    keypairs.forEach(k => this.keypairs[k.address] = k.name)
-    this.forceUpdate()
   }
 
   render () {
@@ -98,11 +91,9 @@ class AccountExplorer extends TabbedExplorer {
         const address = valueFormatter(value)
         let tabText = ''
         const tokenInfo = tokens?.getIn([network, address])?.toJS()
-        if (this.keypairs[address]) {
-          tabText = <>
-            <i className='fas fa-map-marker-alt text-muted mr-1' />
-            {this.keypairs[address]}
-          </>
+        const name = keypairManager.getName(address)
+        if (name) {
+          tabText = <><i className='fas fa-map-marker-alt text-muted mr-1' />{name}</>
         } else if (tokenInfo) {
           const icon = tokenInfo.icon
             ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>

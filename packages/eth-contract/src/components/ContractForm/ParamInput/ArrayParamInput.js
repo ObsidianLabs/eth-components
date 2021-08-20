@@ -5,6 +5,8 @@ import {
   Modal,
 } from '@obsidians/ui-components'
 
+import keypairManager from '@obsidians/keypair'
+
 import ActionParamFormGroup from '../ActionParamFormGroup'
 
 const optionItemFromValue = (item, type, index) => {
@@ -23,6 +25,7 @@ const optionItemFromValue = (item, type, index) => {
 
   if (type === 'address') {
     icon = <i className='fas fa-map-marker-alt mr-1' />
+    label = keypairManager.getName(item.display) || label
   }
 
   return {
@@ -50,9 +53,14 @@ export default class ArrayParamInput extends PureComponent {
   }
 
   componentDidMount () {
-    if (this.props.value?.length) {
-      const { type } = this.props
-      const values = this.props.value.map((v, index) => optionItemFromValue(v, type.replace(/\[\d*\]/, ''), index))
+    this.refreshValues()
+    keypairManager.onUpdated(this.refreshValues.bind(this))
+  }
+
+  refreshValues = () => {
+    const { value, type } = this.props
+    if (value?.length) {
+      const values = value.map((v, index) => optionItemFromValue(v, type.replace(/\[\d*\]/, ''), index))
       this.onChange(values)
     } else {
       this.onChange([])

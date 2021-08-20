@@ -8,17 +8,10 @@ import ReactJson from 'react-json-view'
 import Highlight from 'react-highlight'
 
 export default withRouter(({ format, actionResult, actionError, history, onNavigate }) => {
-  const [keypairs, setKeypairs] = React.useState({})
-
-  const updateKeypairs = keyList => {
-    const keypairs = {}
-    keyList.forEach(k => keypairs[k.address] = k.name)
-    setKeypairs(keypairs)
-  }
+  const [_, forceUpdate] = React.useState({})
 
   React.useEffect(() => {
-    keypairManager.loadAllKeypairs().then(updateKeypairs)
-    return keypairManager.onUpdated(updateKeypairs)
+    return keypairManager.onUpdated(() => forceUpdate({}))
   }, [])
 
   if (actionError) {
@@ -36,7 +29,7 @@ export default withRouter(({ format, actionResult, actionError, history, onNavig
           quotesOnKeys={false}
           displayArrayKey={false}
           enableClipboard={() => notification.info('Copied to Clipboard')}
-          getLabel={addr => keypairs[addr.toLowerCase()]}
+          getLabel={addr => keypairManager.getName(addr.toLowerCase())}
           onRedirect={link => {
             history.push(link)
             onNavigate && onNavigate()
