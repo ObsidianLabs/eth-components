@@ -50,11 +50,11 @@
     "rollup-plugin-postcss": "^2.3.0"
   },
   "peerDependencies": {
-    "electron": "^11.0.0",
-    "moment": "^2.24.0",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
-    "react-router-cache-route": "^1.8.4"
+    "electron": "*",
+    "moment": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-router-cache-route": "*"
   },
   "eslintConfig": {
     "extends": "react-app"

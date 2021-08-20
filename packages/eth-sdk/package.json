@@ -32,6 +32,6 @@
     "cross-env": "^6.0.3"
   },
   "peerDependencies": {
-    "immutable": "^4.0.0-rc.12"
+    "immutable": "*"
   }
 }

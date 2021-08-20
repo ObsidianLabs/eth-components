@@ -44,10 +44,10 @@
     "rollup-plugin-postcss": "^2.3.0"
   },
   "peerDependencies": {
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
-    "react-highlight": "^0.12.0",
-    "react-router-dom": "^5.1.2"
+    "react": "*",
+    "react-dom": "*",
+    "react-highlight": "*",
+    "react-router-dom": "*"
   },
   "eslintConfig": {
     "extends": "react-app"
