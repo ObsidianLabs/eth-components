@@ -69,7 +69,7 @@ export default class Header extends PureComponent {
     dropdownKeypairs.unshift({ header: 'keypair manager' })
 
     const dropdownBrowserAccounts = browserAccounts.map(item => {
-      const name = this.state.keypairs.find(k => k.address === item)?.name
+      const name = keypairManager.getName(item)
       return {
         id: item,
         name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
@@ -82,7 +82,7 @@ export default class Header extends PureComponent {
     }
 
     const dropdownStarred = starred.map(item => {
-      const name = this.state.keypairs.find(k => k.address === item)?.name
+      const name = keypairManager.getName(item)
       return {
         id: item,
         name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
@@ -91,11 +91,9 @@ export default class Header extends PureComponent {
     })
 
     const dropdownStarredContracts = starredContracts.map(item => {
-      const name = this.state.keypairs.find(k => k.address === item)?.name
       return {
         id: item,
-        name: <code className='small'>{item}</code>,
-        // name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -121,7 +119,7 @@ export default class Header extends PureComponent {
         contractName = <code>{selectedContract}</code>
       }
     }
-    const accountName = selectedAccount && (this.state.keypairs.find(k => k.address === selectedAccount)?.name || <code>{selectedAccount}</code>)
+    const accountName = selectedAccount && (keypairManager.getName(selectedAccount) || <code>{selectedAccount}</code>)
 
     const contractNavbarItem = {
       route: 'contract',
