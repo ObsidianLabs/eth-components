@@ -241,14 +241,23 @@ export default class ContractPage extends PureComponent {
                   Select from <b>ABI Storage</b>
                 </DropdownToggle>
                 <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
-                  {/* <DropdownItem header>ABIs</DropdownItem> */}
                   {this.renderAbiDropdownItem(this.state.abis)}
                 </DropdownMenu>
               </UncontrolledButtonDropdown>
+              <UncontrolledButtonDropdown className='mr-2 mb-2'>
+                <DropdownToggle color='primary' caret>
+                  Add ABI to <b>ABI Storage</b>
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem onClick={() => this.openAbiStorageModal(account.codeHash)}>
+                    Add for code hash <small><code>{account.codeHash.substr(0, 6)}...{account.codeHash.substr(-4)}</code></small>
+                  </DropdownItem>
+                  <DropdownItem onClick={() => this.openAbiStorageModal(account.address)}>
+                    Add for contract address <small><code>{account.address.substr(0, 6)}...{account.address.substr(-4)}</code></small>
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledButtonDropdown>
               {this.renderAbisFromProject()}
-              <Button color='primary' onClick={() => this.openAbiStorageModal(account.codeHash)}>
-                Add ABI for code hash <small><code>{account.codeHash.substr(0, 6)}...{account.codeHash.substr(-4)}</code></small>
-              </Button>
             </div>
             <AbiStorageModal ref={this.abiStorageModal}/>
           </Screen>
