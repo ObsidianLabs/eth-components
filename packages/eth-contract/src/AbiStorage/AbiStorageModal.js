@@ -86,13 +86,7 @@ export default class AbiStorageModal extends PureComponent {
       )
     }
     if (!this.state.abis || !this.state.abis.length) {
-      return (
-        <tr key='abis-none' >
-          <td align='middle' colSpan={3}>
-            (No ABIs)
-          </td>
-        </tr>
-      )
+      return <tr key='abis-none' ><td align='middle' colSpan={3}>(No ABIs)</td></tr>
     }
     return this.state.abis.map(this.renderAbiRow)
   }

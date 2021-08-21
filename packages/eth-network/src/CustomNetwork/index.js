@@ -13,37 +13,37 @@ export default class CustomNetwork extends PureComponent {
   }
 
   componentDidMount () {
-    const { customNetwork } = this.props
-    if (!customNetwork) {
+    const { option } = this.props
+    if (!option) {
       this.modal.current.openModal()
-    } else {
-      this.modal.current.update(customNetwork)
     }
   }
 
   render () {
     const {
       networkId,
-      customNetwork,
+      option,
       CustomNetworkModal,
+      customNetworks,
       placeholder,
     } = this.props
 
     return <>
       <RemoteNetwork
         networkId={networkId}
-        {...customNetwork}
+        {...option}
         EditButton={
           <IconButton
             color='default'
             className='text-muted'
             icon='fas fa-cog'
-            onClick={() => this.modal.current.openModal(customNetwork)}
+            onClick={() => this.modal.current.openModal(option)}
           />
         }
       />
       <CustomNetworkModal
         ref={this.modal}
+        customNetworks={customNetworks}
         placeholder={placeholder}
       />
     </>

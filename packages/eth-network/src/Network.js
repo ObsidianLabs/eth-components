@@ -8,10 +8,11 @@ import CustomNetwork from './CustomNetwork'
 import RemoteNetwork from './RemoteNetwork'
 import { default as DefaultCustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
-export default connect(['network', 'globalConfig'])(props => {
+export default connect(['network', 'customNetworks', 'uiState'])(props => {
   const {
     network: networkId = 'dev',
-    globalConfig,
+    customNetworks,
+    uiState,
     configButton,
     tabs,
     minerKey,
@@ -25,8 +26,6 @@ export default connect(['network', 'globalConfig'])(props => {
     cacheLifecycles.didRecover(() => setActive(true))
   })
 
-  const customNetwork = globalConfig.get('customNetwork')
-  
   if (networkId === 'dev') {
     return (
       <LocalNetwork
@@ -41,7 +40,8 @@ export default connect(['network', 'globalConfig'])(props => {
     return (
       <CustomNetwork
         networkId={networkId}
-        customNetwork={customNetwork}
+        option={uiState.get('customNetworkOption')}
+        customNetworks={customNetworks}
         CustomNetworkModal={CustomNetworkModal}
       />
     )

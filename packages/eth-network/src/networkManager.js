@@ -121,7 +121,7 @@ class NetworkManager {
     }
   }
 
-  async updateCustomNetwork ({ url, option = '{}' }) {
+  async updateCustomNetwork ({ url, option = '{}', notify = true }) {
     try {
       if (option) {
         option = JSON.parse(option)
@@ -130,22 +130,22 @@ class NetworkManager {
       notification.error('Invalid Option', '')
       return
     }
-    const status = await this.createSdk({ id: 'custom', url, option })
+    const info = await this.createSdk({ id: 'custom', url, option })
 
-    if (status) {
+    if (info && notify) {
       redux.dispatch('SELECT_NETWORK', `custom`)
       notification.success(`Network Connected`, `Connected to network at <b>${url}</b>`)
     }
 
-    return status
+    return info
   }
 
   async createSdk (params) {
     const sdk = this.newSdk(params)
     try {
-      const status = await sdk.getStatus()
+      const info = await sdk.networkInfo()
       this._sdk = sdk
-      return status
+      return info
     } catch (e) {
       console.warn(e)
       notification.error('Invalid Node URL', '')
