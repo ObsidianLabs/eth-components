@@ -10,12 +10,6 @@ export default class NodeButton extends PureComponent {
     }
   }
 
-  componentWillUnmount () {
-    if (this.state.lifecycle !== 'stopped') {
-      this.stop()
-    }
-  }
-
   onLifecycle = async (lifecycle, params) => {
     await nodeManager.updateLifecycle(lifecycle, params)
     if (this.props.onLifecycle) {
