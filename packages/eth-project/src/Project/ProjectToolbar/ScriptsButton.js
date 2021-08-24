@@ -38,8 +38,6 @@ export default function ScriptsButton ({ projectManager }) {
     return null
   }
 
-  console.log(options)
-
   return (
     <DropdownToolbarButton
       id='scripts'
