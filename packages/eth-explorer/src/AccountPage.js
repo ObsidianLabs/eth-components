@@ -109,7 +109,7 @@ export default class AccountPage extends PureComponent {
       return (
         <Screen>
           <h4 className='display-4'>New Page</h4>
-          <p className='lead'>No connected network. Please start a local network or switch to a remote network.</p>
+          <p className='lead'>Please enter an {process.env.CHAIN_NAME} address.</p>
         </Screen>
       )
     }
