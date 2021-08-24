@@ -29,7 +29,7 @@ module.exports = class RpcServer {
         throw new Error('No network is running.')
       } else if (req.method === 'eth_accounts') {
         const keypairs = await this.keypairManager.get()
-        res.result = keypairs.map(k => k.address).filter(addr => addr.startsWith('atp'))
+        res.result = keypairs.map(k => k.address)
       } else if (req.method === 'eth_sendTransaction') {
         const tx = await this.keypairManager.call({ ...req, method: 'signTransaction' })
         const kp = await this.keypairManager.get(tx.from)
