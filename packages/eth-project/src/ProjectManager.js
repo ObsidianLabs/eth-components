@@ -44,6 +44,16 @@ function makeProjectManager (Base) {
       this.lint()
     }
 
+    async readPackageJson () {
+      const packageJson = await this.readFile(this.pathForProjectFile('package.json'))
+      return JSON.parse(packageJson)
+    }
+
+    async executeInTerminal (cmd) {
+      this.toggleTerminal(true)
+      return await compilerManager.execute(cmd)
+    }
+
     lint () {
       if (!premiumEditor.solidity) {
         return

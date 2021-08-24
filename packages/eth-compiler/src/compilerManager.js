@@ -44,6 +44,11 @@ export class CompilerManager {
     }
   }
 
+  async execute (cmd) {
+    CompilerManager.switchCompilerConsole('terminal')
+    return await CompilerManager.terminal?.exec(cmd)
+  }
+
   async cacheSolcBin (url, version) {
     const cacheStorage = await window.caches.open('solcjs')
     const cached = await cacheStorage.match(url)

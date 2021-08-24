@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react'
 
 import { WorkspaceContext } from '@obsidians/workspace'
-import { ToolbarButton } from '@obsidians/ui-components'
+import { ToolbarButton, DropdownToolbarButton } from '@obsidians/ui-components'
 import { CompilerButton } from '@obsidians/compiler'
 import keypairManager from '@obsidians/keypair'
 
 import DeployButton from './DeployButton'
+import ScriptsButton from './ScriptsButton'
 import SignRequestModal from './SignRequestModal'
 
 export default class ProjectToolbar extends PureComponent {
@@ -27,6 +28,7 @@ export default class ProjectToolbar extends PureComponent {
         />
       }
       { !noDeploy && <DeployButton projectManager={projectManager} signer={signer} /> }
+      <ScriptsButton projectManager={projectManager} />
       { <ExtraButtons projectManager={projectManager} signer={signer} /> }
       <div className='flex-1' />
       <ToolbarButton
