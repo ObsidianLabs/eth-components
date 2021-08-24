@@ -203,7 +203,7 @@ export class CompilerManager {
       return { errors, decorations }
     }
 
-    const buildFolder = projectManager.path.join('build', 'contracts')
+    const buildFolder = projectManager.path.join(framework === 'hardhat' ? 'artifacts' : 'build', 'contracts')
     if (!sourceFile) {
       notification.success('Build Project Successful', `Please find the generated ABI and bytecode in the <b>${buildFolder}</b> folder.`)
     } else {
