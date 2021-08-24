@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 import { IpcChannel } from '@obsidians/ipc'
+import redux from '@obsidians/redux'
 
 import networks, { customNetworks } from './networks'
 import kp from './kp'
@@ -20,7 +21,7 @@ export default class Sdk {
     this.client = new Client({ networkId: id, url })
     this.networkId = id
     this.chainId = chainId
-    this.explorer = explorer
+    this.explorer = !url
   }
 
   dispose () {
@@ -210,6 +211,32 @@ export default class Sdk {
   }
 
   async getTransactions (address, page = 0, size = 10) {
+    address = address.toLowerCase()
+    if (this.networkId.startsWith('dev')) {
+      const { queue, uiState } = redux.getState()
+      const networkId = uiState.get('localNetwork').params.id
+      const txs = queue.getIn([networkId, 'txs'])
+      if (!txs) {
+        return { length: 0, list: [] }
+      }
+
+      const filtered = txs.filter(tx => {
+        const from = tx.getIn(['data', 'transaction', 'from']) || ''
+        const to = tx.getIn(['data', 'transaction', 'to']) || ''
+        return tx.get('status') === 'CONFIRMED' &&
+          (address === from.toLowerCase() || address === to.toLowerCase())
+      })
+
+      const list = filtered.map(tx => ({
+        ...tx.getIn(['data', 'transaction']).toJS(),
+        ...tx.getIn(['data', 'receipt']).toJS(),
+        timeStamp: tx.get('ts'),
+        method: tx.getIn(['data', 'functionName']),
+      })).toArray()
+
+      return { length: list.length, list }
+    }
+
     return await this.client.getTransactions(address, page, size)
   }
 
