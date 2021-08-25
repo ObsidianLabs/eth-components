@@ -143,10 +143,8 @@ function makeProjectManager (Base) {
 
     async getBuiltContracts () {
       const settings = await this.checkSettings()
-      const builtFolder = this.path.join(
-        this.projectRoot,
-        settings.framework === 'hardhat' ? 'artifacts' : 'build',
-        'contracts'
+      const builtFolder = this.pathForProjectFile(
+        settings.framework === 'hardhat' ? 'artifacts/contracts' : 'build/contracts'
       )
       let stopCriteria
       if (settings.framework === 'hardhat') {
