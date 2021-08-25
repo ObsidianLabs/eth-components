@@ -173,7 +173,6 @@ export default class Header extends PureComponent {
         <Navbar
           profile={profile}
           navbarLeft={navbarLeft}
-
           navbarRight={navbarRight}
         >
           {logo}
