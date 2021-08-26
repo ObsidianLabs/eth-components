@@ -51,10 +51,12 @@ export class CompilerManager {
 
   async cacheSolcBin (url, version) {
     const cacheStorage = await window.caches.open('solcjs')
-    const cached = await cacheStorage.match(url)
-
-    if (cached) {
-      return
+    try {
+      if (await cacheStorage.match(url)) {
+        return
+      }
+    } catch {
+      await cacheStorage.delete(url)
     }
 
     this.notification = notification.info(`Downloading Solc Bin`, `Downloading <b>${version}</b>...`, 0)
@@ -72,13 +74,20 @@ export class CompilerManager {
 
     const solcVersion = projectManager.projectSettings.get('compilers.solc')
     const solcFileName = soljsonReleases[solcVersion]
-    const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
+    const solcUrl = `/${solcFileName}`
+    // const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
 
     const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
     const optimizer = projectManager.projectSettings.get('compilers.optimizer')
 
     CompilerManager.button.setState({ building: true })
-    await this.cacheSolcBin(solcUrl, solcFileName)
+    try {
+      await this.cacheSolcBin(solcUrl, solcFileName)
+    } catch (e) {
+      console.error(e)
+      CompilerManager.button.setState({ building: false })
+      throw e
+    }
 
     CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
     this.notification = notification.info(`Building Project`, `Building...`, 0)
