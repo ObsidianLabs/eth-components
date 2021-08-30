@@ -25,7 +25,7 @@ export default class SignRequestModal extends PureComponent {
   openModal = async tx => {
     this.tx = tx
     const state = { from: tx.from, to: tx.to }
-    networkManager.sdk?.txOptions?.list.forEach(option => {
+    networkManager.sdk?.utils.txOptions?.list.forEach(option => {
       if (tx[option.name]) {
         state[option.name] = BigInt(tx[option.name]).toString()
       } else if (tx[option.alias]) {
@@ -115,7 +115,7 @@ export default class SignRequestModal extends PureComponent {
         />
         <div className='row'>
         {
-          networkManager.sdk?.txOptions?.list.map(option => (
+          networkManager.sdk?.utils.txOptions?.list.map(option => (
             <ActionParamFormGroup
               key={`deploy-param-${option.name}`}
               className={option.className}

@@ -78,7 +78,7 @@ export default class TransferButton extends PureComponent {
 
     this.setState({ pushing: true })
 
-    const override = Object.fromEntries(networkManager.sdk?.txOptions.list.map(option => [option.name, option.default]))
+    const override = Object.fromEntries(networkManager.sdk?.utils.txOptions.list.map(option => [option.name, option.default]))
     try {
       const tx = await networkManager.sdk.getTransferTransaction({ from, to, token, amount }, override)
       await new Promise((resolve, reject) => {
