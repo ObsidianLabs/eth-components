@@ -208,9 +208,11 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         return false
       }
     }
-    result = await super.createProject({ name, projectRoot, framework }, 'post')
-    if (!result) {
-      return false
+    if (framework !== 'truffle-docker') {
+      result = await super.createProject({ name, projectRoot, framework }, 'post')
+      if (!result) {
+        return false
+      }
     }
     return { projectRoot, name }
   }
@@ -276,8 +278,10 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
     const options = [{ key: 'truffle-docker', text: frameworkNames['truffle-docker'] }]
     if (group !== 'Truffle') {
-      options.unshift({ key: 'waffle', text: frameworkNames.waffle })
-      options.unshift({ key: 'hardhat', text: frameworkNames.hardhat })
+      if (!process.env.REACT_APP_NO_OTHER_FRAMEWORKS) {
+        options.unshift({ key: 'waffle', text: frameworkNames.waffle })
+        options.unshift({ key: 'hardhat', text: frameworkNames.hardhat })
+      }
       options.unshift({ key: 'truffle', text: frameworkNames.truffle })
     }
 
