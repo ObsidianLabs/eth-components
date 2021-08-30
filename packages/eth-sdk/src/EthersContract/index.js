@@ -1,12 +1,12 @@
 import { ethers } from 'ethers'
-import utils from './utils'
+import utils from '../utils'
 
-export default class Contract {
-  constructor ({ address, abi }, provider) {
+export default class EthersContract {
+  constructor ({ address, abi }, client) {
     this.address = address
     this.abi = abi
-    this.provider = provider
-    this.instance = new ethers.Contract(address, abi, provider)
+    this.provider = client.provider
+    this.instance = new ethers.Contract(address, abi, client.provider)
   }
 
   async query (method, { array }) {

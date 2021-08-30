@@ -1,10 +1,28 @@
-export { default } from './Sdk'
+import makeSdk from './makeSdk'
 
-export { default as rpc } from './rpc'
-export { default as utils } from './utils'
-export { default as kp } from './kp'
-export { default as signatureProvider } from './signatureProvider'
+import kp from './kp'
+import networks, { customNetworks } from './networks'
 
+import EthersClient from './EthersClient'
+import EthersContract from './EthersContract'
+import EthTxManager from './EthTxManager'
+
+import BrowserExtension from './BrowserExtension'
+
+import utils from './utils'
+import rpc from './rpc'
+
+export default makeSdk({
+  kp,
+  networks,
+  customNetworks,
+  Client: EthersClient,
+  Contract: EthersContract,
+  TxManager: EthTxManager,
+  BrowserExtension,
+  utils,
+  rpc,
+})
+
+export { makeSdk }
 export { default as redux } from './redux'
-export { default as networks } from './networks'
-export { default as txOptions } from './txOptions'

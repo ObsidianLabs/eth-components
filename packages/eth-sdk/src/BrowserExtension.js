@@ -2,6 +2,12 @@ import redux from '@obsidians/redux'
 import networks from './networks'
 
 export default class BrowserExtension {
+  static Init (networkManager) {
+    if (window.ethereum && window.ethereum.isMetaMask) {
+      return new BrowserExtension(networkManager, window.ethereum)
+    }
+  }
+
   constructor (networkManager, ethereum) {
     this.name = 'MetaMask'
     this.networkManager = networkManager
