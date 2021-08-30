@@ -80,7 +80,7 @@ export default class AccountPage extends PureComponent {
       return
     }
 
-    networkManager.sdk.tokenInfo(account.address).then(tokenInfo => {
+    networkManager.sdk.getTokenInfo(account.address).then(tokenInfo => {
       this.setState({ tokenInfo })
       if (tokenInfo?.type === 'ERC20') {
         redux.dispatch('ADD_TOKEN_INFO', {

@@ -120,7 +120,7 @@ export default class ContractPage extends PureComponent {
   }
 
   getTokenInfo = async account => {
-    const tokenInfo = await networkManager.sdk.tokenInfo(account.address)
+    const tokenInfo = await networkManager.sdk.getTokenInfo(account.address)
     this.setState({ tokenInfo })
     if (tokenInfo?.type === 'ERC20') {
       redux.dispatch('ADD_TOKEN_INFO', {
