@@ -21,11 +21,9 @@ export default function makeSdk ({
       browserExtension = BrowserExtension && BrowserExtension.Init(networkManager)
     }
 
-    constructor ({ id, url, chainId, explorer }) {
-      this.client = new Client({ networkId: id, chainId, url })
+    constructor ({ id, ...option }) {
+      this.client = new Client({ networkId: id, ...option })
       this.networkId = id
-      this.chainId = chainId
-      this.explorer = !url
       this.txManager = new TxManager(this.client)
     }
 
@@ -34,6 +32,8 @@ export default function makeSdk ({
     }
 
     get url () { return this.client.url }
+    get chainId () { return this.client.chainId }
+
     get utils () { return utils }
     get rpc () { return rpc }
     get namedContracts () { return namedContracts }
@@ -91,7 +91,7 @@ export default function makeSdk ({
     }
 
     async callRpc (method, parameters) {
-      const params = rpc.prepare(parameters)
+      const params = rpc.prepare(parameters, false, this)
       return await this.client.callRpc(method, params)
     }
   }
