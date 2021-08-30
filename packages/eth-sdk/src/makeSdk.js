@@ -70,8 +70,8 @@ export default function makeSdk ({
       return await this.txManager.getDeployTx(...args)
     }
 
-    async estimate ({ tx }) {
-      return await this.txManager.estimate(tx)
+    async estimate (arg) {
+      return await this.txManager.estimate(arg)
     }
 
     sendTransaction (arg) {

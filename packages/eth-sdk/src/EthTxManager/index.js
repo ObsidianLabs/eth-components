@@ -55,7 +55,7 @@ export default class EthTxManager {
     }
   }
 
-  async estimate (tx) {
+  async estimate ({ tx }) {
     const gasPrice = await this.client.callRpc('eth_gasPrice', [])
     const result = await this.provider.estimateGas(tx)
     return {
