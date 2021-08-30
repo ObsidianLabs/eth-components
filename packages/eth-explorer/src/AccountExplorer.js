@@ -93,15 +93,21 @@ class AccountExplorer extends TabbedExplorer {
         const tokenInfo = tokens?.getIn([network, address])?.toJS()
         const name = keypairManager.getName(address)
         if (name) {
-          tabText = <><i className='fas fa-map-marker-alt text-muted mr-1' />{name}</>
+          tabText = (
+            <div key={`addr-${address}`} className='d-flex flex-row align-items-center'>
+              <i className='fas fa-map-marker-alt text-muted mr-1' />{name}
+            </div>
+          )
         } else if (tokenInfo) {
           const icon = tokenInfo.icon
             ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
             : <i className='fas fa-coin text-muted mr-1' />
-          tabText = <>
-            {icon}
-            {tokenInfo.symbol}
-          </>
+          tabText = (
+            <div key={`token-${address}`} className='d-flex flex-row align-items-center'>
+              {icon}
+              {tokenInfo.symbol}
+            </div>
+          )
         } else if (address.length < 10) {
           tabText = <code>{address}</code>
         } else {

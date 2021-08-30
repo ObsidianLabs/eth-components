@@ -266,7 +266,7 @@ export default class ContractPage extends PureComponent {
       return (
         <Screen>
           <h4 className='display-4'>Error</h4>
-          <p>{error}</p>
+          <p className='lead'>{error}</p>
         </Screen>
       )
     }

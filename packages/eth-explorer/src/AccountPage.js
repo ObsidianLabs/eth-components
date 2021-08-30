@@ -65,6 +65,7 @@ export default class AccountPage extends PureComponent {
       this.getTokenInfo(account)
       this.setState({ loading: false, error: null, account })
     } catch (e) {
+      console.error(e)
       this.setState({ loading: false, error: e.message, account: null })
       return
     }
@@ -119,13 +120,21 @@ export default class AccountPage extends PureComponent {
     }
 
     if (error) {
-      return (
-        <Screen>
-          <h4 className='display-4'>Invalid Address</h4>
-          <p>{error}</p>
-          <p className='lead'><kbd>{this.props.value}</kbd></p>
-        </Screen>
-      )
+      if (typeof error === 'string') {
+        return (
+          <Screen>
+            <h4 className='display-4'>Error</h4>
+            <p className='lead'>{error}</p>
+          </Screen>
+        )
+      } else {
+        return (
+          <Screen>
+            <h4 className='display-4'>Invalid Address</h4>
+            <p className='lead'><kbd>{this.props.value}</kbd></p>
+          </Screen>
+        )
+      }
     }
 
     if (!account) {
