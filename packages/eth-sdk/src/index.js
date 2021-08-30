@@ -24,5 +24,5 @@ export default makeSdk({
   rpc,
 })
 
-export { makeSdk }
+export { makeSdk, utils }
 export { default as redux } from './redux'

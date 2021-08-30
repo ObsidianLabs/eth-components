@@ -23,18 +23,18 @@ const utf8 = hex => {
   }
 }
 
-const parseObject = (values, abi) => {
+function parseObject (values, abi) {
   const parsedOutputs = abi.map((param, index) => {
     const value = values[index]
     const { name, type, internalType } = param
-    const parsed = parseValue(value, param, index)
+    const parsed = parseValue.call(this, value, param, index)
     const result = { type, internalType, value: parsed }
     return [name || `(${index})`, result]
   })
   return Object.fromEntries(parsedOutputs)
 }
 
-const parseValue = (value, param) => {
+function parseValue (value, param) {
   const { type, internalType, components } = param
   if (type === 'tuple') {
     return parseObject(value, components)
@@ -45,13 +45,15 @@ const parseValue = (value, param) => {
       components,
     }
     return value.map(v => {
-      const parsed = parseValue(v, itemParam)
+      const parsed = parseValue.call(this, v, itemParam)
       return { value: parsed, type: itemParam.type, internalType: itemParam.internalType }
     })
   } else if (type.startsWith('uint') || type.startsWith('int')) {
     return value.toString()
   } else if (type.startsWith('byte')) {
     return { hex: value, utf8: utf8(value) }
+  } else if (type.startsWith('address')) {
+    return this.formatAddress(value)
   }
   return value
 }
@@ -59,6 +61,7 @@ const parseValue = (value, param) => {
 export default {
   txOptions,
   isValidAddress: address => ethers.utils.isAddress(address),
+  formatAddress: addr => addr,
   sign: {
     sha3: ethers.utils.keccak256
   },
