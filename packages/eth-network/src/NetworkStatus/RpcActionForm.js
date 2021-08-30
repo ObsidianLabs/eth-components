@@ -49,7 +49,7 @@ export default class RpcActionForm extends PureComponent {
         FormSection={AbiActionForm.FormSection}
         inModal
         smDropdown
-        selectorHeader
+        selectorHeader={null}
         selectorIcon='fas fa-exchange-alt'
         noGasOptions
         showResult
