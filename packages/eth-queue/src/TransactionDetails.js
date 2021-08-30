@@ -32,7 +32,7 @@ export default class TransactionDetails extends PureComponent {
       signer, params,
       value,
       confirmed,
-      tx: txObject,
+      transaction,
       result,
       error,
       receipt,
@@ -143,7 +143,7 @@ export default class TransactionDetails extends PureComponent {
     } else if (selected === 'tx') {
       return (
         <Highlight language='javascript' className='pre-box bg2 pre-wrap break-all small my-0' element='pre'>
-          <code>{JSON.stringify(txObject, null, 2)}</code>
+          <code>{JSON.stringify(transaction, null, 2)}</code>
         </Highlight>
       )
     } else if (selected === 'receipt') {
@@ -216,7 +216,7 @@ export default class TransactionDetails extends PureComponent {
       { key: 'basic', text: 'Basic' },
       { key: 'params', text: 'Parameters' },
     ]
-    if (tx.data?.tx) {
+    if (tx.data?.transaction) {
       options.push({ key: 'tx', text: 'Tx' })
     }
     if (tx.data?.receipt) {
