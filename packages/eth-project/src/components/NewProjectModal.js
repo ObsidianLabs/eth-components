@@ -13,8 +13,8 @@ import fileOps from '@obsidians/file-ops'
 import notification from '@obsidians/notification'
 
 import { NewProjectModal } from '@obsidians/workspace'
-import { DockerImageInputSelector } from '@obsidians/docker'
-import compilerManager from '@obsidians/compiler'
+
+import FrameworkSelector from './FrameworkSelector'
 
 const openZeppelinVersions = [
   { id: 'v4.2.0', display: 'v4.2.0' },
@@ -33,55 +33,23 @@ const openZeppelinVersions = [
   // { id: 'v2.0.0', display: 'v2.0.0' },
 ]
 
-const frameworkNames = {
-  truffle: 'Truffle',
-  hardhat: 'Hardhat',
-  waffle: 'Waffle',
-  'truffle-docker': `Dockerized ${process.env.COMPILER_NAME}`,
-}
-
-const truffleVersions = [
-  { id: 'v5.4.6', display: 'v5.4.6' },
-  { id: 'v5.3.14', display: 'v5.3.13' },
-  { id: 'v5.2.6', display: 'v5.2.6' },
-  { id: 'v5.1.67', display: 'v5.1.67' },
-  { id: 'v5.0.43', display: 'v5.0.43' },
-  { id: 'v4.1.13', display: 'v4.1.13' },
-]
-
-const hardhatVersions = [
-  { id: 'v2.5.0', display: 'v2.5.0' },
-  { id: 'v2.4.3', display: 'v2.4.3' },
-  { id: 'v2.3.3', display: 'v2.3.3' },
-  { id: 'v2.2.1', display: 'v2.2.1' },
-]
-
-const waffleVersions = [
-  { id: 'v3.4.0', display: 'v3.4.0' },
-  { id: 'v3.3.0', display: 'v3.3.0' },
-  { id: 'v3.2.2', display: 'v3.2.2' },
-  { id: 'v3.1.2', display: 'v3.1.2' },
-]
-
 export default class ExtendedNewProjectModal extends NewProjectModal {
   constructor (props) {
     super(props)
 
     this.state = {
       ...this.state,
-      framework: 'truffle',
+      framework: props.defaultFramework,
       npmClient: 'npm',
-      truffleVersion: 'v5.4.6',
-      hardhatVersion: 'v2.5.0',
-      waffleVersion: 'v3.4.0',
-      truffleDockerVersion: '',
       openZeppelinVersion: 'v4.2.0',
     }
+
+    this.framework = React.createRef()
   }
 
   componentDidUpdate () {
     const { group, framework } = this.state
-    if (group === 'Truffle' && framework !== 'truffle-docker') {
+    if (group === process.env.COMPILER_NAME && framework !== 'truffle-docker') {
       this.setState({ framework: 'truffle-docker' })
     }
   }
@@ -93,19 +61,19 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     }
 
     const {
+      remote,
       framework,
       npmClient,
-      truffleVersion,
-      hardhatVersion,
-      waffleVersion,
-      truffleDockerVersion,
       openZeppelinVersion,
     } = this.state
-    const compilerName = frameworkNames[framework]
-    const compilerVersion = framework === 'truffle-docker' ? truffleDockerVersion : this.state[`${framework}Version`]
 
-    if (this.state.remote) {
-      return super.createProject({ projectRoot, name, template, framework, compilerVersion: truffleDockerVersion })
+    const {
+      name: compilerName,
+      version: compilerVersion,
+    } = this.framework.current.getNameAndVersion(framework, remote)
+
+    if (remote) {
+      return super.createProject({ projectRoot, name, template, framework, compilerVersion })
     }
 
     if (!this.props.noCompilerOption && !compilerVersion) {
@@ -115,7 +83,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
     if (group === process.env.COMPILER_NAME) {
       this.setState({ showTerminal: true })
-      if (!truffleDockerVersion) {
+      if (!compilerVersion) {
         notification.error('Cannot Create the Project', `Please select a version for ${process.env.COMPILER_NAME}.`)
         return false
       }
@@ -126,7 +94,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         `--name ${process.env.PROJECT}-create-project`,
         `-v "${projectDir}:/project/${name}"`,
         `-w "/project/${name}"`,
-        `${process.env.DOCKER_IMAGE_COMPILER}:${truffleDockerVersion}`,
+        `${process.env.DOCKER_IMAGE_COMPILER}:${compilerVersion}`,
         `${process.env.COMPILER_EXECUTABLE_NAME} unbox ${template}`,
       ].join(' ')
 
@@ -142,7 +110,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         deploy: './build/contracts/MetaCoin.json',
         framework: 'truffle',
         compilers: {
-          [process.env.COMPILER_VERSION_KEY]: truffleDockerVersion,
+          [process.env.COMPILER_VERSION_KEY]: compilerVersion,
           solc: 'default'
         }
       }
@@ -172,7 +140,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       return false
     }
 
-    if (group === 'open zeppelin' || framework === 'truffle' || framework === 'hardhat' || framework === 'waffle') {
+    if (group === 'open zeppelin' || framework !== 'truffle-docker') {
       this.setState({ showTerminal: true })
       const result = await this.terminal.current.exec(`${npmClient} init -y`, { cwd: projectRoot })
       if (result.code) {
@@ -189,25 +157,19 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         return false
       }
     }
-    if (framework === 'truffle') {
-      const result = await this.terminal.current.exec(`${npmClient} ${installCommand} truffle@${truffleVersion}`, { cwd: projectRoot })
-      if (result.code) {
-        notification.error('Fail to Install Truffle')
-        return false
-      }
-    } else if (framework === 'hardhat') {
-      const result = await this.terminal.current.exec(`${npmClient} ${installCommand} hardhat@${hardhatVersion} @nomiclabs/hardhat-waffle ethereum-waffle chai @nomiclabs/hardhat-ethers ethers`, { cwd: projectRoot })
-      if (result.code) {
-        notification.error('Fail to Install Hardhat')
-        return false
-      }
-    } else if (framework === 'waffle') {
-      const result = await this.terminal.current.exec(`${npmClient} ${installCommand} ethereum-waffle@${waffleVersion} ethers`, { cwd: projectRoot })
-      if (result.code) {
-        notification.error('Fail to Install Waffle')
-        return false
-      }
+
+    if (!await this.framework.current.installDependencies({
+      framework,
+      npmClient,
+      installCommand,
+      compilerVersion,
+      projectRoot,
+      terminal: this.terminal.current,
+    })) {
+      return false
     }
+    
+
     if (framework !== 'truffle-docker') {
       result = await super.createProject({ name, projectRoot, framework }, 'post')
       if (!result) {
@@ -224,65 +186,11 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     return null
   }
 
-  renderFrameworkSelector = () => {
-    const { framework, truffleVersion, hardhatVersion, waffleVersion, truffleDockerVersion } = this.state
-    if (framework === 'truffle') {
-      return (
-        <DropdownInput
-          label='Truffle Version'
-          options={truffleVersions}
-          value={truffleVersion}
-          onChange={truffleVersion => this.setState({ truffleVersion })}
-        />
-      )
-    } else if (framework === 'hardhat') {
-      return (
-        <DropdownInput
-          label='Hardhat Version'
-          options={hardhatVersions}
-          value={hardhatVersion}
-          onChange={hardhatVersion => this.setState({ hardhatVersion })}
-        />
-      )
-    } else if (framework === 'waffle') {
-      return (
-        <DropdownInput
-          label='Waffle Version'
-          options={waffleVersions}
-          value={waffleVersion}
-          onChange={waffleVersion => this.setState({ waffleVersion })}
-        />
-      )
-    } else if (framework === 'truffle-docker') {
-      return (
-        <DockerImageInputSelector
-          key='truffle-selector'
-          channel={compilerManager.truffle}
-          label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
-          noneName={`${process.env.COMPILER_NAME}`}
-          modalTitle={`${process.env.COMPILER_NAME} Manager`}
-          downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-          selected={truffleDockerVersion}
-          onSelected={truffleDockerVersion => this.setState({ truffleDockerVersion })}
-        />
-      )
-    }
-    return null
-  }
- 
   renderOtherOptions = () => {
+    const { FrameworkSelector } = this.props
     const { remote, group, openZeppelinVersion, framework, npmClient } = this.state
     if (this.props.noCompilerOption || remote) {
-      return null
-    }
-
-    const options = [{ key: 'truffle-docker', text: frameworkNames['truffle-docker'] }]
-    if (group !== 'Truffle') {
-      if (!process.env.REACT_APP_NO_OTHER_FRAMEWORKS) {
-        options.unshift({ key: 'waffle', text: frameworkNames.waffle })
-        options.unshift({ key: 'hardhat', text: frameworkNames.hardhat })
-      }
-      options.unshift({ key: 'truffle', text: frameworkNames.truffle })
+      return this.renderTemplate(true)
     }
 
     return (
@@ -303,30 +211,19 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
           </div>
           }
         </div>
-        <div className='row'>
-          <div className='col-12 col-sm-8'>
-            <FormGroup>
-              <Label>Framework</Label>
-              <div>
-                <ButtonOptions
-                  className='mb-0'
-                  options={options}
-                  selected={framework}
-                  onSelect={framework => this.setState({ framework })}
-                />
-              </div>
-            </FormGroup>
-          </div>
-          <div className='col-12 col-sm-4'>
-            {this.renderFrameworkSelector()}
-          </div>
-        </div>
+        <FrameworkSelector
+          ref={this.framework}
+          framework={framework}
+          group={group}
+          onSelectFramework={framework => this.setState({ framework })}
+        />
         {
             (group === 'open zeppelin' || framework !== 'truffle-docker') &&
             <FormGroup>
-              <Label>Npm Client</Label>
+              <Label>Npm client</Label>
               <div>
                 <ButtonOptions
+                  size='sm'
                   className='mb-0'
                   options={[
                     { key: 'npm', text: 'npm' },
@@ -368,5 +265,7 @@ const templates = [
 
 ExtendedNewProjectModal.defaultProps = {
   defaultTemplate: 'coin',
+  defaultFramework: 'truffle',
   templates,
+  FrameworkSelector,
 }
