@@ -103,7 +103,7 @@ export default class FrameworkSelector extends PureComponent {
           <Label>Truffle version</Label>
           <DropdownInput
             size='sm'
-            label='Truffle version'
+            label=''
             options={truffleVersions}
             value={truffleVersion}
             onChange={truffleVersion => this.setState({ truffleVersion })}
@@ -116,7 +116,7 @@ export default class FrameworkSelector extends PureComponent {
           <Label>Hardhat version</Label>
           <DropdownInput
             size='sm'
-            label='Hardhat version'
+            label=''
             options={hardhatVersions}
             value={hardhatVersion}
             onChange={hardhatVersion => this.setState({ hardhatVersion })}
@@ -129,6 +129,7 @@ export default class FrameworkSelector extends PureComponent {
           <Label>Waffle version</Label>
           <DropdownInput
             size='sm'
+            label=''
             options={waffleVersions}
             value={waffleVersion}
             onChange={waffleVersion => this.setState({ waffleVersion })}
