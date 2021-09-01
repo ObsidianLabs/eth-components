@@ -49,8 +49,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
   componentDidUpdate () {
     const { group, framework } = this.state
-    if (group === process.env.COMPILER_NAME && framework !== 'truffle-docker') {
-      this.setState({ framework: 'truffle-docker' })
+    if (group === process.env.COMPILER_NAME && !framework.endsWith('-docker')) {
+      this.setState({ framework: `${process.env.COMPILER_EXECUTABLE_NAME}-docker` })
     }
   }
 
@@ -73,7 +73,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     } = this.framework.current.getNameAndVersion(framework, remote)
 
     if (remote) {
-      return super.createProject({ projectRoot, name, template, framework, compilerVersion })
+      return super.createProject({ projectRoot, name, template, compilerVersion })
     }
 
     if (!this.props.noCompilerOption && !compilerVersion) {
@@ -135,12 +135,12 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       }
     }
 
-    let result = await super.createProject({ projectRoot, name, template, framework, compilerVersion, notify: false })
+    let result = await super.createProject({ projectRoot, name, template, framework, npmClient, compilerVersion, notify: false })
     if (!result) {
       return false
     }
 
-    if (group === 'open zeppelin' || framework !== 'truffle-docker') {
+    if (group === 'open zeppelin' || !framework.endsWith('-docker')) {
       this.setState({ showTerminal: true })
       const result = await this.terminal.current.exec(`${npmClient} init -y`, { cwd: projectRoot })
       if (result.code) {
@@ -170,7 +170,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     }
     
 
-    if (framework !== 'truffle-docker') {
+    if (!framework.endsWith('-docker')) {
       result = await super.createProject({ name, projectRoot, framework }, 'post')
       if (!result) {
         return false
@@ -218,7 +218,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
           onSelectFramework={framework => this.setState({ framework })}
         />
         {
-            (group === 'open zeppelin' || framework !== 'truffle-docker') &&
+            (group === 'open zeppelin' || !framework.endsWith('-docker')) &&
             <FormGroup>
               <Label>Npm client</Label>
               <div>

@@ -12,7 +12,8 @@ export default class ExtendedProjectSettings extends ProjectSettings {
     const settings = {
       main: rawSettings.main || './contracts/Contract.sol',
       deploy: rawSettings.deploy,
-      framework: rawSettings.framework || 'truffle-docker',
+      framework: rawSettings.framework || `${process.env.COMPILER_VERSION_KEY}-docker`,
+      npmClient: rawSettings.npmClient,
       compilers: {
         ...compilers,
         [process.env.COMPILER_VERSION_KEY]: compilers[process.env.COMPILER_VERSION_KEY] || '',
@@ -29,6 +30,9 @@ export default class ExtendedProjectSettings extends ProjectSettings {
     }
     if (rawSettings.language) {
       settings.language = rawSettings.language
+    }
+    if (!settings.npmClient) {
+      delete settings.npmClient
     }
     return settings
   }

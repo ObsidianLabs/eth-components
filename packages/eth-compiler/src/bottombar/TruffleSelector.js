@@ -11,7 +11,7 @@ export default () => {
   React.useEffect(BaseProjectManager.effect(`settings:framework`, setFramework), [])
   React.useEffect(BaseProjectManager.effect(`settings:compilers.${process.env.COMPILER_VERSION_KEY}`, onSelected), [])
 
-  if (framework !== 'truffle-docker') {
+  if (!framework.endsWith('-docker')) {
     return null
   }
 

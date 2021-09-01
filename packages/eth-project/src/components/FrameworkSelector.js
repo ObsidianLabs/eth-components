@@ -99,47 +99,58 @@ export default class FrameworkSelector extends PureComponent {
     const { truffleVersion, hardhatVersion, waffleVersion, truffleDockerVersion } = this.state
     if (framework === 'truffle') {
       return (
-        <DropdownInput
-          size='sm'
-          label='Truffle version'
-          options={truffleVersions}
-          value={truffleVersion}
-          onChange={truffleVersion => this.setState({ truffleVersion })}
-        />
+        <FormGroup className='mb-2'>
+          <Label>Truffle version</Label>
+          <DropdownInput
+            size='sm'
+            label='Truffle version'
+            options={truffleVersions}
+            value={truffleVersion}
+            onChange={truffleVersion => this.setState({ truffleVersion })}
+          />
+        </FormGroup>
       )
     } else if (framework === 'hardhat') {
       return (
-        <DropdownInput
-          size='sm'
-          label='Hardhat version'
-          options={hardhatVersions}
-          value={hardhatVersion}
-          onChange={hardhatVersion => this.setState({ hardhatVersion })}
-        />
+        <FormGroup className='mb-2'>
+          <Label>Hardhat version</Label>
+          <DropdownInput
+            size='sm'
+            label='Hardhat version'
+            options={hardhatVersions}
+            value={hardhatVersion}
+            onChange={hardhatVersion => this.setState({ hardhatVersion })}
+          />
+        </FormGroup>
       )
     } else if (framework === 'waffle') {
       return (
-        <DropdownInput
-          size='sm'
-          label='Waffle version'
-          options={waffleVersions}
-          value={waffleVersion}
-          onChange={waffleVersion => this.setState({ waffleVersion })}
-        />
+        <FormGroup className='mb-2'>
+          <Label>Waffle version</Label>
+          <DropdownInput
+            size='sm'
+            options={waffleVersions}
+            value={waffleVersion}
+            onChange={waffleVersion => this.setState({ waffleVersion })}
+          />
+        </FormGroup>
       )
     } else if (framework === 'truffle-docker') {
       return (
-        <DockerImageInputSelector
-          size='sm'
-          key='truffle-selector'
-          channel={compilerManager.truffle}
-          label={`${process.env.COMPILER_NAME_IN_LABEL} version`}
-          noneName={`${process.env.COMPILER_NAME}`}
-          modalTitle={`${process.env.COMPILER_NAME} Manager`}
-          downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
-          selected={truffleDockerVersion}
-          onSelected={truffleDockerVersion => this.setState({ truffleDockerVersion })}
-        />
+        <FormGroup className='mb-2'>
+          <Label>{`${process.env.COMPILER_NAME_IN_LABEL} version`}</Label>
+          <DockerImageInputSelector
+            size='sm'
+            key='truffle-selector'
+            label=''
+            channel={compilerManager.truffle}
+            noneName={`${process.env.COMPILER_NAME}`}
+            modalTitle={`${process.env.COMPILER_NAME} Manager`}
+            downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
+            selected={truffleDockerVersion}
+            onSelected={truffleDockerVersion => this.setState({ truffleDockerVersion })}
+          />
+        </FormGroup>
       )
     }
     return null

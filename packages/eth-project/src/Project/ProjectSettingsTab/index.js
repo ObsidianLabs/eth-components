@@ -78,7 +78,6 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               onChange={this.onChange('deploy')}
               placeholder={`Path to the built contract to deploy`}
             />
-            <h4 className='mt-4'>Compilers</h4>
             {
               !projectManager.remote &&
               <FormGroup>
@@ -100,6 +99,24 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 </CustomInput>
               </FormGroup>
             }
+            {
+              !framework.endsWith('-docker') &&
+              <FormGroup>
+                <Label>Npm client</Label>
+                <CustomInput
+                  id='settings-npm-client'
+                  type='select'
+                  className='bg-black'
+                  value={projectSettings?.get('npmClient')}
+                  onChange={event => this.onChange('npmClient')(event.target.value)}
+                >
+                  <option value='npm'>npm</option>
+                  <option value='yarn'>yarn</option>
+                  <option value='cnpm'>cnpm</option>
+                </CustomInput>
+              </FormGroup>
+            }
+            <h4 className='mt-4'>Compilers</h4>
             {
               !projectManager.remote && framework === 'truffle' &&
               <DockerImageInputSelector

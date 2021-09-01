@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 
 import {
   DropdownToolbarButton,
@@ -11,7 +11,7 @@ export default function ScriptsButton ({ projectManager }) {
   const [options, setOptions] = React.useState([])
 
   React.useEffect(BaseProjectManager.effect(`settings:framework`, framework => {
-    const isNodeProject = ['truffle', 'hardhat', 'waffle'].indexOf(framework) > -1
+    const isNodeProject = !framework.endsWith('-docker')
     setNodeProject(isNodeProject)
   }), [])
 

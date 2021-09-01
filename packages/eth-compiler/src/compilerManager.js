@@ -154,7 +154,7 @@ export class CompilerManager {
     const projectRoot = this.projectRoot
     CompilerManager.button.setState({ building: 'checking' })
 
-    if (framework === 'truffle-docker') {
+    if (framework.endsWith('-docker')) {
       if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
         notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
         CompilerManager.button.setState({ building: false })
@@ -284,17 +284,14 @@ export class CompilerManager {
   }
 
   generateBuildCmd ({ projectRoot, settings, sourceFile }) {
-    const { framework, compilers } = settings
+    const { framework, npmClient, compilers } = settings
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
 
-    if (framework === 'truffle') {
-      return 'npx truffle compile'
-    } else if (framework === 'hardhat') {
-      return 'npx hardhat compile --config hardhat.config.js'
-    } else if (framework === 'waffle') {
-      return 'npx waffle waffle.js'
+    if (!framework.endsWith('-docker')) {
+      const npmRun = npmClient === 'yarn' ? npmClient : `${npmClient} run`
+      return `${npmRun} build`
     }
-
+    
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
       `-v "${fileOps.current.homePath}/.config/truffle/compilers:/root/.config/truffle/compilers"`,
