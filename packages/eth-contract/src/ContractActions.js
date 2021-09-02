@@ -86,7 +86,9 @@ export default class ContractActions extends AbiActionForm {
     const signer = this.state.signer
 
     const options = {}
-    networkManager.sdk.utils.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    networkManager.sdk.utils.txOptions?.list.forEach(opt => {
+      options[opt.name] = this.state[opt.name] || opt.default || undefined
+    })
 
     let value
     try {
