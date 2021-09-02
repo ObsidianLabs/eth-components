@@ -18,6 +18,8 @@ import notification from '@obsidians/notification'
 import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
 
+import NewProjectModal from '../../components/NewProjectModal'
+
 export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   static contextType = WorkspaceContext
 
@@ -54,6 +56,9 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
     const { noSolc } = this.props
     const { projectRoot, projectManager, projectSettings } = this.context
     const framework = projectSettings?.get('framework')
+
+    const frameworks = Object.entries(NewProjectModal.defaultProps.FrameworkSelector.frameworkNames)
+      .map(([key, name]) => ({ key, name }))
 
     return (
       <div className='custom-tab bg2'>
@@ -92,10 +97,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                     this.onChange('framework')(event.target.value)
                   }}
                 >
-                  <option value='truffle'>Truffle</option>
-                  <option value='hardhat'>Hardhat</option>
-                  <option value='waffle'>Waffle</option>
-                  <option value='truffle-docker'>Dockerized Truffle</option>
+                  {frameworks.map(f => <option key={f.key} value={f.key}>{f.name}</option>)}
                 </CustomInput>
               </FormGroup>
             }

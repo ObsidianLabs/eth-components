@@ -42,6 +42,8 @@ const waffleVersions = [
 ]
 
 export default class FrameworkSelector extends PureComponent {
+  static frameworkNames = frameworkNames
+
   constructor (props) {
     super(props)
 
