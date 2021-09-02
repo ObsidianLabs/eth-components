@@ -99,7 +99,6 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       ].join(' ')
 
       const result = await this.terminal.current.exec(cmd)
-
       if (result.code) {
         notification.error('Cannot Create the Project')
         return false
@@ -108,7 +107,8 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       const config = {
         main: './contracts/MetaCoin.sol',
         deploy: './build/contracts/MetaCoin.json',
-        framework: 'truffle',
+        framework: `${process.env.COMPILER_EXECUTABLE_NAME}-docker`,
+        npmClient,
         compilers: {
           [process.env.COMPILER_VERSION_KEY]: compilerVersion,
           solc: 'default'
@@ -144,7 +144,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       this.setState({ showTerminal: true })
       const result = await this.terminal.current.exec(`${npmClient} init -y`, { cwd: projectRoot })
       if (result.code) {
-        notification.error('Cannot Create the Project', 'Please make sure you have node installed.')
+        notification.error('Cannot Create the Project', 'Please make sure you have node.js installed.')
         return false
       }
     }
