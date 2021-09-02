@@ -111,6 +111,7 @@ export default class SignRequestModal extends PureComponent {
           icon='fas fa-coins'
           value={this.state.value}
           onChange={value => this.setState({ value })}
+          disabled
           placeholder='Default: 0'
         />
         <div className='row'>
@@ -123,8 +124,9 @@ export default class SignRequestModal extends PureComponent {
               icon={option.icon}
               value={this.state[option.name]}
               onChange={value => this.setState({ [option.name]: value })}
+              disabled
               placeholder={option.placeholder}
-            />
+          />
           ))
         }
         </div>
