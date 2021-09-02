@@ -23,21 +23,21 @@ const utf8 = hex => {
   }
 }
 
-function parseObject (values, abi) {
+function parseObject (values, abi, chainId) {
   const parsedOutputs = abi.map((param, index) => {
     const value = values[index]
     const { name, type, internalType } = param
-    const parsed = parseValue.call(this, value, param, index)
+    const parsed = parseValue.call(this, value, param, chainId)
     const result = { type, internalType, value: parsed }
     return [name || `(${index})`, result]
   })
   return Object.fromEntries(parsedOutputs)
 }
 
-function parseValue (value, param) {
+function parseValue (value, param, chainId) {
   const { type, internalType, components } = param
   if (type === 'tuple') {
-    return parseObject(value, components)
+    return parseObject.call(this, value, components, chainId)
   } else if (type.endsWith(']')) {
     const itemParam = {
       type: type.replace(/\[\d*\]/, ''),
@@ -45,7 +45,7 @@ function parseValue (value, param) {
       components,
     }
     return value.map(v => {
-      const parsed = parseValue.call(this, v, itemParam)
+      const parsed = parseValue.call(this, v, itemParam, chainId)
       return { value: parsed, type: itemParam.type, internalType: itemParam.internalType }
     })
   } else if (type.startsWith('uint') || type.startsWith('int')) {
@@ -53,7 +53,7 @@ function parseValue (value, param) {
   } else if (type.startsWith('byte')) {
     return { hex: value, utf8: utf8(value) }
   } else if (type.startsWith('address')) {
-    return this.formatAddress(value)
+    return this.formatAddress(value, chainId)
   }
   return value
 }
