@@ -6,7 +6,7 @@ module.exports = class SdkChannel extends IpcChannel {
   constructor (keypairManager) {
     super('sdk')
     this.etherscan = new EtherscanChannel()
-    this.rpcServer = new RpcServer(EthersClient, keypairManager)
+    this.rpcServer = new RpcServer(EthersClient, { keypairManager })
   }
 
   setNetwork (option) {

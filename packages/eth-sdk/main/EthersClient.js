@@ -17,6 +17,11 @@ module.exports = class EthersClient {
 
   async sign (tx, secret) {
     const wallet = this.walletFrom(secret)
+    tx.type = tx.type ? parseInt(tx.type) : 0
+    tx.from = wallet.address
+    tx.nonce = await this.rpc('eth_getTransactionCount', [tx.from, 'latest'])
+    tx.gasLimit = tx.gas
+    delete tx.gas
     const populated = await wallet.populateTransaction(tx)
     return await wallet.signTransaction(populated)
   }

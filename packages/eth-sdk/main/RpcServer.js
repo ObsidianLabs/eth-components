@@ -2,12 +2,13 @@ const fastify = require('fastify')({ logger: false })
 const { JsonRpcEngine, createAsyncMiddleware } = require('json-rpc-engine')
 
 module.exports = class RpcServer {
-  constructor (Client, keypairManager, rpcMap) {
+  constructor (Client, options) {
     this.Client = Client
-    this.keypairManager = keypairManager
+    this.keypairManager = options.keypairManager
+    this.keypairFilter = options.keypairFilter
 
     this.client = null
-    this.engine = this._startJsonRpcEngine(rpcMap)
+    this.engine = this._startJsonRpcEngine(options.rpcMap)
     this._start(this.engine)
   }
 
@@ -28,7 +29,10 @@ module.exports = class RpcServer {
       if (!this.client) {
         throw new Error('No network is running.')
       } else if (req.method === 'eth_accounts') {
-        const keypairs = await this.keypairManager.get()
+        let keypairs = await this.keypairManager.get()
+        if (this.keypairFilter) {
+          keypairs = keypairs.filter(keypair => this.keypairFilter(keypair, this.client))
+        }
         res.result = keypairs.map(k => k.address)
       } else if (req.method === 'eth_sendTransaction') {
         const tx = await this.keypairManager.call({ ...req, method: 'signTransaction' })
@@ -36,7 +40,8 @@ module.exports = class RpcServer {
         if (!kp) {
           throw new Error(`No keypair for ${tx.from}`)
         }
-        const signed = await this.client.sign(tx, kp.secret)
+        // const signed = await this.client.sign(tx, kp.secret)
+        const signed = await this.client.sign(req.params[0], kp.secret)
         res.result = await this.client.sendRawTransaction(signed)
       } else {
         res.result = await this.client.rpc(req.method, req.params)
