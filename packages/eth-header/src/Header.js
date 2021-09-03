@@ -77,7 +77,9 @@ export default class Header extends PureComponent {
       }
     })
     if (dropdownBrowserAccounts.length) {
-      dropdownBrowserAccounts.unshift({ header: networkManager.browserExtension.name.toLowerCase() })
+      if (networkManager.browserExtension) {
+        dropdownBrowserAccounts.unshift({ header: networkManager.browserExtension.name.toLowerCase() })
+      }
       dropdownBrowserAccounts.unshift({ divider: true })
     }
 
