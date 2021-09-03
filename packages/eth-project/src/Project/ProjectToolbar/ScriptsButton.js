@@ -23,10 +23,14 @@ export default function ScriptsButton ({ projectManager }) {
       .then(packageJson => {
         const scripts = packageJson.scripts
         if (scripts) {
-          return Object.keys(scripts).map(key => {
-            const cmd = `yarn ${key}`
-            return { key, onClick: () => projectManager.executeInTerminal(cmd) }
-          })
+          return Object.keys(scripts).map(key => ({
+            key,
+            onClick: () => {
+              const npmClient = projectManager.projectSettings.get('npmClient')
+              const npmRun = npmClient === 'yarn' ? npmClient : `${npmClient} run`
+              projectManager.executeInTerminal(`${npmRun} ${key}`)
+            }
+          }))
         }
         return []
       })
