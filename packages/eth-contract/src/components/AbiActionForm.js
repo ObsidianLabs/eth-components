@@ -177,26 +177,15 @@ export default class AbiActionForm extends PureComponent {
 
   renderResult = () => {
     const { FormSection, showResult } = this.props
-    const { format } = this.state
     if (!showResult) {
       return null
     }
 
-    let title = 'Result', badge
+    let title = 'Result'
+    let badge = null
     if (this.state.actionResult) {
       title = <span key='success'>Result<i className='fas fa-check-circle text-success ml-1' /></span>
-      badge = (
-        <div className='badge-group'>
-          <Badge
-            className={format === 'pretty' ? 'bg-primary' : 'bg-hover'}
-            onClick={() => this.setState({ format: 'pretty' })}
-          >Pretty</Badge>
-          <Badge
-            className={format === 'raw' ? 'bg-primary' : 'bg-hover'}
-            onClick={() => this.setState({ format: 'raw' })}
-          >Raw</Badge>
-        </div>
-      )
+      badge = this.renderResultBadge()
     } else if (this.state.actionError) {
       title = <span key='success'>Result<i className='fas fa-exclamation-triangle text-danger ml-1' /></span>
     }
@@ -205,6 +194,25 @@ export default class AbiActionForm extends PureComponent {
       <FormSection title={title} right={badge}>
         {this.renderResultContent()}
       </FormSection>
+    )
+  }
+
+  renderResultBadge = () => {
+    if (this.props.noResultBadge) {
+      return null
+    }
+    const { format } = this.state
+    return (
+      <div className='badge-group'>
+        <Badge
+          className={format === 'pretty' ? 'bg-primary' : 'bg-hover'}
+          onClick={() => this.setState({ format: 'pretty' })}
+        >Pretty</Badge>
+        <Badge
+          className={format === 'raw' ? 'bg-primary' : 'bg-hover'}
+          onClick={() => this.setState({ format: 'raw' })}
+        >Raw</Badge>
+      </div>
     )
   }
 

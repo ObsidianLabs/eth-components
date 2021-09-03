@@ -53,6 +53,7 @@ export default class RpcActionForm extends PureComponent {
         selectorIcon='fas fa-exchange-alt'
         noGasOptions
         showResult
+        noResultBadge
         actions={networkManager.sdk?.rpc.methods || []}
         executeAction={this.executeAction}
       />
