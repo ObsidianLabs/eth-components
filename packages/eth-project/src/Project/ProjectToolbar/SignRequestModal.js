@@ -24,7 +24,10 @@ export default class SignRequestModal extends PureComponent {
 
   openModal = async tx => {
     this.tx = tx
-    const state = { from: tx.from, to: tx.to }
+    const state = {
+      from: networkManager.sdk?.utils.formatAddress(tx.from, networkManager.sdk?.chainId),
+      to: tx.to,
+    }
     networkManager.sdk?.utils.txOptions?.list.forEach(option => {
       if (tx[option.name]) {
         state[option.name] = BigInt(tx[option.name]).toString()
