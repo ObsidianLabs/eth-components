@@ -1,3 +1,16 @@
+import { IpcChannel } from '@obsidians/ipc'
+import notification from '@obsidians/notification'
+
+let current
+const channel = new IpcChannel('sdk')
+channel.off('error')
+channel.on('error', msg => {
+  if (current) {
+    current.dismiss()
+  }
+  current = notification.error('Error', msg)
+})
+
 export default function makeSdk ({
   kp,
   networks,
