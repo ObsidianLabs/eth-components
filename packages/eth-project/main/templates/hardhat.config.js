@@ -29,6 +29,7 @@ module.exports = {
     obsidians: {
       url: 'http://localhost:62743',
       accounts: 'remote',
+      timeout: 0,
     },
   },
 }
