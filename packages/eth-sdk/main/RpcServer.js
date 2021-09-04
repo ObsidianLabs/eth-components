@@ -49,9 +49,14 @@ module.exports = class RpcServer {
           res.result = await this.client.rpc(req.method, req.params)
         }
       } catch (err) {
-        this.channel.send('error', err.message)
-        end(err)
-        return
+        if (err.body) {
+          console.warn(err.body)
+          end(err)
+        } else {
+          this.channel.send('error', err.message)
+          end(err)
+          return
+        }
       }
       
       end()
@@ -63,9 +68,6 @@ module.exports = class RpcServer {
   _start (engine, port = 62743) {
     fastify.post('/', function (request, reply) {
       engine.handle(request.body, function (err, response) {
-        if (err) {
-          console.warn(err)
-        }
         reply.send(response)
       })
     })
