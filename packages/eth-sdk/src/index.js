@@ -24,5 +24,13 @@ export default makeSdk({
   rpc,
 })
 
-export { makeSdk, utils }
+export {
+  makeSdk,
+  kp,
+  EthersClient,
+  EthersContract,
+  EthTxManager,
+  utils,
+  rpc,
+}
 export { default as redux } from './redux'
