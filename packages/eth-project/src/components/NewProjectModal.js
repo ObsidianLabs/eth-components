@@ -67,14 +67,14 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       openZeppelinVersion,
     } = this.state
 
+    if (remote) {
+      return super.createProject({ projectRoot, name, template, compilerVersion })
+    }
+
     const {
       name: compilerName,
       version: compilerVersion,
     } = this.framework.current.getNameAndVersion(framework, remote)
-
-    if (remote) {
-      return super.createProject({ projectRoot, name, template, compilerVersion })
-    }
 
     if (!this.props.noCompilerOption && !compilerVersion) {
       notification.error('Cannot Create the Project', `Please select a version for ${compilerName}.`)
