@@ -26,7 +26,7 @@ export default class EthersClient {
       }
     }
     
-    this.etherscan = new EtherscanProxy(networkId)
+    this.explorer = new ExplorerProxy(networkId)
 
     if (platform.isDesktop) {
       this.channel = new IpcChannel('sdk')
@@ -97,7 +97,7 @@ export default class EthersClient {
       return { length: list.length, list }
     }
 
-    const result = await this.etherscan.getHistory(address, page, size)
+    const result = await this.explorer.getHistory(address, page, size)
     return { length: 0, list: result.result }
   }
 
@@ -144,7 +144,7 @@ export default class EthersClient {
   }
 
   async _getTokenTotalSupply (address) {
-    const result = await this.etherscan.getTokenTotalSupply(address)
+    const result = await this.explorer.getTokenTotalSupply(address)
     return result.result
   }
 
@@ -154,10 +154,10 @@ export default class EthersClient {
 }
 
 
-class EtherscanProxy {
+class ExplorerProxy {
   constructor (networkId) {
     this.networkId = networkId
-    this.channel = new IpcChannel('etherscan')
+    this.channel = new IpcChannel('explorer')
   }
 
   async getHistory (address, page = 0, size = 10) {
