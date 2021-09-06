@@ -13,13 +13,13 @@
   "scripts": {},
   "dependencies": {
     "@obsidians/ipc": "^0.3.0",
+    "@obsidians/keypair": "^0.3.0",
     "@obsidians/platform": "^0.3.0",
     "@obsidians/redux": "^0.3.0",
     "big.js": "^6.1.1",
     "ethers": "^5.4.4",
     "fastify": "^3.20.2",
-    "json-rpc-engine": "^6.1.0",
-    "url-parse": "^1.4.7"
+    "json-rpc-engine": "^6.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",

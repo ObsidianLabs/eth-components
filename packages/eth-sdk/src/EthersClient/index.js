@@ -31,6 +31,8 @@ export default class EthersClient {
     if (platform.isDesktop) {
       this.channel = new IpcChannel('sdk')
       this.channel.invoke('setNetwork', option)
+    } else {
+      this.channel = new IpcChannel()
     }
   }
 
@@ -73,9 +75,8 @@ export default class EthersClient {
   async getTransactions (address, page, size) {
     address = address.toLowerCase()
     if (this.networkId.startsWith('dev')) {
-      const { queue, uiState } = redux.getState()
-      const networkId = uiState.get('localNetwork').params.id
-      const txs = queue.getIn([networkId, 'txs'])
+      const { queue } = redux.getState()
+      const txs = queue.getIn([this.networkId, 'txs'])
       if (!txs) {
         return { length: 0, list: [] }
       }
