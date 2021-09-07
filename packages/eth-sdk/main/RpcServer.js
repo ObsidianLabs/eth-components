@@ -37,12 +37,19 @@ module.exports = class RpcServer {
           }
           res.result = keypairs.map(k => k.address)
         } else if (req.method === 'eth_sendTransaction') {
-          const tx = await this.keypairManager.call({ ...req, method: 'signTransaction' })
+          if (!req.params[0]) {
+            throw new Error('Empty transaction data')
+          }
+          let tx = req.params[0]
+          if (!tx.from || !tx.direct) {
+            tx = await this.keypairManager.call({ ...req, method: 'signTransaction' })
+          }
           const kp = await this.keypairManager.get(tx.from)
           if (!kp) {
             throw new Error(`No keypair for ${tx.from}`)
           }
           // const signed = await this.client.sign(tx, kp.secret)
+          delete req.params[0].direct
           const signed = await this.client.sign(req.params[0], kp.secret)
           res.result = await this.client.sendRawTransaction(signed)
         } else {
