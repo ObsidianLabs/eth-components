@@ -63,7 +63,7 @@ class ProjectChannel extends FileTreeChannel {
 
     copyRecursiveSync(templateFolder, projectRoot, { name, framework })
 
-    await this.writeFrameworkFiles({ projectRoot, framework, npmClient, compilerVersion })
+    await this.writeFrameworkFiles({ template, projectRoot, framework, npmClient, compilerVersion })
 
     return { projectRoot, name }
   }

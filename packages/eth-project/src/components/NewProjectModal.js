@@ -171,7 +171,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     
 
     if (!framework.endsWith('-docker')) {
-      result = await super.createProject({ name, projectRoot, framework }, 'post')
+      result = await super.createProject({ projectRoot, name, template, framework }, 'post')
       if (!result) {
         return false
       }

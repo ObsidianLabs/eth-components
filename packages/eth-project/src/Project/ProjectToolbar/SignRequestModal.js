@@ -35,7 +35,7 @@ export default class SignRequestModal extends PureComponent {
         state[option.name] = BigInt(tx[option.alias]).toString()
       }
     })
-    state.value = BigInt(tx.value || 0).toString()
+    state.value = networkManager.sdk.utils.unit.fromValue(tx.value || 0)
     state.data = tx.data
 
     this.setState(state)
@@ -57,7 +57,7 @@ export default class SignRequestModal extends PureComponent {
       tx.data = data
     }
     try {
-      tx.value = `0x${BigInt(value || 0).toString(16)}`
+      tx.value = `0x${BigInt(networkManager.sdk.utils.unit.toValue(value || 0)).toString(16)}`
     } catch {
       notification.error(`Invalid ${networkManager.symbol} to Send`, 'Please enter a valid number.')
       return
@@ -100,6 +100,7 @@ export default class SignRequestModal extends PureComponent {
           to
           ? <KeypairInputSelector
               label='To'
+              editable
               value={to}
               onChange={to => this.setState({ to })}
             />
