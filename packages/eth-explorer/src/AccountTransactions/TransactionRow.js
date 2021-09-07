@@ -17,7 +17,7 @@ export default class TransactionRow extends PureComponent {
     const { tx, owner } = this.props
 
     const amount = new Intl.NumberFormat().format(networkManager.sdk?.utils.unit.fromValue(tx.value))
-    const gasUsed = new Intl.NumberFormat().format(tx.gasUsed)
+    const gasUsed = tx.gasUsed ? new Intl.NumberFormat().format(tx.gasUsed) : ''
     const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
 
     return (
