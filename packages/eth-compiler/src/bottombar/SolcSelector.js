@@ -5,7 +5,6 @@ import { DropdownItem } from '@obsidians/ui-components'
 import notification from '@obsidians/notification'
 import { DockerImageSelector } from '@obsidians/docker'
 import { BaseProjectManager } from '@obsidians/workspace'
-import compilerManager from '../compilerManager'
 
 let n
 
@@ -34,7 +33,7 @@ export default props => {
 
   return (
     <DockerImageSelector
-      channel={compilerManager.solc}
+      channel={props.solc}
       disableAutoSelection
       size='sm'
       icon='fas fa-hammer'
