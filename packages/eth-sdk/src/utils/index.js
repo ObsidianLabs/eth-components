@@ -51,7 +51,7 @@ function parseValue (value, param, chainId) {
   } else if (type.startsWith('uint') || type.startsWith('int')) {
     return value.toString()
   } else if (type.startsWith('byte')) {
-    return { hex: value, utf8: utf8(value) }
+    return { hex: ethers.utils.hexlify(value), utf8: utf8(value) }
   } else if (type.startsWith('address')) {
     return this.formatAddress(value, chainId)
   }
