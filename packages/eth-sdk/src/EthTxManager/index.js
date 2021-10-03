@@ -56,11 +56,14 @@ export default class EthTxManager {
   }
 
   async estimate ({ tx }) {
-    const gasPrice = await this.client.callRpc('eth_gasPrice', [])
+    // const gasPrice = await this.client.callRpc('eth_gasPrice', [])
     const result = await this.provider.estimateGas(tx)
+    const feeData = await this.provider.getFeeData()
+
     return {
       gasLimit: result.toString(),
-      gasPrice: BigInt(gasPrice).toString(10),
+      maxFeePerGas: BigInt(feeData.maxFeePerGas).toString(10),
+      maxPriorityFeePerGas: BigInt(feeData.maxPriorityFeePerGas).toString(10),
     }
   }
 
@@ -102,10 +105,19 @@ export default class EthTxManager {
 
       delete transaction.confirmations
       transaction.value = transaction.value.toString()
-      transaction.gasPrice = transaction.gasPrice.toString()
+      if (transaction.gasPrice) {
+        transaction.gasPrice = transaction.gasPrice.toString()
+      }
+      if (transaction.maxFeePerGas) {
+        transaction.maxFeePerGas = transaction.maxFeePerGas.toString()
+      }
+      if (transaction.maxPriorityFeePerGas) {
+        transaction.maxPriorityFeePerGas = transaction.maxPriorityFeePerGas.toString()
+      }
       transaction.gasLimit = transaction.gasLimit.toString()
 
       if (getResult) {
+        delete transaction.gasPrice
         try {
           res.result = await getResult(transaction, height)
         } catch (e) {

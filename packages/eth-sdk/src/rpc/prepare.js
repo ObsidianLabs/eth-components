@@ -19,7 +19,7 @@ function prepare (parameters, asObject) {
           value = '500000000'
         } else if (key === 'gasPrice') {
           value = '1'
-        } else if (key === 'blockNumber') {
+        } else if (key === 'blockNumber' || key === 'newestBlock') {
           return 'latest'
         }
       }

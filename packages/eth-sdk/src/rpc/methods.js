@@ -61,6 +61,11 @@ export default [
 
   { header: 'info' },
   { name: 'eth_gasPrice', inputs: [] },
+  { name: 'eth_feeHistory', inputs: [
+    { name: 'blockCount', type: 'uint256' },
+    { name: 'newestBlock', type: 'uint256' },
+    { name: 'rewardPercentiles', type: 'uint256[]' },
+  ] },
   { name: 'eth_protocolVersion', inputs: [] },
   { name: 'eth_coinbase', inputs: [] },
   { name: 'eth_mining', inputs: [] },
