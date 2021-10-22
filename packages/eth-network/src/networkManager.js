@@ -96,6 +96,10 @@ class NetworkManager {
       return
     }
 
+    if (process.env.DEPLOY === 'bsn' && network.projectKey) {
+      notification.warning(`${network.name}`, `The current network ${network.name} enables a project key, please turn it off in the BSN portal.`, 5)
+    }
+
     const cachingKeys = getCachingKeys()
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
 
