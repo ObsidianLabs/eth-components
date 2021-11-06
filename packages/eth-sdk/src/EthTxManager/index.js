@@ -26,8 +26,11 @@ export default class EthTxManager {
 
     if (token === 'core' || !token) {
       const voidSigner = new ethers.VoidSigner(from, this.provider)
+      const populated = await voidSigner.populateTransaction({ to, value })
+      const nonce = await this.provider.getTransactionCount(from)
+      populated.nonce = nonce
       try {
-        return { tx: await voidSigner.populateTransaction({ to, value }) }
+        return { tx: populated }
       } catch (e) {
         throw utils.parseError(e)
       }
@@ -47,9 +50,11 @@ export default class EthTxManager {
     }
     const tx = await factory.getDeployTransaction(...parameters, { value })
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
-
+    const populated = await voidSigner.populateTransaction(tx)
+    const nonce = await this.provider.getTransactionCount(override.from)
+    populated.nonce = nonce
     try {
-      return { tx: await voidSigner.populateTransaction(tx) }
+      return { tx: populated }
     } catch (e) {
       throw utils.parseError(e)
     }

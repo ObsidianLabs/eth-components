@@ -23,8 +23,11 @@ export default class EthersContract {
     try {
       const tx = await this.instance.populateTransaction[method](...array, override)
       const voidSigner = new ethers.VoidSigner(override.from, this.provider)
+      const populated = await voidSigner.populateTransaction(tx)
+      const nonce = await this.provider.getTransactionCount(tx.from)
+      populated.nonce = nonce
       return {
-        tx: await voidSigner.populateTransaction(tx),
+        tx: populated,
         getResult: async (tx, height) => {
           const data = await this.provider.call(tx, height)
           const result = this.instance.interface.decodeFunctionResult(method, data)
