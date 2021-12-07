@@ -16,7 +16,7 @@ import {
   Button,
 } from '@obsidians/ui-components'
 
-import { Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
 import notification from '@obsidians/notification'
 
@@ -24,7 +24,7 @@ import FormSection from './components/MarginlessFormSection'
 
 import { networkManager } from '@obsidians/eth-network'
 
-export default class ContractEvents extends PureComponent {
+class ContractEvents extends PureComponent {
   state = {
     selected: 0,
     loading: false,
@@ -190,6 +190,7 @@ export default class ContractEvents extends PureComponent {
     if (!rows.length && !this.state.loading) {
       return <tr className='bg-transparent'><td align='middle' colSpan={columns.length + 1}>(no data)</td></tr>
     }
+    const history = this.props.history
     const list = rows.map((item, index) => (
       <tr key={`table-row-${index}`}>
         <td><code><small>{item.blockNumber}</small></code></td>
@@ -202,9 +203,9 @@ export default class ContractEvents extends PureComponent {
 
           if (type === 'address') {
             content = (
-              <Link to={`/account/${content}`} className='text-body'>
+              <a href='javascript:void(0)' onClick={() => history.push(`/account/${content}`)} className='text-body'>
                 {content}
-              </Link>
+              </a>
             )
           }
           return (
@@ -310,3 +311,5 @@ export default class ContractEvents extends PureComponent {
     )
   }
 }
+
+export default withRouter(ContractEvents)

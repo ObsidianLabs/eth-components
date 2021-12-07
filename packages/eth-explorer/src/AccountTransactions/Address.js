@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { UncontrolledTooltip } from '@obsidians/ui-components'
 
-import { Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 const formatAddress = address => <code>{address.substr(0, 12)}...{address.substr(address.length - 6, address.length)}</code>
 const getUrl = (address, route = 'account') => `/${route}/${address}`
@@ -10,15 +10,16 @@ export default function Address ({ addr, route, redirect = true, displayText, sh
   if (!addr) {
     return null
   }
+  const history = useHistory()
   const [id] = useState(`tooltip-address-${addr.replace(/\W/g, '')}-${Math.floor(Math.random() * 1000)}`)
   const hash = displayText ? displayText : formatAddress(addr)
   const url = getUrl(addr, route)
   let text
   if (redirect) {
     text = (
-      <Link to={url} className='text-body small' id={id}>
+      <a href="javascript:void(0)" onClick={() => history.push(url)} className='text-body small' id={id}>
         {hash}
-      </Link>
+      </a>
     )
   } else {
     text = (
