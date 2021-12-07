@@ -9,10 +9,10 @@ import {
 
 import { networkManager } from '@obsidians/eth-network'
 import { ResultContent } from '@obsidians/eth-contract'
-import { Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import Highlight from 'react-highlight'
 
-export default class TransactionDetails extends PureComponent {
+class TransactionDetails extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
@@ -23,7 +23,7 @@ export default class TransactionDetails extends PureComponent {
   }
 
   renderContent = () => {
-    const { tx = {}, closeModal } = this.props
+    const { tx = {}, closeModal, history } = this.props
     const { selected, format } = this.state
     const { txHash, status, data = {} } = tx
     const {
@@ -61,13 +61,15 @@ export default class TransactionDetails extends PureComponent {
               name='Contract'
               icon='fas fa-file-invoice'
               badge={(
-                <Link
-                  to={`/contract/${contractAddress}`}
+                <a href='javascript:void(0)'
+                  onClick={() => {
+                    history.push(`/contract/${contractAddress}`)
+                    this.props.closeModal()
+                  }}
                   className='text-body'
-                  onClick={() => this.props.closeModal()}
                 >
                   <code>{contractAddress}</code>
-                </Link>
+                </a>
               )}
             />
           }
@@ -107,13 +109,14 @@ export default class TransactionDetails extends PureComponent {
             name='Signer'
             icon='fas fa-key'
             badge={(
-              <Link
-                to={`/account/${signer}`}
+              <a
+                href='javascript:void(0)'
+                onClick={() => history.push(`/account/${signer}`)}
                 className='text-body'
                 onClick={() => this.props.closeModal()}
               >
                 <code>{signer}</code>
-              </Link>
+              </a>
             )}
           />
           {
@@ -122,13 +125,16 @@ export default class TransactionDetails extends PureComponent {
               name='Contract Created'
               icon='fas fa-file-invoice'
               badge={(
-                <Link
-                  to={`/contract/${receipt.contractCreated}`}
+                <a
+                  href='javascript:void(0)'
+                  onClick={() => {
+                    history.push(`/contract/${receipt.contractCreated}`)
+                    this.props.closeModal()
+                  }}
                   className='text-body'
-                  onClick={() => this.props.closeModal()}
                 >
                   <code>{receipt.contractCreated}</code>
-                </Link>
+                </a>
               )}
             />
           }
@@ -246,3 +252,5 @@ export default class TransactionDetails extends PureComponent {
     </>
   }
 }
+
+export default withRouter(TransactionDetails)
