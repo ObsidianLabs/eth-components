@@ -61,7 +61,9 @@ function parseValue (value, param, chainId) {
 export default {
   txOptions,
   isValidAddress: address => ethers.utils.isAddress(address),
-  formatAddress: addr => addr,
+  formatAddress: address => ethers.utils.getAddress(address),
+  abbreviateAddress: address => `${address.substr(0, 12)}...${address.substr(address.length - 6, address.length)}`,
+  simplifyAddress: address => address.toLowerCase(),
   sign: {
     sha3: ethers.utils.keccak256
   },
