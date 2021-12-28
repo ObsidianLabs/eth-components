@@ -24,9 +24,14 @@ modelSessionManager.registerModeDetector(filePath => {
 })
 
 const makeContextMenu = (contextMenu, projectManager) => node => {
+  if(!node) {
+    return []
+  }
+
   if (node.children) {
     return contextMenu
   }
+
   if (node.name.endsWith('.json')) {
     const { dir, name } = projectManager.path.parse(node.path)
     if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
