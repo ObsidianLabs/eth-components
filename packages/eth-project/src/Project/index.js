@@ -9,6 +9,7 @@ import ProjectToolbar from './ProjectToolbar'
 import ProjectSettingsTab from './ProjectSettingsTab'
 
 import addSolidityLanguage from './languages/solidity'
+import findIndex from 'lodash/findIndex'
 
 useBuiltinCustomTabs(['markdown'])
 modelSessionManager.registerCustomTab('settings', ProjectSettingsTab, 'Project Settings')
@@ -28,8 +29,12 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
     return []
   }
 
+  // hide "Open" menu item when it`s a folder
   if (node.children) {
-    return contextMenu
+    const menus = [...contextMenu]
+    const index = findIndex(contextMenu, item => item?.text === 'Open')
+    menus.splice(index, 2)
+    return menus
   }
 
   if (node.name.endsWith('.json')) {
