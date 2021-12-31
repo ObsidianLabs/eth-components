@@ -22,6 +22,7 @@ export default class CreateInstanceButton extends PureComponent {
       version: '',
       miner: '',
       pending: false,
+      invalid: true,
     }
 
     this.modal = React.createRef()
@@ -32,6 +33,10 @@ export default class CreateInstanceButton extends PureComponent {
   }
 
   onCreateInstance = async () => {
+    if(this.state.invalid) {
+      return
+    }
+
     let keys
     let miner
 
@@ -119,7 +124,7 @@ export default class CreateInstanceButton extends PureComponent {
             placeholder='Can only contain letters, digits, dash or underscore'
             maxLength='30'
             value={this.state.name}
-            onChange={name => this.setState({ name })}
+            onChange={(name, invalid) => this.setState({ name, invalid })}
             validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Instance name can only contain letters, digits, dash or underscore'}
           />
           <DockerImageInputSelector
