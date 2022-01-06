@@ -30,6 +30,32 @@ class AccountExplorer extends TabbedExplorer {
     super(props)
     this.keypairs = {}
     props.cacheLifecycles.didRecover(this.checkLocation)
+    this.contextMenu = [
+      {
+        text: 'Close',
+        onClick: this.closeCurrent
+      },
+      {
+        text: 'Close Others',
+        onClick: this.closeOthers
+      }
+    ]
+  }
+
+
+
+  closeCurrent = () => {
+    const { onCloseTab, currentTab } = this.tabs.current.tabs.current
+    onCloseTab(currentTab)
+  }
+
+  closeOthers = () => {
+    const { onCloseTab, currentTab, allTabs } = this.tabs.current.tabs.current
+    const shouldCloseTabs = allTabs.filter(tab => tab.key !== currentTab.key)
+
+    shouldCloseTabs.forEach(tab => {
+      onCloseTab(tab)
+    })
   }
 
   componentDidMount () {
@@ -83,6 +109,7 @@ class AccountExplorer extends TabbedExplorer {
       starred,
       subroute: network,
       signer: uiState.get('signer'),
+      tabContextMenu: this.contextMenu,
       getTabText: tab => {
         let { text, value = '' } = tab
         if (text) {

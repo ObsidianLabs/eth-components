@@ -19,16 +19,26 @@ class Contract extends TabbedExplorer {
     valueFormatter: value => value.toLowerCase(),
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     props.cacheLifecycles.didRecover(this.checkLocation)
+    this.contextMenu = [
+      {
+        text: 'Close',
+        onClick: this.closeCurrent
+      },
+      {
+        text: 'Close Others',
+        onClick: this.closeOthers
+      }
+    ]
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.init()
   }
 
-  componentDidUpdate (props) {
+  componentDidUpdate(props) {
     if (this.props.network !== props.network) {
       this.init()
     }
@@ -36,6 +46,20 @@ class Contract extends TabbedExplorer {
     if (this.props.match?.params?.value !== props.match?.params?.value) {
       this.checkLocation()
     }
+  }
+
+  closeCurrent = () => {
+    const { onCloseTab, currentTab } = this.tabs.current.tabs.current
+    onCloseTab(currentTab)
+  }
+
+  closeOthers = () => {
+    const { onCloseTab, currentTab, allTabs } = this.tabs.current.tabs.current
+    const shouldCloseTabs = allTabs.filter(tab => tab.key !== currentTab.key)
+
+    shouldCloseTabs.forEach(tab => {
+      onCloseTab(tab)
+    })
   }
 
   init = () => {
@@ -53,7 +77,7 @@ class Contract extends TabbedExplorer {
     return value && this.openTab(value)
   }
 
-  render () {
+  render() {
     const { history, route, network, uiState, projects, contracts, tokens, valueFormatter } = this.props
 
     if (network === 'dev' && !uiState.get('localNetwork')) {
@@ -75,6 +99,7 @@ class Contract extends TabbedExplorer {
       starred,
       subroute: network,
       signer: uiState.get('signer'),
+      tabContextMenu: this.contextMenu,
       projectRoot,
       getTabText: tab => {
         let { text, value = '' } = tab
@@ -93,7 +118,7 @@ class Contract extends TabbedExplorer {
           )
         } else if (tokenInfo) {
           const icon = tokenInfo.icon
-            ? <img src={tokenInfo.icon} className='token-icon-xs mr-1'/>
+            ? <img src={tokenInfo.icon} className='token-icon-xs mr-1' />
             : <i className='fas fa-coin text-muted mr-1' />
           tabText = (
             <div key={`token-${address}`} className='d-flex flex-row align-items-center'>
