@@ -49,7 +49,7 @@ export default class BrowserExtension {
   async onChainChanged (chainId) {
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
-    if (network) {
+    if (network && network.chainId !== intChainId) {
       this.networkManager.setNetwork(network, { force: true })
     }
   }
