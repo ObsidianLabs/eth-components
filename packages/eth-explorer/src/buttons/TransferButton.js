@@ -53,6 +53,7 @@ export default class TransferButton extends PureComponent {
     if (!from || !await networkManager.sdk.isValidAddress(from)) {
       return
     }
+
     if (signer && signer !== from) {
       this.setState({ loading: true })
       try {
