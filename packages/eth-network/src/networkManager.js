@@ -85,6 +85,19 @@ class NetworkManager {
   }
 
   setNetwork (network, { force, redirect = true, notify = true } = {}) {
+
+    if (ethereum && ethereum.isConnected()){
+      const hexChainId = `0x${network.chainId.toString(16)}`
+      if (ethereum.chainId !== hexChainId) {
+        ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{
+            chainId: hexChainId,
+          }]
+        })
+      }
+    }
+
     if (this.browserExtension && !force) {
       if (redux.getState().network) {
         notification.info(`Please use ${this.browserExtension.name} to switch the network.`)
