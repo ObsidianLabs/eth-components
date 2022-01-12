@@ -68,9 +68,13 @@ export default {
     }
   },
   formatAddress: address => {
+    if(!address) {
+      return false
+    }
     try{
       return ethers.utils.getAddress(address)
     }catch(error) {
+      console.log(address)
       console.log(error)
       return false
     }
