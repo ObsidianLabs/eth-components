@@ -86,10 +86,10 @@ class NetworkManager {
 
   setNetwork (network, { force, redirect = true, notify = true } = {}) {
 
-    if (ethereum && ethereum.isConnected()){
+    if (window.ethereum && window.ethereum.isConnected()){
       const hexChainId = `0x${network.chainId.toString(16)}`
-      if (ethereum.chainId !== hexChainId) {
-        ethereum.request({
+      if (window.ethereum.chainId !== hexChainId) {
+        window.ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{
             chainId: hexChainId,
