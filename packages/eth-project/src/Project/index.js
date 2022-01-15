@@ -14,18 +14,18 @@ import findIndex from 'lodash/findIndex'
 useBuiltinCustomTabs(['markdown'])
 modelSessionManager.registerCustomTab('settings', ProjectSettingsTab, 'Project Settings')
 modelSessionManager.registerModeDetector(filePath => {
-    const { prefix, userId, projectId, settingsFilePath } = modelSessionManager.projectManager
-    const { base } = fileOps.current.path.parse(filePath)
-    const settingFilePath = platform.isDesktop ? settingsFilePath : `${prefix}/${userId}/${projectId}/config.json`
-    const isRoot = settingFilePath === filePath
-
-    if (base === 'config.json' && isRoot) {
-      return 'settings'
-    } else if (base.endsWith('.sol')) {
-      return 'solidity'
-    } else {
-      return defaultModeDetector(filePath)
-    }
+  const {base, dir}  = fileOps.current.path.parse(filePath)
+  const {prefix, userId, projectId } = modelSessionManager.projectManager
+  const rootPath = `${prefix}/${userId}/${projectId}`
+  const isRoot = rootPath === dir
+  
+  if (base === 'config.json' && isRoot) {
+    return 'settings'
+  } else if (base.endsWith('.sol')) {
+    return 'solidity'
+  } else {
+    return defaultModeDetector(filePath)
+  }
 })
 
 const makeContextMenu = (contextMenu, projectManager) => node => {
