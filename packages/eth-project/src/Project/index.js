@@ -37,7 +37,9 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
   if (node.children) {
     const menus = [...contextMenu]
     const index = findIndex(contextMenu, item => item?.text === 'Open')
-    menus.splice(index, 2)
+    if(index !== -1) {
+      menus.splice(index, 2)
+    }
     return menus
   }
 
