@@ -1,4 +1,5 @@
 import React from 'react'
+import { ethers } from 'ethers'
 
 import {
   TabbedExplorer,
@@ -107,6 +108,8 @@ class Contract extends TabbedExplorer {
           return text
         }
         const address = valueFormatter(value)
+        const addressEthers = ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : '--'
+        console.log(address)
         let tabText = ''
         const tokenInfo = tokens?.getIn([network, address])?.toJS()
         if (networkManager.sdk?.namedContracts[address]) {
@@ -129,7 +132,7 @@ class Contract extends TabbedExplorer {
         } else if (address.length < 10) {
           tabText = <code>{address}</code>
         } else {
-          tabText = <code>{address.substr(0, 6)}...{address.slice(-4)}</code>
+          tabText = <code>{addressEthers.substr(0, 6)}...{addressEthers.slice(-4)}</code>
         }
         return tabText
       },
