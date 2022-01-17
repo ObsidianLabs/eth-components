@@ -106,5 +106,6 @@ dist
 .vscode
 .DS_Store
 .yarnrc
+.idea
 
 build
