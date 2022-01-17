@@ -49,8 +49,7 @@ export default class BrowserExtension {
   async onChainChanged (chainId) {
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
-    const currentNetwork = networks.find(n => n.id === redux.getState().network)
-    if (network && currentNetwork.chainId !== intChainId) {
+    if (network) {
       this.networkManager.setNetwork(network, { force: true })
     }
   }
