@@ -25,6 +25,7 @@
     "@obsidians/redux": "^0.3.0",
     "@obsidians/ui-components": "^0.3.0",
     "@obsidians/workspace": "^0.3.0",
+    "@obsidians/eth-sdk": "^0.3.0",
     "react-json-view": "ObsidianLabs/react-json-view#obsidians"
   },
   "devDependencies": {

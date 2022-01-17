@@ -6,4 +6,5 @@ module.exports = {
   SdkChannel,
   RpcServer,
   EthersClient,
+  utils,
 }
