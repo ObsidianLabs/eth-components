@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import { utils } from '@obsidians/eth-sdk'
 
 import {
   Modal,
@@ -104,7 +105,7 @@ export default class AbiStorageModal extends PureComponent {
           <div className='text-overflow-dots'>{name}</div>
         </td>
         <td className='pr-0'>
-          <code className='small'>{codeHash}</code>
+          <code className='small'>{utils.formatAddress(codeHash)}</code>
         </td>
         <td align='right'>
           <div className='d-flex flex-row justify-content-end hover-show'>
