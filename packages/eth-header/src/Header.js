@@ -57,7 +57,7 @@ export default class Header extends PureComponent {
       const address = k.address
       return {
         id: address,
-        name: k.name || <code className='small'>{address.substr(0, 10)}...{address.substr(-8)}</code>,
+        name: k.name || <code className='small'>{utils.isValidAddressReturn(address).substr(0, 10)}...{utils.isValidAddressReturn(address).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -73,7 +73,7 @@ export default class Header extends PureComponent {
       const name = keypairManager.getName(item)
       return {
         id: item,
-        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: name || <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -88,7 +88,7 @@ export default class Header extends PureComponent {
       const name = keypairManager.getName(item)
       return {
         id: item,
-        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: name || <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -96,7 +96,7 @@ export default class Header extends PureComponent {
     const dropdownStarredContracts = starredContracts.map(item => {
       return {
         id: item,
-        name: <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -114,7 +114,6 @@ export default class Header extends PureComponent {
     }
 
     let contractName
-    debugger
     if (selectedContract) {
       if (extraContractItems) {
         // todo:process address for this case
