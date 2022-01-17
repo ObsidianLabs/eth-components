@@ -109,7 +109,6 @@ class Contract extends TabbedExplorer {
         }
         const address = valueFormatter(value)
         const addressEthers = utils.formatAddress(address)
-
         let tabText = ''
         const tokenInfo = tokens?.getIn([network, address])?.toJS()
         if (networkManager.sdk?.namedContracts[address]) {
