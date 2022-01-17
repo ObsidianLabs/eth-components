@@ -6,6 +6,7 @@ import keypairManager from '@obsidians/keypair'
 import { navbarItem } from '@obsidians/workspace'
 import { NewProjectModal } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
+import { utils } from '@obsidians/eth-sdk'
 
 import headerActions from './headerActions'
 
@@ -56,7 +57,7 @@ export default class Header extends PureComponent {
       const address = k.address
       return {
         id: address,
-        name: k.name || <code className='small'>{address.substr(0, 10)}...{address.substr(-8)}</code>,
+        name: k.name || <code className='small'>{utils.isValidAddressReturn(address).substr(0, 10)}...{utils.isValidAddressReturn(address).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -72,7 +73,7 @@ export default class Header extends PureComponent {
       const name = keypairManager.getName(item)
       return {
         id: item,
-        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: name || <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -87,7 +88,7 @@ export default class Header extends PureComponent {
       const name = keypairManager.getName(item)
       return {
         id: item,
-        name: name || <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: name || <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -95,7 +96,7 @@ export default class Header extends PureComponent {
     const dropdownStarredContracts = starredContracts.map(item => {
       return {
         id: item,
-        name: <code className='small'>{item.substr(0, 10)}...{item.substr(-8)}</code>,
+        name: <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
         icon: addressIcon,
       }
     })
@@ -115,13 +116,16 @@ export default class Header extends PureComponent {
     let contractName
     if (selectedContract) {
       if (extraContractItems) {
+        // todo:process address for this case
         contractName = extraContractItems.find(item => item.id === selectedContract)?.name
       }
       if (!contractName) {
-        contractName = <code>{selectedContract}</code>
+        contractName = <code>{utils.isValidAddressReturn(selectedContract)}</code>
       }
     }
-    const accountName = selectedAccount && (keypairManager.getName(selectedAccount) || <code>{selectedAccount}</code>)
+
+    const selectAccountTemp = utils.isValidAddressReturn(selectedAccount)
+    const accountName = selectAccountTemp && (keypairManager.getName(selectAccountTemp) || <code>{selectAccountTemp}</code>)
 
     const contractNavbarItem = {
       route: 'contract',
