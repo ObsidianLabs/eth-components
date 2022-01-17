@@ -17,7 +17,7 @@ export default class EthersClient {
       this.provider = ethers.getDefaultProvider(url)
     } else {
       if (window.ethereum) {
-        this.provider = new ethers.providers.Web3Provider(window.ethereum)
+        this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
         this.provider.isMetaMask = true
       } else {
         this.provider = new ethers.providers.InfuraProvider(networkId, {
