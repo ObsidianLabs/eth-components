@@ -1,5 +1,6 @@
 import React from 'react'
-import { ethers } from 'ethers'
+import { utils } from '@obsidians/eth-sdk'
+
 
 import {
   TabbedExplorer,
@@ -108,8 +109,7 @@ class Contract extends TabbedExplorer {
           return text
         }
         const address = valueFormatter(value)
-        const addressEthers = ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : '--'
-        console.log(address)
+        const addressEthers = utils.formatAddress(address)
         let tabText = ''
         const tokenInfo = tokens?.getIn([network, address])?.toJS()
         if (networkManager.sdk?.namedContracts[address]) {
