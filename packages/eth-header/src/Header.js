@@ -6,6 +6,7 @@ import keypairManager from '@obsidians/keypair'
 import { navbarItem } from '@obsidians/workspace'
 import { NewProjectModal } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
+import { utils } from '@obsidians/eth-sdk'
 
 import headerActions from './headerActions'
 
@@ -113,15 +114,19 @@ export default class Header extends PureComponent {
     }
 
     let contractName
+    debugger
     if (selectedContract) {
       if (extraContractItems) {
+        // todo:process address for this case
         contractName = extraContractItems.find(item => item.id === selectedContract)?.name
       }
       if (!contractName) {
-        contractName = <code>{selectedContract}</code>
+        contractName = <code>{utils.isValidAddressReturn(selectedContract)}</code>
       }
     }
-    const accountName = selectedAccount && (keypairManager.getName(selectedAccount) || <code>{selectedAccount}</code>)
+
+    const selectAccountTemp = utils.isValidAddressReturn(selectedAccount)
+    const accountName = selectAccountTemp && (keypairManager.getName(selectAccountTemp) || <code>{selectAccountTemp}</code>)
 
     const contractNavbarItem = {
       route: 'contract',
