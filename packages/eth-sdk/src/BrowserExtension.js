@@ -57,7 +57,7 @@ export default class BrowserExtension {
     const network = networks.find(n => n.chainId === intChainId)
     const currentNetwork = networks.find(n => n.id === redux.getState().network)
   
-    if (currentNetwork && currentNetwork.chainId !== intChainId) {
+    if (!currentNetwork || currentNetwork.chainId !== intChainId) {
       if (network)
         this.networkManager.setNetwork(network, { force: true })
       else {
@@ -69,14 +69,15 @@ export default class BrowserExtension {
             const customConfig = {url: rpc, option: JSON.stringify({
               name: customChain.name,
             })}
+            const option = {
+              url: rpc,
+              name: customChain.name,
+            }
             redux.dispatch('MODIFY_CUSTOM_NETWORK', {
               name: customChain.name,
-              option: {
-                url: rpc,
-                name: customChain.name,
-              },
+              option,
             })
-            console.log(redux.getState().uiState.toJS())
+            redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
             this.networkManager.updateCustomNetwork(customConfig)
           }
         }
