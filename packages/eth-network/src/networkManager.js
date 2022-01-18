@@ -85,7 +85,7 @@ class NetworkManager {
   }
 
   setNetwork (network, { force, redirect = true, notify = true } = {}) {
-
+    redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
     if (window.ethereum && window.ethereum.isConnected() && network.chainId){
       const hexChainId = `0x${network.chainId.toString(16)}`
       if (window.ethereum.chainId !== hexChainId) {

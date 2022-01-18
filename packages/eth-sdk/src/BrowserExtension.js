@@ -53,32 +53,42 @@ export default class BrowserExtension {
   }
 
   async onChainChanged (chainId) {
+    const state = redux.getState()
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
-    const currentNetwork = networks.find(n => n.id === redux.getState().network)
+    const currentNetwork = networks.find(n => n.id === state.network)
   
     if (!currentNetwork || currentNetwork.chainId !== intChainId) {
-      if (network)
+      if (network){
         this.networkManager.setNetwork(network, { force: true })
+      }
       else {
-        const chainList = redux.getState().chainList.toJS().networks
+        const chainList = state.chainList.toJS().networks
         const customChain = chainList.find(chain => chain.chainId === intChainId)
         if (customChain) {
           const rpc = customChain.rpc.find(rpc => rpc.indexOf("${INFURA_API_KEY}") === -1)
           if (rpc) {
-            const customConfig = {url: rpc, option: JSON.stringify({
-              name: customChain.name,
-            })}
             const option = {
               url: rpc,
+              chainId: intChainId,
               name: customChain.name,
             }
-            redux.dispatch('MODIFY_CUSTOM_NETWORK', {
-              name: customChain.name,
-              option,
+            const customConfig = {url: rpc, option: JSON.stringify(option)}
+            const currentCustomChain = state.customNetworks.toJS()
+            let activeCustomNetworkChainId = null
+            Object.values(currentCustomChain).forEach(network => {
+              if (network.active) activeCustomNetworkChainId = network.chainId
             })
-            redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
-            this.networkManager.updateCustomNetwork(customConfig)
+            console.log(activeCustomNetworkChainId, intChainId)
+            if (activeCustomNetworkChainId !== intChainId) {
+              redux.dispatch('MODIFY_CUSTOM_NETWORK', {
+                name: customChain.name,
+                option,
+              })
+              redux.dispatch('ACTIVE_CUSTOM_NETWORK', option)
+              redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
+              this.networkManager.updateCustomNetwork(customConfig)
+            }
           }
         }
       }
