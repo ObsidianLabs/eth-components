@@ -33,6 +33,7 @@ export default class BrowserExtension {
   }
 
   async initialize (ethereum) {
+
     ethereum.on('chainChanged', this.onChainChanged.bind(this))
     const chainId = await ethereum.request({ method: 'eth_chainId' })
     this.onChainChanged(chainId)
@@ -44,15 +45,44 @@ export default class BrowserExtension {
     const allAccounts = await this.getAllAccounts()
     this._accounts = allAccounts
     redux.dispatch('UPDATE_UI_STATE', { browserAccounts: allAccounts })
+
+    const chainListUrl = `https://chainid.network/chains.json`
+    const chainListRes = await fetch(chainListUrl)
+    const chainList = await chainListRes.json()
+    redux.dispatch('SET_CHAIN_LIST', chainList)
   }
 
   async onChainChanged (chainId) {
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
     const currentNetwork = networks.find(n => n.id === redux.getState().network)
-    if (network && currentNetwork.chainId !== intChainId) {
-      this.networkManager.setNetwork(network, { force: true })
+  
+    if (currentNetwork && currentNetwork.chainId !== intChainId) {
+      if (network)
+        this.networkManager.setNetwork(network, { force: true })
+      else {
+        const chainList = redux.getState().chainList.toJS().networks
+        const customChain = chainList.find(chain => chain.chainId === intChainId)
+        if (customChain) {
+          const rpc = customChain.rpc.find(rpc => rpc.indexOf("${INFURA_API_KEY}") === -1)
+          if (rpc) {
+            const customConfig = {url: rpc, option: JSON.stringify({
+              name: customChain.name,
+            })}
+            redux.dispatch('MODIFY_CUSTOM_NETWORK', {
+              name: customChain.name,
+              option: {
+                url: rpc,
+                name: customChain.name,
+              },
+            })
+            console.log(redux.getState().uiState.toJS())
+            this.networkManager.updateCustomNetwork(customConfig)
+          }
+        }
+      }
     }
+
   }
 
   async getAllAccounts () {

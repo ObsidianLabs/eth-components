@@ -86,7 +86,7 @@ class NetworkManager {
 
   setNetwork (network, { force, redirect = true, notify = true } = {}) {
 
-    if (window.ethereum && window.ethereum.isConnected()){
+    if (window.ethereum && window.ethereum.isConnected() && network.chainId){
       const hexChainId = `0x${network.chainId.toString(16)}`
       if (window.ethereum.chainId !== hexChainId) {
         window.ethereum.request({
