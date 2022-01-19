@@ -79,7 +79,6 @@ export default class BrowserExtension {
             Object.values(currentCustomChain).forEach(network => {
               if (network.active) activeCustomNetworkChainId = network.chainId
             })
-            console.log(activeCustomNetworkChainId, intChainId)
             if (activeCustomNetworkChainId !== intChainId) {
               redux.dispatch('MODIFY_CUSTOM_NETWORK', {
                 name: customChain.name,
