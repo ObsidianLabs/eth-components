@@ -33,6 +33,7 @@ export default class BrowserExtension {
   }
 
   async initialize (ethereum) {
+
     ethereum.on('chainChanged', this.onChainChanged.bind(this))
     const chainId = await ethereum.request({ method: 'eth_chainId' })
     this.onChainChanged(chainId)
@@ -44,15 +45,54 @@ export default class BrowserExtension {
     const allAccounts = await this.getAllAccounts()
     this._accounts = allAccounts
     redux.dispatch('UPDATE_UI_STATE', { browserAccounts: allAccounts })
+
+    const chainListUrl = `https://chainid.network/chains.json`
+    const chainListRes = await fetch(chainListUrl)
+    const chainList = await chainListRes.json()
+    redux.dispatch('SET_CHAIN_LIST', chainList)
   }
 
   async onChainChanged (chainId) {
+    const state = redux.getState()
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
-    const currentNetwork = networks.find(n => n.id === redux.getState().network)
-    if (network && currentNetwork.chainId !== intChainId) {
-      this.networkManager.setNetwork(network, { force: true })
+    const currentNetwork = networks.find(n => n.id === state.network)
+  
+    if (!currentNetwork || currentNetwork.chainId !== intChainId) {
+      if (network){
+        this.networkManager.setNetwork(network, { force: true })
+      }
+      else {
+        const chainList = state.chainList.toJS().networks
+        const customChain = chainList.find(chain => chain.chainId === intChainId)
+        if (customChain) {
+          const rpc = customChain.rpc.find(rpc => rpc.indexOf("${INFURA_API_KEY}") === -1)
+          if (rpc) {
+            const option = {
+              url: rpc,
+              chainId: intChainId,
+              name: customChain.name,
+            }
+            const customConfig = {url: rpc, option: JSON.stringify(option)}
+            const currentCustomChain = state.customNetworks.toJS()
+            let activeCustomNetworkChainId = null
+            Object.values(currentCustomChain).forEach(network => {
+              if (network && network.active) activeCustomNetworkChainId = network.chainId
+            })
+            if (activeCustomNetworkChainId !== intChainId) {
+              redux.dispatch('MODIFY_CUSTOM_NETWORK', {
+                name: customChain.name,
+                option,
+              })
+              redux.dispatch('ACTIVE_CUSTOM_NETWORK', option)
+              redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
+              this.networkManager.updateCustomNetwork(customConfig)
+            }
+          }
+        }
+      }
     }
+
   }
 
   async getAllAccounts () {
