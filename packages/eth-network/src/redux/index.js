@@ -15,5 +15,13 @@ export default {
     REMOVE_CUSTOM_NETWORK: {
       reducer: (state, { payload }) => state.remove(payload)
     },
+    ACTIVE_CUSTOM_NETWORK: {
+      reducer: (state, { payload }) => {
+        return state.map((network) => {
+          if (payload.chainId === network.chainId) return network.set('active', true)
+          else return network.set('active', false)
+        })
+      }
+    },
   }
 }
