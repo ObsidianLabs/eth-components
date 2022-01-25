@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer'
 
-import prettier from 'prettier-plugin-solidity/node_modules/prettier/standalone'
+import prettier from 'prettier/standalone'
 import solidityPlugin from 'prettier-plugin-solidity'
 
 import premiumEditor from '@obsidians/premium-editor'
