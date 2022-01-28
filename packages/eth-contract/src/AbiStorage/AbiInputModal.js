@@ -10,6 +10,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { BaseProjectManager } from '@obsidians/workspace'
+import { utils } from '@obsidians/eth-sdk'
 
 export default class AbiInputModal extends PureComponent {
   constructor (props) {
@@ -29,7 +30,7 @@ export default class AbiInputModal extends PureComponent {
 
   openModal = (name, codeHash, abi) => {
     if (name || codeHash) {
-      this.setState({ name, codeHash, abi: '', codeHashEditable: !codeHash })
+      this.setState({ name, codeHash: utils.isValidAddressReturn(codeHash), abi: '', codeHashEditable: !codeHash })
     } else {
       this.setState({ name: '', codeHash: '', abi: '', validJson: false, codeHashEditable: true })
     }
@@ -52,7 +53,7 @@ export default class AbiInputModal extends PureComponent {
   onConfirm = () => {
     this.onResolve({
       name: this.state.name,
-      codeHash: this.state.codeHash,
+      codeHash: this.state.codeHash.toLowerCase(),
       abi: this.state.abi,
     })
     this.setState({ name: '', codeHash: '', abi: '', validJson: false })
@@ -126,7 +127,7 @@ export default class AbiInputModal extends PureComponent {
         <DebouncedFormGroup
           label='Code hash / Address'
           value={codeHash}
-          onChange={codeHash => this.setState({ codeHash })}
+          onChange={codeHash => this.setState({ codeHash: utils.isValidAddressReturn(codeHash) })}
           // disabled={!codeHashEditable}
         />
         <DebouncedFormGroup
