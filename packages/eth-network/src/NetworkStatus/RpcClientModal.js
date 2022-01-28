@@ -25,7 +25,7 @@ export default class RpcClientModal extends PureComponent {
 
   render () {
     return (
-      <Modal ref={this.modal} h100 title='RPC Client' textCancel='Close'>
+      <Modal ref={this.modal} scrollable title='RPC Client' textCancel='Close'>
         <RpcActionForm />
       </Modal>
     )

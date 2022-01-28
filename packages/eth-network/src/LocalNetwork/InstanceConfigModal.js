@@ -48,8 +48,8 @@ export default class InstanceConfigModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        h100
-        wide
+        scrollable
+        size='lg'
         title='Node Configuration'
         onConfirm={this.onConfirm}
         textConfirm='Save Configuration'

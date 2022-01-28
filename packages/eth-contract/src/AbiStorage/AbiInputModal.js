@@ -112,7 +112,7 @@ export default class AbiInputModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        h100
+        scrollable
         title='Enter New ABI'
         ActionBtn={this.renderAbiSelectionButton()}
         onConfirm={this.onConfirm}
