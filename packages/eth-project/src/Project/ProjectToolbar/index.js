@@ -25,6 +25,7 @@ export default class ProjectToolbar extends PureComponent {
           truffle={compilers[process.env.COMPILER_VERSION_KEY]}
           solc={compilers.solc}
           onClick={() => projectManager.compile()}
+          readOnly={!projectManager.userOwnProject}
         />
       }
       { !noDeploy && <DeployButton projectManager={projectManager} signer={signer} /> }
