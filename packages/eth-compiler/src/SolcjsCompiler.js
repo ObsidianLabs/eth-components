@@ -88,8 +88,12 @@ export default class SolcjsCompiler {
   async getFile ({ path, buffer }) {
     let result
     try {
-      const contents = await this.readFile(path)
-      result = { contents }
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        const res = await fetch(path)
+        result = { contents: await res.text() }
+      } else {
+        result = { contents: await this.readFile(path) }
+      }
     } catch (e) {
       result = { error: e.message }
     }
