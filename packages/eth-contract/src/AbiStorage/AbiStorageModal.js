@@ -133,7 +133,7 @@ export default class AbiStorageModal extends PureComponent {
     return <>
       <Modal
         ref={this.modal}
-        wide
+        size='lg'
         title='ABI Storage'
         textActions={['New']}
         textCancel='Close'

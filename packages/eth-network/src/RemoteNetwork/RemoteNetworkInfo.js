@@ -53,7 +53,7 @@ export default class RemoteNetworkInfo extends PureComponent {
               />
             }
             {
-              status?.difficulty &&
+              Boolean(status?.difficulty) &&
               <TableCardRow
                 name='Difficulty'
                 badge={status && Number(status.difficulty).toFixed(0)}

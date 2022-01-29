@@ -55,7 +55,7 @@ class Contract extends TabbedExplorer {
   }
 
   closeOthers = (currentTab) => {
-    const { onCloseTab } = this.tabs.current.tabs.current
+    const { onCloseTab, allTabs } = this.tabs.current.tabs.current
     const shouldCloseTabs = allTabs.filter(tab => tab.key !== currentTab.key)
 
     shouldCloseTabs.forEach(tab => {
