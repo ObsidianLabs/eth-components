@@ -34,6 +34,7 @@ export default class CompilerButton extends PureComponent {
       className,
       size = 'sm',
       color = 'default',
+      readOnly = false,
     } = this.props
 
     let icon = <span key='build-icon'><i className='fas fa-hammer' /></span>
@@ -52,6 +53,7 @@ export default class CompilerButton extends PureComponent {
         key='tooltip-build-btn'
         className={`hover-block ${className}`}
         onClick={this.onClick}
+        disabled={readOnly}
       >
         {icon}
       </Button>

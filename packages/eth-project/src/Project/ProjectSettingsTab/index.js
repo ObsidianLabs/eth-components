@@ -65,6 +65,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
         <div className='jumbotron bg-transparent text-body'>
           <div className='container'>
             <h1>Project Settings</h1>
+            <form disabled={true}>
             <ProjectPath projectRoot={projectRoot} remote={projectManager.remote} />
 
             <h4 className='mt-4'>General</h4>
@@ -75,6 +76,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               value={projectSettings?.get('main')}
               onChange={this.onChange('main')}
               placeholder={`Required`}
+              readOnly={!projectManager.userOwnProject}
             />
             <DebouncedFormGroup
               label='Smart contract to deploy'
@@ -82,6 +84,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               value={projectSettings?.get('deploy')}
               onChange={this.onChange('deploy')}
               placeholder={`Path to the built contract to deploy`}
+              readOnly={!projectManager.userOwnProject}
             />
             {
               !projectManager.remote &&
@@ -144,10 +147,11 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 extraOptions={!projectManager.remote && framework === 'truffle' && [{
                   id: 'default',
                   display: 'From truffle-config.js',
-                  onClick: () => this.onChange('compilers.solc')('default')
+                  onClick: () => this.onChange('compilers.solc')('default'),
                 }]}
                 selected={projectSettings?.get('compilers.solc')}
                 onSelected={solc => this.onChange('compilers.solc')(solc)}
+                readOnly={!projectManager.userOwnProject}
               />
             }
             <FormGroup>
@@ -158,6 +162,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('compilers.evmVersion')}
                 onChange={event => this.onChange('compilers.evmVersion')(event.target.value)}
+                disabled={!projectManager.userOwnProject}
               >
                 <option value='berlin'>Berlin</option>
                 <option value='istanbul'>Istanbul</option>
@@ -174,6 +179,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               className='bg-black'
               placeholder='Default: 0 (disabled)'
               value={projectSettings?.get('compilers.optimizer.runs') || ''}
+              readOnly={!projectManager.userOwnProject}
               onChange={value => {
                 const runs = Number(value)
                 if (runs) {
@@ -192,6 +198,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('linter')}
                 onChange={event => this.onChange('linter')(event.target.value)}
+                disabled={!projectManager.userOwnProject}
               >
                 <option value='solhint'>Solhint</option>
                 <option value='solium'>Solium/Ethlint</option>
@@ -207,6 +214,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('editor.fontFamily')}
                 onChange={event => this.onChange('editor.fontFamily')(event.target.value)}
+                disabled={!projectManager.userOwnProject}
               >
                 <option value='Hack'>Hack</option>
                 <option value='Fira Code'>Fira Code</option>
@@ -220,6 +228,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('editor.fontSize')}
                 onChange={event => this.onChange('editor.fontSize')(event.target.value)}
+                disabled={!projectManager.userOwnProject}
               >
                 <option value='11px'>11px</option>
                 <option value='12px'>12px</option>
@@ -237,6 +246,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('editor.ligatures')}
                 onChange={event => this.onChange('editor.ligatures')(event.target.value === 'true')}
+                disabled={!projectManager.userOwnProject}
               >
                 <option value='false'>Disabled</option>
                 <option value='true'>Enabled</option>
@@ -244,6 +254,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             </FormGroup>
 
             <AbstractProjectSettingsTab.DeleteButton context={this.context} />
+            </form>
           </div>
         </div>
       </div>

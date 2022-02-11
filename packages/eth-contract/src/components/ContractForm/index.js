@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 
 
 import ActionParamFormGroup from './ActionParamFormGroup'
+import { utils } from '@obsidians/eth-sdk'
 
 export default class ContractForm extends PureComponent {
   constructor (props) {
@@ -27,7 +28,10 @@ export default class ContractForm extends PureComponent {
       const param = this.state.params[index]
       const key = name || `(param${index})`
       if (!type) {
-        const value = param.value || ''
+
+        let value
+        type === 'address' ? value = param.value.toLowerCase() || '' : value = param.value || ''
+
         if (value) {
           allEmpty = false
         }
@@ -52,7 +56,7 @@ export default class ContractForm extends PureComponent {
   }
 
   setParamValue = index => (value, extra) => {
-    this.state.params[index] = { value, ...extra }
+    this.state.params[index] = { value: utils.isValidAddressReturn(value), ...extra }
     const params = [...this.state.params]
     this.setState({ params })
   }
