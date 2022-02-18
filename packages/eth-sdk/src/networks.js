@@ -174,7 +174,7 @@ const networks = [
   // new chain Gnosis
   {
     id: 'gnosismain',
-    group: 'Gnosis',
+    group: 'xDai',
     name: 'Mainnet',
     fullName: 'Gnosis Mainnet',
     icon: 'fas fa-globe',
@@ -195,6 +195,30 @@ const networks = [
   //   chainId: 4002,
   //   symbol: 'xDai',
   // },
+
+  // 
+  // {
+  //   id: 'espace',
+  //   group: 'eSpace',
+  //   name: 'Mainnet',
+  //   fullName: 'Gnosis Mainnet',
+  //   icon: 'fas fa-globe',
+  //   notification: 'Switched to <b>Gnosis Mainnet</b>.',
+  //   url: 'https://evm.confluxrpc.com',
+  //   chainId: 1030,
+  //   symbol: 'CFX',
+  // },
+  {
+    id: 'espace',
+    group: 'eSpace',
+    name: 'Testnet',
+    fullName: 'Gnosis Testnet',
+    icon: 'fas fa-globe',
+    notification: 'Switched to <b>Gnosis Testnet</b>.',
+    url: 'https://evmtestnet.confluxrpc.com',
+    chainId: 71,
+    symbol: 'CFX',
+  },
 ]
 
 if (platform.isDesktop) {
