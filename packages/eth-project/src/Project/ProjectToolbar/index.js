@@ -16,7 +16,7 @@ export default class ProjectToolbar extends PureComponent {
     const { signer, noBuild, noDeploy, ExtraButtons = () => null } = this.props
     const { projectSettings, projectManager } = this.context
     const compilers = projectSettings?.get('compilers') || {}
-
+    const readOnly = !projectManager.userOwnProject && projectManager.remote
     return <>
       {
         !noBuild &&
@@ -25,7 +25,7 @@ export default class ProjectToolbar extends PureComponent {
           truffle={compilers[process.env.COMPILER_VERSION_KEY]}
           solc={compilers.solc}
           onClick={() => projectManager.compile()}
-          readOnly={!projectManager.userOwnProject}
+          readOnly={readOnly}
         />
       }
       { !noDeploy && <DeployButton projectManager={projectManager} signer={signer} /> }

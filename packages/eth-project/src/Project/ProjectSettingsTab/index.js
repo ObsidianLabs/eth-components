@@ -56,6 +56,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
     const { noSolc } = this.props
     const { projectRoot, projectManager, projectSettings } = this.context
     const framework = projectSettings?.get('framework')
+    const readOnly = !projectManager.userOwnProject && projectManager.remote
 
     const frameworks = Object.entries(NewProjectModal.defaultProps.FrameworkSelector.frameworkNames)
       .map(([key, name]) => ({ key, name }))
@@ -76,7 +77,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               value={projectSettings?.get('main')}
               onChange={this.onChange('main')}
               placeholder={`Required`}
-              readOnly={!projectManager.userOwnProject}
+              readOnly={readOnly}
             />
             <DebouncedFormGroup
               label='Smart contract to deploy'
@@ -84,7 +85,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               value={projectSettings?.get('deploy')}
               onChange={this.onChange('deploy')}
               placeholder={`Path to the built contract to deploy`}
-              readOnly={!projectManager.userOwnProject}
+              readOnly={readOnly}
             />
             {
               !projectManager.remote &&
@@ -151,7 +152,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 }]}
                 selected={projectSettings?.get('compilers.solc')}
                 onSelected={solc => this.onChange('compilers.solc')(solc)}
-                readOnly={!projectManager.userOwnProject}
+                readOnly={readOnly}
               />
             }
             <FormGroup>
@@ -179,7 +180,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               className='bg-black'
               placeholder='Default: 0 (disabled)'
               value={projectSettings?.get('compilers.optimizer.runs') || ''}
-              readOnly={!projectManager.userOwnProject}
+              readOnly={readOnly}
               onChange={value => {
                 const runs = Number(value)
                 if (runs) {

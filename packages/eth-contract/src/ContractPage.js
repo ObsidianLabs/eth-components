@@ -149,7 +149,7 @@ export default class ContractPage extends PureComponent {
       return
     }
     try {
-      abiData.abi = JSON.parse(abiData.abi)
+      abiData.abi = JSON.parse(abiData.abi==="{}"? "[]" : abiData.abi)
     } catch {
       throw new Error('Invalid ABI structure.')
     }
