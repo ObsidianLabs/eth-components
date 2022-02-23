@@ -145,6 +145,7 @@ export class CompilerManager {
       modelSessionManager.updateDecorations(errorDecorations)
     } else {
       notification.success('Build Successful', `The smart contract is built.`)
+      modelSessionManager.clearCompilerDecoration()
     }
   }
 
@@ -246,7 +247,8 @@ export class CompilerManager {
       row: Number(row),
       length,
       type: 'error',
-      column: Number(column)
+      column: Number(column),
+      from: 'compiler'
     }
   }
 

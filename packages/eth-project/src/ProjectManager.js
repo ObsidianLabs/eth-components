@@ -16,19 +16,20 @@ import ProjectSettings from './ProjectSettings'
 
 BaseProjectManager.ProjectSettings = ProjectSettings
 
-function makeProjectManager (Base) {
+function makeProjectManager(Base) {
   return class ExtendedProjectManager extends Base {
-    constructor (project, projectRoot) {
+    constructor(project, projectRoot) {
       super(project, projectRoot)
       this.deployButton = null
       this.onFileChanged = debounce(this.onFileChanged, 1500).bind(this)
     }
 
-    get settingsFilePath () {
+    get settingsFilePath() {
       return this.pathForProjectFile('config.json')
     }
 
-    onEditorReady (editor, editorComponent) {
+    onEditorReady(editor, editorComponent) {
+      modelSessionManager.decorationMap = {}
       editor.addCommand(
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
         () => {
@@ -38,23 +39,24 @@ function makeProjectManager (Base) {
       )
       editor.onDidChangeModel(() => setTimeout(() => this.lint(), 100))
       setTimeout(() => this.lint(), 100)
+      // reset the editor model sessions
     }
 
-    onFileChanged () {
+    onFileChanged() {
       this.lint()
     }
 
-    async readPackageJson () {
+    async readPackageJson() {
       const packageJson = await this.readFile(this.pathForProjectFile('package.json'))
       return JSON.parse(packageJson)
     }
 
-    async executeInTerminal (cmd) {
+    async executeInTerminal(cmd) {
       this.toggleTerminal(true)
       return await compilerManager.execute(cmd)
     }
 
-    lint () {
+    lint() {
       if (!premiumEditor.solidity) {
         return
       }
@@ -65,23 +67,25 @@ function makeProjectManager (Base) {
       const linter = this.projectSettings.get('linter') || 'solhint'
       const solcVersion = this.projectSettings.get('compilers.solc')
       const result = premiumEditor.solidity.lint(code, { linter, solcVersion })
-      modelSessionManager.updateDecorations(result.map(item => ({
+      const decorations = result.map(item => ({
         ...item,
         filePath: modelSessionManager.currentFilePath,
-      })))
+        from: 'linter'
+      }))
+      decorations.length > 0 ? modelSessionManager.updateDecorations(decorations) : modelSessionManager.clearLinterDecorations()
     }
 
-    async compile (sourceFile) {
+    async compile(sourceFile) {
       if (CompilerManager.button.state.building) {
         notification.error('Build Failed', 'Another build task is running now.')
         return false
       }
 
       const settings = await this.checkSettings()
-  
+
       await this.project.saveAll()
       this.toggleTerminal(true)
-  
+
       let result
       try {
         result = await compilerManager.build(settings, this, sourceFile)
@@ -94,11 +98,11 @@ function makeProjectManager (Base) {
       if (result?.errors) {
         return false
       }
-  
+
       return true
     }
-  
-    async deploy (contractFileNode) {
+
+    async deploy(contractFileNode) {
       if (!networkManager.sdk) {
         notification.error('Cannot Deploy', 'No connected network. Please start a local network or switch to a remote network.')
         return true
@@ -131,7 +135,7 @@ function makeProjectManager (Base) {
       )
     }
 
-    async getDefaultContractFileNode () {
+    async getDefaultContractFileNode() {
       const settings = await this.checkSettings()
       if (!settings?.deploy) {
         return
@@ -141,7 +145,7 @@ function makeProjectManager (Base) {
       return { path: filePath, pathInProject }
     }
 
-    async getBuiltContracts () {
+    async getBuiltContracts() {
       const settings = await this.checkSettings()
       const builtFolder = this.pathForProjectFile(
         settings.framework === 'hardhat' ? 'artifacts/contracts' : 'build/contracts'
@@ -156,7 +160,7 @@ function makeProjectManager (Base) {
       return files.map(f => ({ ...f, pathInProject: this.pathInProject(f.path) }))
     }
 
-    async readProjectAbis () {
+    async readProjectAbis() {
       const contracts = await this.getBuiltContracts()
       const abis = await Promise.all(contracts
         .map(contract => this.readFile(contract.path, 'utf8')
@@ -176,19 +180,19 @@ function makeProjectManager (Base) {
         })
     }
 
-    checkSdkAndSigner (allParameters) {
+    checkSdkAndSigner(allParameters) {
       if (!networkManager.sdk) {
         notification.error('No Network', 'No connected network. Please start a local network or switch to a remote network.')
         return true
       }
-  
+
       if (!allParameters.signer) {
         notification.error('Deployment Error', 'No signer specified. Please select one to sign the deployment transaction.')
         return true
       }
     }
 
-    validateDeployment (contractObj) {  
+    validateDeployment(contractObj) {
       let bytecode = contractObj.bytecode || contractObj.evm?.bytecode?.object
       let deployedBytecode = contractObj.deployedBytecode || contractObj.evm?.deployedBytecode?.object
 
@@ -212,8 +216,8 @@ function makeProjectManager (Base) {
         deployedBytecode
       }
     }
-    
-    async estimate (contractObj, allParameters) {
+
+    async estimate(contractObj, allParameters) {
       if (this.checkSdkAndSigner(allParameters)) {
         return
       }
@@ -221,7 +225,7 @@ function makeProjectManager (Base) {
       if (!deploy) {
         return
       }
-  
+
       const { amount, parameters } = allParameters
 
       this.deployButton.setState({ pending: 'Estimating...' })
@@ -250,7 +254,7 @@ function makeProjectManager (Base) {
       return result
     }
 
-    async pushDeployment (contractObj, allParameters) {
+    async pushDeployment(contractObj, allParameters) {
       if (this.checkSdkAndSigner(allParameters)) {
         return
       }
@@ -258,13 +262,13 @@ function makeProjectManager (Base) {
       if (!deploy) {
         return
       }
-  
+
       this.deployButton.setState({ pending: 'Deploying...', result: '' })
-  
+
       const networkId = networkManager.sdk.networkId
       const { contractName, amount, parameters, ...override } = allParameters
       const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode)
-  
+
       let result
       try {
         const tx = await networkManager.sdk.getDeployTransaction({
@@ -316,17 +320,17 @@ function makeProjectManager (Base) {
         this.deployButton.setState({ pending: false })
         return
       }
-  
+
       this.deployButton.setState({ pending: false })
       notification.success('Deploy Successful')
-  
+
       redux.dispatch('ABI_ADD', {
         ...deploy.options,
         name: contractName,
         codeHash: result.codeHash,
         abi: JSON.stringify(deploy.abi),
       })
-  
+
       const deployResultPath = this.path.join(this.projectRoot, 'deploys', `${result.network}_${moment().format('YYYYMMDD_HHmmss')}.json`)
       await this.ensureFile(deployResultPath)
       await this.saveFile(deployResultPath, JSON.stringify(result, null, 2))
