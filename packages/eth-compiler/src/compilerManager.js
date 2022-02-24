@@ -237,8 +237,9 @@ export class CompilerManager {
 
   parseSolcJSBuild(error) {
     const { prefix: projectPrefix, userId, projectId } = modelSessionManager.projectManager
-    const [prefix] = error.formattedMessage.split(': ')
-    const [filePath, row, column] = prefix.split(':')
+    const [prefix] = error.formattedMessage.match(/(?<=:).+(?=:)/g)
+    const filePath =  error.sourceLocation.file
+    const [row, column] = prefix.split(':')
     const lines = error.formattedMessage.split('\n')
     const length = lines[lines.length - 1].trim().length
 
