@@ -146,7 +146,7 @@ export class CompilerManager {
       modelSessionManager.updateDecorations(errorDecorations)
     } else {
       notification.success('Build Successful', `The smart contract is built.`)
-      modelSessionManager.clearCompilerDecoration()
+      modelSessionManager.clearDecoration('compiler')
     }
   }
 

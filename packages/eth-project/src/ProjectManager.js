@@ -72,7 +72,7 @@ function makeProjectManager(Base) {
         filePath: modelSessionManager.currentFilePath,
         from: 'linter'
       }))
-      decorations.length > 0 ? modelSessionManager.updateDecorations(decorations) : modelSessionManager.clearLinterDecorations()
+      decorations.length > 0 ? modelSessionManager.updateDecorations(decorations) : modelSessionManager.clearDecoration('linter')
     }
 
     async compile(sourceFile) {
