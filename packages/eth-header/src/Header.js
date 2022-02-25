@@ -45,7 +45,7 @@ export default class Header extends PureComponent {
       logo = null,
     } = this.props
 
-    const username = profile.get('username') || 'local'
+    const username = profile.get('username') || projects.get('selected').toJS()?.author
     const navbarLeft = [
       navbarItem(projects, selectedProject, username)
     ]

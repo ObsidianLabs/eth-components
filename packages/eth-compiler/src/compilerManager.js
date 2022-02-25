@@ -2,16 +2,17 @@ import { DockerImageChannel } from '@obsidians/docker'
 import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
 import stripAnsi from 'strip-ansi'
+import { modelSessionManager } from '@obsidians/code-editor'
 
 import SolcjsCompiler from './SolcjsCompiler'
 import soljsonReleases from './soljsonReleases.json'
 
 class SolcjsChannel extends DockerImageChannel {
-  installed () {
+  installed() {
     return true
   }
 
-  versions () {
+  versions() {
     const versions = Object.entries(soljsonReleases).map(([Tag, Name]) => ({ Tag, Name }))
     const event = new CustomEvent('versions', { detail: versions })
     this.eventTarget.dispatchEvent(event)
@@ -24,32 +25,32 @@ export class CompilerManager {
   static terminal = null
   static truffleTerminal = null
 
-  constructor () {
+  constructor() {
     this.truffle = new DockerImageChannel(process.env.DOCKER_IMAGE_COMPILER)
     this.solc = new SolcjsChannel()
     this.notification = null
     this.solcjsCompiler = new SolcjsCompiler()
   }
 
-  get projectRoot () {
+  get projectRoot() {
     if (!CompilerManager.terminal) {
       throw new Error('CompilerTerminal is not instantiated.')
     }
     return CompilerManager.terminal.props.cwd
   }
 
-  focus () {
+  focus() {
     if (CompilerManager.terminal) {
       CompilerManager.terminal.focus()
     }
   }
 
-  async execute (cmd) {
+  async execute(cmd) {
     CompilerManager.switchCompilerConsole('terminal')
     return await CompilerManager.terminal?.exec(cmd)
   }
 
-  async cacheSolcBin (url, version) {
+  async cacheSolcBin(url, version) {
     const cacheStorage = await window.caches.open('solcjs')
     try {
       if (await cacheStorage.match(url)) {
@@ -66,7 +67,7 @@ export class CompilerManager {
     this.notification.dismiss()
   }
 
-  async buildBySolcjs (projectManager) {
+  async buildBySolcjs(projectManager) {
     if (!await projectManager.isMainValid) {
       notification.error('No Main File', `Please specify the main file in project settings.`)
       throw new Error('No Main File.')
@@ -74,8 +75,9 @@ export class CompilerManager {
 
     const solcVersion = projectManager.projectSettings.get('compilers.solc')
     const solcFileName = soljsonReleases[solcVersion]
-    const solcUrl = `/solc/${solcFileName}`
-    // const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
+
+    // TODO: use the production proxy temporally
+    const solcUrl = `https://eth.ide.black/solc/${solcFileName}`
 
     const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
     const optimizer = projectManager.projectSettings.get('compilers.optimizer')
@@ -121,13 +123,15 @@ export class CompilerManager {
       projectManager.refreshDirectory()
       projectManager.refreshDirectory(projectManager.pathForProjectFile('build/contracts'))
     }
-
+    const errorDecorations = []
     let hasError = false
+
     output.errors?.forEach(error => {
       let color
       if (error.severity === 'error') {
         hasError = true
         color = '--color-danger'
+        errorDecorations.push(this.parseSolcJSBuild(error))
       } else if (error.severity === 'warning') {
         color = '--color-warning'
       }
@@ -139,12 +143,14 @@ export class CompilerManager {
     CompilerManager.button.setState({ building: false })
     if (hasError) {
       notification.error('Build Failed', `Code has errors.`)
+      modelSessionManager.updateDecorations(errorDecorations)
     } else {
       notification.success('Build Successful', `The smart contract is built.`)
+      modelSessionManager.clearDecoration('compiler')
     }
   }
 
-  async build (settings, projectManager, sourceFile) {
+  async build(settings, projectManager, sourceFile) {
     if (projectManager.remote) {
       return await this.buildBySolcjs(projectManager)
     }
@@ -221,7 +227,7 @@ export class CompilerManager {
     return { decorations }
   }
 
-  static async stop () {
+  static async stop() {
     if (CompilerManager.terminal) {
       CompilerManager.terminal.execAsChildProcess(`docker stop -t 1 truffle-compile`)
       await CompilerManager.terminal.stop()
@@ -229,7 +235,26 @@ export class CompilerManager {
     }
   }
 
-  parseBuildLogs (msg) {
+  parseSolcJSBuild(error) {
+    const { prefix: projectPrefix, userId, projectId } = modelSessionManager.projectManager
+    const [prefix] = error.formattedMessage.match(/(?<=:).+(?=:)/g)
+    const filePath =  error.sourceLocation.file
+    const [row, column] = prefix.split(':')
+    const lines = error.formattedMessage.split('\n')
+    const length = lines[lines.length - 1].trim().length
+
+    return {
+      filePath: `${projectPrefix}/${userId}/${projectId}/${filePath.replace('./', '')}`,
+      text: `[Solcjs Compiler]: ${error.message}`,
+      row: Number(row),
+      length,
+      type: 'error',
+      column: Number(column),
+      from: 'compiler'
+    }
+  }
+
+  parseBuildLogs(msg) {
     let index
     index = msg.indexOf('Compiling your contracts...')
     if (index > -1) {
@@ -283,7 +308,7 @@ export class CompilerManager {
     return { errors, decorations }
   }
 
-  generateBuildCmd ({ projectRoot, settings, sourceFile }) {
+  generateBuildCmd({ projectRoot, settings, sourceFile }) {
     const { framework, npmClient, compilers } = settings
     const projectDir = fileOps.current.getDockerMountPath(projectRoot)
 
@@ -291,7 +316,7 @@ export class CompilerManager {
       const npmRun = npmClient === 'yarn' ? npmClient : `${npmClient} run`
       return `${npmRun} build`
     }
-    
+
     const cmd = [
       `docker run -t --rm --name truffle-compile`,
       `-v "${fileOps.current.homePath}/.config/truffle/compilers:/root/.config/truffle/compilers"`,
@@ -314,7 +339,7 @@ export class CompilerManager {
     if (sourceFile) {
       cmd.push(`--contracts_directory '${sourceFile}*'`)
     }
-    
+
     return cmd.join(' ')
   }
 }
