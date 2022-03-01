@@ -45,7 +45,7 @@ export default class SolcjsCompiler {
     } else if (this.reqs.has(id)) {
       this.reqs.get(id).resolve(data)
     } else {
-      console.warn(`[SolcjsCompiler] request ${id} not found.`)
+      console.warn(`[Solcjs Compiler] request ${id} not found.`)
     }
   }
 
@@ -122,7 +122,7 @@ export default class SolcjsCompiler {
       }
       return this.fileCache.get(completePath)
     } catch (e) {
-      console.warn(`[SolcjsCompiler] readFile error`)
+      console.warn(`[Solcjs Compiler] readFile error`)
       console.warn(e)
       throw new Error('File not found')
     }

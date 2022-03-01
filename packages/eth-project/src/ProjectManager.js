@@ -67,9 +67,10 @@ function makeProjectManager(Base) {
       const linter = this.projectSettings.get('linter') || 'solhint'
       const solcVersion = this.projectSettings.get('compilers.solc')
       const result = premiumEditor.solidity.lint(code, { linter, solcVersion })
+
       const decorations = result.map(item => ({
         ...item,
-        text: `[Solhint Linter]: ${item.text}`,
+        text: `[Solhint Linter] ${item.text}`,
         filePath: modelSessionManager.currentFilePath,
         from: 'linter',
       }))

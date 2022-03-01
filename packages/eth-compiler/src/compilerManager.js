@@ -245,7 +245,7 @@ export class CompilerManager {
 
     return {
       filePath: `${projectPrefix}/${userId}/${projectId}/${filePath.replace('./', '')}`,
-      text: `[Solcjs Compiler]: ${error.message}`,
+      text: `[Solcjs Compiler] ${error.message}`,
       row: Number(row),
       length,
       type: 'error',
