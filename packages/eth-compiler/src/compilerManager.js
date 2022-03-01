@@ -75,8 +75,9 @@ export class CompilerManager {
 
     const solcVersion = projectManager.projectSettings.get('compilers.solc')
     const solcFileName = soljsonReleases[solcVersion]
-    const solcUrl = `/solc/${solcFileName}`
-    // const solcUrl = `https://solc-bin.ethereum.org/bin/${solcFileName}`
+
+    // TODO: use the production proxy temporally
+    const solcUrl = `https://eth.ide.black/solc/${solcFileName}`
 
     const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
     const optimizer = projectManager.projectSettings.get('compilers.optimizer')
@@ -145,6 +146,7 @@ export class CompilerManager {
       modelSessionManager.updateDecorations(errorDecorations)
     } else {
       notification.success('Build Successful', `The smart contract is built.`)
+      modelSessionManager.clearDecoration('compiler')
     }
   }
 
@@ -235,18 +237,20 @@ export class CompilerManager {
 
   parseSolcJSBuild(error) {
     const { prefix: projectPrefix, userId, projectId } = modelSessionManager.projectManager
-    const [prefix] = error.formattedMessage.split(': ')
-    const [filePath, row, column] = prefix.split(':')
+    const [prefix] = error.formattedMessage.match(/(?<=:).+(?=:)/g)
+    const filePath =  error.sourceLocation.file
+    const [row, column] = prefix.split(':')
     const lines = error.formattedMessage.split('\n')
     const length = lines[lines.length - 1].trim().length
 
     return {
       filePath: `${projectPrefix}/${userId}/${projectId}/${filePath.replace('./', '')}`,
-      text: error.message,
+      text: `[Solcjs Compiler]: ${error.message}`,
       row: Number(row),
       length,
       type: 'error',
-      column: Number(column)
+      column: Number(column),
+      from: 'compiler'
     }
   }
 

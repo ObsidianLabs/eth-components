@@ -23,9 +23,21 @@ export default class CompilerTerminal extends PureComponent {
 
     this.initialTabs = []
     if (props.projectManager.remote) {
-      this.initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-hammer mr-1' />Compiler</span> })
+      this.initialTabs.push({ 
+        key: 'terminal', 
+        text: <span key='compiler-terminal'><i className='fas fa-hammer mr-1' />Compiler</span>,
+        clickCallback: () => {
+          CompilerManager.terminal.inputRef.current.focus()
+        },
+      })
     } else {
-      this.initialTabs.push({ key: 'terminal', text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />Project</span> })
+      this.initialTabs.push({ 
+        key: 'terminal', 
+        text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />Project</span>,
+        clickCallback: () => {
+          CompilerManager.terminal.inputRef.current.focus()
+        },
+      })
       if (process.env.PROJECT === 'eth') {
         // this.initialTabs.push({ key: 'truffle', text: <span key='compiler-truffle'><i className='fas fa-cookie mr-1' />Truffle</span> })
       }
