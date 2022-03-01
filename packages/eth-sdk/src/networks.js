@@ -92,22 +92,15 @@ const networks = [
     symbol: 'MATIC',
   },
   {
-<<<<<<< HEAD
-    id: 'avalanchemain',
-    group: 'Avalanche',
-    name: 'Avalanche Mainnet',
-    fullName: 'Avalanche Mainnet',
-=======
     id: 'polygonmain',
     group: 'Polygon',
     name: 'Mainnet',
     fullName: 'Polygon Mainnet',
->>>>>>> e1150fa (add nwe network)
     icon: 'fas fa-globe',
-    notification: 'Switched to <b>Avalanche Mainnet</b>.',
-    url: 'https://api.avax.network/ext/bc/C/rpc',
-    chainId: 43114,
-    symbol: 'AVAX',
+    notification: 'Switched to <b>Polygon Mainnet</b>.',
+    url: 'https://matic-mainnet-full-rpc.bwarelabs.com',
+    chainId: 137,
+    symbol: 'MATIC',
   },
   // new chain Gnosis
   // seems there is no test net
@@ -139,20 +132,6 @@ const networks = [
     group: 'Fantom',
     name: 'Testnet',
     fullName: 'Fantom Testnet',
-<<<<<<< HEAD
-    icon: 'fas fa-vial',
-    notification: 'Switched to <b>Fantom-Testnet</b>.',
-    url: 'https://rpc.testnet.fantom.network//',
-    chainId: 4002,
-    symbol: 'FTM',
-  },
-  {
-    id: 'fantomtest',
-    group: 'Fantom',
-    name: 'Fantom Testnet',
-    fullName: 'Fantom-Testnet',
-=======
->>>>>>> e1150fa (add nwe network)
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Fantom-Testnet</b>.',
     url: 'https://rpc.testnet.fantom.network//',
