@@ -60,7 +60,7 @@ const networks = [
   {
     id: 'avalanchetest',
     group: 'Avalanche',
-    name: 'Avalanche Testnet',
+    name: 'Testnet',
     fullName: 'Avalanche Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Avalanche Testnet</b>.',
@@ -71,7 +71,7 @@ const networks = [
   {
     id: 'avalanchemain',
     group: 'Avalanche',
-    name: 'Avalanche Mainnet',
+    name: 'Mainnet',
     fullName: 'Avalanche Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Avalanche Mainnet</b>.',
@@ -83,8 +83,8 @@ const networks = [
   {
     id: 'polygontest',
     group: 'Polygon',
-    name: 'Polygon Mumbai',
-    fullName: 'Mumbai-Testnet',
+    name: 'Mumbai',
+    fullName: 'Mumbai Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Mumbai-Testnet</b>.',
     url: 'https://matic-testnet-archive-rpc.bwarelabs.com',
@@ -94,7 +94,7 @@ const networks = [
   {
     id: 'polygonmain',
     group: 'Polygon',
-    name: 'Polygon Mainnet',
+    name: 'Mainnet',
     fullName: 'Polygon Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Polygon Mainnet</b>.',
@@ -107,8 +107,8 @@ const networks = [
   // {
   //   id: 'gnosistest',
   //   group: 'xDai',
-  //   name: 'xDai Testnet',
-  //   fullName: 'Gnosis-Testnet',
+  //   name: 'Testnet',
+  //   fullName: 'Gnosis Testnet',
   //   icon: 'fas fa-globe',
   //   notification: 'Switched to <b>Gnosis-Testnet</b>.',
   //   url: 'https://rpc.testnet.Gnosis.network//',
@@ -118,7 +118,7 @@ const networks = [
   {
     id: 'gnosismain',
     group: 'xDai',
-    name: 'xDai Mainnet',
+    name: 'Mainnet',
     fullName: 'Gnosis Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Gnosis Mainnet</b>.',
@@ -130,8 +130,8 @@ const networks = [
   {
     id: 'fantomtest',
     group: 'Fantom',
-    name: 'Fantom Testnet',
-    fullName: 'Fantom-Testnet',
+    name: 'Testnet',
+    fullName: 'Fantom Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Fantom-Testnet</b>.',
     url: 'https://rpc.testnet.fantom.network//',
@@ -141,7 +141,7 @@ const networks = [
   {
     id: 'fantommain',
     group: 'Fantom',
-    name: 'Fantom Mainnet',
+    name: 'Mainnet',
     fullName: 'Fantom Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Fantom Mainnet</b>.',
@@ -153,7 +153,7 @@ const networks = [
   {
     id: 'harmonytest',
     group: 'Harmony',
-    name: 'Harmony Testnet',
+    name: 'Testnet',
     fullName: 'Harmony Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Harmony Testnet</b>.',
@@ -164,7 +164,7 @@ const networks = [
   {
     id: 'harmonymain',
     group: 'Harmony',
-    name: 'Harmony Mainnet',
+    name: 'Mainnet',
     fullName: 'Harmony Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Harmony Mainnet</b>.',
@@ -176,8 +176,8 @@ const networks = [
   {
     id: 'Auroratest',
     group: 'Aurora',
-    name: 'Aurora Testnet',
-    fullName: 'Aurora-Testnet',
+    name: 'Testnet',
+    fullName: 'Aurora Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Aurora-Testnet</b>.',
     url: 'https://testnet.aurora.dev/',
@@ -187,7 +187,7 @@ const networks = [
   {
     id: 'Auroramain',
     group: 'Aurora',
-    name: 'Aurora Mainnet',
+    name: 'Mainnet',
     fullName: 'Aurora Mainnet',
     icon: 'fas fa-globe',
     notification: 'Switched to <b>Aurora Mainnet</b>.',
@@ -196,27 +196,27 @@ const networks = [
     symbol: 'AOA',
   },
 
-  // 
-  // {
-  //   id: 'espace',
-  //   group: 'eSpace',
-  //   name: 'Mainnet',
-  //   fullName: 'Gnosis Mainnet',
-  //   icon: 'fas fa-globe',
-  //   notification: 'Switched to <b>Gnosis Mainnet</b>.',
-  //   url: 'https://evm.confluxrpc.com',
-  //   chainId: 1030,
-  //   symbol: 'CFX',
-  // },
+  
   {
     id: 'espace',
-    group: 'eSpace',
-    name: 'eSpace Testnet',
-    fullName: 'Gnosis Testnet',
+    group: 'Conflux',
+    name: 'Testnet',
+    fullName: 'Conflux Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Gnosis Testnet</b>.',
     url: 'https://evmtestnet.confluxrpc.com',
     chainId: 71,
+    symbol: 'CFX',
+  },
+  {
+    id: 'espace',
+    group: 'Conflux',
+    name: 'Mainnet',
+    fullName: 'Conflux Mainnet',
+    icon: 'fas fa-globe',
+    notification: 'Switched to <b>Gnosis Mainnet</b>.',
+    url: 'https://evm.confluxrpc.com',
+    chainId: 1030,
     symbol: 'CFX',
   },
 ]
