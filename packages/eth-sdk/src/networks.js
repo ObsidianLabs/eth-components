@@ -195,10 +195,8 @@ const networks = [
     chainId: 1313161554,
     symbol: 'AOA',
   },
-
-  
   {
-    id: 'espace',
+    id: 'espacetest',
     group: 'Conflux',
     name: 'Testnet',
     fullName: 'Conflux Testnet',
