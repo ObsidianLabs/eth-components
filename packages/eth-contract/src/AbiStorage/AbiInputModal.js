@@ -134,6 +134,7 @@ export default class AbiInputModal extends PureComponent {
           size='sm'
           label='ABI'
           type='textarea'
+          importFromFile='.json'
           placeholder='Please enter the ABI object. Must be a valid JSON array.'
           formGroupClassName='d-flex flex-column flex-grow-1 code'
           inputGroupClassName='flex-grow-1'
