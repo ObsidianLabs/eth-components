@@ -266,7 +266,7 @@ export default class DeployerButton extends PureComponent {
             networkManager.sdk?.utils.txOptions?.list.map(option => (
               <ActionParamFormGroup
                 key={`deploy-param-${option.name}`}
-                className={option.className}
+                className={[option.className,'cursorDefultBtn']}
                 label={option.label}
                 icon={option.icon}
                 value={this.state[option.name]}
