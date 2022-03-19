@@ -4,18 +4,21 @@ on:
 
 env:
   share_components: electron-components
+  owner: ObsidianLabs
 
 jobs:
-  Danger CI:
+  run-danger:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ${{ env.share_components }}
-      - uses: actions/checkout@master
+        uses: actions/checkout@master
         with:
           repository: ${{ env.owner }}/${{ env.share_components }}
-          ref: develop
           path: ./${{ env.share_components }}
       
+      - name: Checkout Self
+        uses: actions/checkout@master
+        
       - name: Use Node.js 16
         uses: actions/setup-node@master
         with:
