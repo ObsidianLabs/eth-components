@@ -18,6 +18,8 @@ jobs:
       
       - name: Checkout Self
         uses: actions/checkout@master
+        with:
+          path: ./eth-components
         
       - name: Use Node.js 16
         uses: actions/setup-node@master
@@ -29,7 +31,8 @@ jobs:
         run: yarn
               
       - name: Install Self deps
-        run: yarn install
+        working-directory: ./eth-components
+        run: yarn
         
       - name: Run Danger CI
         run: yarn danger ci
