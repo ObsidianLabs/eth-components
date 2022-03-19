@@ -14,5 +14,8 @@
   "workspaces": [
     "packages/*",
     "../electron-components/packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "danger": "^11.0.2"
+  }
 }
