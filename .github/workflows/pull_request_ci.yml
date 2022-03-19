@@ -1,19 +1,30 @@
-name: CI Pull Requests
+name: Danger CI
 on:
   pull_request:
 
+env:
+  share_components: electron-components
+
 jobs:
-  build:
+  Danger CI:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout ${{ env.share_components }}
       - uses: actions/checkout@master
+        with:
+          repository: ${{ env.owner }}/${{ env.share_components }}
+          ref: develop
+          path: ./${{ env.share_components }}
+      
       - name: Use Node.js 16
         uses: actions/setup-node@master
         with:
           node-version: 16
-      - name: yarn install
+      
+      - name: Install deps
         run: yarn install
-      - name: Danger
+      
+      - name: Run Danger CI
         run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
