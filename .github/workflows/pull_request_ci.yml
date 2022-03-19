@@ -24,9 +24,13 @@ jobs:
         with:
           node-version: 16
       
-      - name: Install deps
+      - name: Install Self deps
         run: yarn install
-      
+        
+      - name: Install ${{ env.share_components }} deps
+        working-directory: ./${{ env.share_components }}
+        run: yarn
+        
       - name: Run Danger CI
         run: yarn danger ci
         env:
