@@ -49,7 +49,7 @@ export default class SolcjsCompiler {
     }
   }
 
-  async compile (solcUrl, projectManager) {
+  async compile(solcUrl, projectManager) {
     this.fileCache = new Map()
     this.projectManager = projectManager
     const mainFilePath = projectManager.projectSettings.get('main')
