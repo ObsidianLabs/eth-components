@@ -54,7 +54,8 @@
     "moment": "*",
     "react": "*",
     "react-dom": "*",
-    "react-router-cache-route": "*"
+    "react-router-cache-route": "*",
+    "immutable": "*"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -61,7 +61,8 @@
     "react": "*",
     "react-dom": "*",
     "react-highlight": "*",
-    "react-router-dom": "*"
+    "react-router-dom": "*",
+    "prettier": "*"
   },
   "eslintConfig": {
     "extends": "react-app"
