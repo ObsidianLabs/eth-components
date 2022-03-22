@@ -22,6 +22,7 @@
     "@obsidians/queue": "^0.3.0",
     "@obsidians/redux": "^0.3.0",
     "@obsidians/ui-components": "^0.3.0",
+    "@obsidians/eth-contract": "^0.3.0",
     "moment": "^2.24.0"
   },
   "devDependencies": {
