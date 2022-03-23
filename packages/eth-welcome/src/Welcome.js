@@ -7,7 +7,6 @@ import {
 
 import fileOps from '@obsidians/file-ops'
 import { ListItemDocker, ListItemDockerImage } from '@obsidians/docker'
-import fileOps from '@obsidians/file-ops'
 
 import compiler from '@obsidians/eth-compiler'
 import { t } from '@obsidians/i18n'
