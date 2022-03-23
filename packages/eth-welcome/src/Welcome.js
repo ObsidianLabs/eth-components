@@ -2,16 +2,24 @@ import React, { PureComponent } from 'react'
 import {
   Button,
   ListGroup,
+  ListGroupItem
 } from '@obsidians/ui-components'
 
 import fileOps from '@obsidians/file-ops'
 import { ListItemDocker, ListItemDockerImage } from '@obsidians/docker'
+import fileOps from '@obsidians/file-ops'
 
-import { instanceChannel } from '@obsidians/eth-network'
 import compiler from '@obsidians/eth-compiler'
 import { t } from '@obsidians/i18n'
-
+import platform from '@obsidians/platform'
 import checkDependencies from './checkDependencies'
+
+const tutorialPanelInfo = {
+  description: `Ethereum Studio is a graphic IDE for developing smart contracts on the Ethereum blockchian. New here ? Don't worry.
+Here is an instruction for a quick scan and details of each features.`,
+  tips: 'To get started, please install the prerequisite tools for Ethereum Studio',
+  nextPage: 'https://github.com/ObsidianLabs/EthereumStudio/blob/master/README.md'
+}
 
 export default class Welcome extends PureComponent {
   static defaultProps = {
@@ -22,8 +30,12 @@ export default class Welcome extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      ready: false
+      ready: false,
+      remote: platform.isWeb
     }
+    this.tutorialBaro = this.tutorialBar.bind(this)
+    this.toGuidePage = this.toGuidePage.bind(this)
+
     this.listItemDocker = React.createRef()
     this.imageRefs = new Array(2 + (props.extraItems?.length || 0))
       .fill(null)
@@ -71,15 +83,43 @@ export default class Welcome extends PureComponent {
     }
   }
 
+  toGuidePage() {
+    fileOps.current.openLink(tutorialPanelInfo.nextPage)
+  }
+
+  tutorialBar () {
+    return (
+      this.state.remote ? null :
+        <div>
+          <p>{tutorialPanelInfo.description }</p>
+          <ListGroupItem className='center' style={{
+            'margin': '10px 0',
+            'borderRadius': '6px'
+          }}>
+            <div className='center'>
+              <div className='tutorialPanel' />
+              <p>Learn how to use Ethereum Studio</p>
+            </div>
+
+            <Button
+              onClick={this.toGuidePage}
+              color={'primary'}>
+              Open
+            </Button>
+          </ListGroupItem>
+
+          <p>{ tutorialPanelInfo.tips }</p>
+        </div>
+    )
+  }
+
   render () {
     return (
       <div className='d-flex h-100 overflow-auto'>
         <div className='jumbotron jumbotron-fluid'>
           <div className='container'>
             <h4 className='display-4'>{t('welcome.welcome', { projectName: process.env.PROJECT_NAME })}</h4>
-
-            <p className='lead'>{t('welcome.message', { projectName: process.env.PROJECT_NAME, chainName: process.env.CHAIN_NAME })}</p>
-
+            { this.tutorialBar() }
             <div className='my-3' />
 
             <ListGroup>
