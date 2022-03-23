@@ -76,7 +76,7 @@ function makeProjectManager(Base) {
       decorations.length > 0 ? modelSessionManager.updateDecorations(decorations) : modelSessionManager.clearDecoration('linter')
     }
 
-    async compile(sourceFile) {
+    async compile(sourceFile, finalCall) {
       if (CompilerManager.button.state.building) {
         notification.error('Build Failed', 'Another build task is running now.')
         return false
@@ -91,15 +91,18 @@ function makeProjectManager(Base) {
       try {
         result = await compilerManager.build(settings, this, sourceFile)
       } catch {
+        finalCall && finalCall()
         return false
       }
       if (result?.decorations) {
         modelSessionManager.updateDecorations(result.decorations)
       }
       if (result?.errors) {
+        finalCall && finalCall()
         return false
       }
-
+       
+      finalCall && finalCall()
       return true
     }
 
