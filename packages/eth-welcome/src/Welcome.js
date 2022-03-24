@@ -8,6 +8,7 @@ import {
 import fileOps from '@obsidians/file-ops'
 import { ListItemDocker, ListItemDockerImage } from '@obsidians/docker'
 
+import { instanceChannel } from '@obsidians/eth-network'
 import compiler from '@obsidians/eth-compiler'
 import { t } from '@obsidians/i18n'
 import platform from '@obsidians/platform'
@@ -32,7 +33,7 @@ export default class Welcome extends PureComponent {
       ready: false,
       remote: platform.isWeb
     }
-    this.tutorialBaro = this.tutorialBar.bind(this)
+    this.tutorialBar = this.tutorialBar.bind(this)
     this.toGuidePage = this.toGuidePage.bind(this)
 
     this.listItemDocker = React.createRef()
