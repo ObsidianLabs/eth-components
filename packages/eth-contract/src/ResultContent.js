@@ -29,7 +29,7 @@ export default withRouter(({ format, actionResult, actionError, history, onNavig
           quotesOnKeys={false}
           displayArrayKey={false}
           enableClipboard={() => notification.info('Copied to Clipboard')}
-          getLabel={addr => keypairManager.getName(addr.toLowerCase())}
+          getLabel={addr => addr && keypairManager.getName(addr.toLowerCase())}
           onRedirect={link => {
             history.push(link)
             onNavigate && onNavigate()
