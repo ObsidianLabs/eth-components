@@ -66,7 +66,7 @@ export default {
     address = ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : '--'
     return `${address.substr(0, 12)}...${address.substr(address.length - 6, address.length)}`
   },
-  simplifyAddress: address => address.toLowerCase(),
+  simplifyAddress: address => address ? address.toLowerCase() : '',
   isValidAddressReturn: address => ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : address,
   sign: {
     sha3: ethers.utils.keccak256
