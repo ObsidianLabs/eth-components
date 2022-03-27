@@ -159,11 +159,13 @@ export default class Header extends PureComponent {
         }]
       },
     }
+
+    const networkReplaceName = Object.assign({}, network, {name: network.fullName})
     const networkNavbarItem = {
       route: 'network',
       title: 'Network',
       icon: network.icon,
-      selected: network,
+      selected: networkReplaceName,
       dropdown: networkList,
       onClickItem: (_, network) => {
         networkManager.setNetwork(network)
