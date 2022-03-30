@@ -57,23 +57,25 @@ function makeProjectManager(Base) {
     }
 
     lint() {
-      if (!premiumEditor.solidity) {
+      if (!premiumEditor.solidity || !modelSessionManager.currentFilePath.endsWith('.sol')) {
         return
       }
-      if (!modelSessionManager.currentFilePath.endsWith('.sol')) {
-        return
-      }
-      const code = modelSessionManager._editor.getValue()
+      const currentCode = modelSessionManager._editor.getValue()
       const linter = this.projectSettings.get('linter') || 'solhint'
       const solcVersion = this.projectSettings.get('compilers.solc')
-      const result = premiumEditor.solidity.lint(code, { linter, solcVersion })
-      const decorations = result.map(item => ({
-        ...item,
-        text: `[Solhint Linter]: ${item.text}`,
-        filePath: modelSessionManager.currentFilePath,
-        from: 'linter',
-      }))
-      decorations.length > 0 ? modelSessionManager.updateDecorations(decorations) : modelSessionManager.clearDecoration('linter')
+      const lintResult = premiumEditor.solidity.lint(currentCode, { linter, solcVersion })
+      const { currentFilePath } = modelSessionManager
+      const newValue = lintResult.length !== 0 ?
+        lintResult.reduce((prev, cur) => {
+          prev.push({
+            ...cur,
+            text: cur.text,
+            from: 'linter',
+            filePath: currentFilePath
+          })
+          return prev
+        }, []) : []
+      modelSessionManager.updateDecorations(newValue, currentFilePath)
     }
 
     async compile(sourceFile, finalCall) {
