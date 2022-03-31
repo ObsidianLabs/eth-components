@@ -24,6 +24,7 @@ export default connect(['network', 'queue', 'projects', 'uiState'])(function Bot
     chains,
 
     noNetwork,
+    history
   } = props
 
   const localNetwork = uiState.get('localNetwork')
@@ -51,7 +52,7 @@ export default connect(['network', 'queue', 'projects', 'uiState'])(function Bot
   }
 
   return <>
-    <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains}>
+    <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains} history={history}>
       <div className='btn btn-primary btn-sm btn-flat'>
         <i className='fas fa-key' />
       </div>
