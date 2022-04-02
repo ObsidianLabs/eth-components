@@ -13,18 +13,20 @@ import compiler from '@obsidians/eth-compiler'
 import { t } from '@obsidians/i18n'
 import platform from '@obsidians/platform'
 import checkDependencies from './checkDependencies'
+import PropTypes from 'prop-types'
 
 const tutorialPanelInfo = {
-  description: `Ethereum Studio is a graphic IDE for developing smart contracts on the Ethereum blockchian. New here ? Don't worry.
+  description: `Black IDE is a graphic IDE for developing smart contracts on the Ethereum blockchian. New here ? Don't worry.
 Here is an instruction for a quick scan and details of each features.`,
-  tips: 'To get started, please install the prerequisite tools for Ethereum Studio',
-  nextPage: 'https://github.com/ObsidianLabs/EthereumStudio/blob/master/README.md'
+  tips: 'To get started, please install the prerequisite tools for Black IDE',
+  nextPage: 'https://github.com/ObsidianLabs/BlackIDE/blob/master/README.md'
 }
 
 export default class Welcome extends PureComponent {
   static defaultProps = {
     nodeSubtitle: `${process.env.CHAIN_NAME} node built into a docker image.`,
     truffleSubtitle: `${process.env.CHAIN_NAME} version of truffle used to create and compile a project.`,
+    enableTutorial: false
   }
 
   constructor (props) {
@@ -98,7 +100,7 @@ export default class Welcome extends PureComponent {
           }}>
             <div className='center'>
               <div className='tutorialPanel' />
-              <p>Learn how to use Ethereum Studio</p>
+              <p>Learn how to use Black IDE</p>
             </div>
 
             <Button
@@ -119,7 +121,7 @@ export default class Welcome extends PureComponent {
         <div className='jumbotron jumbotron-fluid'>
           <div className='container'>
             <h4 className='display-4'>{t('welcome.welcome', { projectName: process.env.PROJECT_NAME })}</h4>
-            { this.tutorialBar() }
+            { this.props.enableTutorial ? this.tutorialBar() : null }
             <div className='my-3' />
 
             <ListGroup>
@@ -155,4 +157,8 @@ export default class Welcome extends PureComponent {
       </div>
     )
   }
+}
+
+Welcome.propTypes = {
+  enableTutorial: PropTypes.boolean
 }
