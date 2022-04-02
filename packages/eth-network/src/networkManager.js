@@ -84,17 +84,36 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  setNetwork (network, { force, redirect = true, notify = true } = {}) {
+  async setNetwork (network, { force, redirect = true, notify = true } = {}) {
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
     if (window.ethereum && window.ethereum.isConnected() && network.chainId){
       const hexChainId = `0x${network.chainId.toString(16)}`
       if (window.ethereum.chainId !== hexChainId) {
-        window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{
-            chainId: hexChainId,
-          }]
-        })
+        try{
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{
+              chainId: hexChainId,
+            }]
+          })
+        } catch(e) {
+          if (e.code === 4902) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: hexChainId,
+                chainName: network.fullName,
+                rpcUrls: [network.url],
+              }],
+            });
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{
+                chainId: hexChainId,
+              }]
+            })
+          }
+        }
       }
     }
 
