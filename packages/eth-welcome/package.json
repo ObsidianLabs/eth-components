@@ -23,8 +23,7 @@
     "@obsidians/file-ops": "^0.3.0",
     "@obsidians/i18n": "^0.3.0",
     "@obsidians/notification": "^0.3.0",
-    "@obsidians/ui-components": "^0.3.0",
-    "node-sass": "^7.0.1"
+    "@obsidians/ui-components": "^0.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
@@ -47,7 +46,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+    "node-sass": "*"
   },
   "eslintConfig": {
     "extends": "react-app"
