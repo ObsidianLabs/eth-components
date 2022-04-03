@@ -1,7 +1,7 @@
 {
   "name": "@obsidians/eth-bottombar",
   "version": "0.3.0",
-  "description": "Ethereum Studio bottom bar",
+  "description": "Black IDE bottom bar",
   "author": "Phil <qft.gtr@gmail.com>",
   "license": "GPL-3.0",
   "source": "src/index.js",

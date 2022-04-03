@@ -1,7 +1,7 @@
 {
   "name": "@obsidians/eth-queue",
   "version": "0.3.0",
-  "description": "Ethereum Studio transaction queue",
+  "description": "Black IDE transaction queue",
   "author": "Phil <qft.gtr@gmail.com>",
   "license": "GPL-3.0",
   "source": "src/index.js",
