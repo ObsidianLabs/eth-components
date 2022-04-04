@@ -160,5 +160,5 @@ export default class Welcome extends PureComponent {
 }
 
 Welcome.propTypes = {
-  enableTutorial: PropTypes.boolean
+  enableTutorial: PropTypes.bool
 }
