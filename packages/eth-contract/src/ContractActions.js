@@ -99,13 +99,18 @@ export default class ContractActions extends AbiActionForm {
       this.setState({ executing: false })
       return
     }
-
     try {
       const tx = await this.props.contract.execute(actionName, parameters, {
         from: signer,
         value,
         ...options,
       })
+      if(tx.txHash) {
+        notification.success('Execute Success')
+        this.setState({ executing: false })
+        return
+      }
+      
       await queue.add(
         () => networkManager.sdk.sendTransaction(tx),
         {

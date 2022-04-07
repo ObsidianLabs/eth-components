@@ -62,12 +62,16 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
     </KeypairButton>
     {!noNetwork && <NetworkStatus connected={networkConnect} onRefresh={handleStatusRefresh} />}
     <QueueButton txs={txs} />
+    {/* { !noNetwork && <NetworkStatus /> }
+
+   
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
         <i className='fas fa-list mr-1' />
         {t('abi.storage')}
       </div>
-    </AbiStorage>
+    </AbiStorage> */}
+
     <div className='flex-1' />
     {
       loaded && (
