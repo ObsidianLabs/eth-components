@@ -15,11 +15,14 @@ import platform from '@obsidians/platform'
 import checkDependencies from './checkDependencies'
 import PropTypes from 'prop-types'
 
+const {
+  PROJECT_GITHUB_REPO
+} = process.env
 const tutorialPanelInfo = {
   description: `Black IDE is a graphic IDE for developing smart contracts on the Ethereum blockchian. New here ? Don't worry.
 Here is an instruction for a quick scan and details of each features.`,
   tips: 'To get started, please install the prerequisite tools for Black IDE',
-  nextPage: 'https://github.com/ObsidianLabs/BlackIDE/blob/master/README.md'
+  nextPage: `${PROJECT_GITHUB_REPO}/blob/master/README.md`
 }
 
 export default class Welcome extends PureComponent {
