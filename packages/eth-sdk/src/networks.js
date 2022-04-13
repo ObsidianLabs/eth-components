@@ -87,7 +87,7 @@ const networks = [
     fullName: 'Mumbai Testnet',
     icon: 'fas fa-vial',
     notification: 'Switched to <b>Mumbai Testnet</b>.',
-    url: 'https://matic-testnet-archive-rpc.bwarelabs.com',
+    url: 'https://rpc-mumbai.matic.today',
     chainId: 80001,
     symbol: 'MATIC',
   },
