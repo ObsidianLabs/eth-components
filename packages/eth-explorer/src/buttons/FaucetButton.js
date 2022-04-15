@@ -27,7 +27,7 @@ export default class FaucetButton extends PureComponent {
   }
 
   render () {
-    if (['ropsten', 'rinkeby', 'kovan'].indexOf(this.props.network) === -1) {
+    if (['ropsten', 'rinkeby', 'kovan', 'bnbtest', 'evmostest'].indexOf(this.props.network) === -1) {
       return null
     }
     return (
