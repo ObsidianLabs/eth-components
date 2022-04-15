@@ -7,6 +7,8 @@ import redux from '@obsidians/redux'
 import utils from '../utils'
 import tokenlist from './tokenlist.json'
 
+const { REACT_APP_SERVER_URL } = process.env
+
 export default class EthersClient {
   constructor (option) {
     const { networkId = '', chainId, url } = option
@@ -172,7 +174,10 @@ class ExplorerProxy {
       offset: size,
       sort: 'desc'
     }
-    return await this.channel.invoke('GET', this.networkId, query)
+    const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${this.networkId}?${new URLSearchParams(query)}`)
+    return await response.json()
+    // TODO: confirm with the infrua service
+    // return await this.channel.invoke('GET', this.networkId, query)
   }
 
   async getTokenTotalSupply (address) {
