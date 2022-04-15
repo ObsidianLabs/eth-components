@@ -196,7 +196,7 @@ const networks = [
   },
   {
     id: 'gnosismain',
-    group: 'nosis(xDai)',
+    group: 'Gnosis(xDai)',
     name: 'Mainnet',
     fullName: 'Gnosis Mainnet',
     icon: 'fas fa-globe',
