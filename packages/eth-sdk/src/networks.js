@@ -11,6 +11,7 @@ const networks = [
     url: '',
     chainId: 1,
     symbol: 'ETH',
+    iconUrl: 'ethereummain',
   },
   {
     id: 'ropsten',
@@ -22,6 +23,7 @@ const networks = [
     url: '',
     chainId: 3,
     symbol: 'ETH',
+    iconUrl: 'ethereumtest',
   },
   {
     id: 'rinkeby',
@@ -33,9 +35,9 @@ const networks = [
     url: '',
     chainId: 4,
     symbol: 'ETH',
+    iconUrl: 'ethereumtest',
   },
   {
-    // id: 'gorli',
     id: 'goerli',
     group: 'ethereum',
     name: 'Goerli',
@@ -45,6 +47,7 @@ const networks = [
     url: '',
     chainId: 5,
     symbol: 'ETH',
+    iconUrl: 'ethereumtest',
   },
   {
     id: 'kovan',
@@ -56,6 +59,7 @@ const networks = [
     url: '',
     chainId: 42,
     symbol: 'ETH',
+    iconUrl: 'ethereumtest',
   },
   {
     id: 'bnbmain',
@@ -79,7 +83,6 @@ const networks = [
     chainId: 97,
     symbol: 'BNB',
   },
-  // new chain Avalanche
   {
     id: 'avalanchemain',
     group: 'Avalanche c-chain',
@@ -125,7 +128,6 @@ const networks = [
     chainId: 80001,
     symbol: 'MATIC',
   },
-  // new chain Fantom
   {
     id: 'fantommain',
     group: 'Fantom',
@@ -148,7 +150,6 @@ const networks = [
     chainId: 4002,
     symbol: 'FTM',
   },
-  // new chain Harmony
   {
     id: 'harmonymain',
     group: 'Harmony',
@@ -193,19 +194,6 @@ const networks = [
     chainId: 71,
     symbol: 'CFX',
   },
-  // new chain Gnosis
-  // seems there is no test net
-  // {
-  //   id: 'gnosistest',
-  //   group: 'xDai',
-  //   name: 'Testnet',
-  //   fullName: 'Gnosis Testnet',
-  //   icon: 'fas fa-globe',
-  //   notification: 'Switched to <b>Gnosis Testnet</b>.',
-  //   url: 'https://rpc.testnet.Gnosis.network//',
-  //   chainId: 4002,
-  //   symbol: 'xDai',
-  // },
   {
     id: 'gnosismain',
     group: 'nosis(xDai)',
@@ -217,9 +205,8 @@ const networks = [
     chainId: 100,
     symbol: 'xDai',
   },
-  // new chain Aurora
   {
-    id: 'Auroramain',
+    id: 'auroramain',
     group: 'Aurora(near)',
     name: 'Mainnet',
     fullName: 'Aurora Mainnet',
@@ -230,7 +217,7 @@ const networks = [
     symbol: 'AOA',
   },
   {
-    id: 'Auroratest',
+    id: 'auroratest',
     group: 'Aurora(near)',
     name: 'Testnet',
     fullName: 'Aurora Testnet',
