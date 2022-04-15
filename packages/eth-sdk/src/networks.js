@@ -105,6 +105,7 @@ const networks = [
     chainId: 43113,
     symbol: 'AVAX',
   },
+  // new chain Polygon 
   {
     id: 'polygonmain',
     group: 'Polygon',
@@ -226,6 +227,17 @@ const networks = [
     chainId: 1313161555,
     symbol: 'AOA',
   },
+  // {
+  //     id: 'evmosmain',
+  //     group: 'Evmos',
+  //     name: 'Mainnet',
+  //     fullName: 'Evmos Mainnet',
+  //     icon: 'fas fa-globe',
+  //     notification: 'Switched to <b>Evmos Mainnet</b>.',
+  //     url: 'https://eth.bd.evmos.org:8545',
+  //     chainId: 9001,
+  //     symbol: 'EVMOS',
+  //   },
   {
     id: 'evmostest',
     group: 'Evmos',

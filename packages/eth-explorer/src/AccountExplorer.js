@@ -14,6 +14,7 @@ import AccountPage from './AccountPage'
 
 import TransferButton from './buttons/TransferButton'
 import FaucetButton from './buttons/FaucetButton'
+import { utils } from '@obsidians/sdk'
 
 class AccountExplorer extends TabbedExplorer {
   static defaultProps = {
@@ -138,7 +139,7 @@ class AccountExplorer extends TabbedExplorer {
         } else if (address.length < 10) {
           tabText = <code>{address}</code>
         } else {
-          tabText = <code>{address.substr(0, 6)}...{address.slice(-4)}</code>
+          tabText = <code>{ utils.abbreviateAddress(address) }</code>
         }
         return tabText
       },

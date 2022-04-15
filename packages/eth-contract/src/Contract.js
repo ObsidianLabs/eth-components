@@ -1,5 +1,5 @@
 import React from 'react'
-import { utils } from '@obsidians/eth-sdk'
+import { utils } from '@obsidians/sdk'
 
 import {
   TabbedExplorer,
@@ -132,7 +132,7 @@ class Contract extends TabbedExplorer {
         } else if (address.length < 10) {
           tabText = <code>{address}</code>
         } else {
-          tabText = <code>{addressEthers.substr(0, 6)}...{addressEthers.slice(-4)}</code>
+          tabText = <code>{ utils.abbreviateAddress(address) }</code>
         }
         return tabText
       },
