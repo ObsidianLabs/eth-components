@@ -10,7 +10,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { BaseProjectManager } from '@obsidians/workspace'
-import { utils } from '@obsidians/eth-sdk'
+import { utils } from '@obsidians/sdk'
 
 export default class AbiInputModal extends PureComponent {
   constructor (props) {
