@@ -112,7 +112,6 @@ export default class AbiInputModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        scrollable
         title='Enter New ABI'
         ActionBtn={this.renderAbiSelectionButton()}
         onConfirm={this.onConfirm}
@@ -132,6 +131,7 @@ export default class AbiInputModal extends PureComponent {
         />
         <DebouncedFormGroup
           size='sm'
+          rows='12'
           label='ABI'
           type='textarea'
           importFromFile='.json'
