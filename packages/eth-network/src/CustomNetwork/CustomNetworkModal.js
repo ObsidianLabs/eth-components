@@ -53,6 +53,7 @@ export default class CustomNetworkModal extends PureComponent {
   renderTableBody = () => {
     const connecting = this.state.connecting
     const customNetworks = this.props.customNetworks.toArray()
+    customNetworks.sort((a, b) => a[0].localeCompare(b[0]))
     if (customNetworks.length) {
       return customNetworks.map(([name, item], i) => (
         <tr key={`custom-network-${i}`} className='hover-flex'>
