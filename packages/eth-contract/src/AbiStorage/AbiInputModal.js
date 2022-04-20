@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import notification from '@obsidians/notification'
 
 import {
   Modal,
@@ -61,9 +62,17 @@ export default class AbiInputModal extends PureComponent {
   }
 
   onChangeAbi = abi => {
+
     try {
-      JSON.parse(abi)
+      let objectAbi = JSON.parse(abi)
+      // for built contract
+      if (objectAbi.abi && objectAbi.abi instanceof Array) {
+        this.setState({ abi: JSON.stringify(objectAbi.abi), validJson: true })
+        return
+      } 
+      if (!(objectAbi instanceof Array)) throw new Error()
     } catch (e) {
+      if (!this.state.abi) notification.error('Invalid json file', `Abi should be an array.`)
       this.setState({ abi, validJson: false })
       return
     }
