@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 
 
 import ActionParamFormGroup from './ActionParamFormGroup'
-import { utils } from '@obsidians/eth-sdk'
+import { utils } from '@obsidians/sdk'
 
 export default class ContractForm extends PureComponent {
   constructor (props) {

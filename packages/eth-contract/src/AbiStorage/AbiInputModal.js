@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import notification from '@obsidians/notification'
 
 import {
   Modal,
@@ -10,7 +11,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { BaseProjectManager } from '@obsidians/workspace'
-import { utils } from '@obsidians/eth-sdk'
+import { utils } from '@obsidians/sdk'
 
 export default class AbiInputModal extends PureComponent {
   constructor (props) {
@@ -61,9 +62,17 @@ export default class AbiInputModal extends PureComponent {
   }
 
   onChangeAbi = abi => {
+
     try {
-      JSON.parse(abi)
+      let objectAbi = JSON.parse(abi)
+      // for built contract
+      if (objectAbi.abi && objectAbi.abi instanceof Array) {
+        this.setState({ abi: JSON.stringify(objectAbi.abi), validJson: true })
+        return
+      } 
+      if (!(objectAbi instanceof Array)) throw new Error()
     } catch (e) {
+      if (!this.state.abi) notification.error('Invalid json file', `Abi should be an array.`)
       this.setState({ abi, validJson: false })
       return
     }
@@ -112,7 +121,6 @@ export default class AbiInputModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        scrollable
         title='Enter New ABI'
         ActionBtn={this.renderAbiSelectionButton()}
         onConfirm={this.onConfirm}
@@ -132,6 +140,7 @@ export default class AbiInputModal extends PureComponent {
         />
         <DebouncedFormGroup
           size='sm'
+          rows='12'
           label='ABI'
           type='textarea'
           importFromFile='.json'

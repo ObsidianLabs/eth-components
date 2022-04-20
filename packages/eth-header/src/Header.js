@@ -6,7 +6,7 @@ import keypairManager from '@obsidians/keypair'
 import { navbarItem } from '@obsidians/workspace'
 import { NewProjectModal } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
-import { utils } from '@obsidians/eth-sdk'
+import { utils } from '@obsidians/sdk'
 
 import headerActions from './headerActions'
 
