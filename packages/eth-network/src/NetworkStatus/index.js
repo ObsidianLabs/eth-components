@@ -9,15 +9,17 @@ import {
 
 import RpcClientModal from './RpcClientModal'
 import networkManager from '../networkManager'
+import connectedIcon from '../assets/icon_connected.png'
 
 export default function NetworkStatus (props) {
   const rpcModal = React.useRef()
 
   const { networkId, current: network } = networkManager
-  
+
+  const networkIcon = (network?.group === 'others' && network?.id !== 'custom') ? <img src={connectedIcon} className='network-icon' /> : <i className={network?.icon} />
   const icon = (
     <div key={`network-${networkId}`} className='d-inline-block mr-1'>
-      <i className={network?.icon} />
+      {networkIcon}
     </div>
   )
 
