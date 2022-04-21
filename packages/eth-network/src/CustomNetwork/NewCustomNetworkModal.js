@@ -20,6 +20,7 @@ export default class CustomNetworkModal extends PureComponent {
       status: null,
       modify: false,
       option: {},
+      originalOption: {},
     }
     this.modal = React.createRef()
     this.input = React.createRef()
@@ -27,7 +28,7 @@ export default class CustomNetworkModal extends PureComponent {
 
   openModal = (modify = false, option = {}) => {
     this.name = option.name
-    this.setState({ pending: false, status: null, modify, option })
+    this.setState({ pending: false, status: null, modify, option, originalOption: option })
     this.modal.current?.openModal()
     setTimeout(() => this.input.current?.focus(), 100)
   }
@@ -46,18 +47,32 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   onConfirm = async () => {
-    const { modify, status, option } = this.state
+    const { modify, status, option, originalOption } = this.state
     if (!status) {
       this.tryCreateSdk({ ...option, notify: false })
     } else {
       if (modify) {
         redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
+        if ((option.url).trim() !== originalOption.url) {
+          this.connect(option)
+        }
       } else {
         redux.dispatch('ADD_CUSTOM_NETWORK', option)
       }
       this.setState({ pending: false, status: null })
       this.modal.current.closeModal()
     }
+  }
+
+  connect = async option => {
+    try {
+      const status = await networkManager.updateCustomNetwork(option)
+      if (status) {
+        redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
+        return
+      }
+    } catch {}
+    notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
   }
 
   render () {

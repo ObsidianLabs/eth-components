@@ -17,9 +17,10 @@ import NewCustomNetworkModal from './NewCustomNetworkModal'
 export default class CustomNetworkModal extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = { connecting: '' }
+    this.state = { connecting: '', customNetworkItem: null }
     this.modal = React.createRef()
     this.newConnectionModal = React.createRef()
+    this.deleteModal = React.createRef()
   }
 
   openModal = (customNetwork = {}) => {
@@ -31,8 +32,17 @@ export default class CustomNetworkModal extends PureComponent {
     this.newConnectionModal.current?.openModal(modify, option)
   }
 
-  delete = name => {
-    redux.dispatch('REMOVE_CUSTOM_NETWORK', name)
+  delete = item => {
+    this.deleteModal.current?.openModal()
+    this.setState({
+      customNetworkItem: item,
+    })
+  }
+
+  deleteConfirm = async () => {
+    redux.dispatch('REMOVE_CUSTOM_NETWORK', this.state.customNetworkItem?.name)
+    this.deleteModal.current.closeModal()
+    // 这里需判断当前custom network 是否连接中，若连接中，需自动连接至启动 IDE 时默认 network
   }
 
   connect = async option => {
@@ -82,10 +92,15 @@ export default class CustomNetworkModal extends PureComponent {
                     onClick={() => this.openNewConnectionModal(true, item.toJS())}
                     icon='fas fa-pencil-alt'
                   />
-                  <DeleteButton
+                  <IconButton
+                    color='transparent'
+                    className='ml-1 text-muted delete-test'
+                    onClick={() => this.delete(item.toJS())}
+                  />
+                  {/* <DeleteButton
                     className='ml-1'
                     onConfirm={() => this.delete(name)}
-                  />
+                  /> */}
                 </div>
               }
             </div>
@@ -97,6 +112,9 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   render () {
+    const networkConnectingText = 'it will be disconnected immediately and cannot be restored.'
+    const networkNotConnectedText = 'it cannot be restored.'
+
     return <>
       <Modal
         ref={this.modal}
@@ -116,6 +134,17 @@ export default class CustomNetworkModal extends PureComponent {
         >
           {this.renderTableBody()}
         </Table>
+      </Modal>
+      <Modal
+        ref={this.deleteModal}
+        title='Delete Custom Network'
+        textConfirm='Delete'
+        noCancel={true}
+        onConfirm={this.deleteConfirm}
+      >
+        <div>
+          Are you sure you want to delete <kbd className='color-danger'>{this.state.customNetworkItem?.name}</kbd> ? Once deleted, {true ? networkConnectingText : networkNotConnectedText}
+        </div>
       </Modal>
       <NewCustomNetworkModal ref={this.newConnectionModal} />
     </>
