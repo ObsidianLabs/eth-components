@@ -15,7 +15,6 @@ export default function NetworkStatus (props) {
   const rpcModal = React.useRef()
 
   const { networkId, current: network } = networkManager
-
   const networkIcon = (network?.group === 'others' && network?.id !== 'custom') ? <img src={connectedIcon} className='network-icon' /> : <i className={network?.icon} />
   const icon = (
     <div key={`network-${networkId}`} className='d-inline-block mr-1'>
