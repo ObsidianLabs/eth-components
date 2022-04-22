@@ -1,32 +1,38 @@
 import React from 'react'
 import CacheRoute from 'react-router-cache-route'
-
 import { connect } from '@obsidians/redux'
-
 import Auth from '@obsidians/auth'
 import { KeypairButton } from '@obsidians/keypair'
 import { TerminalButton } from '@obsidians/workspace'
-
-import { NetworkStatus } from '@obsidians/eth-network'
+import { NetworkStatus, networkManager } from '@obsidians/eth-network'
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
+import { useInterval } from '@obsidians/hooks'
+import redux from '@obsidians/redux'
 
-export default connect(['network', 'queue', 'projects', 'uiState'])(function BottomBar(props) {
+export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiState'])(function BottomBar(props) {
   const {
     network,
     queue,
     projects,
     uiState,
-
+    networkConnect,
     mnemonic = true,
     secretName = mnemonic ? 'Private Key / Mnemonic' : 'Private Key',
     chains,
-
     noNetwork,
   } = props
 
   const localNetwork = uiState.get('localNetwork')
+
+  const handleStatusRefresh = () => {
+    redux.dispatch('CHANGE_NETWORK_STATUS', !networkConnect)
+    if(networkConnect) {
+      redux.dispatch('SELECT_NETWORK', '')
+    }
+  }
+
   let txs
   if (network !== 'dev') {
     txs = queue.getIn([network, 'txs'])
@@ -53,7 +59,7 @@ export default connect(['network', 'queue', 'projects', 'uiState'])(function Bot
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
-    {!noNetwork && <NetworkStatus />}
+    {!noNetwork && <NetworkStatus connected={networkConnect} onRefresh={handleStatusRefresh} />}
     <QueueButton txs={txs} />
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
@@ -63,16 +69,17 @@ export default connect(['network', 'queue', 'projects', 'uiState'])(function Bot
     </AbiStorage>
     <div className='flex-1' />
     {
-      loaded && <>
-        <CacheRoute
-          path={[`/${Auth.username}/:project`, '/local/:project']}
-          render={() => <CompilerSelectors author={selectedProject.get('author')} />}
-        />
-        <CacheRoute
-          path={[`/${Auth.username}/:project`, '/local/:project']}
-          component={TerminalButton}
-        />
-      </>
+      loaded && (
+        <>
+          <CacheRoute
+            path={[`/${Auth.username}/:project`, '/local/:project']}
+            render={() => <CompilerSelectors author={selectedProject.get('author')} />}
+          />
+          <CacheRoute
+            path={[`/${Auth.username}/:project`, '/local/:project']}
+            component={TerminalButton}
+          />
+        </>)
     }
   </>
 })
