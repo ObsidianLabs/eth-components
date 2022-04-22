@@ -30,9 +30,14 @@ export default function NetworkStatus (props) {
         <DropdownItem header>
           <i className='fas fa-hammer mr-1' />network tools
         </DropdownItem>
-        <DropdownItem onClick={() => rpcModal.current?.openModal()}>
-          RPC Client
-        </DropdownItem>
+        {
+          networkId !== 'dev' && <DropdownItem onClick={handleRefreshNetwork}>
+            {
+              connected ? <span key='connect'><i className='fas fa-wifi mr-1' /></span> : <span key='disConnect'><i className='fas fa-wifi-slash mr-1' /></span>
+            }
+            {connected ? 'Disconnect' : 'Reconnect'}
+          </DropdownItem>
+        }
       </DropdownMenu>
     </UncontrolledButtonDropdown>
     <RpcClientModal ref={rpcModal} />
