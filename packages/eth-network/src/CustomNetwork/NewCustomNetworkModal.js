@@ -76,12 +76,12 @@ export default class CustomNetworkModal extends PureComponent {
       const status = await networkManager.updateCustomNetwork(option)
       if (status) {
         redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
-        redux.dispatch('CHANGE_STATUS', true)
+        redux.dispatch('CHANGE_NETWORK_STATUS', true)
         return
       }
     } catch {}
     notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
-    redux.dispatch('CHANGE_STATUS', false)
+    redux.dispatch('CHANGE_NETWORK_STATUS', false)
   }
 
   render() {

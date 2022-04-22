@@ -27,7 +27,10 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
   const localNetwork = uiState.get('localNetwork')
 
   const handleStatusRefresh = () => {
-    redux.dispatch('CHANGE_STATUS', !networkConnect)
+    redux.dispatch('CHANGE_NETWORK_STATUS', !networkConnect)
+    if(networkConnect) {
+      redux.dispatch('SELECT_NETWORK', '')
+    }
   }
 
   let txs

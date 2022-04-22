@@ -45,7 +45,7 @@ export default class BrowserExtension {
     const allAccounts = await this.getAllAccounts()
     this._accounts = allAccounts
     redux.dispatch('UPDATE_UI_STATE', { browserAccounts: allAccounts })
-    redux.dispatch('CHANGE_STATUS', true)
+    redux.dispatch('CHANGE_NETWORK_STATUS', true)
 
     const chainListUrl = `https://chainid.network/chains.json`
     const chainListRes = await fetch(chainListUrl)
@@ -87,7 +87,7 @@ export default class BrowserExtension {
               })
               redux.dispatch('ACTIVE_CUSTOM_NETWORK', option)
               redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
-              redux.dispatch('CHANGE_STATUS', true)
+              redux.dispatch('CHANGE_NETWORK_STATUS', true)
               this.networkManager.updateCustomNetwork(customConfig)
             }
           }

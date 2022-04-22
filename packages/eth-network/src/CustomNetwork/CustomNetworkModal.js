@@ -51,7 +51,7 @@ export default class CustomNetworkModal extends PureComponent {
       const status = await networkManager.updateCustomNetwork(option)
       if (status) {
         redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
-        redux.dispatch('CHANGE_STATUS', true)
+        redux.dispatch('CHANGE_NETWORK_STATUS', true)
         this.modal.current?.closeModal()
         this.setState({ connecting: '' })
         return
@@ -63,8 +63,10 @@ export default class CustomNetworkModal extends PureComponent {
 
   renderTableBody = () => {
     const connecting = this.state.connecting
+    const networkId = redux.getState().network
     const customNetworks = this.props.customNetworks.toArray()
     customNetworks.sort((a, b) => a[0].localeCompare(b[0]))
+
     if (customNetworks.length) {
       return customNetworks.map(([name, item], i) => (
         <tr key={`custom-network-${i}`} className='hover-flex'>
@@ -81,7 +83,7 @@ export default class CustomNetworkModal extends PureComponent {
               {
                 connecting === name
                 ? <><i className='fas fa-spin fa-spinner mr-1' />Connecting...</>
-                : 'Connect'
+                : networkId === name ? 'Connected' : 'Connect'
               }
               </Button>
               {
@@ -115,7 +117,7 @@ export default class CustomNetworkModal extends PureComponent {
   render () {
     const networkConnectingText = 'it will be disconnected immediately and cannot be restored.'
     const networkNotConnectedText = 'it cannot be restored.'
-
+    
     return <>
       <Modal
         ref={this.modal}
@@ -139,6 +141,7 @@ export default class CustomNetworkModal extends PureComponent {
       <Modal
         ref={this.deleteModal}
         title='Delete Custom Network'
+        size='md'
         textConfirm='Delete'
         noCancel={true}
         onConfirm={this.deleteConfirm}

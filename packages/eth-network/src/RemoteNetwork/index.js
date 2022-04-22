@@ -64,7 +64,7 @@ export default class RemoteNetwork extends PureComponent {
       console.warn(error)
       if (error.message.startsWith('missing response')) {
         notification.error('Internet Disconnected')
-        redux.dispatch('CHANGE_STATUS', false)
+        redux.dispatch('CHANGE_NETWORK_STATUS', false)
         if (this.h) {
           clearInterval(this.h)
         }
