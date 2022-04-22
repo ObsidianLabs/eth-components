@@ -1,31 +1,33 @@
 import React from 'react'
-
 import {
   UncontrolledButtonDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
 } from '@obsidians/ui-components'
-
 import RpcClientModal from './RpcClientModal'
 import networkManager from '../networkManager'
-import connectedIcon from '../assets/icon_connected.png'
+import notification from '@obsidians/notification'
 
-export default function NetworkStatus (props) {
+export default function NetworkStatus(props) {
   const rpcModal = React.useRef()
-
   const { networkId, current: network } = networkManager
-  const networkIcon = (network?.group === 'others' && network?.id !== 'custom') ? <img src={connectedIcon} className='network-icon' /> : <i className={network?.icon} />
-  const icon = (
-    <div key={`network-${networkId}`} className='d-inline-block mr-1'>
-      {networkIcon}
-    </div>
-  )
+  const { connected } = props
+
+  const handleRefreshNetwork = () => {
+    if (!connected) {
+      networkManager.reconnectNetwork()
+    }
+    props.onRefresh && props.onRefresh()
+    !connected ? notification.success(`Network`, ` Network connected`) : notification.error(`Network`, ` Network disconnect`)
+  }
 
   return <>
     <UncontrolledButtonDropdown direction='up'>
       <DropdownToggle size='sm' color='default' className='rounded-0 px-2 text-muted'>
-        {icon}{network?.name}
+        <span key={`network-${networkId}`} className='d-inline-block mr-1'>
+          <i className={network?.icon} />
+        </span>{network?.name}
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>
         <DropdownItem header>

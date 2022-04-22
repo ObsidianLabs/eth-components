@@ -13,7 +13,7 @@ import notification from '@obsidians/notification'
 import networkManager from '../networkManager'
 
 export default class CustomNetworkModal extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       pending: false,
@@ -48,19 +48,26 @@ export default class CustomNetworkModal extends PureComponent {
 
   onConfirm = async () => {
     const { modify, status, option, originalOption } = this.state
-    if (!status) {
-      this.tryCreateSdk({ ...option, notify: false })
+    const customNetworkNames = Object.keys(redux.getState().customNetworks.toJS());
+
+    if (customNetworkNames.includes(option.name)) {
+      notification.error('Invalid network name', `<b>${option.name}</b> alreay exists.`)
+      return
     } else {
-      if (modify) {
-        redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
-        if ((option.url).trim() !== originalOption.url) {
-          this.connect(option)
-        }
+      if (!status) {
+        this.tryCreateSdk({ ...option, notify: false })
       } else {
-        redux.dispatch('ADD_CUSTOM_NETWORK', option)
+        if (modify) {
+          redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
+          if ((option.url).trim() !== originalOption.url) {
+            this.connect(option)
+          }
+        } else {
+          redux.dispatch('ADD_CUSTOM_NETWORK', option)
+        }
+        this.setState({ pending: false, status: null })
+        this.modal.current.closeModal()
       }
-      this.setState({ pending: false, status: null })
-      this.modal.current.closeModal()
     }
   }
 
@@ -69,13 +76,15 @@ export default class CustomNetworkModal extends PureComponent {
       const status = await networkManager.updateCustomNetwork(option)
       if (status) {
         redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
+        redux.dispatch('CHANGE_STATUS', true)
         return
       }
     } catch {}
     notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
+    redux.dispatch('CHANGE_STATUS', false)
   }
 
-  render () {
+  render() {
     const {
       placeholder = 'http(s)://...',
     } = this.props
@@ -104,7 +113,7 @@ export default class CustomNetworkModal extends PureComponent {
           onChange={url => this.setState({ status: null, option: { ...option, url } })}
         />
         {
-          status && 
+          status &&
           <FormGroup>
             <Label>Network info</Label>
             <pre className='text-body pre-wrap break-all small user-select mb-0'>

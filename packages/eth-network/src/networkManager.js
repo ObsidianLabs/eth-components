@@ -84,6 +84,10 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
+  async reconnectNetwork () {
+    this.setNetwork(this.network)
+  }
+
   async setNetwork (network, { force, redirect = true, notify = true } = {}) {
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
     if (window.ethereum && window.ethereum.isConnected() && network.chainId){
@@ -151,6 +155,7 @@ class NetworkManager {
     redux.dispatch('SELECT_NETWORK', network.id)
     if (notify) {
       notification.success(`Network`, network.notification)
+      redux.dispatch('CHANGE_STATUS', true)
     }
     if (redirect) {
       headerActions.updateNetwork(network.id)
@@ -170,6 +175,7 @@ class NetworkManager {
 
     if (info && notify) {
       redux.dispatch('SELECT_NETWORK', `custom`)
+      redux.dispatch('CHANGE_STATUS', true)
       notification.success(`Network Connected`, `Connected to network at <b>${url}</b>`)
     }
 
