@@ -19,6 +19,13 @@ export default class RemoteNetworkInfo extends PureComponent {
             title={networkManager.current?.fullName}
             right={EditButton}
           >
+            {
+              networkManager.current?.group !== 'others' && networkManager.current?.symbol &&
+              <TableCardRow
+                name='Native Coin'
+                badge={networkManager.current?.symbol}
+              />
+            }
             <TableCardRow name='Node URL' badge={url} badgeColor='primary' />
             {
               info?.chainId &&
