@@ -6,7 +6,7 @@ import {
   FormGroup,
   Label,
 } from '@obsidians/ui-components'
-
+import headerActions from '@obsidians/eth-header'
 import redux from '@obsidians/redux'
 import notification from '@obsidians/notification'
 
@@ -48,16 +48,18 @@ export default class CustomNetworkModal extends PureComponent {
 
   onConfirm = async () => {
     const { modify, status, option, originalOption } = this.state
-    const customNetworkNames = Object.keys(redux.getState().customNetworks.toJS());
+    const customNetworkMap = redux.getState().customNetworks.toJS()
+    const customNetworkNames = Object.keys(customNetworkMap);
+    const connected = customNetworkMap[option.name]?.active;
 
-    if (customNetworkNames.includes(option.name)) {
+    if (customNetworkNames.includes(option.name) && !modify) {
       notification.error('Invalid network name', `<b>${option.name}</b> alreay exists.`)
       return
     } else {
       if (!status) {
         this.tryCreateSdk({ ...option, notify: false })
       } else {
-        if (modify) {
+        if (modify && connected) {
           redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
           if ((option.url).trim() !== originalOption.url) {
             this.connect(option)
@@ -100,6 +102,11 @@ export default class CustomNetworkModal extends PureComponent {
       if (status) {
         redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
         redux.dispatch('CHANGE_NETWORK_STATUS', true)
+        headerActions.updateNetwork(option.name)
+        networkManager.setNetwork({
+          ...option,
+          id: option.name
+        })
         return
       }
     } catch { }
