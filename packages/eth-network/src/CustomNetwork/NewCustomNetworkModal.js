@@ -41,7 +41,7 @@ export default class CustomNetworkModal extends PureComponent {
         this.setState({ pending: false, status })
         return
       }
-    } catch {}
+    } catch { }
     notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
     this.setState({ pending: false })
   }
@@ -65,6 +65,29 @@ export default class CustomNetworkModal extends PureComponent {
         } else {
           redux.dispatch('ADD_CUSTOM_NETWORK', option)
         }
+        const customeNetworkMap = redux.getState().customNetworks.toJS()
+        const customeNetworkGroup = Object.keys(customeNetworkMap).map(name => ({
+          group: 'others',
+          icon: 'fas fa-vial',
+          id: name,
+          networkId: name,
+          name: name,
+          fullName: name,
+          notification: `Switched to <b>Fantom Testnet</b>.`,
+          url: customeNetworkMap[name].url,
+        }))
+        const newNetworks = networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
+          fullName: 'Custom Network',
+          group: 'others',
+          icon: 'fas fa-vial',
+          id: 'custom',
+          name: 'Custom',
+          notification: 'Switched to <b>Custom</b> network.',
+          symbol: 'ETH',
+          url: '',
+        }]).concat(customeNetworkGroup)
+        networkManager.addNetworks(newNetworks)
+
         this.setState({ pending: false, status: null })
         this.modal.current.closeModal()
       }
@@ -79,7 +102,7 @@ export default class CustomNetworkModal extends PureComponent {
         redux.dispatch('CHANGE_NETWORK_STATUS', true)
         return
       }
-    } catch {}
+    } catch { }
     notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
     redux.dispatch('CHANGE_NETWORK_STATUS', false)
   }

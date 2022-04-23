@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-
+import headerActions from '@obsidians/eth-header'
 import {
   Modal,
   Table,
@@ -15,7 +15,7 @@ import networkManager from '../networkManager'
 import NewCustomNetworkModal from './NewCustomNetworkModal'
 
 export default class CustomNetworkModal extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = { connecting: '', customNetworkItem: null }
     this.modal = React.createRef()
@@ -40,9 +40,19 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   deleteConfirm = async () => {
-    redux.dispatch('REMOVE_CUSTOM_NETWORK', this.state.customNetworkItem?.name)
+    const currentNetwork = this.state.customNetworkItem?.name
     this.deleteModal.current.closeModal()
-    // 这里需判断当前custom network 是否连接中，若连接中，需自动连接至启动 IDE 时默认 network
+    const customNetworkMap = redux.getState().customNetworks.toJS()
+
+    if (redux.getState().networkConnect && customNetworkMap[currentNetwork].active) {
+      this.modal.current.closeModal()
+      networkManager.setNetwork(networkManager.networks[0], {
+        redirect: false,
+        notify: false
+      })
+    }
+    networkManager.deleteNetwork(currentNetwork)
+    redux.dispatch('REMOVE_CUSTOM_NETWORK', currentNetwork)
   }
 
   connect = async option => {
@@ -51,19 +61,24 @@ export default class CustomNetworkModal extends PureComponent {
       const status = await networkManager.updateCustomNetwork(option)
       if (status) {
         redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
+        redux.dispatch('SELECT_NETWORK', option.name)
         redux.dispatch('CHANGE_NETWORK_STATUS', true)
         this.modal.current?.closeModal()
         this.setState({ connecting: '' })
+        headerActions.updateNetwork(option.name)
+        networkManager.setNetwork({
+          ...option,
+          id: option.name
+        })
         return
       }
-    } catch {}
+    } catch { }
     notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
     this.setState({ connecting: '' })
   }
 
   renderTableBody = () => {
     const connecting = this.state.connecting
-    const networkId = redux.getState().network
     const customNetworks = this.props.customNetworks.toArray()
     customNetworks.sort((a, b) => a[0].localeCompare(b[0]))
 
@@ -80,11 +95,10 @@ export default class CustomNetworkModal extends PureComponent {
                 color='success'
                 onClick={() => this.connect(item.toJS())}
               >
-              {
-                connecting === name
-                ? <><i className='fas fa-spin fa-spinner mr-1' />Connecting...</>
-                : networkId === name ? 'Connected' : 'Connect'
-              }
+                {
+                  connecting === name
+                    ? <><i className='fas fa-spin fa-spinner mr-1' />Connecting...</> : 'Connect'
+                }
               </Button>
               {
                 connecting !== name &&
@@ -100,10 +114,6 @@ export default class CustomNetworkModal extends PureComponent {
                     className='ml-1 text-muted delete-test'
                     onClick={() => this.delete(item.toJS())}
                   />
-                  {/* <DeleteButton
-                    className='ml-1'
-                    onConfirm={() => this.delete(name)}
-                  /> */}
                 </div>
               }
             </div>
@@ -114,10 +124,13 @@ export default class CustomNetworkModal extends PureComponent {
     return <tr key='custom-network-none'><td align='middle' colSpan={3}>(No Custom Networks)</td></tr>
   }
 
-  render () {
+  render() {
     const networkConnectingText = 'it will be disconnected immediately and cannot be restored.'
     const networkNotConnectedText = 'it cannot be restored.'
-    
+    const currentNetwork = this.state.customNetworkItem?.name
+    const customNetworkMap = redux.getState().customNetworks.toJS()
+    const connected = redux.getState().networkConnect && customNetworkMap[currentNetwork]?.active
+
     return <>
       <Modal
         ref={this.modal}
@@ -147,7 +160,7 @@ export default class CustomNetworkModal extends PureComponent {
         onConfirm={this.deleteConfirm}
       >
         <div>
-          Are you sure you want to delete <kbd className='color-danger'>{this.state.customNetworkItem?.name}</kbd> ? Once deleted, {true ? networkConnectingText : networkNotConnectedText}
+          Are you sure you want to delete <kbd className='color-danger'>{this.state.customNetworkItem?.name}</kbd> ? Once deleted, {connected ? networkConnectingText : networkNotConnectedText}
         </div>
       </Modal>
       <NewCustomNetworkModal ref={this.newConnectionModal} />

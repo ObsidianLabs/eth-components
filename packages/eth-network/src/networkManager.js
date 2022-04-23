@@ -6,16 +6,14 @@ import redux from '@obsidians/redux'
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
 class NetworkManager {
-  constructor () {
+  constructor() {
     this.networks = []
-
     this._sdk = null
     this.network = undefined
-    this.networks = []
     this.Sdks = new Map()
   }
 
-  addSdk (Sdk, networks) {
+  addSdk(Sdk, networks) {
     networks.forEach(n => this.Sdks.set(n.id, Sdk))
     this.networks = [...this.networks, ...networks]
 
@@ -25,27 +23,41 @@ class NetworkManager {
     }
   }
 
-  get networkId () {
+  get networkId() {
     return this.network?.id
   }
 
-  get Sdk () {
+  get Sdk() {
     return this.Sdks.get(this.networkId)
   }
 
-  get sdk () {
+  get sdk() {
     return this._sdk
   }
 
-  get current () {
+  get current() {
     return this.networks.find(n => n.id === this.networkId)
   }
 
-  get symbol () {
+  get symbol() {
     return this.current?.symbol
   }
 
-  newSdk (params) {
+  addNetworks(networks) {
+    networks.forEach(n => this.Sdks.set(n.id, this.Sdk))
+    this.networks = networks
+  }
+
+  deleteNetwork(networkId) {
+    const index = this.networks.findIndex(n => n.id === networkId)
+    if (index === -1) {
+      return
+    }
+    this.networks.splice(index, 1)
+    this.Sdks.delete(networkId)
+  }
+
+  newSdk(params) {
     const networkId = params.id.split('.')[0]
     const Sdk = this.Sdks.get(networkId)
     if (!Sdk) {
@@ -54,7 +66,7 @@ class NetworkManager {
     return new Sdk(params)
   }
 
-  async updateSdk (params) {
+  async updateSdk(params) {
     this._sdk = this.newSdk({ ...this.network, ...params })
     await new Promise(resolve => {
       const h = setInterval(() => {
@@ -70,7 +82,7 @@ class NetworkManager {
     })
   }
 
-  async disposeSdk (params) {
+  async disposeSdk(params) {
     this._sdk && this._sdk.dispose()
     if (this.networkId === 'dev') {
       this._sdk = null
@@ -80,27 +92,28 @@ class NetworkManager {
     }
   }
 
-  onSdkDisposed (callback) {
+  onSdkDisposed(callback) {
     this.onSdkDisposedCallback = callback
   }
 
-  async reconnectNetwork () {
+  async reconnectNetwork() {
     this.setNetwork(this.network)
   }
 
-  async setNetwork (network, { force, redirect = true, notify = true } = {}) {
+  async setNetwork(network, { force, redirect = true, notify = true } = {}) {
+    console.log(network, '123')
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
-    if (window.ethereum && window.ethereum.isConnected() && network.chainId){
+    if (window.ethereum && window.ethereum.isConnected() && network.chainId) {
       const hexChainId = `0x${network.chainId.toString(16)}`
       if (window.ethereum.chainId !== hexChainId) {
-        try{
+        try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{
               chainId: hexChainId,
             }]
           })
-        } catch(e) {
+        } catch (e) {
           if (e.code === 4902) {
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
@@ -162,7 +175,7 @@ class NetworkManager {
     }
   }
 
-  async updateCustomNetwork ({ url, option = '{}', notify = true }) {
+  async updateCustomNetwork({ url, option = '{}', notify = true }) {
     try {
       if (option) {
         option = JSON.parse(option)
@@ -182,7 +195,7 @@ class NetworkManager {
     return info
   }
 
-  async createSdk (params) {
+  async createSdk(params) {
     const sdk = this.newSdk(params)
     try {
       const info = await sdk.networkInfo()
