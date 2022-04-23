@@ -19,7 +19,7 @@ export default function NetworkStatus(props) {
       networkManager.reconnectNetwork()
     }
     props.onRefresh && props.onRefresh()
-    !connected ? notification.success(`Network`, ` Network connected`) : notification.error(`Network`, ` Network disconnect`)
+    connected && notification.error(`Network`, ` Network disconnect`)
   }
 
   return <>

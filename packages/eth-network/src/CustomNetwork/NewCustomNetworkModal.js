@@ -75,7 +75,7 @@ export default class CustomNetworkModal extends PureComponent {
           networkId: name,
           name: name,
           fullName: name,
-          notification: `Switched to <b>Fantom Testnet</b>.`,
+          notification: `Switched to <b>${name}</b>.`,
           url: customeNetworkMap[name].url,
         }))
         const newNetworks = networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
