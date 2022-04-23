@@ -11,21 +11,21 @@ import { utils } from '@obsidians/sdk'
 import headerActions from './headerActions'
 
 export default class Header extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       keypairs: []
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     keypairManager.loadAllKeypairs().then(this.updateKeypairs)
     keypairManager.onUpdated(this.updateKeypairs)
   }
 
   updateKeypairs = keypairs => this.setState({ keypairs })
 
-  render () {
+  render() {
     const {
       noExplorer,
       profile,
@@ -160,7 +160,7 @@ export default class Header extends PureComponent {
       },
     }
 
-    const networkReplaceName = Object.assign({}, network, {name: network.fullName})
+    const networkReplaceName = Object.assign({}, network, { name: network.fullName })
     const networkNavbarItem = {
       route: 'network',
       title: 'Network',
@@ -186,7 +186,7 @@ export default class Header extends PureComponent {
           {logo}
         </Navbar>
         <NewProjectModal createProject={createProject} />
-        { AuthModal && <AuthModal /> }
+        {AuthModal && <AuthModal />}
       </>
     )
   }
