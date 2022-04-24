@@ -21,7 +21,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
     mnemonic = true,
     secretName = mnemonic ? 'Private Key / Mnemonic' : 'Private Key',
     chains,
-    noNetwork,
+    noNetwork = false,
   } = props
 
   const localNetwork = uiState.get('localNetwork')

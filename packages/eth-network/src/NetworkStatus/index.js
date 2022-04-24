@@ -8,6 +8,7 @@ import {
 import RpcClientModal from './RpcClientModal'
 import networkManager from '../networkManager'
 import notification from '@obsidians/notification'
+import classnames from 'classnames'
 
 export default function NetworkStatus(props) {
   const rpcModal = React.useRef()
@@ -25,22 +26,19 @@ export default function NetworkStatus(props) {
   return <>
     <UncontrolledButtonDropdown direction='up'>
       <DropdownToggle size='sm' color='default' className='rounded-0 px-2 text-muted'>
-        <span key={`network-${networkId}`} className='d-inline-block mr-1'>
-          <i className={network?.icon} />
-        </span>{network?.name}
+        <span key={`network-${networkId}`} className={`${classnames('d-inline-block mr-1', connected ? 'color-success' : '')}`}>
+          <i className='fas fa-wifi mr-1' />
+        </span>{network ? network.name : 'No Network'}
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>
         <DropdownItem header>
-          network tools
+          <i className='fas fa-hammer mr-1' /> network tools
         </DropdownItem>
         <DropdownItem onClick={() => rpcModal.current?.openModal()}>
-          <i className='fas fa-hammer mr-1' /> RPC Client
+          RPC Client
         </DropdownItem>
         {
-          networkId !== 'dev' && <DropdownItem onClick={handleRefreshNetwork}>
-            {
-              connected ? <span key='connect'><i className='fas fa-wifi mr-1' /></span> : <span key='disConnect'><i className='fas fa-wifi-slash mr-1' /></span>
-            }
+          (networkId !== 'dev' && network) && <DropdownItem onClick={handleRefreshNetwork}>
             {connected ? 'Disconnect' : 'Reconnect'}
           </DropdownItem>
         }
