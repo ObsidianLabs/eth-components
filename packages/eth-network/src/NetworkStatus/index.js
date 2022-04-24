@@ -31,7 +31,10 @@ export default function NetworkStatus(props) {
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>
         <DropdownItem header>
-          <i className='fas fa-hammer mr-1' />network tools
+          network tools
+        </DropdownItem>
+        <DropdownItem onClick={() => rpcModal.current?.openModal()}>
+          <i className='fas fa-hammer mr-1' /> RPC Client
         </DropdownItem>
         {
           networkId !== 'dev' && <DropdownItem onClick={handleRefreshNetwork}>
