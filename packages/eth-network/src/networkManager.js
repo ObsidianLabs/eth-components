@@ -104,28 +104,28 @@ class NetworkManager {
 
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
 
-    const chainId = this.browserExtension.getChainId ? await this.browserExtension.getChainId() 
-    : await this.browserExtension.ethereum.request({ method: 'eth_chainId' })
-    const switchChain = this.browserExtension.switchChain.bind(this.browserExtension) || (chainId => {
-      return this.browserExtension.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{
-          chainId,
-        }]
-      })
-    })
-    const addChain = this.browserExtension.addChain.bind(this.browserExtension) || (({chainId, chainName, rpcUrls}) => {
-      return this.browserExtension.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [{
-          chainId,
-          chainName,
-          rpcUrls,
-        }],
-      })
-    })
 
-    if (this.browserExtension.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId){
+    if (this.browserExtension && this.browserExtension.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId){
+      const chainId = this.browserExtension.getChainId ? await this.browserExtension.getChainId() 
+      : await this.browserExtension.ethereum.request({ method: 'eth_chainId' })
+      const switchChain = this.browserExtension.switchChain.bind(this.browserExtension) || (chainId => {
+        return this.browserExtension.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{
+            chainId,
+          }]
+        })
+      })
+      const addChain = this.browserExtension.addChain.bind(this.browserExtension) || (({chainId, chainName, rpcUrls}) => {
+        return this.browserExtension.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId,
+            chainName,
+            rpcUrls,
+          }],
+        })
+      })
       const hexChainId = `0x${network.chainId.toString(16)}`
       if (chainId !== hexChainId) {
         try{
