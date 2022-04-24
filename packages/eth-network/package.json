@@ -28,6 +28,7 @@
     "@obsidians/redux": "^0.3.0",
     "@obsidians/terminal": "^0.3.0",
     "@obsidians/ui-components": "^0.3.0",
+    "@obsidians/hooks": "^0.1.0",
     "semver": "^7.3.2"
   },
   "devDependencies": {

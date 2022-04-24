@@ -10,7 +10,7 @@ import tokenlist from './tokenlist.json'
 const { REACT_APP_SERVER_URL } = process.env
 
 export default class EthersClient {
-  constructor (option) {
+  constructor(option) {
     const { networkId = '', chainId, url } = option
     this.networkId = networkId
     this.chainId = chainId
@@ -27,7 +27,7 @@ export default class EthersClient {
         })
       }
     }
-    
+
     this.explorer = new ExplorerProxy(networkId)
 
     if (platform.isDesktop) {
@@ -38,30 +38,30 @@ export default class EthersClient {
     }
   }
 
-  get url () {
+  get url() {
     return this.provider && this.provider.connection && this.provider.connection.url
   }
 
-  dispose () {
+  dispose() {
     if (platform.isDesktop) {
       this.channel.invoke('unsetNetwork')
     }
   }
 
-  async networkInfo () {
+  async networkInfo() {
     return await this.provider.getNetwork()
-  }
+}
 
-  async getStatus () {
+  async getStatus() {
     return await this.provider.getBlock('latest')
   }
 
-  async latest () {
+  async latest() {
     const status = await this.getStatus()
     return status.number
   }
 
-  async getAccount (address) {
+  async getAccount(address) {
     const balance = await this.provider.getBalance(address)
     const code = await this.provider.getCode(address)
     const nonce = await this.provider.getTransactionCount(address)
@@ -74,7 +74,7 @@ export default class EthersClient {
     }
   }
 
-  async getTransactions (address, page, size) {
+  async getTransactions(address, page, size) {
     address = address.toLowerCase()
     if (this.networkId.startsWith('dev')) {
       const { queue } = redux.getState()
@@ -104,7 +104,7 @@ export default class EthersClient {
     return { length: 0, list: result.result }
   }
 
-  async getTokens (address) {
+  async getTokens(address) {
     if (this.chainId !== 1) {
       return
     }
@@ -133,7 +133,7 @@ export default class EthersClient {
     })
   }
 
-  async getTokenInfo (address) {
+  async getTokenInfo(address) {
     if (this.chainId !== 1) {
       return
     }
@@ -146,24 +146,24 @@ export default class EthersClient {
     }
   }
 
-  async _getTokenTotalSupply (address) {
+  async _getTokenTotalSupply(address) {
     const result = await this.explorer.getTokenTotalSupply(address)
     return result.result
   }
 
-  async callRpc (method, params) {
+  async callRpc(method, params) {
     return await this.provider.send(method, params)
   }
 }
 
 
 class ExplorerProxy {
-  constructor (networkId) {
+  constructor(networkId) {
     this.networkId = networkId
     this.channel = new IpcChannel('explorer')
   }
 
-  async getHistory (address, page = 0, size = 10) {
+  async getHistory(address, page = 0, size = 10) {
     const query = {
       module: 'account',
       action: 'txlist',
@@ -180,7 +180,7 @@ class ExplorerProxy {
     // return await this.channel.invoke('GET', this.networkId, query)
   }
 
-  async getTokenTotalSupply (address) {
+  async getTokenTotalSupply(address) {
     const query = {
       module: 'stats',
       action: 'tokensupply',
