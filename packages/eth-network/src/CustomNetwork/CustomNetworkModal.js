@@ -5,7 +5,6 @@ import {
   Table,
   Button,
   IconButton,
-  DeleteButton,
 } from '@obsidians/ui-components'
 
 import redux from '@obsidians/redux'

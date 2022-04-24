@@ -104,11 +104,10 @@ class NetworkManager {
 
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
 
-
-    if (this.browserExtension && this.browserExtension.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId){
+    if (this.browserExtension && this.browserExtension?.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId){
       const chainId = this.browserExtension.getChainId ? await this.browserExtension.getChainId() 
       : await this.browserExtension.ethereum.request({ method: 'eth_chainId' })
-      const switchChain = this.browserExtension.switchChain.bind(this.browserExtension) || (chainId => {
+      const switchChain = this.browserExtension?.switchChain?.bind(this.browserExtension) || (chainId => {
         return this.browserExtension.ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{
@@ -116,7 +115,7 @@ class NetworkManager {
           }]
         })
       })
-      const addChain = this.browserExtension.addChain.bind(this.browserExtension) || (({chainId, chainName, rpcUrls}) => {
+      const addChain = this.browserExtension?.addChain?.bind(this.browserExtension) || (({chainId, chainName, rpcUrls}) => {
         return this.browserExtension.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
@@ -195,8 +194,9 @@ class NetworkManager {
     }
 
     redux.dispatch('SELECT_NETWORK', network.id)
+
     if (notify) {
-      notification.success(`Network`, network.notification)
+      network.notification && notification.success(`Network`, network.notification)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
     }
     if (redirect) {

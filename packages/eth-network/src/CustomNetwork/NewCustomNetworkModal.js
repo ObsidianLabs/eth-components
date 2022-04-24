@@ -59,9 +59,11 @@ export default class CustomNetworkModal extends PureComponent {
       if (!status) {
         this.tryCreateSdk({ ...option, notify: false })
       } else {
-        if (modify && connected) {
+        console.log(option)
+
+        if (modify) {
           redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
-          if ((option.url).trim() !== originalOption.url) {
+          if (option.url.trim() !== originalOption.url && connected) {
             this.connect(option)
           }
         } else {
@@ -77,7 +79,7 @@ export default class CustomNetworkModal extends PureComponent {
           fullName: name,
           notification: `Switched to <b>${name}</b>.`,
           url: customeNetworkMap[name].url,
-        }))
+        })).sort((a, b) => a.name.localeCompare(b.name))
         const newNetworks = networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
           fullName: 'Custom Network',
           group: 'others',
