@@ -18,6 +18,7 @@ export default {
     }
   ],
   external: [
+    'react-router-dom',
     ...Object.keys(pkg.dependencies),
     ...Object.keys(pkg.peerDependencies),
   ],
