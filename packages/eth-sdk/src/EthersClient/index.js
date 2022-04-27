@@ -100,8 +100,11 @@ export default class EthersClient {
       return { length: list.length, list }
     }
 
+    console.log('====触发历史记录接口====');
     const result = await this.explorer.getHistory(address, page, size)
-    return { length: 0, list: result.result }
+    console.log('result=====',result);
+    return { length: 0, list: (result ? result.result : []) }
+    // return { length: 0, list: result.result }
   }
 
   async getTokens(address) {
@@ -174,8 +177,18 @@ class ExplorerProxy {
       offset: size,
       sort: 'desc'
     }
+    
     const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${this.networkId}?${new URLSearchParams(query)}`)
-    return await response.json()
+    // return await response.json()
+
+    try {
+      console.log('=====get result ====');
+      return await response.json()
+    } catch (error) {
+      console.log('=====get error ====',error);
+      return {}
+    }
+
     // TODO: confirm with the infrua service
     // return await this.channel.invoke('GET', this.networkId, query)
   }
