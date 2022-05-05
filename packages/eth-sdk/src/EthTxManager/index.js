@@ -1,18 +1,17 @@
 import { ethers } from 'ethers'
-
 import utils from '../utils'
 import signatureProvider from './signatureProvider'
 
 export default class EthTxManager {
-  constructor (client) {
+  constructor(client) {
     this.client = client
   }
 
-  get provider () {
+  get provider() {
     return this.client.provider
   }
 
-  async getTransferTx (Contract, { from, to, token, amount }, override) {
+  async getTransferTx(Contract, { from, to, token, amount }, override) {
     let value
     try {
       if (token === 'core' || !token) {
@@ -40,7 +39,7 @@ export default class EthTxManager {
     }
   }
 
-  async getDeployTx ({ abi, bytecode, amount, parameters }, override) {
+  async getDeployTx({ abi, bytecode, amount, parameters }, override) {
     const factory = new ethers.ContractFactory(abi, bytecode)
     let value
     try {
@@ -60,11 +59,20 @@ export default class EthTxManager {
     }
   }
 
-  async estimate ({ tx }) {
+   
+  async estimate({ tx }) {
     // const gasPrice = await this.client.callRpc('eth_gasPrice', [])
+    const supportsEIP1559 = await this.provider.getBlock("latest").baseFeePerGas !== undefined
     const result = await this.provider.estimateGas(tx)
     const feeData = await this.provider.getFeeData()
 
+    if (!supportsEIP1559) {
+      return {
+        gasLimit: result.toString(),
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+      }
+    }
     return {
       gasLimit: result.toString(),
       maxFeePerGas: BigInt(feeData.maxFeePerGas).toString(10),
@@ -72,7 +80,7 @@ export default class EthTxManager {
     }
   }
 
-  sendTransaction ({ tx, getResult }, browserExtension) {
+  sendTransaction({ tx, getResult }, browserExtension) {
     let pendingTx
     if (this.provider.isMetaMask && browserExtension && browserExtension.currentAccount === tx.from.toLowerCase()) {
       const signer = this.provider.getSigner(tx.from)
