@@ -125,7 +125,7 @@ export default class AbiActionForm extends PureComponent {
     if (noGasOptions) {
       return null
     }
-    const txOptions = networkManager.sdk?.utils.txOptions
+    const txOptions = networkManager.sdk?.txOptions
     if (!txOptions?.list.length) {
       return null
     }

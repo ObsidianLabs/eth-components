@@ -82,7 +82,7 @@ class NetworkManager {
     })
   }
 
-  async disposeSdk(params) {
+  async disposeSdk() {
     this._sdk && this._sdk.dispose()
     if (this.networkId === 'dev') {
       this._sdk = null
@@ -100,14 +100,15 @@ class NetworkManager {
     this.setNetwork(this.network)
   }
 
-  async setNetwork (network, { force, redirect = true, notify = true } = {}) {
+  async setNetwork(network, { force, redirect = true, notify = true } = {}) {
 
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
 
-    if (this.browserExtension && this.browserExtension?.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId){
-      const chainId = this.browserExtension.getChainId ? await this.browserExtension.getChainId() 
-      : await this.browserExtension.ethereum.request({ method: 'eth_chainId' })
-      const switchChain = this.browserExtension?.switchChain?.bind(this.browserExtension) || (chainId => {
+    if (this.browserExtension && this.browserExtension?.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId) {
+      const chainId = this.browserExtension.getChainId ? await this.browserExtension.getChainId()
+        : await this.browserExtension.ethereum.request({ method: 'eth_chainId' })
+      
+        const switchChain = this.browserExtension?.switchChain?.bind(this.browserExtension) || (chainId => {
         return this.browserExtension.ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{
@@ -115,7 +116,8 @@ class NetworkManager {
           }]
         })
       })
-      const addChain = this.browserExtension?.addChain?.bind(this.browserExtension) || (({chainId, chainName, rpcUrls}) => {
+      
+      const addChain = this.browserExtension?.addChain?.bind(this.browserExtension) || (({ chainId, chainName, rpcUrls }) => {
         return this.browserExtension.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
@@ -125,49 +127,24 @@ class NetworkManager {
           }],
         })
       })
+      
       const hexChainId = `0x${network.chainId.toString(16)}`
+      
       if (chainId !== hexChainId) {
-        try{
+        try {
           await switchChain(hexChainId)
-          // await this.browserExtension.ethereum.request({
-          //   method: 'wallet_switchEthereumChain',
-          //   params: [{
-          //     chainId: hexChainId,
-          //   }]
-          // })
-        } catch(e) {
+        } catch (e) {
           if (e.code === 4902) {
             await addChain({
-                chainId: hexChainId,
-                chainName: network.fullName,
-                rpcUrls: [network.url],
+              chainId: hexChainId,
+              chainName: network.fullName,
+              rpcUrls: [network.url],
             })
             await switchChain(hexChainId)
-            // await this.browserExtension.ethereum.request({
-            //   method: 'wallet_addEthereumChain',
-            //   params: [{
-            //     chainId: hexChainId,
-            //     chainName: network.fullName,
-            //     rpcUrls: [network.url],
-            //   }],
-            // });
-            // await this.browserExtension.ethereum.request({
-            //   method: 'wallet_switchEthereumChain',
-            //   params: [{
-            //     chainId: hexChainId,
-            //   }]
-            // })
           }
         }
       }
     }
-
-    // if (this.browserExtension.ethereum && !force) {
-    //   if (redux.getState().network) {
-    //     notification.info(`Please use ${this.browserExtension.ethereum.name} to switch the network.`)
-    //   }
-    //   return
-    // }
 
     if (!network || network.id === redux.getState().network) {
       return
@@ -184,6 +161,7 @@ class NetworkManager {
     if (network.id && network.id !== 'dev') {
       try {
         this._sdk = this.newSdk(network)
+        await this._sdk.updateEIP1559Support()
       } catch (error) {
         this._sdk && this._sdk.dispose()
         this._sdk = null
