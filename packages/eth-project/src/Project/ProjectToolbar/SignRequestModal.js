@@ -28,7 +28,7 @@ export default class SignRequestModal extends PureComponent {
       from: networkManager.sdk?.utils.formatAddress(tx.from, networkManager.sdk?.chainId),
       to: tx.to,
     }
-    networkManager.sdk?.utils.txOptions?.list.forEach(option => {
+    networkManager.sdk?.txOptions?.list.forEach(option => {
       if (tx[option.name]) {
         state[option.name] = BigInt(tx[option.name]).toString()
       } else if (tx[option.alias]) {
@@ -120,7 +120,7 @@ export default class SignRequestModal extends PureComponent {
         />
         <div className='row'>
         {
-          networkManager.sdk?.utils.txOptions?.list.map(option => (
+          networkManager.sdk?.txOptions?.list.map(option => (
             <ActionParamFormGroup
               key={`deploy-param-${option.name}`}
               className={option.className}

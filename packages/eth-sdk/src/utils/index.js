@@ -1,8 +1,6 @@
 import { ethers } from 'ethers'
 import Big from 'big.js'
 
-import txOptions from './txOptions'
-
 const display = value => {
   const amount = ethers.utils.formatEther(value)
   if (amount > 0.001) {
@@ -59,7 +57,6 @@ function parseValue (value, param, chainId) {
 }
 
 export default {
-  txOptions,
   isValidAddress: address => ethers.utils.isAddress(address),
   formatAddress: address => ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : '--',
   abbreviateAddress: address => {
