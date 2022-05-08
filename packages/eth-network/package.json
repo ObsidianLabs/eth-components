@@ -28,6 +28,7 @@
     "@obsidians/redux": "^0.3.0",
     "@obsidians/terminal": "^0.3.0",
     "@obsidians/ui-components": "^0.3.0",
+    "@obsidians/hooks": "^0.1.0",
     "semver": "^7.3.2"
   },
   "devDependencies": {
@@ -39,8 +40,8 @@
     "@babel/preset-env": "^7.7.5",
     "@babel/preset-react": "^7.7.4",
     "@rollup/plugin-babel": "^5.2.2",
-    "@rollup/plugin-commonjs": "^17.0.0",
-    "@rollup/plugin-node-resolve": "^7.1.1",
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-node-resolve": "^13.2.1",
     "@rollup/plugin-url": "^4.0.2",
     "@svgr/rollup": "^5.2.0",
     "babel-eslint": "^10.1.0",

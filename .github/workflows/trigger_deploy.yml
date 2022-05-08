@@ -1,0 +1,17 @@
+name: Trigger Test Build
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - run: |
+          curl -X POST \
+          -H "Authorization: Bearer ${{secrets.obsidians_token}}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/ObsidianLabs/Black-IDE/actions/workflows/main.yml/dispatches \
+          -d '{"ref": "develop"}'

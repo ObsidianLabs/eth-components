@@ -77,7 +77,7 @@ export class CompilerManager {
     const solcFileName = soljsonReleases[solcVersion]
 
     // TODO: use the production proxy temporally
-    const solcUrl = `https://eth.ide.black/solc/${solcFileName}`
+    const solcUrl = `https://ide.black/solc/${solcFileName}`
 
     const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
     const optimizer = projectManager.projectSettings.get('compilers.optimizer')

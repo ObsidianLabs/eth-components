@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { withRouter } from 'react-router-dom'
 import { connect } from '@obsidians/redux'
 
 import networkManager from './networkManager'
@@ -8,7 +8,7 @@ import CustomNetwork from './CustomNetwork'
 import RemoteNetwork from './RemoteNetwork'
 import { default as DefaultCustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
-export default connect(['network', 'customNetworks', 'uiState'])(props => {
+export default connect(['network', 'customNetworks', 'uiState'])(withRouter(props => {
   const {
     network: networkId = 'dev',
     customNetworks,
@@ -18,9 +18,19 @@ export default connect(['network', 'customNetworks', 'uiState'])(props => {
     minerKey,
     CustomNetworkModal = DefaultCustomNetworkModal,
     cacheLifecycles,
+    history
   } = props
 
   const [active, setActive] = React.useState(true)
+  const [showCustomNetworkModal, setShowCustomNetworkModal] = React.useState(false)
+
+  
+  React.useEffect(() => {
+    if(history.location.pathname.endsWith('custom')) {
+      setShowCustomNetworkModal(true)
+    }
+  }, [history])
+  
   React.useEffect(() => {
     cacheLifecycles.didCache(() => setActive(false))
     cacheLifecycles.didRecover(() => setActive(true))
@@ -43,10 +53,11 @@ export default connect(['network', 'customNetworks', 'uiState'])(props => {
         option={uiState.get('customNetworkOption')}
         customNetworks={customNetworks}
         CustomNetworkModal={CustomNetworkModal}
+        openModal={showCustomNetworkModal}
       />
     )
   } else {
     const url = networkManager.sdk?.url
     return <RemoteNetwork networkId={networkId} url={url} />
   }
-})
+}))

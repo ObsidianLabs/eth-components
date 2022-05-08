@@ -19,6 +19,7 @@ export default {
     }
   ],
   external: [
+    '@obsidians/sdk',
     ...Object.keys(pkg.dependencies),
     ...Object.keys(pkg.peerDependencies),
   ],
