@@ -26,8 +26,10 @@ export default function NetworkStatus(props) {
   return <>
     <UncontrolledButtonDropdown direction='up'>
       <DropdownToggle size='sm' color='default' className='rounded-0 px-2 text-muted'>
-        <span key={`network-${networkId}`} className={`${classnames('d-inline-block mr-1', connected ? 'color-success' : '')}`}>
-          <i className='fas fa-wifi mr-1' />
+        <span hidden={networkId == 'dev'}>
+          <span key={`network-${networkId}`} className={`${classnames('d-inline-block mr-1', connected ? 'color-success' : '')}`}>
+            <i className='fas fa-wifi mr-1' />
+          </span>  
         </span>{network ? network.name : 'No Network'}
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>

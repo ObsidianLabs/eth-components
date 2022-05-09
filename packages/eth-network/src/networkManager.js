@@ -218,7 +218,6 @@ class NetworkManager {
     if (info && notify) {
       redux.dispatch('SELECT_NETWORK', `custom`)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
-      notification.success(`Network Connected`, `Connected to network at <b>${url}</b>`)
     }
 
     return info
