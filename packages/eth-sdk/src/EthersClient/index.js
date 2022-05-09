@@ -107,7 +107,7 @@ export default class EthersClient {
     const result = await this.explorer.getHistory(address, page, size)
     const isHarmony = chainsHarmonyName.includes(this.networkId)
     const isConflux = chainsConfluxtName.includes(this.networkId)
-    let list = result.result ? (isHarmony ? result.result.transactions : result.result) : (result.list ? result.list : [])
+    let list = result.result ? (isHarmony ? result.result.transactions : result.result) : (result.list || [])
     if (isHarmony || isConflux) {
       list.map(elem => {
         if (isConflux) {
@@ -207,8 +207,13 @@ class ExplorerProxy {
     }
 
     if (chainsHarmonyName.includes(this.networkId)) {
-      query.page = query.page - 1
-      return await this.channel.invoke('POST', this.networkId, query)
+      if (platform.isDesktop) {
+        const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/harmony/explorer/${this.networkId}?${new URLSearchParams(query)}`,{method: 'POST'})
+        return await response.json()
+      } else {
+        query.page = query.page - 1
+        return await this.channel.invoke('POST', this.networkId, query)
+      }
     } else {
       const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${this.networkId}?${new URLSearchParams(query)}`)
       return await response.json()
