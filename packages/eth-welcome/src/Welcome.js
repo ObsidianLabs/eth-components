@@ -32,7 +32,7 @@ export default class Welcome extends PureComponent {
     enableTutorial: false
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       ready: false,
@@ -47,20 +47,20 @@ export default class Welcome extends PureComponent {
       .map(() => React.createRef())
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.mounted = true
     this.refresh()
     fileOps.current.onFocus(this.refresh)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.mounted = false
     fileOps.current.offFocus(this.refresh)
   }
 
   getImageItems = (props = this.props) => {
-    const { extraItems = [] } = props
-    return [
+    const { extraItems = [], overrideItems = [] } = props
+    return overrideItems.length > 0 ? overrideItems : [
       {
         channel: instanceChannel.node,
         title: `${process.env.CHAIN_EXECUTABLE_NAME} in Docker`,
@@ -80,10 +80,11 @@ export default class Welcome extends PureComponent {
   }
 
   refresh = async () => {
+    const { extraItems, overrideItems } = this.props
     if (this.mounted) {
       this.listItemDocker.current.refresh()
       this.imageRefs.forEach(ref => ref.current?.refresh())
-      const ready = await checkDependencies(this.props.extraItems)
+      const ready = await checkDependencies(overrideItems ? overrideItems : extraItems)
       this.setState({ ready })
     }
   }
@@ -92,11 +93,11 @@ export default class Welcome extends PureComponent {
     fileOps.current.openLink(tutorialPanelInfo.nextPage)
   }
 
-  tutorialBar () {
+  tutorialBar() {
     return (
       this.state.remote ? null :
         <div>
-          <p>{tutorialPanelInfo.description }</p>
+          <p>{tutorialPanelInfo.description}</p>
           <ListGroupItem className='center' style={{
             'margin': '10px 0',
             'borderRadius': '6px'
@@ -113,18 +114,18 @@ export default class Welcome extends PureComponent {
             </Button>
           </ListGroupItem>
 
-          <p>{ tutorialPanelInfo.tips }</p>
+          <p>{tutorialPanelInfo.tips}</p>
         </div>
     )
   }
 
-  render () {
+  render() {
     return (
       <div className='d-flex h-100 overflow-auto'>
         <div className='jumbotron jumbotron-fluid'>
           <div className='container'>
             <h4 className='display-4'>{t('welcome.welcome', { projectName: process.env.PROJECT_NAME })}</h4>
-            { this.props.enableTutorial ? this.tutorialBar() : null }
+            {this.props.enableTutorial ? this.tutorialBar() : null}
             <div className='my-3' />
 
             <ListGroup>
