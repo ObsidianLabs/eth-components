@@ -1,17 +1,14 @@
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
-
+import { t } from '@obsidians/i18n'
 import { ProjectManager, BaseProjectManager } from '@obsidians/workspace'
 import { modelSessionManager } from '@obsidians/code-editor'
 import premiumEditor from '@obsidians/premium-editor'
-
 import { networkManager } from '@obsidians/eth-network'
 import compilerManager, { CompilerManager } from '@obsidians/compiler'
 import queue from '@obsidians/eth-queue'
-
 import debounce from 'lodash/debounce'
 import moment from 'moment'
-
 import ProjectSettings from './ProjectSettings'
 
 BaseProjectManager.ProjectSettings = ProjectSettings
@@ -110,7 +107,7 @@ function makeProjectManager(Base) {
 
     async deploy(contractFileNode) {
       if (!networkManager.sdk) {
-        notification.error('Cannot Deploy', 'No connected network. Please start a local network or switch to a remote network.')
+        notification.error(t('contract.deploy.fail'), 'No connected network. Please start a local network or switch to a remote network.')
         return true
       }
 
@@ -322,7 +319,7 @@ function makeProjectManager(Base) {
         })
       } catch (e) {
         console.warn(e)
-        notification.error('Deploy Failed', e.reason || e.message)
+        notification.error(t('contract.deploy.fail'), e.reason || e.message)
         this.deployButton.setState({ pending: false })
         return
       }

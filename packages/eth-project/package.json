@@ -24,6 +24,7 @@
     "@obsidians/eth-queue": "^0.3.0",
     "@obsidians/file-ops": "^0.3.0",
     "@obsidians/filetree": "^0.3.0",
+    "@obsidians/i18n": "^0.3.0",
     "@obsidians/keypair": "^0.3.0",
     "@obsidians/notification": "^0.3.0",
     "@obsidians/platform": "^0.3.0",
