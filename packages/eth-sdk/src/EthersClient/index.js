@@ -207,11 +207,11 @@ class ExplorerProxy {
     }
 
     if (chainsHarmonyName.includes(this.networkId)) {
+      query.page -= 1
       if (platform.isDesktop) {
         const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/harmony/explorer/${this.networkId}?${new URLSearchParams(query)}`,{method: 'POST'})
         return await response.json()
       } else {
-        query.page = query.page - 1
         return await this.channel.invoke('POST', this.networkId, query)
       }
     } else {
