@@ -207,7 +207,7 @@ class ExplorerProxy {
     }
 
     if (chainsHarmonyName.includes(this.networkId)) {
-      query.page = query.page - 1
+      query.page -= 1
       if (platform.isDesktop) {
         const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/harmony/explorer/${this.networkId}?${new URLSearchParams(query)}`,{method: 'POST'})
         return await response.json()

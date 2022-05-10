@@ -204,7 +204,7 @@ class NetworkManager {
     }
   }
 
-  async updateCustomNetwork({ url, option = '{}', notify = true }) {
+  async updateCustomNetwork({ url, option = '{}', notify = true, name }) {
     try {
       if (option) {
         option = JSON.parse(option)
@@ -218,6 +218,7 @@ class NetworkManager {
     if (info && notify) {
       redux.dispatch('SELECT_NETWORK', `custom`)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
+      notification.success(`Network Connected`, `Connected to network at <b>${name || url}</b>`)
     }
 
     return info
