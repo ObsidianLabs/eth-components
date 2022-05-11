@@ -194,9 +194,10 @@ export class CompilerManager {
     } else {
       this.notification = notification.info(t('contract.build.contractFile'), `Building <b>${sourceFile}</b>...`, 0)
     }
-
     const cmd = this.generateBuildCmd({ projectRoot, settings, sourceFile })
     const result = await CompilerManager.terminal.exec(cmd)
+    console.log(result)
+  
 
     CompilerManager.button.setState({ building: false })
     this.notification.dismiss()
@@ -239,7 +240,7 @@ export class CompilerManager {
   parseSolcJSBuild(error) {
     const { prefix: projectPrefix, userId, projectId } = modelSessionManager.projectManager
     const [prefix] = error.formattedMessage.match(/(?<=:).+(?=:)/g)
-    const filePath =  error.sourceLocation.file
+    const filePath = error.sourceLocation.file
     const [row, column] = prefix.split(':')
     const lines = error.formattedMessage.split('\n')
     const length = lines[lines.length - 1].trim().length
