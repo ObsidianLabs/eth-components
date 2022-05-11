@@ -139,12 +139,15 @@ function makeProjectManager(Base) {
     }
 
     async getDefaultContractFileNode() {
+
       const settings = await this.checkSettings()
       if (!settings?.deploy) {
         return
       }
       const filePath = this.pathForProjectFile(settings.deploy)
       const pathInProject = this.pathInProject(filePath)
+      console.log(filePath, pathInProject)
+
       return { path: filePath, pathInProject }
     }
 
@@ -196,6 +199,7 @@ function makeProjectManager(Base) {
     }
 
     validateDeployment(contractObj) {
+      console.log('contractObj', contractObj)
       let bytecode = contractObj.bytecode || contractObj.evm?.bytecode?.object
       let deployedBytecode = contractObj.deployedBytecode || contractObj.evm?.deployedBytecode?.object
 
@@ -258,6 +262,7 @@ function makeProjectManager(Base) {
     }
 
     async pushDeployment(contractObj, allParameters) {
+      console.log(contractObj)
       if (this.checkSdkAndSigner(allParameters)) {
         return
       }

@@ -44,9 +44,9 @@ export default class DeployerButton extends PureComponent {
   }
 
   getDeploymentParameters = async (option, callback, estimate) => {
+    
     this.getConstructorAbiArgs = option.getConstructorAbiArgs || (contractObj => [contractObj.abi])
     const contractFileNode = option.contractFileNode || option.contracts[0]
-    
     this.setState({ selected: contractFileNode.path, contracts: option.contracts })
 
     this.modal.current.openModal()
@@ -66,6 +66,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   updateAbi = async fileNode => {
+    debugger
     const contractName = this.props.projectManager.path.parse(fileNode.path).name
 
     let contractObj
@@ -79,6 +80,7 @@ export default class DeployerButton extends PureComponent {
     let constructorAbi
     try {
       constructorAbi = await this.getConstructorAbi(...this.getConstructorAbiArgs(contractObj))
+      console.log(constructorAbi)
     } catch (e) {
       notification.error(t('contract.build.fileErr'), e.message)
       return
@@ -92,8 +94,9 @@ export default class DeployerButton extends PureComponent {
   }
   
   readContractJson = async fileNode => {
+    console.log('contractJson', this.props.projectManager.readFile)
     const contractJson = await this.props.projectManager.readFile(fileNode.path)
-
+    console.log('contractJson', contractJson)
     try {
       return JSON.parse(contractJson)
     } catch (e) {
