@@ -155,7 +155,7 @@ export class CompilerManager {
     if (projectManager.remote) {
       return await this.buildBySolcjs(projectManager)
     }
-
+    console.log(settings)
     const { framework, compilers = {} } = settings
 
     const projectRoot = this.projectRoot
