@@ -11,6 +11,7 @@ import {
 
 import redux from '@obsidians/redux'
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import ViewAbiModal from './ViewAbiModal'
 import AbiInputModal from './AbiInputModal'
@@ -81,7 +82,7 @@ export default class AbiStorageModal extends PureComponent {
       return (
         <tr key='abis-loading' >
           <td align='middle' colSpan={3}>
-            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
@@ -134,17 +135,17 @@ export default class AbiStorageModal extends PureComponent {
       <Modal
         ref={this.modal}
         size='lg'
-        title='ABI Storage'
-        textActions={['New']}
-        textCancel='Close'
+        title={t('abi.storage')}
+        textActions={[t('header.title.new')]}
+        textCancel={t('component.text.close')}
         onActions={[() => this.newAbi()]}
       >
         <Table
           tableSm
           TableHead={(
             <tr>
-              <th style={{ width: '20%' }}>Name</th>
-              <th style={{ width: '70%' }}>Code Hash / Address</th>
+              <th style={{ width: '20%' }}>{t('abi.name')}</th>
+              <th style={{ width: '70%' }}>{t('abi.codeHash')} / {t('abi.address')}</th>
               <th style={{ width: '10%' }}></th>
             </tr>
           )}

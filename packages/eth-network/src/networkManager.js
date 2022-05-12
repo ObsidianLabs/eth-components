@@ -2,6 +2,7 @@ import platform from '@obsidians/platform'
 import headerActions from '@obsidians/eth-header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
+import { t } from '@obsidians/i18n'
 
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 
@@ -196,7 +197,7 @@ class NetworkManager {
     redux.dispatch('SELECT_NETWORK', network.id)
 
     if (notify) {
-      network.notification && notification.success(`Network`, network.notification)
+      network.notification && notification.success(t('network.network.network'), network.notification)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
     }
     if (redirect) {
@@ -218,7 +219,7 @@ class NetworkManager {
     if (info && notify) {
       redux.dispatch('SELECT_NETWORK', `custom`)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
-      notification.success(`Network Connected`, `Connected to network at <b>${url}</b>`)
+      notification.success(t('network.network.connected'), `Connected to network at <b>${url}</b>`)
     }
 
     return info

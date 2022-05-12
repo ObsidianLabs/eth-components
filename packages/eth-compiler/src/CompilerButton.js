@@ -6,6 +6,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { CompilerManager } from './compilerManager'
+import { t } from '@obsidians/i18n'
 
 export default class CompilerButton extends PureComponent {
   constructor (props) {
@@ -58,7 +59,7 @@ export default class CompilerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='tooltip-build-btn'>
-        { this.state.building ? 'Stop Build' : `Build`}
+        { this.state.building ? t('contract.build.stopBuild') : t('contract.build.build')}
       </UncontrolledTooltip>
     </>
   }

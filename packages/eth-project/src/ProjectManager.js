@@ -77,7 +77,7 @@ function makeProjectManager(Base) {
 
     async compile(sourceFile, finalCall) {
       if (CompilerManager.button.state.building) {
-        notification.error('Build Failed', 'Another build task is running now.')
+        notification.error(t('contract.build.fail'), t('contract.build.failText'))
         return false
       }
 
@@ -107,7 +107,7 @@ function makeProjectManager(Base) {
 
     async deploy(contractFileNode) {
       if (!networkManager.sdk) {
-        notification.error(t('contract.deploy.fail'), 'No connected network. Please start a local network or switch to a remote network.')
+        notification.error(t('contract.deploy.fail'), t('contract.deploy.failText'))
         return true
       }
 
@@ -119,13 +119,13 @@ function makeProjectManager(Base) {
         try {
           contracts = await this.getBuiltContracts()
         } catch {
-          notification.error('Cannot Deploy', `Cannot locate the built folder. Please make sure you have built the project successfully.`)
+          notification.error(t('contract.deploy.connot'), t('contract.deploy.cannotTextFolder'))
           return
         }
       }
 
       if (!contracts.length) {
-        notification.error('Cannot Deploy', `No built contracts found. Please make sure you have built the project successfully.`)
+        notification.error(t('contract.deploy.connot'), t('contract.deploy.connotTextProject'))
         return
       }
 
@@ -185,12 +185,12 @@ function makeProjectManager(Base) {
 
     checkSdkAndSigner(allParameters) {
       if (!networkManager.sdk) {
-        notification.error('No Network', 'No connected network. Please start a local network or switch to a remote network.')
+        notification.error(t('network.network.noNetwork'), t('network.network.noNetworkText'))
         return true
       }
 
       if (!allParameters.signer) {
-        notification.error('Deployment Error', 'No signer specified. Please select one to sign the deployment transaction.')
+        notification.error(t('contract.deploy.error'), t('contract.deploy.errorText'))
         return true
       }
     }
@@ -200,11 +200,11 @@ function makeProjectManager(Base) {
       let deployedBytecode = contractObj.deployedBytecode || contractObj.evm?.deployedBytecode?.object
 
       if (!deployedBytecode) {
-        notification.error('Deployment Error', `Invalid <b>deployedBytecode</b> and <b>evm.deployedBytecode.object</b> fields in the built contract JSON. Please make sure you selected a correct built contract JSON file.`)
+        notification.error(t('contract.deploy.error'), `Invalid <b>deployedBytecode</b> and <b>evm.deployedBytecode.object</b> fields in the built contract JSON. Please make sure you selected a correct built contract JSON file.`)
         return
       }
       if (!deployedBytecode) {
-        notification.error('Deployment Error', `Invalid <b>bytecode</b> and <b>evm.bytecode.object</b> fields in the built contract JSON. Please make sure you selected a correct built contract JSON file.`)
+        notification.error(t('contract.deploy.error'), `Invalid <b>bytecode</b> and <b>evm.bytecode.object</b> fields in the built contract JSON. Please make sure you selected a correct built contract JSON file.`)
         return
       }
       if (!bytecode.startsWith('0x')) {
@@ -247,7 +247,7 @@ function makeProjectManager(Base) {
         result = await networkManager.sdk.estimate(tx)
       } catch (e) {
         console.warn(e)
-        notification.error('Estimate Failed', e.reason || e.message)
+        notification.error(t('contract.estimate.fail'), e.reason || e.message)
         this.deployButton.setState({ pending: false })
         return
       }
@@ -266,7 +266,7 @@ function makeProjectManager(Base) {
         return
       }
 
-      this.deployButton.setState({ pending: 'Deploying...', result: '' })
+      this.deployButton.setState({ pending: `${t('contract.deploy.deploying')}...`, result: '' })
 
       const networkId = networkManager.sdk.networkId
       const { contractName, amount, parameters, ...override } = allParameters
@@ -289,7 +289,7 @@ function makeProjectManager(Base) {
           queue.add(
             () => networkManager.sdk.sendTransaction(tx),
             {
-              title: 'Deploy a Contract',
+              title: t('contract.deploy.aContract'),
               name: 'Deploy',
               contractName,
               signer: allParameters.signer,
@@ -325,7 +325,7 @@ function makeProjectManager(Base) {
       }
 
       this.deployButton.setState({ pending: false })
-      notification.success('Deploy Successful')
+      notification.success(t('contract.deploy.success'))
 
       redux.dispatch('ABI_ADD', {
         ...deploy.options,

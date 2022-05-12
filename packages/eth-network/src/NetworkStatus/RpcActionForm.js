@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 
 import notification from '@obsidians/notification'
 import { AbiActionForm } from '@obsidians/eth-contract'
+import { t } from '@obsidians/i18n'
 
 import networkManager from '../networkManager'
 
@@ -12,7 +13,7 @@ export default class RpcActionForm extends PureComponent {
     }
 
     if (!networkManager.sdk) {
-      notification.error('Call RPC Failed', 'No connected network. Please start a local network or switch to a remote network.')
+      notification.error(t('network.network.fail'), t('network.network.noNetworkText'))
       return
     }
 
@@ -20,7 +21,7 @@ export default class RpcActionForm extends PureComponent {
     try {
       parameters = abiForm.form.current.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('network.network.errorParameters'), e.message)
       return
     }
 

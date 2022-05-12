@@ -13,6 +13,7 @@ import { KeypairInputSelector } from '@obsidians/keypair'
 
 import { networkManager } from '@obsidians/eth-network'
 import { ContractForm, ActionParamFormGroup } from '@obsidians/eth-contract'
+import { t } from '@obsidians/i18n'
 
 export default class DeployerButton extends PureComponent {
   constructor (props) {
@@ -71,7 +72,7 @@ export default class DeployerButton extends PureComponent {
     try {
       contractObj = await this.readContractJson(fileNode)
     } catch (e) {
-      notification.error('Built Contract Not Found', `Cannot open the file <b>${fileNode.pathInProject}</b>. Please make sure <i>smart contract to deploy</i> is pointting to a valid built contract in the Project Settings.`)
+      notification.error(t('contract.build.notFound'), t('contract.build.notFoundText', {path: fileNode.pathInProject}))
       return
     }
 
@@ -79,7 +80,7 @@ export default class DeployerButton extends PureComponent {
     try {
       constructorAbi = await this.getConstructorAbi(...this.getConstructorAbiArgs(contractObj))
     } catch (e) {
-      notification.error('Built Contract File Error', e.message)
+      notification.error(t('contract.build.fileErr'), e.message)
       return
     }
 
@@ -132,7 +133,7 @@ export default class DeployerButton extends PureComponent {
     } else if (this.needEstimate()) {
       return
     } else {
-      return ['Re-estimate']
+      return [t('contract.estimate.re')]
     }
   }
 
@@ -142,7 +143,7 @@ export default class DeployerButton extends PureComponent {
       try {
         parameters = this.form.current?.getParameters()
       } catch (e) {
-        notification.error('Error in Constructor Parameters', e.message)
+        notification.error(t('contract.build.parametersErr'), e.message)
         return
       }
     }
@@ -206,13 +207,13 @@ export default class DeployerButton extends PureComponent {
             placeholder='Default: 0'
           /> : null
         }
-        <Label>Constructor Parameters</Label>
+        <Label>{t('contract.deploy.parameters')}</Label>
         <ContractForm
           ref={this.form}
           key={selected}
           size='sm'
           {...constructorAbi}
-          Empty={<div className='small'>(None)</div>}
+          Empty={<div className='small'>({t('header.title.none')})</div>}
         />
         <div className='mb-2' />
       </>
@@ -232,19 +233,19 @@ export default class DeployerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>
-        { pending || `Deploy`}
+        { pending || t('contract.deploy.deploy')}
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
-        title={<span>Deploy Contract <b>{contractName}</b></span>}
-        textConfirm={needEstimate ? 'Estimate & Deploy' : 'Deploy'}
+        title={<span>{t('contract.deploy.title')} <b>{contractName}</b></span>}
+        textConfirm={needEstimate ? t('contract.estimate.deploy') : t('contract.deploy.deploy')}
         pending={pending}
         onConfirm={this.confirmDeployment}
         textActions={this.renderTextActions()}
         onActions={[this.estimate]}
       >
         <DropdownInput
-          label='Compiled contract (compiler output JSON)'
+          label={t('contract.deploy.compiled')}
           options={contracts.map(c => ({ id: c.path, display: c.relative || c.pathInProject }))}
           placeholder='No Contract Selected'
           value={selected}
@@ -252,7 +253,7 @@ export default class DeployerButton extends PureComponent {
         />
         {constructorParameters}
         <KeypairInputSelector
-          label='Signer'
+          label={t('contract.deploy.signer')}
           extra={networkManager.browserExtension?.isEnabled && signer && [{
             group: networkManager.browserExtension.name.toLowerCase(),
             badge: networkManager.browserExtension.name,

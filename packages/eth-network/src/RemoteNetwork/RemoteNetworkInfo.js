@@ -4,6 +4,7 @@ import {
   TableCard,
   TableCardRow,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 import moment from 'moment'
 import networkManager from '../networkManager'
@@ -22,11 +23,11 @@ export default class RemoteNetworkInfo extends PureComponent {
             {
               networkManager.current?.group !== 'others' && networkManager.current?.symbol &&
               <TableCardRow
-                name='Native Coin'
+                name={t('header.title.nativeCoin')}
                 badge={networkManager.current?.symbol}
               />
             }
-            <TableCardRow name='Node URL' badge={url} badgeColor='primary' />
+            <TableCardRow name={t('header.title.nodeURL')} badge={url} badgeColor='primary' />
             {
               info?.chainId &&
               <TableCardRow
@@ -44,18 +45,18 @@ export default class RemoteNetworkInfo extends PureComponent {
           </TableCard>
         </div>
         <div className='col-6 p-0'>
-          <TableCard title='Blocks'>
+          <TableCard title={t('header.title.blocks')}>
             {
               status?.number &&
               <TableCardRow
-                name='Block Number'
+                name={t('header.title.blockNumber')}
                 badge={status?.number}
               />
             }
             {
               status?.timestamp &&
               <TableCardRow
-                name='Block Time'
+                name={t('header.title.blockTime')}
                 badge={moment(status.timestamp * 1000).format('MMMM Do, HH:mm:ss')}
               />
             }

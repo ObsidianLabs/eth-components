@@ -3,6 +3,7 @@ import notification from '@obsidians/notification'
 import fileOps from '@obsidians/file-ops'
 import stripAnsi from 'strip-ansi'
 import { modelSessionManager } from '@obsidians/code-editor'
+import { t } from '@obsidians/i18n'
 
 import SolcjsCompiler from './SolcjsCompiler'
 import soljsonReleases from './soljsonReleases.json'
@@ -60,7 +61,7 @@ export class CompilerManager {
       await cacheStorage.delete(url)
     }
 
-    this.notification = notification.info(`Downloading Solc Bin`, `Downloading <b>${version}</b>...`, 0)
+    this.notification = notification.info(t('contract.build.downloadingSolcBin'), `Downloading <b>${version}</b>...`, 0)
     const request = new Request(url, { mode: 'no-cors' })
     const response = await fetch(request)
     await cacheStorage.put(url, response)
@@ -69,7 +70,7 @@ export class CompilerManager {
 
   async buildBySolcjs(projectManager) {
     if (!await projectManager.isMainValid) {
-      notification.error('No Main File', `Please specify the main file in project settings.`)
+      notification.error(t('contract.build.noMainFile'), t('contract.build.noMainFileText'))
       throw new Error('No Main File.')
     }
 
@@ -77,7 +78,7 @@ export class CompilerManager {
     const solcFileName = soljsonReleases[solcVersion]
 
     // TODO: use the production proxy temporally
-    const solcUrl = `https://eth.ide.black/solc/${solcFileName}`
+    const solcUrl = `https://ide.black/solc/${solcFileName}`
 
     const evmVersion = projectManager.projectSettings.get('compilers.evmVersion')
     const optimizer = projectManager.projectSettings.get('compilers.optimizer')
@@ -92,21 +93,21 @@ export class CompilerManager {
     }
 
     CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
-    this.notification = notification.info(`Building Project`, `Building...`, 0)
+    this.notification = notification.info(t('contract.build.start'), `${t('contract.build.building')}...`, 0)
 
     let output
     try {
       output = await this.solcjsCompiler.compile(solcUrl, projectManager)
     } catch (e) {
       this.notification.dismiss()
-      notification.error('Build Failed', e.message)
+      notification.error(t('contract.build.fail'), e.message)
       CompilerManager.button.setState({ building: false })
       throw e
     }
 
     if (!output) {
       this.notification.dismiss()
-      notification.error('Build Failed', ``)
+      notification.error(t('contract.build.fail'), ``)
       CompilerManager.button.setState({ building: false })
       throw new Error('Build Failed.')
     }
@@ -142,10 +143,10 @@ export class CompilerManager {
     this.notification.dismiss()
     CompilerManager.button.setState({ building: false })
     if (hasError) {
-      notification.error('Build Failed', `Code has errors.`)
+      notification.error(t('contract.build.fail'), t('contract.build.fileCodeErr'))
       modelSessionManager.updateDecorations(errorDecorations)
     } else {
-      notification.success('Build Successful', `The smart contract is built.`)
+      notification.success(t('contract.build.success'), t('contract.build.successTextSmart'))
       modelSessionManager.clearDecoration('compiler')
     }
   }
@@ -162,13 +163,13 @@ export class CompilerManager {
 
     if (framework.endsWith('-docker')) {
       if (!compilers || !compilers[process.env.COMPILER_VERSION_KEY]) {
-        notification.error(`No ${process.env.COMPILER_NAME} Version`, `Please select a version for ${process.env.COMPILER_NAME} in project settings.`)
+        notification.error(t('contract.build.noVersion', { compilerName: process.env.COMPILER_NAME }), t('contract.build.noVersionText', { compilerName: process.env.COMPILER_NAME }))
         CompilerManager.button.setState({ building: false })
         throw new Error(`No ${process.env.COMPILER_NAME} version.`)
       }
       const allVersions = await this.truffle.versions()
       if (!allVersions.find(v => v.Tag === compilers[process.env.COMPILER_VERSION_KEY])) {
-        notification.error(`${process.env.COMPILER_NAME} ${compilers[process.env.COMPILER_VERSION_KEY]} not Installed`, `Please install the version in <b>${process.env.COMPILER_NAME} Manager</b> or select another version in project settings.`)
+        notification.error(t('contract.build.notInstalled', { compilerName: process.env.COMPILER_NAME, compilerVersion: compilers[process.env.COMPILER_VERSION_KEY]}), t('contract.build.notInstalledText', { compilerName: process.env.COMPILER_NAME }))
         CompilerManager.button.setState({ building: false })
         throw new Error(`${process.env.COMPILER_NAME} version not installed`)
       }
@@ -181,7 +182,7 @@ export class CompilerManager {
 
     const allSolcVersions = await this.solc.versions()
     if (compilers.solc && compilers.solc !== 'default' && !allSolcVersions.find(v => v.Tag === compilers.solc)) {
-      notification.error(`Solc ${compilers.solc} not Installed`, `Please install the version in <b>Solc Manager</b> or select another version in project settings.`)
+      notification.error(t('contract.build.solcNotInstall', { compilerSolc: compilers.solc }), t('contract.build.solcNotInstallText'))
       CompilerManager.button.setState({ building: false })
       throw new Error('Solc version not installed')
     }
@@ -189,9 +190,9 @@ export class CompilerManager {
     CompilerManager.button.setState({ building: true })
     CompilerManager.switchCompilerConsole('terminal')
     if (!sourceFile) {
-      this.notification = notification.info(`Building Project`, `Building...`, 0)
+      this.notification = notification.info(t('contract.build.start'), t('contract.build.building'), 0)
     } else {
-      this.notification = notification.info(`Building Contract File`, `Building <b>${sourceFile}</b>...`, 0)
+      this.notification = notification.info(t('contract.build.contractFile'), `Building <b>${sourceFile}</b>...`, 0)
     }
 
     const cmd = this.generateBuildCmd({ projectRoot, settings, sourceFile })
@@ -211,18 +212,18 @@ export class CompilerManager {
     const { errors, decorations } = this.parseBuildLogs(stripAnsi(result.logs))
     if (result.code) {
       if (errors.length) {
-        notification.error('Build Failed', errors[0])
+        notification.error(t('contract.build.fail'), errors[0])
       } else {
-        notification.error('Build Failed', `Code has errors.`)
+        notification.error(t('contract.build.fail'), t('contract.build.fileCodeErr'))
       }
       return { errors, decorations }
     }
 
     const buildFolder = projectManager.path.join(framework === 'hardhat' ? 'artifacts' : 'build', 'contracts')
     if (!sourceFile) {
-      notification.success('Build Project Successful', `Please find the generated ABI and bytecode in the <b>${buildFolder}</b> folder.`)
+      notification.success(t('contract.build.projectSuccess'), t('contract.build.fileSuccessText', { buildFolder }))
     } else {
-      notification.success('Build File Successful', `Please find the generated ABI and bytecode in the <b>${buildFolder}</b> folder.`)
+      notification.success(t('contract.build.fileSuccess'), t('contract.build.fileSuccessText', { buildFolder }))
     }
     return { decorations }
   }

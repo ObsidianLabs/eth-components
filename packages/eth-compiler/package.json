@@ -27,6 +27,7 @@
     "@obsidians/terminal": "^0.3.0",
     "@obsidians/ui-components": "^0.3.0",
     "@obsidians/workspace": "^0.3.0",
+    "@obsidians/i18n": "^0.3.0",
     "@obsidians/code-editor": "^0.3.0",
     "lodash": "^4.17.15",
     "semver": "^7.3.2",

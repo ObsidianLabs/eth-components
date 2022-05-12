@@ -5,6 +5,7 @@ import {
   TableCardRow,
   Badge,
 } from '@obsidians/ui-components'
+import { t } from '@obsidians/i18n'
 
 export default function AccountInfo ({ account, tokenInfo }) {
   let tokenInfoRows = null
@@ -25,12 +26,12 @@ export default function AccountInfo ({ account, tokenInfo }) {
   }
     
   return (
-    <TableCard title='Information'>
+    <TableCard title={t('explorer.page.information')}>
       {tokenInfoRows}
       <TableCardRow
         name={account.codeHash ? 'Code Hash' : 'Code'}
         icon='fas fa-code'
-        badge={account.codeHash ? account.codeHash : '(None)'}
+        badge={account.codeHash ? account.codeHash : `(${t('header.title.none')})`}
       />
     </TableCard>
   )

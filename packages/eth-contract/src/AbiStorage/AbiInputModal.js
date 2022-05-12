@@ -12,6 +12,7 @@ import {
 
 import { BaseProjectManager } from '@obsidians/workspace'
 import { utils } from '@obsidians/sdk'
+import { t } from '@obsidians/i18n'
 
 export default class AbiInputModal extends PureComponent {
   constructor (props) {
@@ -87,7 +88,7 @@ export default class AbiInputModal extends PureComponent {
     return (
       <UncontrolledButtonDropdown>
         <DropdownToggle caret color='success'>
-          Select from the current project
+          {t('abi.selectProject')}
         </DropdownToggle>
         <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
           {this.renderAbiDropdownItem(abis)}
@@ -121,19 +122,19 @@ export default class AbiInputModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        title='Enter New ABI'
+        title={t('abi.enterNew')}
         ActionBtn={this.renderAbiSelectionButton()}
         onConfirm={this.onConfirm}
         confirmDisabled={!name || !codeHash || !validJson}
       >
         <DebouncedFormGroup
           ref={this.nameInput}
-          label='Name'
+          label={t('abi.name')}
           value={name}
           onChange={name => this.setState({ name })}
         />
         <DebouncedFormGroup
-          label='Code hash / Address'
+          label={`${t('abi.codeHash')} / ${t('abi.address')}`}
           value={codeHash}
           onChange={codeHash => this.setState({ codeHash: utils.isValidAddressReturn(codeHash) })}
           // disabled={!codeHashEditable}
@@ -144,7 +145,7 @@ export default class AbiInputModal extends PureComponent {
           label='ABI'
           type='textarea'
           importFromFile='.json'
-          placeholder='Please enter the ABI object. Must be a valid JSON array.'
+          placeholder={t('abi.inputPlaceholder')}
           formGroupClassName='d-flex flex-column flex-grow-1 code'
           inputGroupClassName='flex-grow-1'
           className='h-100 code'

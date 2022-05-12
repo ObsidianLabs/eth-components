@@ -10,14 +10,15 @@ import {
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 export default function AccountBalance ({ account, tokens, history }) {
   const erc20Tokens = tokens?.filter(t => t.type === 'ERC20')
 
   return (
-    <TableCard title='Account' tableScroll>
+    <TableCard title={t('explorer.page.account')} tableScroll>
       <TableCardRow
-        name='Balance'
+        name={t('explorer.page.balance')}
         icon='far fa-wallet'
         badge={`${new Intl.NumberFormat().format(account.balance)} ${networkManager.symbol}`}
         badgeColor='success'
@@ -26,7 +27,7 @@ export default function AccountBalance ({ account, tokens, history }) {
         Boolean(erc20Tokens?.length) &&
         <TableCardRow
           name='Tokens'
-          icon='far fa-coins'
+          icon='far fa-coins' 
           right={
             <UncontrolledDropdown>
               <DropdownToggle caret className='badge badge-pill d-flex align-items-center' color='info'>

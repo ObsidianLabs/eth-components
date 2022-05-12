@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import redux from '@obsidians/redux'
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import networkManager from '../networkManager'
 import DefaultRemoteNetworkInfo from './RemoteNetworkInfo'
@@ -63,7 +64,7 @@ export default class RemoteNetwork extends PureComponent {
     } catch (error) {
       console.warn(error)
       if (error.message.startsWith('missing response')) {
-        notification.error('Internet Disconnected')
+        notification.error(t('network.network.internetDis'))
         redux.dispatch('CHANGE_NETWORK_STATUS', false)
         if (this.h) {
           clearInterval(this.h)
