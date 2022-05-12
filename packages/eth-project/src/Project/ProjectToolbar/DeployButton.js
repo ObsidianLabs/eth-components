@@ -16,7 +16,7 @@ import { ContractForm, ActionParamFormGroup } from '@obsidians/eth-contract'
 import { t } from '@obsidians/i18n'
 
 export default class DeployerButton extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       selected: '',
@@ -32,7 +32,7 @@ export default class DeployerButton extends PureComponent {
     this.form = React.createRef()
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.projectManager.deployButton = this
   }
 
@@ -44,7 +44,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   getDeploymentParameters = async (option, callback, estimate) => {
-    
+    console.log(option, 'option')
     this.getConstructorAbiArgs = option.getConstructorAbiArgs || (contractObj => [contractObj.abi])
     const contractFileNode = option.contractFileNode || option.contracts[0]
     this.setState({ selected: contractFileNode.path, contracts: option.contracts })
@@ -92,7 +92,7 @@ export default class DeployerButton extends PureComponent {
       constructorAbi,
     })
   }
-  
+
   readContractJson = async fileNode => {
     console.log('contractJson', this.props.projectManager.readFile)
     const contractJson = await this.props.projectManager.readFile(fileNode.path)
@@ -187,7 +187,7 @@ export default class DeployerButton extends PureComponent {
     this.modal.current.closeModal()
   }
 
-  render () {
+  render() {
     const { signer } = this.props
     const { contracts, selected, contractName, pending } = this.state
 
@@ -202,13 +202,13 @@ export default class DeployerButton extends PureComponent {
       constructorParameters = <>
         {
           (constructorAbi.payable || constructorAbi.stateMutability === 'payable') ?
-          <ActionParamFormGroup
-            label={`${networkManager.symbol} to Send`}
-            icon='fas fa-coins'
-            value={this.state.amount}
-            onChange={amount => this.setState({ amount })}
-            placeholder='Default: 0'
-          /> : null
+            <ActionParamFormGroup
+              label={`${networkManager.symbol} to Send`}
+              icon='fas fa-coins'
+              value={this.state.amount}
+              onChange={amount => this.setState({ amount })}
+              placeholder='Default: 0'
+            /> : null
         }
         <Label>{t('contract.deploy.parameters')}</Label>
         <ContractForm
@@ -221,7 +221,7 @@ export default class DeployerButton extends PureComponent {
         <div className='mb-2' />
       </>
     }
-    
+
     const needEstimate = this.needEstimate()
 
     return <>
