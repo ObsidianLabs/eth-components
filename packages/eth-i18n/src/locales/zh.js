@@ -81,6 +81,7 @@ const translation = {
       errorParameters: '参数有误',
       switchedTo: '切换到',
       startingTruffle: '启动Truffle控制台',
+      connectedTo: '连接到网络',
     },
     custom: {
       custom: '自定义网络',
@@ -132,6 +133,16 @@ const translation = {
     enterNew: '输入新的ABI',
     inputPlaceholder: '请输入ABI对象，必须是一个有效的JSON数组。',
     selectProject: '从当前项目中选择',
+    fail: '解析ABI失败',
+    failText: '保存的ABI不是一个有效的JSON',
+    add: '新增ABI',
+    addText: '一个新的ABI记录被添加到存储中',
+    del: '删除ABI',
+    delText: 'ABI记录被从存储器中删除',
+    update: '更新ABI',
+    updateText: 'ABI记录在存储中被更新',
+    invalid: '无效的json文件',
+    invalidText: 'Abi应该是一个数组',
   }
 }
 

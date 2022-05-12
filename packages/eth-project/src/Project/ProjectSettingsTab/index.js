@@ -58,7 +58,6 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
     const { projectRoot, projectManager, projectSettings } = this.context
     const framework = projectSettings?.get('framework')
     const readOnly = !projectManager.userOwnProject && projectManager.remote
-
     const frameworks = Object.entries(NewProjectModal.defaultProps.FrameworkSelector.frameworkNames)
       .map(([key, name]) => ({ key, name }))
 
@@ -164,7 +163,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('compilers.evmVersion')}
                 onChange={event => this.onChange('compilers.evmVersion')(event.target.value)}
-                disabled={!projectManager.userOwnProject}
+                disabled={readOnly}
               >
                 <option value='berlin'>Berlin</option>
                 <option value='istanbul'>Istanbul</option>
@@ -200,7 +199,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('linter')}
                 onChange={event => this.onChange('linter')(event.target.value)}
-                disabled={!projectManager.userOwnProject}
+                disabled={readOnly}
               >
                 <option value='solhint'>Solhint</option>
                 <option value='solium'>Solium/Ethlint</option>
@@ -216,7 +215,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('editor.fontFamily')}
                 onChange={event => this.onChange('editor.fontFamily')(event.target.value)}
-                disabled={!projectManager.userOwnProject}
+                disabled={readOnly}
               >
                 <option value='Hack'>Hack</option>
                 <option value='Fira Code'>Fira Code</option>
@@ -230,7 +229,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('editor.fontSize')}
                 onChange={event => this.onChange('editor.fontSize')(event.target.value)}
-                disabled={!projectManager.userOwnProject}
+                disabled={readOnly}
               >
                 <option value='11px'>11px</option>
                 <option value='12px'>12px</option>
@@ -248,7 +247,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 className='bg-black'
                 value={projectSettings?.get('editor.ligatures')}
                 onChange={event => this.onChange('editor.ligatures')(event.target.value === 'true')}
-                disabled={!projectManager.userOwnProject}
+                disabled={readOnly}
               >
                 <option value='false'>Disabled</option>
                 <option value='true'>Enabled</option>

@@ -81,6 +81,7 @@ const translation = {
       errorParameters: 'Error in Parameters',
       switchedTo: 'Switched to',
       startingTruffle: 'Starting Truffle Console',
+      connectedTo: 'Connected to network at',
     },
     custom: {
       custom: 'Custom Network',
@@ -132,6 +133,16 @@ const translation = {
     enterNew: 'Enter New ABI',
     inputPlaceholder: 'Please enter the ABI object. Must be a valid JSON array.',
     selectProject: 'Select from the current project',
+    fail: 'Failed to parse ABI',
+    failText: 'The saved ABI is not a valid JSON.',
+    add: 'ABI Added',
+    addText: 'A new ABI record is added to the storage.',
+    del: 'ABI Deleted',
+    delText: 'The ABI record is removed from the storage.',
+    update: 'ABI Updated',
+    updateText: 'The ABI record is updated in the storage.',
+    invalid: 'Invalid json file',
+    invalidText: 'Abi should be an array.',
   }
 }
 

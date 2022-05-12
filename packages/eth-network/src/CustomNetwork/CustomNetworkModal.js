@@ -58,18 +58,14 @@ export default class CustomNetworkModal extends PureComponent {
   connect = async option => {
     try {
       this.setState({ connecting: option.name })
-      const status = await networkManager.updateCustomNetwork(option)
+      const status = await networkManager.updateCustomNetwork({...option, notify: false})
       if (status) {
-        redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
-        redux.dispatch('SELECT_NETWORK', option.name)
         redux.dispatch('CHANGE_NETWORK_STATUS', true)
         this.modal.current?.closeModal()
         this.setState({ connecting: '' })
         headerActions.updateNetwork(option.name)
-        networkManager.setNetwork({
-          ...option,
-          id: option.name
-        })
+        const connectCustomeNetwork = networkManager.networks?.find(item => item.id == option.name)
+        networkManager.setNetwork(connectCustomeNetwork)
         return
       }
     } catch { }

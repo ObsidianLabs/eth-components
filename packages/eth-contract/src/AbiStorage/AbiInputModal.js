@@ -73,7 +73,7 @@ export default class AbiInputModal extends PureComponent {
       } 
       if (!(objectAbi instanceof Array)) throw new Error()
     } catch (e) {
-      if (!this.state.abi) notification.error('Invalid json file', `Abi should be an array.`)
+      if (!this.state.abi) notification.error(t('abi.invalid'), t('abi.invalidText'))
       this.setState({ abi, validJson: false })
       return
     }

@@ -52,14 +52,14 @@ export default class DeployerButton extends PureComponent {
     this.modal.current.openModal()
     await this.updateAbi(contractFileNode)
     const options = {}
-    networkManager.sdk?.utils.txOptions?.list.forEach(opt => options[opt.name] = '')
+    networkManager.sdk?.txOptions?.list.forEach(opt => options[opt.name] = '')
     this.setState(options)
     this.callback = callback
     this.estimateCallback = estimate
   }
 
   updateContract = async selected => {
-    const txOptionObj = Object.fromEntries(networkManager.sdk?.utils.txOptions?.list.map(option => [option.name, '']))
+    const txOptionObj = Object.fromEntries(networkManager.sdk?.txOptions?.list.map(option => [option.name, '']))
     this.setState({ selected, ...txOptionObj })
     const selectedContract = this.state.contracts.find(c => c.path === selected)
     await this.updateAbi(selectedContract)
@@ -115,8 +115,8 @@ export default class DeployerButton extends PureComponent {
     if (this.props.skipEstimate) {
       return false
     }
-    if (networkManager.sdk?.utils.txOptions?.list.length) {
-      const option = networkManager.sdk.utils.txOptions.list[0]
+    if (networkManager.sdk?.txOptions?.list.length) {
+      const option = networkManager.sdk.txOptions.list[0]
       const value = this.state[option.name]
       if (!value) {
         return true
@@ -129,7 +129,7 @@ export default class DeployerButton extends PureComponent {
     if (this.state.pending) {
       return
     } else if (this.props.skipEstimate) {
-      return [`Estimate ${networkManager.sdk?.utils.txOptions?.title}`]
+      return [`Estimate ${networkManager.sdk?.txOptions?.title}`]
     } else if (this.needEstimate()) {
       return
     } else {
@@ -150,7 +150,7 @@ export default class DeployerButton extends PureComponent {
 
     const { contractName, contractObj, amount, signer } = this.state
     const options = {}
-    networkManager.sdk?.utils.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
+    networkManager.sdk?.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
 
     return [contractObj, { parameters, amount, contractName, signer, ...options }]
   }
@@ -264,7 +264,7 @@ export default class DeployerButton extends PureComponent {
         />
         <div className='row'>
           {
-            networkManager.sdk?.utils.txOptions?.list.map(option => (
+            networkManager.sdk?.txOptions?.list.map(option => (
               <ActionParamFormGroup
                 key={`deploy-param-${option.name}`}
                 className={option.className}
