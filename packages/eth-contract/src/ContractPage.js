@@ -200,11 +200,16 @@ export default class ContractPage extends PureComponent {
     )
   }
 
-  separateAbi = abi => {
-    const functions = abi.abi.filter(item => item.type === 'function')
-    const events = abi.abi.filter(item => item.type === 'event')
+  separateAbi = info => {
+    console.log(info, '1111')
+    console.log()
+    const abi = info.content.output.abi
+    console.log(abi)
+    const functions = abi.filter(item => item.type === 'function')
+    const events = abi.filter(item => item.type === 'event')
     const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
     const views = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) > -1)
+    console.log(actions, views, events)
     return { actions, views, events }
   }
 
