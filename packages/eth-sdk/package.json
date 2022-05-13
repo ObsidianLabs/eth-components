@@ -17,6 +17,7 @@
     "@obsidians/keypair": "^0.3.0",
     "@obsidians/platform": "^0.3.0",
     "@obsidians/redux": "^0.3.0",
+    "@obsidians/i18n": "^0.3.0",
     "big.js": "^6.1.1",
     "ethers": "^5.4.7",
     "fastify": "^3.20.2",

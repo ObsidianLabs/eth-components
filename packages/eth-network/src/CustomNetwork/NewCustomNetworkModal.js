@@ -11,6 +11,7 @@ import redux from '@obsidians/redux'
 import notification from '@obsidians/notification'
 
 import networkManager from '../networkManager'
+import { t } from '@obsidians/i18n'
 
 export default class CustomNetworkModal extends PureComponent {
   constructor(props) {
@@ -42,7 +43,7 @@ export default class CustomNetworkModal extends PureComponent {
         return
       }
     } catch { }
-    notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
+    notification.error(t('network.custom.err'), t('network.custom.errText'))
     this.setState({ pending: false })
   }
 
@@ -53,7 +54,7 @@ export default class CustomNetworkModal extends PureComponent {
     const connected = customNetworkMap[option.name]?.active;
 
     if (customNetworkNames.includes(option.name) && !modify) {
-      notification.error('Invalid network name', `<b>${option.name}</b> alreay exists.`)
+      notification.error(t('network.custom.invalidName'), t('network.custom.invalidNameText', {name: option.name}))
       return
     } else {
       if (!status) {
@@ -77,7 +78,7 @@ export default class CustomNetworkModal extends PureComponent {
           networkId: name,
           name: name,
           fullName: name,
-          notification: `Switched to <b>${name}</b>.`,
+          notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
           url: customeNetworkMap[name].url,
         })).sort((a, b) => a.name.localeCompare(b.name))
         const newNetworks = networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
@@ -86,7 +87,7 @@ export default class CustomNetworkModal extends PureComponent {
           icon: 'fas fa-vial',
           id: 'custom',
           name: 'Custom',
-          notification: 'Switched to <b>Custom</b> network.',
+          notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,
           symbol: 'ETH',
           url: '',
         }]).concat(customeNetworkGroup)
@@ -112,7 +113,7 @@ export default class CustomNetworkModal extends PureComponent {
         return
       }
     } catch { }
-    notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
+    notification.error(t('network.custom.err'), t('network.custom.errText'))
     redux.dispatch('CHANGE_NETWORK_STATUS', false)
   }
 
@@ -125,9 +126,9 @@ export default class CustomNetworkModal extends PureComponent {
     return (
       <Modal
         ref={this.modal}
-        title={`${modify ? 'Modify' : 'New'} Custom Network Connection`}
-        pending={pending && 'Trying to connect...'}
-        textConfirm={status ? modify ? 'Update Network' : 'Add Network' : 'Check Network'}
+        title={`${modify ? t('network.custom.modify') : t('header.title.new')} ${t('network.custom.customConnect')}`}
+        pending={pending && t('network.custom.try')}
+        textConfirm={status ? modify ? t('network.custom.update') : t('network.custom.add') : t('network.custom.check')}
         onConfirm={this.onConfirm}
       >
         <DebouncedFormGroup

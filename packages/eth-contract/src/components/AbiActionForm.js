@@ -14,6 +14,7 @@ import {
 
 import { KeypairInputSelector } from '@obsidians/keypair'
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 import FormSection from './FormSection'
 import MarginlessFormSection from './MarginlessFormSection'
@@ -113,7 +114,7 @@ export default class AbiActionForm extends PureComponent {
           color={inModal ? 'primary' : 'default'}
           key={this.state.executing ? 'action-executing' : 'action-execute'}
           icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
-          tooltip='Execute'
+          tooltip={t('contract.transaction.execute')}
           onClick={() => this.executeAction(selectedAction.name)}
         />
       </ButtonGroup>
@@ -159,7 +160,7 @@ export default class AbiActionForm extends PureComponent {
 
     const { FormSection, signer } = this.props
     return (
-      <FormSection title='Authorization'>
+      <FormSection title={t('contract.transaction.authorization')}>
         <KeypairInputSelector
           size='sm'
           label='Signer'
@@ -181,13 +182,13 @@ export default class AbiActionForm extends PureComponent {
       return null
     }
 
-    let title = 'Result'
+    let title = t('rpc.result')
     let badge = null
     if (this.state.actionResult) {
-      title = <span key='success'>Result<i className='fas fa-check-circle text-success ml-1' /></span>
+      title = <span key='success'>{t('rpc.result')}<i className='fas fa-check-circle text-success ml-1' /></span>
       badge = this.renderResultBadge()
     } else if (this.state.actionError) {
-      title = <span key='success'>Result<i className='fas fa-exclamation-triangle text-danger ml-1' /></span>
+      title = <span key='success'>{t('rpc.result')}<i className='fas fa-exclamation-triangle text-danger ml-1' /></span>
     }
 
     return (
@@ -230,7 +231,7 @@ export default class AbiActionForm extends PureComponent {
       )
     }
 
-    return <div className='small'>(None)</div>
+    return <div className='small'>({t('header.title.none')})</div>
   }
 
   render () {
@@ -247,7 +248,7 @@ export default class AbiActionForm extends PureComponent {
           {this.renderActionSelector()}
         </div>
         <div className={classnames(!inModal && 'd-flex flex-column flex-grow-1 overflow-auto')}>
-          <FormSection title='Parameters'>
+          <FormSection title={t('rpc.parameters')}>
             {
               (selectedAction.payable || selectedAction.stateMutability === 'payable') ?
               <ActionParamFormGroup
@@ -264,7 +265,7 @@ export default class AbiActionForm extends PureComponent {
               key={selectedAction.name}
               size='sm'
               {...selectedAction}
-              Empty={<div className='small'>(None)</div>}
+              Empty={<div className='small'>({t('header.title.none')})</div>}
             />
           </FormSection>
           {this.renderGasOptions(selectedAction)}

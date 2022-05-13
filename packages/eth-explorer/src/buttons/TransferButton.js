@@ -14,6 +14,7 @@ import { networkManager } from '@obsidians/eth-network'
 import notification from '@obsidians/notification'
 import keypairManager, { KeypairInputSelector } from '@obsidians/keypair'
 import queue from '@obsidians/eth-queue'
+import { t } from '@obsidians/i18n'
 
 export default class TransferButton extends PureComponent {
   constructor(props) {
@@ -178,29 +179,29 @@ export default class TransferButton extends PureComponent {
         size='md'
         icon='fas fa-repeat'
         loading={loading}
-        tooltip='Transfer'
+        tooltip={t('transfer')}
         onClick={this.openModal}
       />
       <Modal
         ref={this.modal}
         overflow
-        title='Transfer'
-        textConfirm='Sign and Push'
+        title={t('transfer')}
+        textConfirm={t('signPush')}
         confirmDisabled={false}
         onConfirm={this.push}
-        pending={pushing && 'Pushing...'}
+        pending={pushing && t('pushing')}
       >
         {this.renderTokens()}
         <DebouncedFormGroup
           ref={this.amountInput}
-          label='Amount'
+          label={t('amount')}
           maxLength='50'
           placeholder={`Max: ${max}`}
           value={amount}
           onChange={amount => this.setState({ amount })}
         />
         <FormGroup>
-          <Label>Recipient</Label>
+          <Label>{t('recipient')}</Label>
           <KeypairInputSelector
             ref={this.keypairInput}
             editable

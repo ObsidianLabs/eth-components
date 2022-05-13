@@ -4,6 +4,7 @@ import { Card } from '@obsidians/ui-components'
 import redux from '@obsidians/redux'
 import { DockerImageButton } from '@obsidians/docker'
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import CreateInstanceButton from './CreateInstanceButton'
 
@@ -55,10 +56,10 @@ export default class InstanceList extends PureComponent {
     this.setState(runningState)
     if (lifecycle === 'stopped') {
       redux.dispatch('UPDATE_UI_STATE', { localNetwork: '' })
-      notification.info(`${process.env.CHAIN_NAME} Instance Stopped`, `<b>${name}</b> stops to run.`)
+      notification.info(t('network.dev.stopped', {name: process.env.CHAIN_NAME}), t('network.dev.stoppedText', {name}))
     } else if (lifecycle === 'started') {
       redux.dispatch('UPDATE_UI_STATE', { localNetwork: runningState })
-      notification.success(`${process.env.CHAIN_NAME} Instance Started`, `<b>${name}</b> is running now.`)
+      notification.success(t('network.dev.started', {name: process.env.CHAIN_NAME}), t('network.dev.startedText', {name}))
     }
   }
 

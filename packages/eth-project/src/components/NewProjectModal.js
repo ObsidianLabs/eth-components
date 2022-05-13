@@ -15,6 +15,7 @@ import notification from '@obsidians/notification'
 import { NewProjectModal } from '@obsidians/workspace'
 
 import FrameworkSelector from './FrameworkSelector'
+import { t } from '@obsidians/i18n'
 
 const openZeppelinVersions = [
   { id: 'v4.2.0', display: 'v4.2.0' },
@@ -77,14 +78,14 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     } = this.framework.current.getNameAndVersion(framework, remote)
 
     if (!this.props.noCompilerOption && !compilerVersion) {
-      notification.error('Cannot Create the Project', `Please select a version for ${compilerName}.`)
+      notification.error(t('project.cannotCreate'), t(('project.cannotCreateTextOne'),{ name: compilerName}))
       return false
     }
 
     if (group === process.env.COMPILER_NAME) {
       this.setState({ showTerminal: true })
       if (!compilerVersion) {
-        notification.error('Cannot Create the Project', `Please select a version for ${process.env.COMPILER_NAME}.`)
+        notification.error(t('project.cannotCreate'), t(('project.cannotCreateTextOne'),{ name: process.env.COMPILER_NAME}))
         return false
       }
       await fileOps.current.ensureDirectory(projectRoot)
@@ -100,7 +101,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
 
       const result = await this.terminal.current.exec(cmd)
       if (result.code) {
-        notification.error('Cannot Create the Project')
+        notification.error(t('project.cannotCreate'))
         return false
       }
 
@@ -144,7 +145,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       this.setState({ showTerminal: true })
       const result = await this.terminal.current.exec(`${npmClient} init -y`, { cwd: projectRoot })
       if (result.code) {
-        notification.error('Cannot Create the Project', 'Please make sure you have node.js installed.')
+        notification.error(t('project.cannotCreate'), t('project.cannotCreateTextTwo'))
         return false
       }
     }
@@ -153,7 +154,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
     if (group === 'open zeppelin') {
       const result = await this.terminal.current.exec(`${npmClient} ${installCommand} ${openZeppelinPackage}@${openZeppelinVersion}`, { cwd: projectRoot })
       if (result.code) {
-        notification.error('Fail to Install OpenZeppelin')
+        notification.error(t('project.fail'))
         return false
       }
     }
@@ -220,7 +221,7 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
         {
             (group === 'open zeppelin' || !framework.endsWith('-docker')) &&
             <FormGroup>
-              <Label>Npm client</Label>
+              <Label>Npm {t('client')}</Label>
               <div>
                 <ButtonOptions
                   size='sm'

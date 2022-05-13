@@ -7,6 +7,7 @@ import {
 
 import redux from '@obsidians/redux'
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 import AccountBalance from './AccountBalance'
 import AccountInfo from './AccountInfo'
@@ -109,8 +110,8 @@ export default class AccountPage extends PureComponent {
     if (!this.props.value) {
       return (
         <Screen>
-          <h4 className='display-4'>New Page</h4>
-          <p className='lead'>Please enter an {process.env.CHAIN_NAME} address.</p>
+          <h4 className='display-4'>{t('explorer.page.newPage')}</h4>
+          <p className='lead'>{t('explorer.page.newPageText', { chainName: process.env.CHAIN_NAME })}</p>
         </Screen>
       )
     }
@@ -130,7 +131,7 @@ export default class AccountPage extends PureComponent {
       } else {
         return (
           <Screen>
-            <h4 className='display-4'>Invalid Address</h4>
+            <h4 className='display-4'>{t('explorer.page.invalidAddress')}</h4>
             <p className='lead'><kbd>{this.props.value}</kbd></p>
           </Screen>
         )

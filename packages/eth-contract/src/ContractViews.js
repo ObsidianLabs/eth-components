@@ -1,6 +1,7 @@
 import React from 'react'
 
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import AbiActionForm from './components/AbiActionForm'
 import ResultContent from './ResultContent'
@@ -24,7 +25,7 @@ export default class ContractViews extends AbiActionForm {
     try {
       parameters = this.form.current.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('network.network.errorParameters'), e.message)
       return
     }
 

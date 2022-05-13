@@ -11,6 +11,7 @@ import {
 
 import redux from '@obsidians/redux'
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import ViewAbiModal from './ViewAbiModal'
 import AbiInputModal from './AbiInputModal'
@@ -46,13 +47,13 @@ export default class AbiStorageModal extends PureComponent {
     try {
       formattedAbi = JSON.stringify(JSON.parse(data.abi), null, 2)
     } catch {
-      notification.error('Failed to parse ABI', 'The saved ABI is not a valid JSON.')
+      notification.error(t('abi.fail'), t('abi.failText'))
     }
     const { name, codeHash, abi } = await this.abiInputModal.current.openModal(data.name, data.codeHash, formattedAbi)
     redux.dispatch('ABI_UPDATE', [data.codeHash, { name, codeHash, abi }])
     notification.success(
-      'ABI Updated',
-      `The ABI record is updated in the storage.`
+      t('abi.update'),
+      t('abi.updateText')
     )
     this.refresh()
   }
@@ -61,8 +62,8 @@ export default class AbiStorageModal extends PureComponent {
     const { name, codeHash, abi } = await this.abiInputModal.current.openModal(inputName, inputCodeHash)
     redux.dispatch('ABI_ADD', { name, codeHash, abi })
     notification.success(
-      'ABI Added',
-      `A new ABI record is added to the storage.`
+      t('abi.add'),
+      t('abi.addText')
     )
     this.refresh()
   }
@@ -70,8 +71,8 @@ export default class AbiStorageModal extends PureComponent {
   deleteAbi = async codeHash => {
     redux.dispatch('ABI_DELETE', codeHash)
     notification.info(
-      'ABI Deleted',
-      `The ABI record is removed from the storage.`
+      t('abi.del'),
+      t('abi.delText')
     )
     this.refresh()
   }
@@ -81,7 +82,7 @@ export default class AbiStorageModal extends PureComponent {
       return (
         <tr key='abis-loading' >
           <td align='middle' colSpan={3}>
-            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
@@ -134,17 +135,17 @@ export default class AbiStorageModal extends PureComponent {
       <Modal
         ref={this.modal}
         size='lg'
-        title='ABI Storage'
-        textActions={['New']}
-        textCancel='Close'
+        title={t('abi.storage')}
+        textActions={[t('header.title.new')]}
+        textCancel={t('component.text.close')}
         onActions={[() => this.newAbi()]}
       >
         <Table
           tableSm
           TableHead={(
             <tr>
-              <th style={{ width: '20%' }}>Name</th>
-              <th style={{ width: '70%' }}>Code Hash / Address</th>
+              <th style={{ width: '20%' }}>{t('abi.name')}</th>
+              <th style={{ width: '70%' }}>{t('abi.codeHash')} / {t('abi.address')}</th>
               <th style={{ width: '10%' }}></th>
             </tr>
           )}

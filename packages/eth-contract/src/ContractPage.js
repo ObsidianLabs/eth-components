@@ -14,6 +14,7 @@ import {
 import { networkManager } from '@obsidians/eth-network'
 import redux from '@obsidians/redux'
 import { BaseProjectManager } from '@obsidians/workspace'
+import { t } from '@obsidians/i18n'
 
 import ContractActions from './ContractActions'
 import ContractViews from './ContractViews'
@@ -190,7 +191,7 @@ export default class ContractPage extends PureComponent {
     return (
       <UncontrolledButtonDropdown className='mr-2 mb-2'>
         <DropdownToggle color='primary' caret>
-          Select from the current project
+          {t('abi.selectProject')}
         </DropdownToggle>
         <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
           {this.renderAbiDropdownItem(abis)}
@@ -218,8 +219,8 @@ export default class ContractPage extends PureComponent {
     if (!value) {
       return (
         <Screen>
-          <h4 className='display-4'>New Page</h4>
-          <p className='lead'>Please enter an {process.env.CHAIN_NAME} address.</p>
+          <h4 className='display-4'>{t('explorer.page.newPage')}</h4>
+          <p className='lead'>{t('explorer.page.newPageText', { chainName: process.env.CHAIN_NAME })}</p>
         </Screen>
       )
     }
@@ -238,7 +239,7 @@ export default class ContractPage extends PureComponent {
             <div className='d-flex flex-wrap align-items-start'>
               <UncontrolledButtonDropdown className='mr-2 mb-2'>
                 <DropdownToggle color='primary' caret>
-                  Select from <b>ABI Storage</b>
+                  Select from <b>{t('abi.storage')}</b>
                 </DropdownToggle>
                 <DropdownMenu className='dropdown-menu-sm' style={{ maxHeight: 240 }}>
                   {this.renderAbiDropdownItem(this.state.abis)}
@@ -246,7 +247,7 @@ export default class ContractPage extends PureComponent {
               </UncontrolledButtonDropdown>
               <UncontrolledButtonDropdown className='mr-2 mb-2'>
                 <DropdownToggle color='primary' caret>
-                  Add ABI to <b>ABI Storage</b>
+                  Add ABI to <b>{t('abi.storage')}</b>
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem onClick={() => this.openAbiStorageModal(account.codeHash)}>

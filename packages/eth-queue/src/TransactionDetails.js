@@ -11,6 +11,7 @@ import { networkManager } from '@obsidians/eth-network'
 import { ResultContent } from '@obsidians/eth-contract'
 import { withRouter } from 'react-router-dom'
 import Highlight from 'react-highlight'
+import { t } from '@obsidians/i18n'
 
 class TransactionDetails extends PureComponent {
   constructor (props) {
@@ -44,12 +45,12 @@ class TransactionDetails extends PureComponent {
       return (
         <Table>
           <TableCardRow
-            name='Hash'
+            name={t('contract.transaction.hash')}
             icon='fas fa-hashtag'
             badge={<code>{txHash}</code>}
           />
           <TableCardRow
-            name='Status'
+            name={t('contract.transaction.status')}
             icon='fad fa-spinner-third'
             badge={status === 'FAILED-TIMEOUT' ? 'TIMEOUT' : status}
             badgeColor={status.startsWith('FAILED') ? 'danger' : status === 'CONFIRMED' ? 'success' : 'warning'}
@@ -58,7 +59,7 @@ class TransactionDetails extends PureComponent {
           {
             contractAddress &&
             <TableCardRow
-              name='Contract'
+              name={t('contract.transaction.contract')}
               icon='fas fa-file-invoice'
               badge={(
                 <a href='javascript:void(0)'
@@ -76,7 +77,7 @@ class TransactionDetails extends PureComponent {
           {
             functionName &&
             <TableCardRow
-              name='Function'
+              name={t('contract.transaction.function')}
               icon='fas fa-function'
               badge={functionName}
             />
@@ -84,7 +85,7 @@ class TransactionDetails extends PureComponent {
           {
             contractName &&
             <TableCardRow
-              name='Contract Name'
+              name={t('contract.transaction.contractName')}
               icon='fas fa-file-invoice'
               badge={contractName}
             />
@@ -100,13 +101,13 @@ class TransactionDetails extends PureComponent {
           {
             confirmed &&
             <TableCardRow
-              name='Result'
+              name={t('rpc.result')}
               icon='fas fa-sign-out'
               badge={confirmed}
             />
           }
           <TableCardRow
-            name='Signer'
+            name={t('contract.deploy.signer')}
             icon='fas fa-key'
             badge={(
               <a
@@ -219,20 +220,20 @@ class TransactionDetails extends PureComponent {
     const { selected } = this.state
 
     const options = [
-      { key: 'basic', text: 'Basic' },
-      { key: 'params', text: 'Parameters' },
+      { key: 'basic', text: t('contract.estimate.basic') },
+      { key: 'params', text: t('rpc.parameters') },
     ]
     if (tx.data?.transaction) {
       options.push({ key: 'tx', text: 'Tx' })
     }
     if (tx.data?.receipt) {
-      options.push({ key: 'receipt', text: 'Receipt' })
+      options.push({ key: 'receipt', text: t('contract.estimate.receipt') })
     }
     if (tx.data?.result) {
-      options.push({ key: 'result', text: 'Result' })
+      options.push({ key: 'result', text: t('rpc.result') })
     }
     if (tx.data?.error) {
-      options.push({ key: 'error', text: 'Error' })
+      options.push({ key: 'error', text: t('contract.estimate.error') })
     }
     if (tx.data?.abi) {
       options.push({ key: 'abi', text: 'ABI' })

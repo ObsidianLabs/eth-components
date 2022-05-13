@@ -12,6 +12,7 @@ import notification from '@obsidians/notification'
 
 import networkManager from '../networkManager'
 import NewCustomNetworkModal from './NewCustomNetworkModal'
+import { t } from '@obsidians/i18n'
 
 export default class CustomNetworkModal extends PureComponent {
   constructor(props) {
@@ -68,7 +69,7 @@ export default class CustomNetworkModal extends PureComponent {
         return
       }
     } catch { }
-    notification.error('Network Error', 'Failed to connect the network. Make sure you entered a valid url for the node RPC.')
+    notification.error(t('network.custom.err'), t('network.custom.errText'))
     this.setState({ connecting: '' })
   }
 
@@ -92,7 +93,7 @@ export default class CustomNetworkModal extends PureComponent {
               >
                 {
                   connecting === name
-                    ? <><i className='fas fa-spin fa-spinner mr-1' />Connecting...</> : 'Connect'
+                    ? <><i className='fas fa-spin fa-spinner mr-1' />{t('network.custom.connecting')}</> : (t('network.custom.connect'))
                 }
               </Button>
               {
@@ -116,12 +117,12 @@ export default class CustomNetworkModal extends PureComponent {
         </tr>
       ))
     }
-    return <tr key='custom-network-none'><td align='middle' colSpan={3}>(No Custom Networks)</td></tr>
+    return <tr key='custom-network-none'><td align='middle' colSpan={3}>({t('network.custom.none')})</td></tr>
   }
 
   render() {
-    const networkConnectingText = 'it will be disconnected immediately and cannot be restored.'
-    const networkNotConnectedText = 'it cannot be restored.'
+    const networkConnectingText = t('network.custom.delTipsEnd')
+    const networkNotConnectedText = t('network.custom.delConTips')
     const currentNetwork = this.state.customNetworkItem?.name
     const customNetworkMap = redux.getState().customNetworks.toJS()
     const connected = redux.getState().networkConnect && customNetworkMap[currentNetwork]?.active
@@ -129,8 +130,8 @@ export default class CustomNetworkModal extends PureComponent {
     return <>
       <Modal
         ref={this.modal}
-        title='Custom Network'
-        textActions={['New Connection']}
+        title={t('network.custom.custom')}
+        textActions={[t('network.custom.create')]}
         onActions={[() => this.openNewConnectionModal()]}
       >
         <Table
@@ -148,14 +149,17 @@ export default class CustomNetworkModal extends PureComponent {
       </Modal>
       <Modal
         ref={this.deleteModal}
-        title='Delete Custom Network'
+        title={t('network.custom.del')}
         size='md'
-        textConfirm='Delete'
+        textConfirm={t('network.custom.delConfirm')}
         noCancel={true}
         onConfirm={this.deleteConfirm}
       >
         <div>
-          Are you sure you want to delete <kbd className='color-danger'>{this.state.customNetworkItem?.name}</kbd> ? Once deleted, {connected ? networkConnectingText : networkNotConnectedText}
+          {t('network.custom.delTips')}
+          <kbd className='color-danger'>{this.state.customNetworkItem?.name} </kbd>
+          {t('network.custom.delTwoTips')}
+          {connected ? networkConnectingText : networkNotConnectedText}
         </div>
       </Modal>
       <NewCustomNetworkModal ref={this.newConnectionModal} />

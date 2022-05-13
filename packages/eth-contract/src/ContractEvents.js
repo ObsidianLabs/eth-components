@@ -23,6 +23,7 @@ import notification from '@obsidians/notification'
 import FormSection from './components/MarginlessFormSection'
 
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 class ContractEvents extends PureComponent {
   state = {
@@ -151,7 +152,7 @@ class ContractEvents extends PureComponent {
       <ToolbarButton
         key={this.state.loading ? 'event-loading' : 'event-query'}
         icon={this.state.loading ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
-        tooltip='Get event logs'
+        tooltip={t('contract.transaction.getEventLogs')}
         className='border-right-1'
         onClick={() => this.getEventLogs(selectedEvent)}
       />
@@ -220,7 +221,7 @@ class ContractEvents extends PureComponent {
       list.push(
         <tr key='loading' className='bg-transparent'>
           <td align='middle' colSpan={columns.length + 1}>
-            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
@@ -264,10 +265,10 @@ class ContractEvents extends PureComponent {
           {this.renderEventSelector()}
         </div>
         <div className='d-flex flex-column flex-grow-1 overflow-auto'>
-          <FormSection title='Parameters'>
+          <FormSection title={t('rpc.parameters')}>
             <div className='row'>
               <FormGroup className='mb-2 col-12'>
-                <Label className='mb-1 small'>Range</Label>
+                <Label className='mb-1 small'>{t('contract.transaction.range')}</Label>
                 <InputGroup size='sm'>
                   <Input
                     innerRef={this.input}
@@ -296,14 +297,14 @@ class ContractEvents extends PureComponent {
                   />
                   <InputGroupAddon addonType='append'>
                     <Button color='secondary' size='sm' onClick={() => this.setState({ rangeFrom: '', rangeTo: '' })}>
-                      Clear
+                      {t('contract.transaction.clear')}
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
               </FormGroup>
             </div>
           </FormSection>
-          <FormSection title='Event Logs' flex={1}>
+          <FormSection title={t('contract.transaction.eventLogs')} flex={1}>
             {this.renderLogsTable()}
           </FormSection>
         </div>

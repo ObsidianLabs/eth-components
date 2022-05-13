@@ -19,6 +19,7 @@ import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
 
 import NewProjectModal from '../../components/NewProjectModal'
+import { t } from '@obsidians/i18n'
 
 export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   static contextType = WorkspaceContext
@@ -64,11 +65,11 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
       <div className='custom-tab bg2'>
         <div className='jumbotron bg-transparent text-body'>
           <div className='container'>
-            <h1>Project Settings</h1>
+            <h1>{t('project.projectSetting')}</h1>
             <form disabled={true}>
             <ProjectPath projectRoot={projectRoot} remote={projectManager.remote} />
 
-            <h4 className='mt-4'>General</h4>
+            <h4 className='mt-4'>{t('project.general')}</h4>
             {this.renderLanguageOption(projectSettings)}
             <DebouncedFormGroup
               label='Main file'
@@ -89,7 +90,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             {
               !projectManager.remote &&
               <FormGroup>
-                <Label>Framework</Label>
+                <Label>{t('framework')}</Label>
                 <CustomInput
                   id='settings-framework'
                   type='select'
@@ -107,7 +108,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             {
               !framework.endsWith('-docker') &&
               <FormGroup>
-                <Label>Npm client</Label>
+                <Label>Npm {t('client')}</Label>
                 <CustomInput
                   id='settings-npm-client'
                   type='select'
@@ -121,7 +122,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 </CustomInput>
               </FormGroup>
             }
-            <h4 className='mt-4'>Compilers</h4>
+            <h4 className='mt-4'>{t('project.compilers')}</h4>
             {
               !projectManager.remote && framework === 'truffle' &&
               <DockerImageInputSelector
@@ -155,7 +156,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               />
             }
             <FormGroup>
-              <Label>EVM version</Label>
+              <Label>EVM {t('project.version')}</Label>
               <CustomInput
                 id='settings-evm-version'
                 type='select'
@@ -205,9 +206,9 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               </CustomInput>
             </FormGroup>
 
-            <h4 className='mt-4'>Editor</h4>
+            <h4 className='mt-4'>{t('project.editor')}</h4>
             <FormGroup>
-              <Label>Font Family</Label>
+              <Label>{t('project.fontFamily')}</Label>
               <CustomInput
                 id='settings-font-family'
                 type='select'
@@ -221,7 +222,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               </CustomInput>
             </FormGroup>
             <FormGroup>
-              <Label>Font Size</Label>
+              <Label>{t('project.fontSize')}</Label>
               <CustomInput
                 id='settings-font-size'
                 type='select'
@@ -239,7 +240,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               </CustomInput>
             </FormGroup>
             <FormGroup>
-              <Label>Font Ligatures</Label>
+              <Label>{t('project.fontLigatures')}</Label>
               <CustomInput
                 id='settings-ligatures'
                 type='select'
