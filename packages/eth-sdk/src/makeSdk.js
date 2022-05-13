@@ -110,11 +110,13 @@ export default function makeSdk({
       return await this.client.latest()
     }
 
-    async accountFrom(address) {
+    async accountFrom (address) {
+      console.log(address, 'accountFrom')
       return await this.client.getAccount(address)
     }
 
-    contractFrom({ address, abi }) {
+    contractFrom ({ address, abi }) {
+      console.log(arguments, 111)
       return new Contract({ address, abi }, this.client)
     }
 
