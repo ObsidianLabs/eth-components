@@ -15,6 +15,11 @@ export class HeaderActions {
   }
 
   updateNetwork (networkId) {
+    const loadNetworkResources = redux.getState().loadNetworkResources
+    if(!loadNetworkResources && networkId == 'custom') {
+      redux.dispatch('LOAD_NETWORK_RESOURCES', true)
+      return this.history.push(`/network/${networkId}`)
+    }
     if (this?.history?.location?.pathname?.startsWith('/network')) {
       this.history.push(`/network/${networkId}`)
     }
