@@ -275,8 +275,9 @@ function makeProjectManager(Base) {
 
       const networkId = networkManager.sdk.networkId
       const { contractName, amount, parameters, ...override } = allParameters
-      const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode)
 
+      const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode)
+      
       let result
       try {
         const tx = await networkManager.sdk.getDeployTransaction({
@@ -331,11 +332,13 @@ function makeProjectManager(Base) {
 
       this.deployButton.setState({ pending: false })
       notification.success(t('contract.deploy.success'))
-
+      console.log(result, '123123123')
+      console.log(deploy, '12312====4123')
       redux.dispatch('ABI_ADD', {
         ...deploy.options,
         name: contractName,
-        codeHash: result.codeHash,
+        // use address instead
+        codeHash: result.receipt.contractCreated,
         abi: JSON.stringify(deploy.abi),
       })
 

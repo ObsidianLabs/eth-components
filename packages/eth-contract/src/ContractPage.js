@@ -59,6 +59,7 @@ export default class ContractPage extends PureComponent {
   }
 
   refresh = async () => {
+    console.log('refresh')
     this.setState({ loading: true, error: null, abi: {}, abis: [], selectedAbi: null, account: null, errorType: null })
 
     await new Promise(resolve => setTimeout(resolve, 10))
@@ -88,7 +89,7 @@ export default class ContractPage extends PureComponent {
       this.setState({ loading: false, error: e.message })
       return
     }
-
+ 
     if (account.codeHash) {
       this.getTokenInfo(account)
     } else {
@@ -107,7 +108,7 @@ export default class ContractPage extends PureComponent {
     }
 
     this.loadProjectAbis()
-
+    console.log(account, '11111111123123123')
     this.setState({
       loading: false,
       error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
@@ -203,8 +204,8 @@ export default class ContractPage extends PureComponent {
   separateAbi = info => {
     console.log(info, '1111')
     console.log()
-    const abi = info.content.output.abi
-    console.log(abi)
+    const abi = info.abi.output.abi
+    console.log(abi, 'llllll')
     const functions = abi.filter(item => item.type === 'function')
     const events = abi.filter(item => item.type === 'event')
     const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
@@ -216,7 +217,7 @@ export default class ContractPage extends PureComponent {
   render () {
     const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
-
+    console.log(abi, 'abi')
     if (!networkManager.sdk) {
       return null
     }
@@ -235,6 +236,7 @@ export default class ContractPage extends PureComponent {
     }
 
     if (error) {
+      console.log(account, 'contractPage')
       if (account && errorType && errorType === 'ABI_NOT_FOUND') {
         return (
           <Screen>
@@ -276,7 +278,6 @@ export default class ContractPage extends PureComponent {
         </Screen>
       )
     }
-
     const contractInstance = networkManager.sdk.contractFrom({ ...abi, address: value })
     const { actions, views, events } = this.separateAbi(abi)
 
