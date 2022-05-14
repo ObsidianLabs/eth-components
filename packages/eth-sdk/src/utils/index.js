@@ -58,9 +58,9 @@ function parseValue (value, param, chainId) {
 
 export default {
   isValidAddress: address => ethers.utils.isAddress(address),
-  formatAddress: address => ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : '--',
+  formatAddress: address => ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : address,
   abbreviateAddress: address => {
-    address = ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : '--'
+    address = ethers.utils.isAddress(address) ? ethers.utils.getAddress(address) : address
     return `${address.substr(0, 12)}...${address.substr(address.length - 6, address.length)}`
   },
   simplifyAddress: address => address ? address.toLowerCase() : '',
