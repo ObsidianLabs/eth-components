@@ -42,7 +42,7 @@ export default class Welcome extends PureComponent {
     this.toGuidePage = this.toGuidePage.bind(this)
 
     this.listItemDocker = React.createRef()
-    this.imageRefs = new Array(2 + (props.extraItems?.length || 0))
+    this.imageRefs = new Array(this.props.overrideItems ? this.props.overrideItems.length : 2 + (props.extraItems?.length || 0))
       .fill(null)
       .map(() => React.createRef())
   }

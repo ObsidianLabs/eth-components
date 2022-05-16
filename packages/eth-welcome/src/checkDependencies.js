@@ -8,8 +8,11 @@ export default async function checkDependencies (extras = []) {
       dockerChannel.check(),
       instanceChannel.node.installed(),
       compiler.truffle.installed(),
-      ...extras.map(item => item.channel.installed()),
+      ...extras.map(item => {
+        return item.channel.installed()
+      }),
     ])
+    console.log(results, 'result')
     return results.every(x => !!x)
   } catch (e) {
     return false
