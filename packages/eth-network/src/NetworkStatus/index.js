@@ -8,6 +8,7 @@ import {
 import RpcClientModal from './RpcClientModal'
 import networkManager from '../networkManager'
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 import classnames from 'classnames'
 
 export default function NetworkStatus(props) {
@@ -20,26 +21,26 @@ export default function NetworkStatus(props) {
       networkManager.reconnectNetwork()
     }
     props.onRefresh && props.onRefresh()
-    connected && notification.error(`Network`, ` Network disconnect`)
+    connected && notification.error(t('network.network.network'), t('network.network.networkDisconnect'))
   }
 
   return <>
     <UncontrolledButtonDropdown direction='up'>
       <DropdownToggle size='sm' color='default' className='rounded-0 px-2 text-muted'>
-        <span key={`network-${networkId}`} className={`${classnames('d-inline-block mr-1', connected ? 'color-success' : '')}`}>
+        <span hidden={networkId == 'dev' || networkId == 'custom'} key={`network-${networkId}`} className={`${classnames(`${networkId != 'dev' && networkId != 'custom' && 'd-inline-block'} mr-1`, connected ? 'color-success' : '')}`}>
           <i className='fas fa-wifi mr-1' />
-        </span>{network ? network.name : 'No Network'}
+        </span>{network ? network.name : t('network.network.noNetwork')}
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>
         <DropdownItem header>
-          <i className='fas fa-hammer mr-1' /> network tools
+          <i className='fas fa-hammer mr-1' /> {t('network.network.tools')}
         </DropdownItem>
         <DropdownItem onClick={() => rpcModal.current?.openModal()}>
-          RPC Client
+          {t('rpc.client')}
         </DropdownItem>
         {
           (networkId !== 'dev' && network) && <DropdownItem onClick={handleRefreshNetwork}>
-            {connected ? 'Disconnect' : 'Reconnect'}
+            {connected ? t('network.network.disconnect') : t('network.network.reconnect')}
           </DropdownItem>
         }
       </DropdownMenu>

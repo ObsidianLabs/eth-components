@@ -6,6 +6,7 @@ import {
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 import TransactionRow from './TransactionRow'
 
@@ -81,7 +82,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loading' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            <i className='fas fa-spin fa-spinner mr-1' />Loading...
+            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
@@ -97,7 +98,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loadmore' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            No Transactions Found
+            {t('explorer.transactions.noTransactions')}
           </td>
         </tr>
       )
@@ -105,7 +106,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loadmore' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            <span className='btn btn-sm btn-secondary' onClick={this.loadMore}>Load More</span>
+            <span className='btn btn-sm btn-secondary' onClick={this.loadMore}>{t('explorer.transactions.loadMore')}</span>
           </td>
         </tr>
       )
@@ -125,7 +126,7 @@ export default class AccountTransactions extends PureComponent {
       <TableCard
         title={
           <div className='d-flex flex-row align-items-end'>
-            <h4 className='mb-0'>Transactions</h4>
+            <h4 className='mb-0'>{t('explorer.transactions.transactions')}</h4>
             <Badge pill className='ml-1 mb-1'>{total}</Badge>
           </div>
         }
@@ -140,14 +141,14 @@ export default class AccountTransactions extends PureComponent {
 
 const TransactionHeader = () => (
   <tr>
-    <th style={{ width: '10%' }}>time</th>
-    <th style={{ width: '8%' }}>block</th>
-    <th style={{ width: '17%' }}>tx hash</th>
-    <th style={{ width: '17%' }}>from</th>
-    <th style={{ width: '17%' }}>to</th>
-    <th style={{ width: '8%', textAlign: 'right' }}>value</th>
-    <th style={{ width: '8%', textAlign: 'right' }}>gas used</th>
-    <th style={{ width: '15%', textAlign: 'right' }}>fee</th>
+    <th style={{ width: '10%' }}>{t('explorer.transactions.time')}</th>
+    <th style={{ width: '8%' }}>{t('explorer.transactions.block')}</th>
+    <th style={{ width: '17%' }}>{t('explorer.transactions.txHash')}</th>
+    <th style={{ width: '17%' }}>{t('explorer.transactions.from')}</th>
+    <th style={{ width: '17%' }}>{t('explorer.transactions.to')}</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>{t('explorer.transactions.value')}</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>{t('explorer.transactions.gasUsed')}</th>
+    <th style={{ width: '15%', textAlign: 'right' }}>{t('explorer.transactions.fee')}</th>
   </tr>
 )
 

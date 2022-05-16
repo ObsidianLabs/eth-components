@@ -5,6 +5,7 @@ import {
 } from '@obsidians/ui-components'
 
 import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import RpcActionForm from './RpcActionForm'
 import networkManager from '../networkManager'
@@ -17,7 +18,7 @@ export default class RpcClientModal extends PureComponent {
 
   openModal = () => {
     if (!networkManager.sdk) {
-      notification.error('No Network', 'No connected network. Please start a local network or switch to a remote network.')
+      notification.error(t('network.network.noNetwork'), t('network.network.noNetworkText'))
       return
     }
     this.modal.current.openModal()
@@ -25,7 +26,7 @@ export default class RpcClientModal extends PureComponent {
 
   render () {
     return (
-      <Modal ref={this.modal} scrollable title='RPC Client' textCancel='Close'>
+      <Modal ref={this.modal} scrollable title={t('rpc.client')} textCancel={t('component.text.close')}>
         <RpcActionForm />
       </Modal>
     )

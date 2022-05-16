@@ -1,3 +1,5 @@
+import { t } from '@obsidians/i18n'
+
 export default {
   title: 'Gas',
   list: [
@@ -5,7 +7,7 @@ export default {
       name: 'gasLimit',
       alias: 'gas',
       className: 'col-4',
-      label: 'Gas Limit',
+      label: t('contract.deploy.gasLimit'),
       icon: 'fas fa-burn',
       placeholder: 'Default: 1,000,000',
       default: '1000000'
@@ -13,7 +15,7 @@ export default {
     {
       name: 'maxPriorityFeePerGas',
       className: 'col-4',
-      label: 'Tip',
+      label: t('contract.deploy.tip'),
       icon: 'fas fa-hand-holding-usd',
       placeholder: 'max priority fee per gas',
       default: ''
@@ -21,7 +23,7 @@ export default {
     {
       name: 'maxFeePerGas',
       className: 'col-4',
-      label: 'Max Fee',
+      label: t('contract.deploy.maxFee'),
       icon: 'fas fa-sack-dollar',
       placeholder: 'max fee per gas',
       default: ''

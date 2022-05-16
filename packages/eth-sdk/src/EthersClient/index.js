@@ -3,11 +3,15 @@ import { ethers } from 'ethers'
 import platform from '@obsidians/platform'
 import { IpcChannel } from '@obsidians/ipc'
 import redux from '@obsidians/redux'
+import { format } from 'js-conflux-sdk'
 
 import utils from '../utils'
 import tokenlist from './tokenlist.json'
 
 const { REACT_APP_SERVER_URL } = process.env
+const chainsConfluxtName = ['confluxtest', 'confluxmain']
+const chainsHarmonyName = ['harmonytest', 'harmonymain']
+const { fromBech32 } = require('@harmony-js/crypto')
 
 export default class EthersClient {
   constructor(option) {
@@ -50,7 +54,7 @@ export default class EthersClient {
 
   async networkInfo() {
     return await this.provider.getNetwork()
-}
+  }
 
   async getStatus() {
     return await this.provider.getBlock('latest')
@@ -101,7 +105,29 @@ export default class EthersClient {
     }
 
     const result = await this.explorer.getHistory(address, page, size)
-    return { length: 0, list: result.result }
+    const isHarmony = chainsHarmonyName.includes(this.networkId)
+    const isConflux = chainsConfluxtName.includes(this.networkId)
+    let list = result.result ? (isHarmony ? result.result.transactions : result.result) : (result.list || [])
+    if (isHarmony || isConflux) {
+      list.map(elem => {
+        if (isConflux) {
+          elem.from = format.hexAddress(elem.from)
+          elem.to = format.hexAddress(elem.to)
+          elem.blockNumber = elem.epochNumber
+          elem.methodString = elem.method
+          elem.timeStamp = elem.timestamp
+          elem.method = ''
+        }
+        if (isHarmony) {
+          elem.from = fromBech32(elem.from)
+          elem.to = fromBech32(elem.to)
+          elem.timeStamp = elem.timestamp
+          elem.hash = elem.ethHash
+          elem.value = elem.value + ""
+        }
+      })
+    }
+    return { length: 0, list }
   }
 
   async getTokens(address) {
@@ -164,18 +190,34 @@ class ExplorerProxy {
   }
 
   async getHistory(address, page = 0, size = 10) {
-    const query = {
+    let query = {
       module: 'account',
       action: 'txlist',
-      address,
       startblock: 0,
       endblock: 99999999,
       page: page + 1,
       offset: size,
       sort: 'desc'
     }
-    const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${this.networkId}?${new URLSearchParams(query)}`)
-    return await response.json()
+    if (chainsConfluxtName.includes(this.networkId)) {
+      query.accountAddress = address
+      query.skip = page * size
+    } else {
+      query.address = address
+    }
+
+    if (chainsHarmonyName.includes(this.networkId)) {
+      query.page -= 1
+      if (platform.isDesktop) {
+        const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/harmony/explorer/${this.networkId}?${new URLSearchParams(query)}`,{method: 'POST'})
+        return await response.json()
+      } else {
+        return await this.channel.invoke('POST', this.networkId, query)
+      }
+    } else {
+      const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${this.networkId}?${new URLSearchParams(query)}`)
+      return await response.json()
+    }
     // TODO: confirm with the infrua service
     // return await this.channel.invoke('GET', this.networkId, query)
   }

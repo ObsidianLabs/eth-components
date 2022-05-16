@@ -7,6 +7,7 @@ import {
 import Terminal from '@obsidians/terminal'
 import notification from '@obsidians/notification'
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 import { CompilerManager } from './compilerManager'
 
@@ -17,11 +18,11 @@ export default class TruffleTerminal extends PureComponent {
 
   tryOpenTruffleConsole = () => {
     if (!networkManager.sdk) {
-      notification.error('No Network Detected', 'No Ethereum node instance is running.')
+      notification.error(t('network.network.detected'), t('network.network.detectedText'))
       return
     }
     this.setState({ truffleConsole: true })
-    this.notification = notification.info(`Starting Truffle Console...`, '', 0)
+    this.notification = notification.info(`${t('network.network.startingTruffle')}...`, '', 0)
     networkManager.onSdkDisposed(this.stopTruffleConsole)
   }
 

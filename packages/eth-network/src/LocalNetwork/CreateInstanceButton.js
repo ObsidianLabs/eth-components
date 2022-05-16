@@ -12,6 +12,7 @@ import notification from '@obsidians/notification'
 
 import instanceChannel from './instanceChannel'
 import networkManager from '../networkManager'
+import { t } from '@obsidians/i18n'
 
 export default class CreateInstanceButton extends PureComponent {
   constructor (props) {
@@ -41,14 +42,14 @@ export default class CreateInstanceButton extends PureComponent {
     let miner
 
     if (this.props.instances.some(instance => instance.Name.substr(process.env.PROJECT.length + 1) === this.state.name)) {
-      notification.error('Failed', `You have an instance named ${this.state.name}, please use a different name.`)
+      notification.error(t('network.dev.fail'), t('network.dev.failText', {name: this.state.name}))
       return
     }
 
     const keypairs = await keypairManager.loadAllKeypairs()
     if (this.props.minerKey) {
       if (!keypairs || !keypairs.length) {
-        notification.error('Failed', 'Please create or import a keypair in the keypair manager first.')
+        notification.error(t('network.dev.fail'), t('network.dev.failedText'))
         return
       }
       const kp = networkManager.Sdk?.kp
@@ -66,7 +67,7 @@ export default class CreateInstanceButton extends PureComponent {
       keys = keypairs.map(k => k.address)
     }
 
-    this.setState({ pending: 'Creating...' })
+    this.setState({ pending: `${t('keypair.creating')}...` })
 
     await instanceChannel.invoke('create', {
       name: this.state.name,
@@ -108,20 +109,20 @@ export default class CreateInstanceButton extends PureComponent {
           onClick={this.onClickButton}
         >
           <i className='fas fa-plus mr-1' />
-          New Instance
+          {t('network.dev.newInstance')}
         </Button>
         <Modal
           ref={this.modal}
           overflow
-          title={`New Instance (${this.props.networkId})`}
-          textConfirm='Create'
+          title={`${t('network.dev.newInstance')} (${this.props.networkId})`}
+          textConfirm={t('keypair.create')}
           onConfirm={this.onCreateInstance}
           pending={this.state.pending}
           confirmDisabled={!this.state.name || !this.state.version}
         >
           <DebouncedFormGroup
-            label='Instance name'
-            placeholder='Can only contain letters, digits, dash or underscore'
+            label={t('network.dev.name')}
+            placeholder={t('network.dev.placeholder')}
             maxLength='30'
             value={this.state.name}
             onChange={(name, invalid) => this.setState({ name, invalid })}

@@ -7,6 +7,7 @@ import { navbarItem } from '@obsidians/workspace'
 import { NewProjectModal } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
 import { utils } from '@obsidians/sdk'
+import { t } from '@obsidians/i18n'
 
 import headerActions from './headerActions'
 
@@ -129,7 +130,7 @@ export default class Header extends PureComponent {
 
     const contractNavbarItem = {
       route: 'contract',
-      title: 'Contract',
+      title: t('header.title.contract'),
       icon: 'fas fa-file-invoice',
       selected: { id: selectedContract, name: contractName },
       dropdown: dropdownStarredInContract,
@@ -141,7 +142,7 @@ export default class Header extends PureComponent {
     }
     const explorerNavbarItem = {
       route: 'account',
-      title: 'Explorer',
+      title: t('header.title.explorer'),
       icon: 'fas fa-map-marker-alt',
       noneIcon: 'fas fa-map-marker-times',
       selected: { id: selectedAccount, name: accountName },
@@ -163,7 +164,7 @@ export default class Header extends PureComponent {
     const networkReplaceName = Object.assign({}, network, { name: network.fullName })
     const networkNavbarItem = {
       route: 'network',
-      title: 'Network',
+      title: t('header.title.network'),
       icon: network.icon,
       selected: networkReplaceName,
       dropdown: networkList,

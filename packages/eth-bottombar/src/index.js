@@ -10,6 +10,7 @@ import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
 import { useInterval } from '@obsidians/hooks'
 import redux from '@obsidians/redux'
+import { t } from '@obsidians/i18n'
 
 export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiState'])(function BottomBar(props) {
   const {
@@ -64,7 +65,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
     <AbiStorage>
       <div className='btn btn-default btn-sm btn-flat text-muted'>
         <i className='fas fa-list mr-1' />
-        ABI Storage
+        {t('abi.storage')}
       </div>
     </AbiStorage>
     <div className='flex-1' />

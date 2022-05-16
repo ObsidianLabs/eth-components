@@ -3,6 +3,7 @@ import React from 'react'
 import notification from '@obsidians/notification'
 import queue from '@obsidians/eth-queue'
 import { networkManager } from '@obsidians/eth-network'
+import { t } from '@obsidians/i18n'
 
 import AbiActionForm from './components/AbiActionForm'
 import ResultContent from './ResultContent'
@@ -19,7 +20,7 @@ export default class ContractActions extends AbiActionForm {
 
   estimate = async actionName => {
     if (!this.state.signer) {
-      notification.error('Error', 'No signer is provided. Please make sure you have availabe keypairs to use in the keypair manager.')
+      notification.error(t('contract.estimate.error'), t('contract.transaction.noSignerText'))
       return
     }
 
@@ -27,7 +28,7 @@ export default class ContractActions extends AbiActionForm {
     try {
       parameters = this.form.current.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('network.network.errorParameters'), e.message)
       return
     }
 
@@ -35,7 +36,7 @@ export default class ContractActions extends AbiActionForm {
     try {
       value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
     } catch {
-      notification.error('Estimate Failed', `${networkManager.symbol} to send is invalid.`)
+      notification.error(t('contract.estimate.fail'), t('contract.transaction.executeFailText', {symbol: networkManager.symbol}))
       return
     }
 
@@ -47,7 +48,7 @@ export default class ContractActions extends AbiActionForm {
       })
       result = await networkManager.sdk.estimate(tx)
     } catch (e) {
-      notification.error('Estimate Failed', e.reason || e.message)
+      notification.error(t('contract.estimate.fail'), e.reason || e.message)
       return
     }
 
@@ -62,7 +63,7 @@ export default class ContractActions extends AbiActionForm {
     }
 
     if (!this.state.signer) {
-      notification.error('Error', 'No signer is provided. Please make sure you have availabe keypairs to use in the keypair manager.')
+      notification.error(t('contract.estimate.error'), t('contract.transaction.noSignerText'))
       return
     }
 
@@ -70,14 +71,14 @@ export default class ContractActions extends AbiActionForm {
     try {
       parameters = this.form.current.getParameters()
     } catch (e) {
-      notification.error('Error in Parameters', e.message)
+      notification.error(t('network.network.errorParameters'), e.message)
       return
     }
 
     if (parameters.empty && parameters.array.length && !this.confirming) {
       this.confirming = true
       setTimeout(() => { this.confirming = false }, 3000)
-      notification.info('Send transaction with empty parameters?', 'Press the execute button again to confirm.', 3)
+      notification.info(t('contract.transaction.parametersEmpty'), t('contract.transaction.parametersEmptyText'), 3)
       return
     }
 
@@ -94,7 +95,7 @@ export default class ContractActions extends AbiActionForm {
     try {
       value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
     } catch {
-      notification.error('Execute Contract Failed', `${networkManager.symbol} to send is invalid.`)
+      notification.error(t('contract.transaction.executeFail'), t('contract.transaction.executeFailText', {symbol: networkManager.symbol}))
       this.setState({ executing: false })
       return
     }
@@ -124,7 +125,7 @@ export default class ContractActions extends AbiActionForm {
       )
     } catch (e) {
       console.warn(e)
-      notification.error('Execute Contract Failed', e.reason || e.message)
+      notification.error(t('contract.transaction.executeFail'), e.reason || e.message)
       this.setState({ executing: false, actionError: e.reason || e.message, actionResult: '' })
     }
   }

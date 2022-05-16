@@ -10,6 +10,7 @@ import {
 import notification from '@obsidians/notification'
 import { DockerImageInputSelector } from '@obsidians/docker'
 import compilerManager from '@obsidians/compiler'
+import { t } from '@obsidians/i18n'
 
 const frameworkNames = {
   truffle: 'Truffle',
@@ -173,7 +174,7 @@ export default class FrameworkSelector extends PureComponent {
       <div className='row'>
         <div className='col-12 col-sm-7'>
           <FormGroup>
-            <Label>Framework</Label>
+            <Label>{t('framework')}</Label>
             <div>
               <ButtonOptions
                 size='sm'
