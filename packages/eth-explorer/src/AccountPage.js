@@ -125,6 +125,7 @@ export default class AccountPage extends PureComponent {
         return (
           <Screen>
             <h4 className='display-4'>Error</h4>
+            <p className='lead color-danger'>The blockchain node network connection error, you can try to reconnect to the network or open a new tab query.</p>
             <p className='lead'>{error}</p>
           </Screen>
         )

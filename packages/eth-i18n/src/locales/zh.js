@@ -61,6 +61,8 @@ const translation = {
       value: '价值',
       gasUsed: '已消耗 gas',
       fee: 'Gas 费',
+      transferFailed: '转账失败',
+      transferFailedText: '金额是空的',
     }
   },
   network: {
