@@ -4,7 +4,7 @@ import { connect } from '@obsidians/redux'
 import Auth from '@obsidians/auth'
 import { KeypairButton } from '@obsidians/keypair'
 import { TerminalButton } from '@obsidians/workspace'
-import { NetworkStatus, networkManager } from '@obsidians/eth-network'
+import Network, { NetworkStatus, networkManager } from '@obsidians/eth-network'
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
@@ -59,6 +59,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
+    <div hidden><Network /></div>
     {!noNetwork && <NetworkStatus connected={networkConnect} onRefresh={handleStatusRefresh} />}
     <QueueButton txs={txs} />
     <AbiStorage>

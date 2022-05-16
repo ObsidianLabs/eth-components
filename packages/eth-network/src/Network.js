@@ -1,6 +1,6 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
-import redux, { connect } from '@obsidians/redux'
+import { connect } from '@obsidians/redux'
 
 import networkManager from './networkManager'
 import LocalNetwork from './LocalNetwork'
@@ -32,9 +32,10 @@ export default connect(['network', 'customNetworks', 'uiState'])(withRouter(prop
   }, [history])
   
   React.useEffect(() => {
-    redux.dispatch('LOAD_NETWORK_RESOURCES', true)
-    cacheLifecycles.didCache(() => setActive(false))
-    cacheLifecycles.didRecover(() => setActive(true))
+    if (cacheLifecycles) {
+      cacheLifecycles.didCache(() => setActive(false))
+      cacheLifecycles.didRecover(() => setActive(true))
+    }
   })
 
   if (networkId === 'dev') {
