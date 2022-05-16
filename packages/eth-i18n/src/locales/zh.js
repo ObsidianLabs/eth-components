@@ -50,17 +50,17 @@ const translation = {
       totalSupply: '供应总量',
     },
     transactions: {
-      transactions: '交易情况',
-      noTransactions: '没有交易记录',
+      transactions: '交易记录',
+      noTransactions: '暂无交易记录',
       loadMore: '加载更多',
-      time: '块龄',
+      time: '交易时间',
       block: '区块高度',
       txHash: '交易哈希',
       from: '发送方',
       to: '接收方',
       value: '价值',
-      gasUsed: '已消耗gas',
-      fee: '燃气费',
+      gasUsed: '已消耗 gas',
+      fee: 'Gas 费',
     }
   },
   network: {
