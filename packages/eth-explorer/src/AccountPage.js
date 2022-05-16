@@ -33,11 +33,6 @@ export default class AccountPage extends PureComponent {
     this.refresh()
   }
 
-  componentDidUpdate (prevProps) {
-    if (prevProps.value !== this.props.value) {
-      this.refresh()
-    }
-  }
 
   componentDidRecover = () => {
     this.props.onDisplay(this)
