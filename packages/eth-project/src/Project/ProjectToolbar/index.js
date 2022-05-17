@@ -43,7 +43,9 @@ export default class ProjectToolbar extends PureComponent {
         id='settings'
         icon='fas fa-cog'
         tooltip='Project Settings'
-        onClick={() => projectManager.openProjectSettings()}
+        onClick={() => {
+          projectManager.openProjectSettings()
+        }}
       />
       <SignRequestModal ref={keypairManager.signReqModal} />
     </>
