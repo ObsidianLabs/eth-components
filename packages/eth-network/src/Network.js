@@ -32,8 +32,10 @@ export default connect(['network', 'customNetworks', 'uiState'])(withRouter(prop
   }, [history])
   
   React.useEffect(() => {
-    cacheLifecycles.didCache(() => setActive(false))
-    cacheLifecycles.didRecover(() => setActive(true))
+    if (cacheLifecycles) {
+      cacheLifecycles.didCache(() => setActive(false))
+      cacheLifecycles.didRecover(() => setActive(true))
+    }
   })
 
   if (networkId === 'dev') {
