@@ -5,6 +5,7 @@ import {
   Table,
   Button,
   IconButton,
+  UncontrolledTooltip,
 } from '@obsidians/ui-components'
 
 import redux from '@obsidians/redux'
@@ -81,7 +82,19 @@ export default class CustomNetworkModal extends PureComponent {
     if (customNetworks.length) {
       return customNetworks.map(([name, item], i) => (
         <tr key={`custom-network-${i}`} className='hover-flex'>
-          <td>{name}</td>
+          <td>
+            <div>
+              <span id={name.length > 10 && `custom-${i}`}>
+                {name.length > 10 ? (`${name.substr(0,10)}...`) : name}
+              </span>
+            </div>
+            {
+              name.length > 10 &&
+              <UncontrolledTooltip placement='right' target={`custom-${i}`}>
+                {name}
+              </UncontrolledTooltip>
+            }
+          </td>
           <td className='text-overflow-dots'>{item.get('url')}</td>
           <td align='right'>
             <div className='d-flex align-items-center justify-content-between'>
