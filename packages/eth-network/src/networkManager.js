@@ -162,7 +162,7 @@ class NetworkManager {
     if (network.id && network.id !== 'dev') {
       try {
         this._sdk = this.newSdk(network)
-        await this._sdk.updateEIP1559Support()
+        this._sdk.updateEIP1559Support()
       } catch (error) {
         this._sdk && this._sdk.dispose()
         this._sdk = null
