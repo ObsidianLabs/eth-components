@@ -82,7 +82,7 @@ export default class AbiStorageModal extends PureComponent {
       return (
         <tr key='abis-loading' >
           <td align='middle' colSpan={3}>
-            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
+            <i className='fas fa-pulse fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )

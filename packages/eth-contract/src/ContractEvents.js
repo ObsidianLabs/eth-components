@@ -151,7 +151,7 @@ class ContractEvents extends PureComponent {
       </UncontrolledButtonDropdown>
       <ToolbarButton
         key={this.state.loading ? 'event-loading' : 'event-query'}
-        icon={this.state.loading ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
+        icon={this.state.loading ? 'fas fa-pulse fa-spinner' : 'fas fa-play'}
         tooltip={t('contract.transaction.getEventLogs')}
         className='border-right-1'
         onClick={() => this.getEventLogs(selectedEvent)}
@@ -221,7 +221,7 @@ class ContractEvents extends PureComponent {
       list.push(
         <tr key='loading' className='bg-transparent'>
           <td align='middle' colSpan={columns.length + 1}>
-            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
+            <i className='fas fa-pulse fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
