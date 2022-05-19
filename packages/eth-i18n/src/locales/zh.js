@@ -99,7 +99,6 @@ const translation = {
       errText: '连接网络失败。确保你为节点RPC输入了一个有效的网址。',
       invalidName: '无效的网络名称',
       invalidNameText: '<b>{{name}}</b>已经存在.',
-      invalidNameTextChinese: '<b>名称</b>不能包含中文或汉字',
       del: '删除自定义网络',
       delConfirm: '删除',
       delTips: '你确定你要删除',

@@ -99,7 +99,6 @@ const translation = {
       errText: 'Failed to connect the network. Make sure you entered a valid url for the node RPC.',
       invalidName: 'Invalid network name',
       invalidNameText: '<b>{{name}}</b> alreay exists.',
-      invalidNameTextChinese: '<b>Name</b> cannot contain Chinese or Chinese characters.',
       del: 'Delete Custom Network',
       delConfirm: 'Delete',
       delTips: 'Are you sure you want to delete ',
