@@ -61,6 +61,8 @@ const translation = {
       value: 'value',
       gasUsed: 'gas used',
       fee: 'fee',
+      transferFailed: 'Transfer Failed',
+      transferFailedText: 'The amount is empty.',
     }
   },
   network: {
