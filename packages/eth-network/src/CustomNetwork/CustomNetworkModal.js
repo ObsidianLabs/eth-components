@@ -5,6 +5,7 @@ import {
   Table,
   Button,
   IconButton,
+  UncontrolledTooltip,
 } from '@obsidians/ui-components'
 
 import redux from '@obsidians/redux'
@@ -79,43 +80,58 @@ export default class CustomNetworkModal extends PureComponent {
     customNetworks.sort((a, b) => a[0].localeCompare(b[0]))
 
     if (customNetworks.length) {
-      return customNetworks.map(([name, item], i) => (
-        <tr key={`custom-network-${i}`} className='hover-flex'>
-          <td>{name}</td>
-          <td className='text-overflow-dots'>{item.get('url')}</td>
-          <td align='right'>
-            <div className='d-flex align-items-center justify-content-between'>
-              <Button
-                key={connecting === name ? `${name}-connecting` : `${name}-connect`}
-                size='sm'
-                color='success'
-                onClick={() => this.connect(item.toJS())}
-              >
-                {
-                  connecting === name
-                    ? <><i className='fas fa-spin fa-spinner mr-1' />{t('network.custom.connecting')}</> : (t('network.custom.connect'))
-                }
-              </Button>
+      return customNetworks.map(([name, item], i) => {
+        const tooltipId = Math.random().toString(36).substring(2)
+        return (
+          <tr key={`custom-network-${i}`} className='hover-flex'>
+            <td className='d-flex'>
+              <div className='text-overflow-dots' id={`custom-${tooltipId}`}>
+                <span >
+                  {name}
+                </span>
+              </div>
               {
-                connecting !== name &&
-                <div className='d-flex hover-show'>
-                  <IconButton
-                    color='transparent'
-                    className='text-muted'
-                    onClick={() => this.openNewConnectionModal(true, item.toJS())}
-                    icon='fas fa-pencil-alt'
-                  />
-                  <IconButton
-                    color='transparent'
-                    className='ml-1 text-muted delete-test'
-                    onClick={() => this.delete(item.toJS())}
-                  />
-                </div>
+                name.length > 10 &&
+                <UncontrolledTooltip placement='right' target={`custom-${tooltipId}`}>
+                  {name}
+                </UncontrolledTooltip>
               }
-            </div>
-          </td>
-        </tr>
-      ))
+            </td>
+            <td className='text-overflow-dots'>{item.get('url')}</td>
+            <td align='right'>
+              <div className='d-flex align-items-center justify-content-between'>
+                <Button
+                  key={connecting === name ? `${name}-connecting` : `${name}-connect`}
+                  size='sm'
+                  color='success'
+                  onClick={() => this.connect(item.toJS())}
+                >
+                  {
+                    connecting === name
+                      ? <><i className='fas fa-spin fa-spinner mr-1' />{t('network.custom.connecting')}</> : (t('network.custom.connect'))
+                  }
+                </Button>
+                {
+                  connecting !== name &&
+                  <div className='d-flex hover-show'>
+                    <IconButton
+                      color='transparent'
+                      className='text-muted'
+                      onClick={() => this.openNewConnectionModal(true, item.toJS())}
+                      icon='fas fa-pencil-alt'
+                    />
+                    <IconButton
+                      color='transparent'
+                      className='ml-1 text-muted delete-test'
+                      onClick={() => this.delete(item.toJS())}
+                    />
+                  </div>
+                }
+              </div>
+            </td>
+          </tr>
+        )
+      })
     }
     return <tr key='custom-network-none'><td align='middle' colSpan={3}>({t('network.custom.none')})</td></tr>
   }
