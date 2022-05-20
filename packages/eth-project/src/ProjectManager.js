@@ -262,11 +262,12 @@ function makeProjectManager(Base) {
     }
 
     async pushDeployment(contractObj, allParameters) {
-      console.log(contractObj)
+      console.log(allParameters, 'allParameters')
       if (this.checkSdkAndSigner(allParameters)) {
         return
       }
       const deploy = this.validateDeployment(contractObj)
+      console.log(deploy)
       if (!deploy) {
         return
       }
@@ -276,7 +277,7 @@ function makeProjectManager(Base) {
       const networkId = networkManager.sdk.networkId
       const { contractName, amount, parameters, ...override } = allParameters
 
-      const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode)
+      const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode.toString())
       
       let result
       try {
