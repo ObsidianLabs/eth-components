@@ -82,7 +82,7 @@ export default class AccountTransactions extends PureComponent {
       rows.push(
         <tr key='txs-loading' className='bg-transparent'>
           <td align='middle' colSpan={8}>
-            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
+            <i className='fas fa-pulse fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
