@@ -10,13 +10,13 @@ export default ({ txHash, data, status, ts }) => {
   let iconClassName = 'fas fa-check-circle text-success mr-1'
   let statusComponent = null
   if (status === 'PUSHING') {
-    iconClassName = 'fas fa-spinner-third fa-spin mr-1'
+    iconClassName = 'fas fa-spinner fa-pulse mr-1'
     statusComponent = <Badge color='warning' className='ml-1'>PUSHING</Badge>
   } else if (status === 'MINED') {
-    iconClassName = 'fad fa-spinner-third fa-spin mr-1'
+    iconClassName = 'fad fa-spinner fa-pulse mr-1'
     statusComponent = <Badge color='warning' className='ml-1'>MINED</Badge>
   } else if (status === 'EXECUTED') {
-    iconClassName = 'fas fa-circle-notch fa-spin mr-1'
+    iconClassName = 'fas fa-spinner fa-pulse mr-1'
     statusComponent = <Badge color='warning' className='ml-1'>EXECUTED</Badge>
   } else if (status === 'FAILED-TIMEOUT') {
     iconClassName = 'fas fa-times-circle text-danger mr-1'

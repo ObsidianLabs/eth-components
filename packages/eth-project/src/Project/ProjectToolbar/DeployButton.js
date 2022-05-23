@@ -190,7 +190,7 @@ export default class DeployerButton extends PureComponent {
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
     if (pending) {
-      icon = <span key='deploying-icon'><i className='fas fa-spinner fa-spin' /></span>
+      icon = <span key='deploying-icon'><i className='fas fa-spinner fa-pulse' /></span>
     }
 
     const { constructorAbi } = this.state
