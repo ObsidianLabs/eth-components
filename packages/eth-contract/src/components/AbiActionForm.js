@@ -113,7 +113,7 @@ export default class AbiActionForm extends PureComponent {
           className={!inModal && 'border-right-1'}
           color={inModal ? 'primary' : 'default'}
           key={this.state.executing ? 'action-executing' : 'action-execute'}
-          icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
+          icon={this.state.executing ? 'fas fa-pulse fa-spinner' : 'fas fa-play'}
           tooltip={t('contract.transaction.execute')}
           onClick={() => this.executeAction(selectedAction.name)}
         />

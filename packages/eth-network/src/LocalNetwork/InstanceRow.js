@@ -33,6 +33,7 @@ export default class InstanceRow extends PureComponent {
     if (this.props.lifecycle !== 'stopped' && this.props.runningInstance !== name) {
       return null
     }
+    nodeManager._nodeButton = this.button.current
     return (
       <NodeButton
         ref={this.button}

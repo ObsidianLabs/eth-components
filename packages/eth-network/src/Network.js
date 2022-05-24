@@ -1,6 +1,6 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
-import { connect } from '@obsidians/redux'
+import redux, { connect } from '@obsidians/redux'
 
 import networkManager from './networkManager'
 import LocalNetwork from './LocalNetwork'
@@ -26,14 +26,17 @@ export default connect(['network', 'customNetworks', 'uiState'])(withRouter(prop
 
   
   React.useEffect(() => {
+    (history.location.pathname?.startsWith('/network')) && redux.dispatch('LOAD_NETWORK_RESOURCES', true)
     if(history.location.pathname.endsWith('custom')) {
       setShowCustomNetworkModal(true)
     }
   }, [history])
   
   React.useEffect(() => {
-    cacheLifecycles.didCache(() => setActive(false))
-    cacheLifecycles.didRecover(() => setActive(true))
+    if (cacheLifecycles) {
+      cacheLifecycles.didCache(() => setActive(false))
+      cacheLifecycles.didRecover(() => setActive(true))
+    }
   })
 
   if (networkId === 'dev') {

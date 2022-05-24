@@ -82,7 +82,7 @@ export default class AbiStorageModal extends PureComponent {
       return (
         <tr key='abis-loading' >
           <td align='middle' colSpan={3}>
-            <i className='fas fa-spin fa-spinner mr-1' />{t('loading')}...
+            <i className='fas fa-pulse fa-spinner mr-1' />{t('loading')}...
           </td>
         </tr>
       )
@@ -100,8 +100,10 @@ export default class AbiStorageModal extends PureComponent {
     try {
       abi = JSON.stringify(JSON.parse(abi), null, 2)
     } catch (e) {}
+    let key = btoa(codeHash)
+    key = key.replace(/=/g, '')
     return (
-      <tr key={`abi-${codeHash}`} className='hover-flex'>
+      <tr key={`abi-${key}`} className='hover-flex'>
         <td>
           <div className='text-overflow-dots'>{name}</div>
         </td>
@@ -112,12 +114,12 @@ export default class AbiStorageModal extends PureComponent {
           <div className='d-flex flex-row justify-content-end hover-show'>
             <IconButton
               color='transparent'
-              id={`show-abi-${index}`}
+              id={`show-abi-${key}`}
               className='text-muted'
               icon='fas fa-pencil-alt'
               onClick={() => this.viewAbi({ name, codeHash, abi })}
             >
-              <UncontrolledTooltip delay={0} placement='top' target={`show-abi-${index}`}>
+              <UncontrolledTooltip delay={0} placement='top' target={`show-abi-${key}`}>
                 Edit
               </UncontrolledTooltip>
             </IconButton>

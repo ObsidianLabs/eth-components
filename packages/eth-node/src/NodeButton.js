@@ -29,7 +29,7 @@ export default class NodeButton extends PureComponent {
         name: this.props.name,
         version: this.props.version,
         chain: this.props.chain,
-      }, this)
+      })
       await this.onLifecycle('started', params)
       this.setState({ lifecycle: 'started' })
     } catch (e) {
@@ -70,7 +70,7 @@ export default class NodeButton extends PureComponent {
     return (
       <div key='node-btn-starting' className='hover-inline'>
         <button type='button' className='btn btn-sm btn-transparent hover-inline-hide'>
-          <i className='fas fa-circle-notch fa-spin mr-1' />Starting
+          <i className='fas fa-spinner fa-pulse mr-1' />Starting
         </button>
         <button type='button' className='btn btn-sm btn-danger hover-inline-show' onClick={this.stop}>
           <i className='fas fa-stop mr-1' />Stop
@@ -94,7 +94,7 @@ export default class NodeButton extends PureComponent {
       case 'stopping':
         return (
           <div key='node-btn-stopping' className='btn btn-sm btn-transparent'>
-            <i className='fas fa-circle-notch fa-spin mr-1' />Stopping
+            <i className='fas fa-spinner fa-pulse mr-1' />Stopping
           </div> 
         )
       default:

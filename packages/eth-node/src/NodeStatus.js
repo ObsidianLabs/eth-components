@@ -21,7 +21,7 @@ export default class NodeStatus extends PureComponent {
     }
     return (
       <div className="btn btn-sm btn-secondary">
-        <i className='fas fa-circle-notch fa-spin' /> {this.state.blockNumber}
+        <i className='fas fa-spinner fa-pulse' /> {this.state.blockNumber}
       </div>
     )
   }
