@@ -277,13 +277,13 @@ function makeProjectManager(Base) {
       const networkId = networkManager.sdk.networkId
       const { contractName, amount, parameters, ...override } = allParameters
 
-      const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode.toString())
+      // const codeHash = networkManager.sdk.utils.sign.sha3(deploy.deployedBytecode.toString())
       
       let result
       try {
         const tx = await networkManager.sdk.getDeployTransaction({
           abi: deploy.abi,
-          bytecode: deploy.bytecode,
+          bytecode: 'AGFzbQEAAAABtgItYAAAYAN/f38Bf2ADf35/AX5gBH9/f38AYAF/AGACf38Bf2AAAX9gAn9/AGABfgBgAn99AGAFf35+fn4AYAJ/fABgBH5+fn4Bf2ACfn4BfGACfn4BfWADf39/AGAEf39/fwF/YAN+f38Bf2AMf39/f39/f39/f39/AGACf38BfmAJf39+f39/f39/AX9gAAF+YAJ+fgF+YAJ/fgBgBn9/f39/fwF/YAN+fn4AYAF/AX9gBH9/f34BfmADf39/AX5gAnx/AXxgAn5+AX9gAXwBfGAEf35+fwBgAn9/AX1gAn9/AXxgAn5/AX9gBX9/f39/AX9gC39/f39/f39/f39/AX9gB39/f39/f38AYAJ+fgBgA39+fwBgBX9/f39/AGAGf39/f39/AGAEf35+fgBgBH9/f34AAtcJOwNlbnYQYWN0aW9uX2RhdGFfc2l6ZQAGA2Vudg13YXNtaW9fYXNzZXJ0AAcDZW52Bm1lbXNldAABA2VudgdtZW1tb3ZlAAEDZW52EHJlYWRfYWN0aW9uX2RhdGEABQNlbnYGbWVtY3B5AAEDZW52BnByaW50cwAEA2VudgVhYm9ydAAAA2VudgZwcmludGkACANlbnYNX19leHRlbmRzZnRmMgAJA2VudghfX211bHRmMwAKA2VudgtfX2Zsb2F0c2l0ZgAHA2VudghfX2FkZHRmMwAKA2Vudg1fX2V4dGVuZGRmdGYyAAsDZW52B19fZ2V0ZjIADANlbnYNX19mbG9hdHVuc2l0ZgAHA2VudghfX2RpdnRmMwAKA2VudgdfX2VxdGYyAAwDZW52B19fbGV0ZjIADANlbnYHX19uZXRmMgAMA2VudghfX3N1YnRmMwAKA2VudgxfX3RydW5jdGZkZjIADQNlbnYMX190cnVuY3Rmc2YyAA4DZW52CHByaW50c19sAAcDZW52DHV0aWxzX2Fzc2VydAAPA2VudgtjaGFpbl9zdG9yZQAQA2VudgljaGFpbl9kZWwABQNlbnYUY2hhaW5fZ2V0X2Jsb2NrX2hhc2gAEQNlbnYKY2hhaW5fdGxvZwASA2VudhJjaGFpbl90aGlzX2FkZHJlc3MABQNlbnYRY2hhaW5fZ2V0X2JhbGFuY2UAEwNlbnYNY2hhaW5fcGF5Y29pbgAUA2VudiBzZXRfYmxvY2tjaGFpbl9wYXJhbWV0ZXJzX3BhY2tlZAAHA2VudiBnZXRfYmxvY2tjaGFpbl9wYXJhbWV0ZXJzX3BhY2tlZAAFA2VudhZzZXRfcHJvcG9zZWRfcHJvZHVjZXJzABMDZW52DGN1cnJlbnRfdGltZQAVA2VudhRnZXRfYWN0aXZlX3Byb2R1Y2VycwAFA2VudhVjaGFpbl9ibG9ja190aW1lc3RhbXAAFQNlbnYSY2hhaW5fYmxvY2tfbnVtYmVyABUDZW52EmNoYWluX3R4X2luaXRpYXRvcgAFA2Vudg9jaGFpbl90eF9zZW5kZXIABQNlbnYSY2hhaW5fdHhfZ2FzX3ByaWNlABUDZW52DWNoYWluX3R4X2hhc2gABQNlbnYSY2hhaW5fdHhfZmVlX2xpbWl0ABUDZW52E2NoYWluX21zZ19pbml0aWF0b3IABQNlbnYQY2hhaW5fbXNnX3NlbmRlcgAFA2VudhVjaGFpbl9tc2dfY29pbl9hbW91bnQAFQNlbnYPY2hhaW5fbXNnX25vbmNlABUDZW52GWNoYWluX21zZ19vcGVyYXRpb25faW5kZXgAFQNlbnYJdXRpbHNfbG9nAAcDZW52D3V0aWxzX2ludDY0X2FkZAAWA2Vudg91dGlsc19pbnQ2NF9zdWIAFgNlbnYPdXRpbHNfaW50NjRfbXVsABYDZW52D3V0aWxzX2ludDY0X21vZAAWA2Vudg91dGlsc19pbnQ2NF9kaXYAFgNlbnYTdXRpbHNfYWRkcmVzc19jaGVjawABA2VudhJ3YXNtaW9fYXNzZXJ0X2NvZGUAFwNlbnYKY2hhaW5fbG9hZAAQA2VudhpjaGFpbl9nZXRfYWNjb3VudF9tZXRhZGF0YQAYA8ABvgEAGRoFBAAaBgUBGgQBAQEBARoBAQQEBhoEABoaFxobHBwBAQUaHAEcAQEdCh4KHyADEyEiDyEBIg8FBSMDJAMlAxABBRoFAQUBBQUaBQEFBRoBASQPEAEQBAUmBwcXGgQIBwQnBwUnBQMFJwMnDycoJyYnKQ8BJw8nKicmBwcFJyoHJykHJwMHJycEJwQnBCcEJwQnBCcEJwQnBCcEJwQnBCcEJycrJysnKycrJysnLCcEJCcaABoEGgcEBAEHBAUBcAEUFAUDAQABBhYDfwFBgMAAC38AQcPnAAt/AEHD5wALBwkBBWFwcGx5ADwJIQEAQQELE2FxeXt3kQEdJygqLC3xAfIB8wH0AfUB9gH3AQq38gO+AQQAEEAL3wcAIAAQmwEQOyAAIAFRBEBCgICAgICAgMDrACACUQRAIAAgARCeAQVCgICgsui4uqbDACACUQRAIAAgARChAQVCgIDqpbO8uqbDACACUQRAIAAgARClAQVCgICAiNW0uqbDACACUQRAIAAgARCnAQVCgICgw82GorQ8IAJRBEAgACABEKkBBUKAgICj47y6psMAIAJRBEAgACABEKsBBUKAgICwspOZ2ZJ/IAJRBEAgACABEK0BBUKAgICAlLSa0TkgAlEEQCAAIAEQsQEFQoCAgICmx6LeqX8gAlEEQCAAIAEQswEFQoCAgIimx6LeqX8gAlEEQCAAIAEQtQEFQoCAgJCmx6LeqX8gAlEEQCAAIAEQugEFQoCAgJimx6LeqX8gAlEEQCAAIAEQvQEFQoCAgKCmx6LeqX8gAlEEQCAAIAEQwAEFQoCAgKimx6LeqX8gAlEEQC',
           options: deploy.options,
           parameters: parameters.array,
           amount,
@@ -311,7 +311,7 @@ function makeProjectManager(Base) {
               executed: ({ tx, receipt, abi }) => {
                 resolve({
                   network: networkId,
-                  codeHash,
+                  // codeHash,
                   ...parameters,
                   tx,
                   receipt,
