@@ -44,7 +44,6 @@ export default class DeployerButton extends PureComponent {
   }
 
   getDeploymentParameters = async (option, callback, estimate) => {
-    console.log(option, 'option')
     this.getConstructorAbiArgs = option.getConstructorAbiArgs || (contractObj => [contractObj.abi])
     const contractFileNode = option.contractFileNode || option.contracts[0]
     this.setState({ selected: contractFileNode.path, contracts: option.contracts })
@@ -131,9 +130,9 @@ export default class DeployerButton extends PureComponent {
     if (this.state.pending) {
       return
     } else if (this.props.skipEstimate) {
-      return [`Estimate ${networkManager.sdk?.txOptions?.title}`]
+      return 
     } else if (this.needEstimate()) {
-      return
+      return [`Estimate ${networkManager.sdk?.txOptions?.title}`]
     } else {
       return [t('contract.estimate.re')]
     }
