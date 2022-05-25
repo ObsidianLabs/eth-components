@@ -22,7 +22,7 @@ import ContractEvents from './ContractEvents'
 import AbiStorageModal from './AbiStorage/AbiStorageModal'
 
 export default class ContractPage extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.abiStorageModal = React.createRef()
 
@@ -40,12 +40,12 @@ export default class ContractPage extends PureComponent {
     props.cacheLifecycles.didRecover(this.componentDidRecover)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.props.onDisplay(this)
     this.refresh()
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (prevProps.value !== this.props.value) {
       this.refresh()
     }
@@ -89,7 +89,7 @@ export default class ContractPage extends PureComponent {
       this.setState({ loading: false, error: e.message })
       return
     }
- 
+
     if (account.codeHash) {
       this.getTokenInfo(account)
     } else {
@@ -145,20 +145,20 @@ export default class ContractPage extends PureComponent {
     })
   }
 
-  getAbiData (codeHash) {
+  getAbiData(codeHash) {
     const abiData = redux.getState().abis.get(codeHash)?.toJS()
     if (!abiData) {
       return
     }
     try {
-      abiData.abi = JSON.parse(abiData.abi==="{}"? "[]" : abiData.abi)
+      abiData.abi = JSON.parse(abiData.abi === "{}" ? "[]" : abiData.abi)
     } catch {
       throw new Error('Invalid ABI structure.')
     }
     return abiData
   }
 
-  async openAbiStorageModal (codeHash) {
+  async openAbiStorageModal(codeHash) {
     await this.abiStorageModal.current.newAbi('', codeHash)
     this.refresh()
   }
@@ -214,7 +214,7 @@ export default class ContractPage extends PureComponent {
     return { actions, views, events }
   }
 
-  render () {
+  render() {
     const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
     console.log(abi, 'abi')
@@ -267,7 +267,7 @@ export default class ContractPage extends PureComponent {
               </UncontrolledButtonDropdown>
               {this.renderAbisFromProject()}
             </div>
-            <AbiStorageModal ref={this.abiStorageModal}/>
+            <AbiStorageModal ref={this.abiStorageModal} />
           </Screen>
         )
       }
@@ -285,7 +285,7 @@ export default class ContractPage extends PureComponent {
       <div className='d-flex p-relative h-100 w-100'>
         <SplitPane
           split='vertical'
-          defaultSize={320}
+          defaultSize={window.innerWidth / 2}
           minSize={200}
         >
           <ContractActions
@@ -294,12 +294,12 @@ export default class ContractPage extends PureComponent {
             actions={actions}
             contract={contractInstance}
             signer={signer}
-            // history={contractCalls.getIn(['action', 'history'])}
-            // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
+          // history={contractCalls.getIn(['action', 'history'])}
+          // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
           />
           <SplitPane
             split='vertical'
-            defaultSize={320}
+            defaultSize={window.innerWidth / 2}
             minSize={200}
           >
             <ContractViews
@@ -307,14 +307,14 @@ export default class ContractPage extends PureComponent {
               value={value}
               actions={views}
               contract={contractInstance}
-              // history={contractCalls.getIn(['table', 'history'])}
-              // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}
+            // history={contractCalls.getIn(['table', 'history'])}
+            // bookmarks={contractCalls.getIn(['table', 'bookmarks'])}
             />
-            <ContractEvents
+            {/* <ContractEvents
               value={value}
               abi={events}
               contract={contractInstance}
-            />
+            /> */}
           </SplitPane>
         </SplitPane>
       </div>
