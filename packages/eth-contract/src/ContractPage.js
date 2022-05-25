@@ -204,7 +204,10 @@ export default class ContractPage extends PureComponent {
   separateAbi = info => {
     console.log(info, '1111')
     console.log()
-    const abi = info.abi.output.abi
+    if(!info.abi) {
+      return {}
+    }
+    const abi = info.abi?.output.abi
     console.log(abi, 'llllll')
     const functions = abi.filter(item => item.type === 'function')
     const events = abi.filter(item => item.type === 'event')
