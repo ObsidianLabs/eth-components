@@ -11,7 +11,7 @@ import { t } from '@obsidians/i18n'
 
 import headerActions from './headerActions'
 
-export default class Header extends PureComponent {
+class Header extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -183,6 +183,7 @@ export default class Header extends PureComponent {
           profile={profile}
           navbarLeft={navbarLeft}
           navbarRight={navbarRight}
+          noUser={this.props.noUser}
         >
           {logo}
         </Navbar>
@@ -192,3 +193,9 @@ export default class Header extends PureComponent {
     )
   }
 }
+
+Header.defaultProps = {
+  noUser: false
+}
+
+export default Header
