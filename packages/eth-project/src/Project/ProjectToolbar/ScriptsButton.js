@@ -6,7 +6,7 @@ import {
 
 import { BaseProjectManager } from '@obsidians/workspace'
 
-export default function ScriptsButton ({ projectManager }) {
+export default function ScriptsButton({ projectManager, readOnly }) {
   const [isNodeProject, setNodeProject] = React.useState(false)
   const [options, setOptions] = React.useState([])
 
@@ -47,6 +47,7 @@ export default function ScriptsButton ({ projectManager }) {
       id='scripts'
       icon='fas fa-code'
       options={options}
+      readOnly={readOnly}
     />
   )
 }
