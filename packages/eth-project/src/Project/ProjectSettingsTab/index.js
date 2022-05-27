@@ -115,6 +115,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                   className='bg-black'
                   value={projectSettings?.get('npmClient')}
                   onChange={event => this.onChange('npmClient')(event.target.value)}
+                  disabled={readOnly}
                 >
                   <option value='npm'>npm</option>
                   <option value='yarn'>yarn</option>
@@ -134,6 +135,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
                 modalTitle={`${process.env.COMPILER_NAME} Manager`}
                 downloadingTitle={`Downloading ${process.env.COMPILER_NAME}`}
                 selected={projectSettings?.get(`compilers.${process.env.COMPILER_VERSION_KEY}`)}
+                readOnly={readOnly}
                 onSelected={truffle => this.onChange(`compilers.${process.env.COMPILER_VERSION_KEY}`)(truffle)}
               />
             }
