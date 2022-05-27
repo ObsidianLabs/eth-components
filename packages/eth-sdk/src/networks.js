@@ -1,5 +1,6 @@
 import platform from '@obsidians/platform'
 import { t } from '@obsidians/i18n'
+import NetworkAllLogoImg from './NetworkIcon'
 
 const networks = [
   {
@@ -12,7 +13,7 @@ const networks = [
     url: '',
     chainId: 1,
     symbol: 'ETH',
-    iconUrl: 'ethereummain',
+    logoIcon: NetworkAllLogoImg.ethereummain,
   },
   {
     id: 'ropsten',
@@ -24,7 +25,7 @@ const networks = [
     url: '',
     chainId: 3,
     symbol: 'ETH',
-    iconUrl: 'ethereumtest',
+    logoIcon: NetworkAllLogoImg.ethereumtest,
   },
   {
     id: 'rinkeby',
@@ -36,7 +37,7 @@ const networks = [
     url: '',
     chainId: 4,
     symbol: 'ETH',
-    iconUrl: 'ethereumtest',
+    logoIcon: NetworkAllLogoImg.ethereumtest,
   },
   {
     id: 'goerli',
@@ -48,7 +49,7 @@ const networks = [
     url: '',
     chainId: 5,
     symbol: 'ETH',
-    iconUrl: 'ethereumtest',
+    logoIcon: NetworkAllLogoImg.ethereumtest,
   },
   {
     id: 'kovan',
@@ -60,7 +61,7 @@ const networks = [
     url: '',
     chainId: 42,
     symbol: 'ETH',
-    iconUrl: 'ethereumtest',
+    logoIcon: NetworkAllLogoImg.ethereumtest,
   },
   {
     id: 'bnbmain',
@@ -72,6 +73,7 @@ const networks = [
     url: 'https://bsc-dataseed.binance.org/',
     chainId: 56,
     symbol: 'BNB',
+    logoIcon: NetworkAllLogoImg.bnbmain,
   },
   {
     id: 'bnbtest',
@@ -83,6 +85,7 @@ const networks = [
     url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     chainId: 97,
     symbol: 'BNB',
+    logoIcon: NetworkAllLogoImg.bnbtest,
   },
   {
     id: 'avalanchemain',
@@ -94,6 +97,7 @@ const networks = [
     url: 'https://api.avax.network/ext/bc/C/rpc',
     chainId: 43114,
     symbol: 'AVAX',
+    logoIcon: NetworkAllLogoImg.avalanchemain,
   },
   {
     id: 'avalanchetest',
@@ -105,8 +109,8 @@ const networks = [
     url: 'https://api.avax-test.network/ext/bc/C/rpc',
     chainId: 43113,
     symbol: 'AVAX',
+    logoIcon: NetworkAllLogoImg.avalanchetest,
   },
-  // new chain Polygon 
   {
     id: 'polygonmain',
     group: 'Polygon',
@@ -117,6 +121,7 @@ const networks = [
     url: 'https://matic-mainnet-full-rpc.bwarelabs.com',
     chainId: 137,
     symbol: 'MATIC',
+    logoIcon: NetworkAllLogoImg.polygonmain,
   },
   {
     id: 'polygontest',
@@ -128,6 +133,7 @@ const networks = [
     url: 'https://rpc-mumbai.matic.today',
     chainId: 80001,
     symbol: 'MATIC',
+    logoIcon: NetworkAllLogoImg.polygontest,
   },
   {
     id: 'fantommain',
@@ -139,6 +145,7 @@ const networks = [
     url: 'https://rpc.ftm.tools/',
     chainId: 250,
     symbol: 'FTM',
+    logoIcon: NetworkAllLogoImg.fantommain,
   },
   {
     id: 'fantomtest',
@@ -150,6 +157,7 @@ const networks = [
     url: 'https://rpc.testnet.fantom.network/',
     chainId: 4002,
     symbol: 'FTM',
+    logoIcon: NetworkAllLogoImg.fantomtest,
   },
   {
     id: 'harmonymain',
@@ -161,6 +169,7 @@ const networks = [
     url: 'https://api.harmony.one/',
     chainId: 1666600000,
     symbol: 'ONE',
+    logoIcon: NetworkAllLogoImg.harmonymain,
   },
   {
     id: 'harmonytest',
@@ -172,6 +181,7 @@ const networks = [
     url: 'https://api.s0.pops.one/',
     chainId: 1666700000,
     symbol: 'ONE',
+    logoIcon: NetworkAllLogoImg.harmonytest,
   },
   {
     id: 'confluxmain',
@@ -183,6 +193,7 @@ const networks = [
     url: 'https://evm.confluxrpc.com',
     chainId: 1030,
     symbol: 'CFX',
+    logoIcon: NetworkAllLogoImg.confluxmain,
   },
   {
     id: 'confluxtest',
@@ -194,6 +205,7 @@ const networks = [
     url: 'https://evmtestnet.confluxrpc.com',
     chainId: 71,
     symbol: 'CFX',
+    logoIcon: NetworkAllLogoImg.confluxtest,
   },
   {
     id: 'gnosismain',
@@ -205,6 +217,7 @@ const networks = [
     url: 'https://rpc.gnosischain.com/',
     chainId: 100,
     symbol: 'xDai',
+    logoIcon: NetworkAllLogoImg.gnosismain,
   },
   {
     id: 'auroramain',
@@ -216,6 +229,7 @@ const networks = [
     url: 'https://mainnet.aurora.dev/',
     chainId: 1313161554,
     symbol: 'AOA',
+    logoIcon: NetworkAllLogoImg.auroramain,
   },
   {
     id: 'auroratest',
@@ -227,18 +241,20 @@ const networks = [
     url: 'https://testnet.aurora.dev/',
     chainId: 1313161555,
     symbol: 'AOA',
+    logoIcon: NetworkAllLogoImg.auroratest,
   },
-  // {
-  //     id: 'evmosmain',
-  //     group: 'Evmos',
-  //     name: 'Mainnet',
-  //     fullName: 'Evmos Mainnet',
-  //     icon: 'fas fa-globe',
-  //     notification: `${t('network.network.switchedTo')} <b>Evmos Mainnet</b>.`,
-  //     url: 'https://eth.bd.evmos.org:8545',
-  //     chainId: 9001,
-  //     symbol: 'EVMOS',
-  //   },
+  {
+    id: 'evmosmain',
+    group: 'Evmos',
+    name: 'Mainnet',
+    fullName: 'Evmos Mainnet',
+    icon: 'fas fa-globe',
+    notification: `${t('network.network.switchedTo')} <b>Evmos Mainnet</b>.`,
+    url: 'https://eth.bd.evmos.org:8545',
+    chainId: 9001,
+    symbol: 'EVMOS',
+    logoIcon: NetworkAllLogoImg.evmosmain,
+  },
   {
     id: 'evmostest',
     group: 'Evmos',
@@ -249,6 +265,7 @@ const networks = [
     url: 'https://eth.bd.evmos.dev:8545',
     chainId: 9000,
     symbol: 'EVMOS',
+    logoIcon: NetworkAllLogoImg.evmostest,
   },
 ]
 
