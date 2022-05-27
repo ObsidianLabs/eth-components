@@ -18,7 +18,8 @@ class NetworkManager {
     networks.forEach(n => this.Sdks.set(n.id, Sdk))
     this.networks = [...this.networks, ...networks]
 
-    const enabled = !process.env.REACT_APP_DISABLE_BROWSER_EXTENSION
+    const enabled = !(process.env.REACT_APP_DISABLE_BROWSER_EXTENSION === 'true')
+
     if (platform.isWeb && enabled && Sdk.InitBrowserExtension) {
       this.browserExtension = Sdk.InitBrowserExtension(this)
     }

@@ -32,6 +32,7 @@ export default function makeSdk({
 
     static InitBrowserExtension(networkManager) {
       browserExtension = BrowserExtension && BrowserExtension.Init(networkManager)
+      console.log(BrowserExtension)
       return browserExtension
     }
 
