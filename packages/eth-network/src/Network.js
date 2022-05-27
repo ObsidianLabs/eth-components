@@ -42,7 +42,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     }
   })
 
-  function customNetworkBody() {
+  function customNetworkModalBody() {
     return (
       <CustomNetworkModal
         ref={customModal}
@@ -64,14 +64,14 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
           tabs={tabs}
           minerKey={minerKey}
         />
-        {customNetworkBody()}
+        {customNetworkModalBody()}
       </>
     )
   } else {
     const url = networkManager.sdk?.url
     return <>
       <RemoteNetwork networkId={networkId} url={url} />
-      {customNetworkBody()}
+      {customNetworkModalBody()}
     </>
   }
 }))

@@ -208,7 +208,7 @@ class NetworkManager {
     const sdk = this.newSdk(params)
     try {
       const info = await sdk.networkInfo()
-      this._sdk = sdk
+      if (params.id !== 'custom') this._sdk = sdk
       return info
     } catch (e) {
       console.warn(e)
