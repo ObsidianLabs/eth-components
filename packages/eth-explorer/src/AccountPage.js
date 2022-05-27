@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import {
   Screen,
   LoadingScreen,
+  Button
 } from '@obsidians/ui-components'
 
 import redux from '@obsidians/redux'
@@ -94,6 +95,13 @@ export default class AccountPage extends PureComponent {
     })
   }
 
+  handleReconnectNetwork = () => {
+    redux.dispatch('CHANGE_NETWORK_STATUS', false)
+    redux.dispatch('SELECT_NETWORK', '')
+    networkManager.reconnectNetwork()
+    this.props.onRefresh()
+  }
+
   render () {
     const { AccountInfo, history } = this.props
     const { error, account, tokens, tokenInfo } = this.state
@@ -119,8 +127,14 @@ export default class AccountPage extends PureComponent {
       if (typeof error === 'string') {
         return (
           <Screen>
-            <h4 className='display-4'>Error</h4>
-            <p className='lead'>{error}</p>
+            <h4 className='display-4'>{t('network.network.error')}</h4>
+            <p className='lead'>{t('network.network.errorDesc')}</p>
+            <div>
+              <Button size='md' className='mt-4' color='primary' onClick={this.handleReconnectNetwork}
+              >
+                {t('network.network.reconnect')}
+              </Button>
+            </div>
           </Screen>
         )
       } else {
