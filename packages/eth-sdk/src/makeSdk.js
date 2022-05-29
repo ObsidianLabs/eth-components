@@ -29,10 +29,10 @@ export default function makeSdk({
     static get kp() { return kp }
     static get networks() { return networks }
     static get customNetworks() { return customNetworks }
+    static get BrowserExtension() { return BrowserExtension }
 
     static InitBrowserExtension(networkManager) {
       browserExtension = BrowserExtension && BrowserExtension.Init(networkManager)
-      console.log(BrowserExtension)
       return browserExtension
     }
 
