@@ -91,7 +91,7 @@ export default class CustomNetworkModal extends PureComponent {
                 </span>
               </div>
               {
-                name.length > 10 &&
+                name &&
                 <UncontrolledTooltip placement='right' target={`custom-${tooltipId}`}>
                   {name}
                 </UncontrolledTooltip>
@@ -136,6 +136,8 @@ export default class CustomNetworkModal extends PureComponent {
     return <tr key='custom-network-none'><td align='middle' colSpan={3}>({t('network.custom.none')})</td></tr>
   }
 
+  onClosed = () => redux.dispatch('CUSTOM_MODAL_STATUS', false)
+
   render() {
     const networkConnectingText = t('network.custom.delTipsEnd')
     const networkNotConnectedText = t('network.custom.delConTips')
@@ -148,6 +150,7 @@ export default class CustomNetworkModal extends PureComponent {
         ref={this.modal}
         title={t('network.custom.custom')}
         textActions={[t('network.custom.create')]}
+        onClosed={this.onClosed}
         onActions={[() => this.openNewConnectionModal()]}
       >
         <Table
