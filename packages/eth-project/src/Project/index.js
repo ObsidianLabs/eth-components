@@ -14,6 +14,7 @@ import findIndex from 'lodash/findIndex'
 useBuiltinCustomTabs(['markdown'])
 modelSessionManager.registerCustomTab('settings', ProjectSettingsTab, 'Project Settings')
 modelSessionManager.registerModeDetector(filePath => {
+    console.log(modelSessionManager.projectManager, 'projectManager')
     const { prefix, userId, projectId, settingsFilePath } = modelSessionManager.projectManager
     const { base } = fileOps.current.path.parse(filePath)
     const settingFilePath = platform.isDesktop ? settingsFilePath : `${prefix}/${userId}/${projectId}/config.json`

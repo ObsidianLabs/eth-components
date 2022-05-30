@@ -21,11 +21,11 @@ class NetworkManager {
     const enabled = !(process.env.REACT_APP_DISABLE_BROWSER_EXTENSION === 'true')
 
     if (platform.isWeb && enabled && Sdk.InitBrowserExtension) {
-      if(!Sdk.InitBrowserExtension(this)) {
-        if(Sdk.BrowserExtension.getNotInstallMsg) {
-          notification.error(Sdk.BrowserExtension.getNotInstallMsg())
-        }
-      }
+      // if(!Sdk.InitBrowserExtension(this)) {
+      //   if(Sdk.BrowserExtension.getNotInstallMsg) {
+      //     notification.error(Sdk.BrowserExtension.getNotInstallMsg())
+      //   }
+      // }
       this.browserExtension = Sdk.InitBrowserExtension(this)
     }
   }
