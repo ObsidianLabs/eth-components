@@ -12,9 +12,11 @@ class NetworkManager {
     this._sdk = null
     this.network = undefined
     this.Sdks = new Map()
+    this.SdkFun = null
   }
 
   addSdk(Sdk, networks) {
+    !this.SdkFun && (this.SdkFun = Sdk)
     networks.forEach(n => this.Sdks.set(n.id, Sdk))
     this.networks = [...this.networks, ...networks]
 
@@ -45,7 +47,7 @@ class NetworkManager {
   }
 
   addNetworks(networks) {
-    networks.forEach(n => this.Sdks.set(n.id, this.Sdk))
+    networks.forEach(n => this.Sdks.set(n.id, this.SdkFun))
     this.networks = networks
   }
 

@@ -60,8 +60,6 @@ export default class CustomNetworkModal extends PureComponent {
       if (!status) {
         this.tryCreateSdk({ ...option, notify: false })
       } else {
-        console.log(option)
-
         if (modify) {
           redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
           if (option.url.trim() !== originalOption.url && connected) {
