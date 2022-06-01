@@ -205,6 +205,13 @@ export default class ContractPage extends PureComponent {
     return { actions, views, events }
   }
 
+  handleReconnectNetwork = () => {
+    redux.dispatch('CHANGE_NETWORK_STATUS', false)
+    redux.dispatch('SELECT_NETWORK', '')
+    networkManager.reconnectNetwork()
+    this.props.onRefresh()
+  }
+
   render () {
     const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
@@ -263,8 +270,26 @@ export default class ContractPage extends PureComponent {
       }
       return (
         <Screen>
-          <h4 className='display-4'>Error</h4>
-          <p className='lead'>{error}</p>
+          {
+            (/noNetwork|NETWORK_ERROR/g).test(error) ?
+            (
+              <>
+                <h4 className='display-4'>{t('network.network.error')}</h4>
+                <p className='lead'>{t('network.network.errorDesc')}</p>
+                <div>
+                  <Button size='md' className='mt-4' color='primary' onClick={this.handleReconnectNetwork}>
+                    {t('network.network.reconnect')}
+                  </Button>
+                </div>
+              </>
+            ) 
+            : (
+              <>
+                <h4 className='display-4'>Error</h4>
+                <p className='lead'>{error}</p>
+              </>
+            )
+          }
         </Screen>
       )
     }
