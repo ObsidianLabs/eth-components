@@ -62,7 +62,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
         <i className='fas fa-key' />
       </div>
       <UncontrolledTooltip placement='bottom' target='keypair-manager'>
-        Keypair Manager
+        {t('keypair.manager')}
       </UncontrolledTooltip>
     </KeypairButton>
     {!loadNetworkResources && <div hidden><Network /></div>}

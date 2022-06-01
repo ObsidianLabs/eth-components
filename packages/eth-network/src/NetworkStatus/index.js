@@ -32,7 +32,7 @@ export default function NetworkStatus(props) {
           <i className='fas fa-wifi mr-1' />
         </span>{network ? network.name : t('network.network.noNetwork')}
         <UncontrolledTooltip placement='bottom' target='network-tools'>
-          Network Tools
+          {t('network.network.Tools')}
         </UncontrolledTooltip>
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>

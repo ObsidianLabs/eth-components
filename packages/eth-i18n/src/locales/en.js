@@ -73,6 +73,7 @@ const translation = {
       noNetwork: 'No Network',
       noNetworkText: 'No connected network. Please start a local network or switch to a remote network.',
       tools: 'network tools',
+      Tools: 'Network Tools',
       disconnect: 'Disconnect',
       reconnect: 'Reconnect',
       connected: 'Network Connected',
