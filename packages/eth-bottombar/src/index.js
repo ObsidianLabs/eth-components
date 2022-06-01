@@ -53,7 +53,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
       console.log(error)
       redux.dispatch('CHANGE_NETWORK_STATUS', false)
     }
-  }, networkConnect ? 10000 : null)
+  }, networkConnect ? 60000 : null)
 
   return <>
     <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains}>

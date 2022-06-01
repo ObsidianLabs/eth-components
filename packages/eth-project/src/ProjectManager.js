@@ -187,6 +187,7 @@ function makeProjectManager(Base) {
     }
 
     checkSdkAndSigner(allParameters) {
+      console.log(networkManager)
       if (!networkManager.sdk) {
         notification.error(t('network.network.noNetwork'), t('network.network.noNetworkText'))
         return true
@@ -288,6 +289,7 @@ function makeProjectManager(Base) {
           options: deploy.options,
           parameters: parameters.array,
           amount,
+          ...deploy
         }, {
           from: allParameters.signer,
           ...override
