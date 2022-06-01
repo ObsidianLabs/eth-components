@@ -168,7 +168,7 @@ class NetworkManager {
     if (network.id && network.id !== 'dev') {
       try {
         this._sdk = this.newSdk(network)
-        await this._sdk.updateEIP1559Support()
+        this._sdk.updateEIP1559Support()
       } catch (error) {
         this._sdk && this._sdk.dispose()
         this._sdk = null
@@ -214,7 +214,7 @@ class NetworkManager {
     const sdk = this.newSdk(params)
     try {
       const info = await sdk.networkInfo()
-      this._sdk = sdk
+      if (params.id !== 'custom') this._sdk = sdk
       return info
     } catch (e) {
       console.warn(e)

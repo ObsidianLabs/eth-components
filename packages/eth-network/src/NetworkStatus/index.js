@@ -39,7 +39,7 @@ export default function NetworkStatus(props) {
           {t('rpc.client')}
         </DropdownItem> */}
         {
-          (networkId !== 'dev' && network) && <DropdownItem onClick={handleRefreshNetwork}>
+          (networkId !== 'dev' && networkId !== 'custom' && network) && <DropdownItem onClick={handleRefreshNetwork}>
             {connected ? t('network.network.disconnect') : t('network.network.reconnect')}
           </DropdownItem>
         }

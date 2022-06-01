@@ -1,6 +1,6 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
-import { connect } from '@obsidians/redux'
+import redux, { connect } from '@obsidians/redux'
 
 import networkManager from './networkManager'
 import LocalNetwork from './LocalNetwork'
@@ -8,7 +8,7 @@ import CustomNetwork from './CustomNetwork'
 import RemoteNetwork from './RemoteNetwork'
 import { default as DefaultCustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
-export default connect(['network', 'customNetworks', 'uiState'])(withRouter(props => {
+export default connect(['network', 'customNetworks', 'uiState', 'customNetworkModalStatus'])(withRouter(props => {
   const {
     network: networkId = 'dev',
     customNetworks,
@@ -18,46 +18,60 @@ export default connect(['network', 'customNetworks', 'uiState'])(withRouter(prop
     minerKey,
     CustomNetworkModal = DefaultCustomNetworkModal,
     cacheLifecycles,
-    history
+    history,
+    customNetworkModalStatus,
   } = props
 
   const [active, setActive] = React.useState(true)
   const [showCustomNetworkModal, setShowCustomNetworkModal] = React.useState(false)
+  const customModal = React.createRef()
 
   
   React.useEffect(() => {
-    if(history.location.pathname.endsWith('custom')) {
+    (history.location.pathname?.startsWith('/network')) && redux.dispatch('LOAD_NETWORK_RESOURCES', true)
+    if (customNetworkModalStatus) {
       setShowCustomNetworkModal(true)
+      customModal.current?.openModal()
     }
-  }, [history])
+  }, [customNetworkModalStatus])
   
   React.useEffect(() => {
-    cacheLifecycles.didCache(() => setActive(false))
-    cacheLifecycles.didRecover(() => setActive(true))
+    if (cacheLifecycles) {
+      cacheLifecycles.didCache(() => setActive(false))
+      cacheLifecycles.didRecover(() => setActive(true))
+    }
   })
 
-  if (networkId === 'dev') {
+  function customNetworkModalBody() {
     return (
-      <LocalNetwork
+      <CustomNetworkModal
+        ref={customModal}
         networkId={networkId}
-        active={active}
-        configButton={configButton}
-        tabs={tabs}
-        minerKey={minerKey}
-      />
-    )
-  } else if (networkId.startsWith('custom')) {
-    return (
-      <CustomNetwork
-        networkId={networkId}
-        option={uiState.get('customNetworkOption')}
         customNetworks={customNetworks}
-        CustomNetworkModal={CustomNetworkModal}
+        option={uiState.get('customNetworkOption')}
         openModal={showCustomNetworkModal}
       />
     )
+  }
+
+  if (networkId === 'dev') {
+    return (
+      <>
+        <LocalNetwork
+          networkId={networkId}
+          active={active}
+          configButton={configButton}
+          tabs={tabs}
+          minerKey={minerKey}
+        />
+        {customNetworkModalBody()}
+      </>
+    )
   } else {
     const url = networkManager.sdk?.url
-    return <RemoteNetwork networkId={networkId} url={url} />
+    return <>
+      <RemoteNetwork networkId={networkId} url={url} />
+      {customNetworkModalBody()}
+    </>
   }
 }))

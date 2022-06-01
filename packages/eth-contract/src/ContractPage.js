@@ -45,10 +45,7 @@ export default class ContractPage extends PureComponent {
     this.refresh()
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.value !== this.props.value) {
-      this.refresh()
-    }
+  componentDidUpdate (prevProps) {
     if (prevProps.projectRoot !== this.props.projectRoot) {
       this.loadProjectAbis()
     }

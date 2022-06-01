@@ -4,7 +4,7 @@ import { connect } from '@obsidians/redux'
 import Auth from '@obsidians/auth'
 import { KeypairButton } from '@obsidians/keypair'
 import { TerminalButton } from '@obsidians/workspace'
-import { NetworkStatus, networkManager } from '@obsidians/eth-network'
+import Network, { NetworkStatus, networkManager } from '@obsidians/eth-network'
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
@@ -12,7 +12,7 @@ import { useInterval } from '@obsidians/hooks'
 import redux from '@obsidians/redux'
 import { t } from '@obsidians/i18n'
 
-export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiState'])(function BottomBar(props) {
+export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiState', 'loadNetworkResources'])(function BottomBar(props) {
   const {
     network,
     queue,
@@ -23,6 +23,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
     secretName = mnemonic ? 'Private Key / Mnemonic' : 'Private Key',
     chains,
     noNetwork = false,
+    loadNetworkResources,
   } = props
 
   const localNetwork = uiState.get('localNetwork')
@@ -60,6 +61,7 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
         <i className='fas fa-key' />
       </div>
     </KeypairButton>
+    {!loadNetworkResources && <div hidden><Network /></div>}
     {!noNetwork && <NetworkStatus connected={networkConnect} onRefresh={handleStatusRefresh} />}
     <QueueButton txs={txs} />
     {/* { !noNetwork && <NetworkStatus /> }

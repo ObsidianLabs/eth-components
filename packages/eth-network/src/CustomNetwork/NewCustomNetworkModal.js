@@ -130,6 +130,7 @@ export default class CustomNetworkModal extends PureComponent {
         pending={pending && t('network.custom.try')}
         textConfirm={status ? modify ? t('network.custom.update') : t('network.custom.add') : t('network.custom.check')}
         onConfirm={this.onConfirm}
+        confirmDisabled={!option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !option.url}
       >
         <DebouncedFormGroup
           ref={this.input}
@@ -137,6 +138,7 @@ export default class CustomNetworkModal extends PureComponent {
           maxLength='50'
           value={option.name}
           onChange={name => this.setState({ option: { ...option, name } })}
+          validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Network name can only contain letters, digits, dash or underscore.'}
         />
         <DebouncedFormGroup
           label='URL of node rpc'

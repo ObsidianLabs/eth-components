@@ -169,7 +169,8 @@ class Header extends PureComponent {
       selected: networkReplaceName,
       dropdown: networkList,
       onClickItem: (_, network) => {
-        networkManager.setNetwork(network)
+        if (network.id === 'custom') redux.dispatch('CUSTOM_MODAL_STATUS', true)
+        if (network.id !== 'custom') networkManager.setNetwork(network)
       },
     }
 

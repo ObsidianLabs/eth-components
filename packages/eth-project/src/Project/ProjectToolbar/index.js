@@ -35,8 +35,15 @@ export default class ProjectToolbar extends PureComponent {
           readOnly={readOnly}
         />
       }
-      { !noDeploy && <DeployButton projectManager={projectManager} signer={signer} /> }
-      <ScriptsButton projectManager={projectManager} />
+      {!noDeploy &&
+        <DeployButton
+        projectManager={projectManager}
+        signer={signer}
+        readOnly={readOnly} />
+      }
+      <ScriptsButton
+        projectManager={projectManager}
+        readOnly={readOnly}/>
       { <ExtraButtons projectManager={projectManager} signer={signer} /> }
       <div className='flex-1' />
       <ToolbarButton

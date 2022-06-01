@@ -61,6 +61,8 @@ const translation = {
       value: 'value',
       gasUsed: 'gas used',
       fee: 'fee',
+      transferFailed: 'Transfer Failed',
+      transferFailedText: 'The amount is empty.',
     }
   },
   network: {
@@ -82,6 +84,8 @@ const translation = {
       switchedTo: 'Switched to',
       startingTruffle: 'Starting Truffle Console',
       connectedTo: 'Connected to network at',
+      error: 'Network Connection Error',
+      errorDesc: 'Please refresh this page or reconnect the current network.',
     },
     custom: {
       custom: 'Custom Network',

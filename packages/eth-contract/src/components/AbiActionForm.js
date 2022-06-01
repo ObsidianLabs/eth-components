@@ -51,13 +51,19 @@ export default class AbiActionForm extends PureComponent {
   }
 
   selectAction = index => {
-    this.setState({
+    let state = {
       selected: index,
       amount: '',
       executing: false,
       actionError: '',
       actionResult: '',
-    })
+    }
+    if (networkManager?.sdk?.txOptions) {
+      networkManager?.sdk?.txOptions.list.forEach(option => {
+        state[option.name] = null
+      })
+    }
+    this.setState(state)
   }
 
   estimate = async actionName => {
@@ -113,7 +119,7 @@ export default class AbiActionForm extends PureComponent {
           className={!inModal && 'border-right-1'}
           color={inModal ? 'primary' : 'default'}
           key={this.state.executing ? 'action-executing' : 'action-execute'}
-          icon={this.state.executing ? 'fas fa-spin fa-spinner' : 'fas fa-play'}
+          icon={this.state.executing ? 'fas fa-pulse fa-spinner' : 'fas fa-play'}
           tooltip={t('contract.transaction.execute')}
           onClick={() => this.executeAction(selectedAction.name)}
         />

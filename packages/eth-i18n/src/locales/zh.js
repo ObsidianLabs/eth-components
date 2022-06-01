@@ -61,6 +61,8 @@ const translation = {
       value: '价值',
       gasUsed: '已消耗 gas',
       fee: 'Gas 费',
+      transferFailed: '转账失败',
+      transferFailedText: '金额是空的',
     }
   },
   network: {
@@ -82,6 +84,8 @@ const translation = {
       switchedTo: '切换到',
       startingTruffle: '启动Truffle控制台',
       connectedTo: '连接到网络',
+      error: '网络连接错误',
+      errorDesc: '请刷新此页面或重新连接当前网络。',
     },
     custom: {
       custom: '自定义网络',

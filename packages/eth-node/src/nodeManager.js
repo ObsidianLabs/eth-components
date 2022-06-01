@@ -33,12 +33,10 @@ class NodeManager {
     this._status = v
   }
 
-  async start ({ name, version }, nodeButton) {
+  async start ({ name, version }) {
     if (!this._terminal) {
       throw new Error()
     }
-
-    this._nodeButton = nodeButton
 
     const versions = await instanceChannel.node.versions()
     if (!versions.find(v => v.Tag === version)) {

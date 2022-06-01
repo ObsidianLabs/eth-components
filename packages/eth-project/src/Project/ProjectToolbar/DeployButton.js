@@ -185,13 +185,13 @@ export default class DeployerButton extends PureComponent {
     this.modal.current.closeModal()
   }
 
-  render() {
-    const { signer } = this.props
+  render () {
+    const { signer, readOnly } = this.props
     const { contracts, selected, contractName, pending } = this.state
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
     if (pending) {
-      icon = <span key='deploying-icon'><i className='fas fa-spinner fa-spin' /></span>
+      icon = <span key='deploying-icon'><i className='fas fa-spinner fa-pulse' /></span>
     }
 
     const { constructorAbi } = this.state
@@ -230,6 +230,7 @@ export default class DeployerButton extends PureComponent {
         key='toolbar-btn-deploy'
         className='rounded-0 border-0 flex-none px-2 w-5 flex-column align-items-center'
         onClick={this.onClick}
+        disabled={readOnly}
       >
         {icon}
       </Button>

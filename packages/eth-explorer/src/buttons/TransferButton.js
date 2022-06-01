@@ -73,14 +73,14 @@ export default class TransferButton extends PureComponent {
     const from = this.props.from
 
     if (!amount) {
-      notification.error('Transfer Failed', 'The amount is empty.')
+      notification.error(t('explorer.transactions.transferFailed'), t('explorer.transactions.transferFailedText'))
       return
     }
 
     this.setState({ pushing: true })
 
-    const override = Object.fromEntries(networkManager.sdk?.utils.txOptions.list.map(option => [option.name, option.default]))
     try {
+      const override = Object.fromEntries(networkManager.sdk?.txOptions.list.map(option => [option.name, option.default]))
       const tx = await networkManager.sdk.getTransferTransaction({ from, to, token, amount }, override)
       await new Promise((resolve, reject) => {
         queue.add(
@@ -106,7 +106,7 @@ export default class TransferButton extends PureComponent {
       })
     } catch (e) {
       console.warn(e)
-      notification.error('Transfer Failed', e.reason || e.message)
+      notification.error(t('explorer.transactions.transferFailed'), e.reason || e.message)
       this.setState({ pushing: false })
       return
     }

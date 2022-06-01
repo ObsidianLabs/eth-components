@@ -112,16 +112,17 @@ export default class EthersClient {
     if (isHarmony || isConflux) {
       list.map(elem => {
         if (isConflux) {
-          elem.from = format.hexAddress(elem.from)
-          elem.to = format.hexAddress(elem.to)
+          elem.from && (elem.from = format.hexAddress(elem.from))
+          elem.to && (elem.to = format.hexAddress(elem.to))
+          elem.contractCreated && (elem.contractAddress = format.hexAddress(elem.contractCreated))
           elem.blockNumber = elem.epochNumber
           elem.methodString = elem.method
           elem.timeStamp = elem.timestamp
           elem.method = ''
         }
         if (isHarmony) {
-          elem.from = fromBech32(elem.from)
-          elem.to = fromBech32(elem.to)
+          elem.from && (elem.from = fromBech32(elem.from))
+          elem.to && (elem.to = fromBech32(elem.to))
           elem.timeStamp = elem.timestamp
           elem.hash = elem.ethHash
           elem.value = elem.value + ""
