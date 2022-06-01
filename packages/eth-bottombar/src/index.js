@@ -11,6 +11,7 @@ import { CompilerSelectors } from '@obsidians/compiler'
 import { useInterval } from '@obsidians/hooks'
 import redux from '@obsidians/redux'
 import { t } from '@obsidians/i18n'
+import { UncontrolledTooltip } from '@obsidians/ui-components'
 
 export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiState', 'loadNetworkResources'])(function BottomBar(props) {
   const {
@@ -57,9 +58,12 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
 
   return <>
     <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains}>
-      <div className='btn btn-primary btn-sm btn-flat'>
+      <div className='btn btn-primary btn-sm btn-flat' id='keypair-manager'>
         <i className='fas fa-key' />
       </div>
+      <UncontrolledTooltip placement='bottom' target='keypair-manager'>
+        Keypair Manager
+      </UncontrolledTooltip>
     </KeypairButton>
     {!loadNetworkResources && <div hidden><Network /></div>}
     {!noNetwork && <NetworkStatus connected={networkConnect} onRefresh={handleStatusRefresh} />}

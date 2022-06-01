@@ -4,6 +4,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  UncontrolledTooltip
 } from '@obsidians/ui-components'
 import RpcClientModal from './RpcClientModal'
 import networkManager from '../networkManager'
@@ -26,10 +27,13 @@ export default function NetworkStatus(props) {
 
   return <>
     <UncontrolledButtonDropdown direction='up'>
-      <DropdownToggle size='sm' color='default' className='rounded-0 px-2 text-muted'>
+      <DropdownToggle size='sm' color='default' id='network-tools' className='rounded-0 px-2 text-muted'>
         <span hidden={networkId == 'dev' || networkId == 'custom'} key={`network-${networkId}`} className={`${classnames(`${networkId != 'dev' && networkId != 'custom' && 'd-inline-block'} mr-1`, connected ? 'color-success' : '')}`}>
           <i className='fas fa-wifi mr-1' />
         </span>{network ? network.name : t('network.network.noNetwork')}
+        <UncontrolledTooltip placement='bottom' target='network-tools'>
+          Network Tools
+        </UncontrolledTooltip>
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>
         <DropdownItem header>
