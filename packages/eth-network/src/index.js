@@ -7,5 +7,7 @@ export { default as CustomNetwork } from './CustomNetwork'
 export { default as CustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
 export { default as NetworkStatus } from './NetworkStatus'
+export { default as ErrorPage } from './ErrorPage'
+export { default as utils } from './utils'
 
 export { default as redux } from './redux'

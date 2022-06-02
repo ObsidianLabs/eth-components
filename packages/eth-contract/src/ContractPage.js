@@ -11,7 +11,7 @@ import {
   DropdownItem,
 } from '@obsidians/ui-components'
 
-import { networkManager } from '@obsidians/eth-network'
+import { networkManager, ErrorPage, utils } from '@obsidians/eth-network'
 import redux from '@obsidians/redux'
 import { BaseProjectManager } from '@obsidians/workspace'
 import { t } from '@obsidians/i18n'
@@ -205,6 +205,13 @@ export default class ContractPage extends PureComponent {
     return { actions, views, events }
   }
 
+  handleReconnectNetwork = () => {
+    redux.dispatch('CHANGE_NETWORK_STATUS', false)
+    redux.dispatch('SELECT_NETWORK', '')
+    networkManager.reconnectNetwork()
+    this.props.onRefresh()
+  }
+
   render () {
     const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
@@ -263,8 +270,13 @@ export default class ContractPage extends PureComponent {
       }
       return (
         <Screen>
-          <h4 className='display-4'>Error</h4>
-          <p className='lead'>{error}</p>
+          <ErrorPage
+            btnText={t('network.network.reconnect')}
+            handleBtn={this.handleReconnectNetwork}
+            btnStatus={!utils.isNetworkConnectError(error)}
+            error={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
+            errorDesc={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
+          />
         </Screen>
       )
     }
