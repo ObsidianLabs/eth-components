@@ -45,7 +45,7 @@ class NetworkManager {
   }
 
   addNetworks(networks) {
-    networks.forEach(n => this.Sdks.set(n.id, this.Sdk))
+    networks.forEach(n => this.Sdks.set(n.id, this.Sdks.get(n.id)))
     this.networks = networks
   }
 

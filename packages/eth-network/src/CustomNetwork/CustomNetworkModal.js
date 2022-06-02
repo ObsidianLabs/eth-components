@@ -81,18 +81,17 @@ export default class CustomNetworkModal extends PureComponent {
 
     if (customNetworks.length) {
       return customNetworks.map(([name, item], i) => {
-        const tooltipId = Math.random().toString(36).substring(2)
         return (
           <tr key={`custom-network-${i}`} className='hover-flex'>
             <td className='d-flex'>
-              <div className='text-overflow-dots' id={`custom-${tooltipId}`}>
+              <div className='text-overflow-dots' id={`custom-${name}`}>
                 <span >
                   {name}
                 </span>
               </div>
               {
                 name &&
-                <UncontrolledTooltip placement='right' target={`custom-${tooltipId}`}>
+                <UncontrolledTooltip placement='right' target={`custom-${name}`}>
                   {name}
                 </UncontrolledTooltip>
               }
@@ -107,8 +106,7 @@ export default class CustomNetworkModal extends PureComponent {
                   onClick={() => this.connect(item.toJS())}
                 >
                   {
-                    connecting === name
-                      ? <><i className='fas fa-spin fa-spinner mr-1' />{t('network.custom.connecting')}</> : (t('network.custom.connect'))
+                    connecting === name ? <><i className='fas fa-spin fa-spinner mr-1'/>{t('network.custom.connecting')}</> : (t('network.custom.connect'))
                   }
                 </Button>
                 {
