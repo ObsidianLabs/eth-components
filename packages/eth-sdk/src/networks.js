@@ -130,7 +130,7 @@ const networks = [
     fullName: 'Polygon Testnet (Mumbai)',
     icon: 'fas fa-vial',
     notification: `${t('network.network.switchedTo')} <b>Polygon Testnet (Mumbai)</b>.`,
-    url: 'https://rpc-mumbai.matic.today',
+    url: 'https://matic-testnet-archive-rpc.bwarelabs.com',
     chainId: 80001,
     symbol: 'MATIC',
     logoIcon: NetworkAllLogoImg.polygontest,
