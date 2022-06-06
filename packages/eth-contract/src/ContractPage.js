@@ -199,13 +199,10 @@ export default class ContractPage extends PureComponent {
   }
 
   separateAbi = info => {
-    console.log(info, '1111')
-    console.log()
     if(!info.abi) {
       return {}
     }
     const abi = info.abi?.output.abi
-    console.log(abi, 'llllll')
     const functions = abi.filter(item => item.type === 'function')
     const events = abi.filter(item => item.type === 'event')
     const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
@@ -217,7 +214,6 @@ export default class ContractPage extends PureComponent {
   render() {
     const { subroute: network, value, signer } = this.props
     const { error, abi, account, errorType } = this.state
-    console.log(abi, 'abi')
     if (!networkManager.sdk) {
       return null
     }

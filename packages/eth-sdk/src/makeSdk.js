@@ -117,7 +117,6 @@ export default function makeSdk({
     }
 
     contractFrom ({ address, abi }) {
-      console.log(arguments, 111)
       return new Contract({ address, abi }, this.client)
     }
 

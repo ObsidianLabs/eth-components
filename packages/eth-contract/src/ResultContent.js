@@ -19,30 +19,31 @@ export default withRouter(({ format, actionResult, actionError, history, onNavig
   }
 
   if (actionResult) {
-    if (format === 'pretty') {
-      return (
-        <ReactJson
-          src={actionResult.parsed}
-          theme='monokai'
-          indentWidth={2}
-          name={false}
-          quotesOnKeys={false}
-          displayArrayKey={false}
-          enableClipboard={() => notification.info('Copied to Clipboard')}
-          getLabel={addr => addr && keypairManager.getName(addr.toLowerCase())}
-          onRedirect={link => {
-            history.push(link)
-            onNavigate && onNavigate()
-          }}
-        />
-      )
-    } else {
+    console.log(actionResult, 'actionResult')
+    // if (format === 'pretty') {
+    //   return (
+    //     <ReactJson
+    //       src={actionResult.parsed[0]}
+    //       theme='monokai'
+    //       indentWidth={2}
+    //       name={false}
+    //       quotesOnKeys={false}
+    //       displayArrayKey={false}
+    //       enableClipboard={() => notification.info('Copied to Clipboard')}
+    //       getLabel={addr => addr}
+    //       onRedirect={link => {
+    //         history.push(link)
+    //         onNavigate && onNavigate()
+    //       }}
+    //     />
+    //   )
+    // } else {
       return (
         <Highlight language='javascript' className='pre-wrap break-all small' element='pre'>
           <code>{JSON.stringify(actionResult.raw, null, 2)}</code>
         </Highlight>
       )
-    }
+    // }
   }
 
   return <div className='small'>(None)</div>
