@@ -39,6 +39,9 @@ class NetworkManager {
   }
 
   get sdk() {
+    if(!this._sdk && this.network) {
+      return this.newSdk(this.network)
+    }
     return this._sdk
   }
 

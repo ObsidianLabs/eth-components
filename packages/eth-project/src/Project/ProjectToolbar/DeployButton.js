@@ -74,11 +74,9 @@ export default class DeployerButton extends PureComponent {
       notification.error(t('contract.build.notFound'), t('contract.build.notFoundText', {path: fileNode.pathInProject}))
       return
     }
-
     let constructorAbi
     try {
-      constructorAbi = await this.getConstructorAbi(...this.getConstructorAbiArgs(contractObj))
-      console.log(constructorAbi)
+      constructorAbi = await this.getConstructorAbi(this.getConstructorAbiArgs(contractObj))
     } catch (e) {
       notification.error(t('contract.build.fileErr'), e.message)
       return

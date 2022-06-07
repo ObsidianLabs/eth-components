@@ -107,10 +107,14 @@ export default class ContractActions extends AbiActionForm {
       })
       if(tx.txHash) {
         notification.success('Execute Success')
-        this.setState({ executing: false })
+        this.setState({ executing: false, actionResult: {
+          raw: {
+            txHash: tx.txHash
+          }
+        }})
         return
       }
-      
+
       await queue.add(
         () => networkManager.sdk.sendTransaction(tx),
         {
