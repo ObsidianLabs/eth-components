@@ -4,7 +4,7 @@ import { ToolbarButton } from '@obsidians/ui-components'
 
 import fileOps from '@obsidians/file-ops'
 
-const FaucetUrlList = [
+const faucetUrlList = [
   {
     name: 'ropsten',
     url: `https://faucet.ropsten.be/`,
@@ -57,11 +57,11 @@ const FaucetUrlList = [
 
 export default class FaucetButton extends PureComponent {
   claim = async () => {
-    fileOps.current.openLink(FaucetUrlList.find(item => item.name === this.props.network)?.url)
+    fileOps.current.openLink(faucetUrlList.find(item => item.name === this.props.network)?.url)
   }
 
   render () {
-    if (!FaucetUrlList.find(item => item.name === this.props.network)) {
+    if (!faucetUrlList.find(item => item.name === this.props.network)) {
       return null
     }
     return (
