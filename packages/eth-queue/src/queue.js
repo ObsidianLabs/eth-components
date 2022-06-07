@@ -44,7 +44,7 @@ class Queue extends BaseQueueManager {
       }, callbacks)
       return
     }
-    if (receipt.gasUsed) {
+    if (receipt?.gasUsed) {
       const gasUsed = receipt.gasUsed.toString()
       // const gasFee = receipt.gasFee.toString()
       notification.info(t('contract.deploy.executed'), t('contract.deploy.executedText', {gasUsed}))
