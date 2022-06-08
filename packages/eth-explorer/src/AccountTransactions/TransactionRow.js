@@ -46,9 +46,9 @@ export default class TransactionRow extends PureComponent {
             {amount} {networkManager.symbol}
           </Badge>
         </td>
-        <td align='right'>
+        {/* <td align='right'>
           <Badge pill>{gasUsed}</Badge>
-        </td>
+        </td> */}
         <td align='right'>
           <TransactionFee value={gasFee}/>
         </td>
