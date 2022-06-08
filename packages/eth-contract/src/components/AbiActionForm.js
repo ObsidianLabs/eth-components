@@ -143,7 +143,7 @@ export default class AbiActionForm extends PureComponent {
       }}>Estimate</Badge>
     )
     return (
-      <FormSection title={txOptions.title} right={estimate}>
+      <FormSection title={txOptions.title}>
         {txOptions.list.map(option => (
           <ActionParamFormGroup
             size='sm'
