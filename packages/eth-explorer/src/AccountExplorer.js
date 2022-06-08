@@ -15,6 +15,7 @@ import AccountPage from './AccountPage'
 import TransferButton from './buttons/TransferButton'
 import FaucetButton from './buttons/FaucetButton'
 import { utils } from '@obsidians/sdk'
+import { utils as networkUtils } from '@obsidians/eth-network'
 import { t } from '@obsidians/i18n'
 
 class AccountExplorer extends TabbedExplorer {
@@ -77,12 +78,14 @@ class AccountExplorer extends TabbedExplorer {
 
   init = () => {
     const { history, route, network, accounts, match } = this.props
-    const value = accounts.getIn([network, 'selected'])
-    if (match?.params && value !== match?.params?.value) {
-      history.push(value ? `/${route}/${value}` : `/${route}`)
+    !network && networkUtils.getMetamaskConnect()
+    const value = accounts.getIn([network, 'selected'])?.toLowerCase()
+    const paramsValue = match?.params?.value?.toLowerCase()
+    if (match?.params && value !== paramsValue) {
+      history.push(paramsValue || value ? `/${route}/${paramsValue || value}` : `/${route}`)
     }
     const tabs = accounts.getIn([network, 'tabs'])?.toArray() || []
-    this.initialize({ value, tabs, subroute: network })
+    this.initialize({ value: paramsValue || value, tabs, subroute: network })
   }
 
   checkLocation = () => {
