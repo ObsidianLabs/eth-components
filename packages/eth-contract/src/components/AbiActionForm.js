@@ -51,13 +51,19 @@ export default class AbiActionForm extends PureComponent {
   }
 
   selectAction = index => {
-    this.setState({
+    let state = {
       selected: index,
       amount: '',
       executing: false,
       actionError: '',
       actionResult: '',
-    })
+    }
+    if (networkManager?.sdk?.txOptions) {
+      networkManager?.sdk?.txOptions.list.forEach(option => {
+        state[option.name] = null
+      })
+    }
+    this.setState(state)
   }
 
   estimate = async actionName => {
