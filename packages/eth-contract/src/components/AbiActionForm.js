@@ -211,14 +211,14 @@ export default class AbiActionForm extends PureComponent {
     const { format } = this.state
     return (
       <div className='badge-group'>
-        <Badge
+        {/* <Badge
           className={format === 'pretty' ? 'bg-primary' : 'bg-hover'}
           onClick={() => this.setState({ format: 'pretty' })}
         >Pretty</Badge>
         <Badge
           className={format === 'raw' ? 'bg-primary' : 'bg-hover'}
           onClick={() => this.setState({ format: 'raw' })}
-        >Raw</Badge>
+        >Raw</Badge> */}
       </div>
     )
   }

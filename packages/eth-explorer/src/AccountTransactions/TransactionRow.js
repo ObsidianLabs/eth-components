@@ -22,7 +22,7 @@ export default class TransactionRow extends PureComponent {
 
     return (
       <tr onClick={this.onClick}>
-        <td><small>{moment(tx.timeStamp * 1000).format('MM/DD HH:mm:ss')}</small></td>
+        <td><small>{moment(tx.timeStamp).format('YYYY/MM/DD HH:mm:ss')}</small></td>
         <td><small>{tx.blockNumber}</small></td>
         <td>
           <div className='flex-1 overflow-hidden'>
