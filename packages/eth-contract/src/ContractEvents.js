@@ -198,14 +198,13 @@ class ContractEvents extends PureComponent {
         {columns.map(({ name, type }, index2) => {
 
           let content = item.args[index2]
-          content = content
-            ? (content.toString ? content.toString() : JSON.stringify(content))
-            : ''
+          content = content ? (content.toString ? content.toString() : JSON.stringify(content)) : ''
 
           if (type === 'address') {
+            const addressValue = content
             content = (
-              <a href='javascript:void(0)' onClick={() => history.push(`/account/${content}`)} className='text-body'>
-                {content}
+              <a href='javascript:void(0)' onClick={() => history.push(`/account/${addressValue}`)} className='text-body'>
+                {addressValue}
               </a>
             )
           }
