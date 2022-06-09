@@ -111,10 +111,12 @@ class TransactionDetails extends PureComponent {
             icon='fas fa-key'
             badge={(
               <a
-                href='javascript:void(0)'
-                onClick={() => history.push(`/account/${signer}`)}
                 className='text-body'
-                onClick={() => this.props.closeModal()}
+                href='javascript:void(0)'
+                onClick={() => {
+                  history.push(`/account/${signer}`)
+                  this.props.closeModal()
+                }}
               >
                 <code>{signer}</code>
               </a>
