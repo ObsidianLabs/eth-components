@@ -66,7 +66,11 @@ export default class DeployerButton extends PureComponent {
 
   updateAbi = async fileNode => {
     const contractName = this.props.projectManager.path.parse(fileNode.path).name
-
+    
+    if(fileNode.path.endsWith('.js')) {
+      return
+    }
+    
     let contractObj
     try {
       contractObj = await this.readContractJson(fileNode)

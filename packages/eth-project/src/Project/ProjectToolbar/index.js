@@ -21,12 +21,11 @@ export default class ProjectToolbar extends PureComponent {
     const { projectSettings, projectManager } = this.context
     const compilers = projectSettings?.get('compilers') || {}
     const readOnly = !projectManager.userOwnProject && projectManager.remote
-
-
-
+    const isJS = projectSettings.settings.language === 'javascript'
+    
     return <>
       {
-        !noBuild &&
+        !noBuild && !isJS &&
         <CompilerButton
           className='rounded-0 border-0 flex-none w-5'
           truffle={compilers[process.env.COMPILER_VERSION_KEY]}
