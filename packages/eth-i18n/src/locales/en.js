@@ -87,6 +87,7 @@ const translation = {
       connectedTo: 'Connected to network at',
       error: 'Network Connection Error',
       errorDesc: 'Please refresh this page or reconnect the current network.',
+      errorText: 'Please refresh or try later.',
     },
     custom: {
       custom: 'Custom Network',
