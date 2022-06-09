@@ -1,33 +1,67 @@
 import React, { PureComponent } from 'react'
 
-import {
-  ToolbarButton,
-} from '@obsidians/ui-components'
+import { ToolbarButton } from '@obsidians/ui-components'
 
 import fileOps from '@obsidians/file-ops'
 
+const faucetUrlList = [
+  {
+    name: 'ropsten',
+    url: `https://faucet.ropsten.be/`,
+  },
+  {
+    name: 'rinkeby',
+    url: `https://faucet.rinkeby.io/`,
+  },
+  {
+    name: 'goerli',
+    url: `https://goerlifaucet.com/`,
+  },
+  {
+    name: 'kovan',
+    url: `https://faucet.kovan.network/`,
+  },
+  {
+    name: 'bnbtest',
+    url: `https://testnet.binance.org/faucet-smart`,
+  },
+  {
+    name: 'avalanchetest',
+    url: `https://faucet.avax-test.network/`,
+  },
+  {
+    name: 'polygontest',
+    url: `https://faucet.polygon.technology/`,
+  },
+  {
+    name: 'fantomtest',
+    url: `https://faucet.fantom.network/`,
+  },
+  {
+    name: 'harmonytest',
+    url: `https://faucet.pops.one/`,
+  },
+  {
+    name: 'confluxtest',
+    url: `https://efaucet.confluxnetwork.org/`,
+  },
+  {
+    name: 'auroratest',
+    url: `https://aurora.dev/faucet`,
+  },
+  {
+    name: 'evmostest',
+    url: `https://faucet.evmos.dev/`,
+  },
+]
+
 export default class FaucetButton extends PureComponent {
   claim = async () => {
-    let faucetUrl
-    if (this.props.network === 'ropsten') {
-      faucetUrl = `https://faucet.ropsten.be/`
-    } else if (this.props.network === 'rinkeby') {
-      faucetUrl = `https://faucet.rinkeby.io/`
-    } else if (this.props.network === 'kovan') {
-      faucetUrl = `https://faucet.kovan.network/`
-    } else if (this.props.network === 'evmostest') {
-      faucetUrl = `https://faucet.evmos.org/`
-    } else if (this.props.network === 'bnbtest') {
-      faucetUrl = `https://testnet.binance.org/faucet-smart`
-    } else {
-      return
-    }
-
-    fileOps.current.openLink(faucetUrl)
+    fileOps.current.openLink(faucetUrlList.find(item => item.name === this.props.network)?.url)
   }
 
   render () {
-    if (['ropsten', 'rinkeby', 'kovan', 'bnbtest', 'evmostest'].indexOf(this.props.network) === -1) {
+    if (!faucetUrlList.find(item => item.name === this.props.network)) {
       return null
     }
     return (
