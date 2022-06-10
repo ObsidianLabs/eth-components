@@ -47,17 +47,19 @@ export default class RemoteNetworkInfo extends PureComponent {
         <div className='col-6 p-0'>
           <TableCard title={t('header.title.blocks')}>
             {
-              status?.number &&
+              networkId &&
               <TableCardRow
+                loading={!status?.number}
                 name={t('header.title.blockNumber')}
                 badge={status?.number}
               />
             }
             {
-              status?.timestamp &&
+              networkId &&
               <TableCardRow
+                loading={!status?.timestamp}
                 name={t('header.title.blockTime')}
-                badge={moment(status.timestamp * 1000).format('MMMM Do, HH:mm:ss')}
+                badge={status?.timestamp && moment(status.timestamp * 1000).format('MMMM Do, HH:mm:ss')}
               />
             }
             {
