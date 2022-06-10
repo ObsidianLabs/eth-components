@@ -7,11 +7,11 @@ import fileOps from '@obsidians/file-ops'
 const faucetUrlList = [
   {
     name: 'ropsten',
-    url: `https://faucet.ropsten.be/`,
+    url: `https://testnet.help/en/ethfaucet/ropsten`,
   },
   {
     name: 'rinkeby',
-    url: `https://faucet.rinkeby.io/`,
+    url: `https://rinkebyfaucet.io/`,
   },
   {
     name: 'goerli',
@@ -19,7 +19,7 @@ const faucetUrlList = [
   },
   {
     name: 'kovan',
-    url: `https://faucet.kovan.network/`,
+    url: `https://faucets.chain.link/`,
   },
   {
     name: 'bnbtest',
