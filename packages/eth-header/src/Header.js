@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-
 import redux from '@obsidians/redux'
 import Navbar from '@obsidians/navbar'
 import keypairManager from '@obsidians/keypair'
@@ -8,8 +7,8 @@ import { NewProjectModal } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
 import { utils } from '@obsidians/sdk'
 import { t } from '@obsidians/i18n'
-
 import headerActions from './headerActions'
+import metamaskIcon from './assets/metamask.png'
 
 export default class Header extends PureComponent {
   constructor(props) {
@@ -17,6 +16,12 @@ export default class Header extends PureComponent {
     this.state = {
       keypairs: []
     }
+
+    this.updateDropdownKeypairs = this.updateDropdownKeypairs.bind(this)
+    this.updateDropDownBrowserAccount = this.updateDropDownBrowserAccount.bind(this)
+    this.updatedDropdownStarred = this.updatedDropdownStarred.bind(this)
+    this.updateDropdownStarredContract = this.updateDropdownStarredContract.bind(this)
+    this.updateContractName = this.updateContractName.bind(this)
   }
 
   componentDidMount() {
@@ -25,6 +30,97 @@ export default class Header extends PureComponent {
   }
 
   updateKeypairs = keypairs => this.setState({ keypairs })
+
+  updateDropdownKeypairs(keypairManagerFilter, addressIcon) {
+    let result = this.state.keypairs.map(k => {
+      return {
+        id: k.address,
+        name: k.name ||
+          <code className='small'>
+            {utils.isValidAddressReturn(k.address).substr(0, 10)}
+            ...{utils.isValidAddressReturn(k.address).substr(-8)}
+          </code>,
+        icon: addressIcon,
+      }
+    })
+
+    result = keypairManagerFilter ? result.filter(keypairManagerFilter) : result
+    !result.length && result.push({ none: true })
+
+    result.unshift({ header: 'keypair manager' })
+    return result
+  }
+
+  updateDropDownBrowserAccount(browserAccounts, addressIcon) {
+    let result = browserAccounts.map(item => {
+      return {
+        id: item,
+        name: keypairManager.getName(item) ||
+          <code className='small'>
+            {utils.isValidAddressReturn(item).substr(0, 10)}
+            ...{utils.isValidAddressReturn(item).substr(-8)}
+          </code>,
+        icon: addressIcon,
+      }
+    })
+    if (networkManager?.browserExtension) {
+      result.unshift({
+        id: networkManager.browserExtension.currentAccount,
+        name:
+          <code className='small'>
+            {utils.isValidAddressReturn(networkManager.browserExtension.currentAccount).substr(0, 6)}
+            ...{utils.isValidAddressReturn(networkManager.browserExtension.currentAccount).substr(-4)}
+          </code>,
+        logoIcon: metamaskIcon,
+      })
+
+      result = [{ divider: true }, { header: networkManager.browserExtension.name.toLowerCase() }, ...result]
+    }
+    return result
+  }
+
+  updatedDropdownStarred(starred, addressIcon) {
+    const result = starred.map(item => {
+      return {
+        id: item,
+        name: keypairManager.getName(item) ||
+          <code className='small'>
+            {utils.isValidAddressReturn(item).substr(0, 10)}
+            ...{utils.isValidAddressReturn(item).substr(-8)}
+          </code>,
+        icon: addressIcon,
+      }
+    })
+    if (!result.length) return []
+    return [{ divider: true }, { header: 'starred' }, ...result]
+  }
+
+  updateDropdownStarredContract(starredContracts, addressIcon, contractIcon, extraContractItems) {
+    let result = starredContracts.map(item => {
+      return {
+        id: item,
+        name: <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
+        icon: addressIcon,
+      }
+    })
+
+    result = [{ header: 'starred' }, ...result.map(item => ({ ...item, icon: contractIcon }))]
+    !starredContracts.length && result.push({ none: true })
+    result = extraContractItems ? [...extraContractItems, ...result] : result
+
+    return result
+  }
+
+  updateContractName(selectedContract, extraContractItems) {
+    if (!selectedContract) return
+    let result
+      // todo:process address for this case
+    result = extraContractItems ? extraContractItems.find(item => item.id === selectedContract)?.name : result
+    if (!result) {
+      result = <code>{utils.isValidAddressReturn(selectedContract)}</code>
+    }
+    return result
+  }
 
   render() {
     const {
@@ -47,83 +143,16 @@ export default class Header extends PureComponent {
     } = this.props
 
     const username = profile.get('username') || projects.get('selected')?.toJS()?.author
-    const navbarLeft = [
-      navbarItem(projects, selectedProject, username)
-    ]
-
+    const navbarLeft = [navbarItem(projects, selectedProject, username)]
+    
     const contractIcon = isSelected => isSelected ? 'fas fa-file-invoice' : 'far fa-file'
     const addressIcon = isSelected => isSelected ? 'fas fa-map-marker-alt' : 'far fa-map-marker'
 
-    let dropdownKeypairs = this.state.keypairs.map(k => {
-      const address = k.address
-      return {
-        id: address,
-        name: k.name || <code className='small'>{utils.isValidAddressReturn(address).substr(0, 10)}...{utils.isValidAddressReturn(address).substr(-8)}</code>,
-        icon: addressIcon,
-      }
-    })
-    if (keypairManagerFilter) {
-      dropdownKeypairs = dropdownKeypairs.filter(keypairManagerFilter)
-    }
-    if (!dropdownKeypairs.length) {
-      dropdownKeypairs.push({ none: true })
-    }
-    dropdownKeypairs.unshift({ header: 'keypair manager' })
-
-    const dropdownBrowserAccounts = browserAccounts.map(item => {
-      const name = keypairManager.getName(item)
-      return {
-        id: item,
-        name: name || <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
-        icon: addressIcon,
-      }
-    })
-    if (dropdownBrowserAccounts.length) {
-      if (networkManager.browserExtension) {
-        dropdownBrowserAccounts.unshift({ header: networkManager.browserExtension.name.toLowerCase() })
-      }
-      dropdownBrowserAccounts.unshift({ divider: true })
-    }
-
-    const dropdownStarred = starred.map(item => {
-      const name = keypairManager.getName(item)
-      return {
-        id: item,
-        name: name || <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
-        icon: addressIcon,
-      }
-    })
-
-    const dropdownStarredContracts = starredContracts.map(item => {
-      return {
-        id: item,
-        name: <code className='small'>{utils.isValidAddressReturn(item).substr(0, 10)}...{utils.isValidAddressReturn(item).substr(-8)}</code>,
-        icon: addressIcon,
-      }
-    })
-
-    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarredContracts.map(item => ({ ...item, icon: contractIcon }))]
-    if (dropdownStarred.length) {
-      dropdownStarred.unshift({ header: 'starred' })
-      dropdownStarred.unshift({ divider: true })
-    }
-    if (!starredContracts.length) {
-      dropdownStarredInContract.push({ none: true })
-    }
-    if (extraContractItems) {
-      dropdownStarredInContract = [...extraContractItems, ...dropdownStarredInContract]
-    }
-
-    let contractName
-    if (selectedContract) {
-      if (extraContractItems) {
-        // todo:process address for this case
-        contractName = extraContractItems.find(item => item.id === selectedContract)?.name
-      }
-      if (!contractName) {
-        contractName = <code>{utils.isValidAddressReturn(selectedContract)}</code>
-      }
-    }
+    const dropdownKeypairs = this.updateDropdownKeypairs(keypairManagerFilter, addressIcon)
+    const dropdownBrowserAccounts = this.updateDropDownBrowserAccount(browserAccounts, addressIcon)
+    const dropdownStarred = this.updatedDropdownStarred(starred, addressIcon)
+    const dropdownStarredInContract = this.updateDropdownStarredContract(starredContracts, addressIcon, contractIcon, extraContractItems)
+    const contractName = this.updateContractName(selectedContract, extraContractItems)
 
     const selectAccountTemp = utils.isValidAddressReturn(selectedAccount)
     const accountName = selectAccountTemp && (keypairManager.getName(selectAccountTemp) || <code>{selectAccountTemp}</code>)
@@ -140,6 +169,7 @@ export default class Header extends PureComponent {
         onClick: ({ id }) => redux.dispatch('REMOVE_ACCOUNT', { network: network.id, account: id }),
       }],
     }
+
     const explorerNavbarItem = {
       route: 'account',
       title: t('header.title.explorer'),
@@ -162,6 +192,7 @@ export default class Header extends PureComponent {
     }
 
     const networkReplaceName = Object.assign({}, network, { name: network.fullName })
+  
     const networkNavbarItem = {
       route: 'network',
       title: t('header.title.network'),

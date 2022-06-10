@@ -168,6 +168,7 @@ export default class AbiActionForm extends PureComponent {
     return (
       <FormSection title={t('contract.transaction.authorization')}>
         <KeypairInputSelector
+          abbreviationOption
           size='sm'
           label='Signer'
           extra={networkManager.browserExtension?.isEnabled && signer && [{
