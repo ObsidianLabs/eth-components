@@ -4,6 +4,8 @@ import platform from '@obsidians/platform'
 import { IpcChannel } from '@obsidians/ipc'
 import redux from '@obsidians/redux'
 import { format } from 'js-conflux-sdk'
+import notification from '@obsidians/notification'
+import { t } from '@obsidians/i18n'
 
 import utils from '../utils'
 import tokenlist from './tokenlist.json'
@@ -105,6 +107,7 @@ export default class EthersClient {
     }
 
     const result = await this.explorer.getHistory(address, page, size)
+    if (utils.isServerError(result.message)) notification.error(t('network.network.serveBusy'), t('network.network.errorText'))
     const isHarmony = chainsHarmonyName.includes(this.networkId)
     const isConflux = chainsConfluxtName.includes(this.networkId)
     let list = result.result ? (isHarmony ? result.result.transactions : result.result) : (result.list || [])

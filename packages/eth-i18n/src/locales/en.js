@@ -88,6 +88,7 @@ const translation = {
       error: 'Network Connection Error',
       errorDesc: 'Please refresh this page or reconnect the current network.',
       errorText: 'Please refresh or try later.',
+      serveBusy: 'Serve Request Busy',
     },
     custom: {
       custom: 'Custom Network',

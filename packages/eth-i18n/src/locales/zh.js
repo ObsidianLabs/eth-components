@@ -88,6 +88,7 @@ const translation = {
       error: '网络连接错误',
       errorDesc: '请刷新此页面或重新连接当前网络。',
       errorText: '请刷新或稍后再试。',
+      serveBusy: '服务器请求繁忙',
     },
     custom: {
       custom: '自定义网络',
