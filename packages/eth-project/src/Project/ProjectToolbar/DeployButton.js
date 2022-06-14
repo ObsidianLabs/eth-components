@@ -66,23 +66,29 @@ export default class DeployerButton extends PureComponent {
 
   updateAbi = async fileNode => {
     const contractName = this.props.projectManager.path.parse(fileNode.path).name
-    
-    if(fileNode.path.endsWith('.js')) {
+
+    if (fileNode.path.endsWith('.js')) {
       return
     }
-    
+
     let contractObj
     try {
       contractObj = await this.readContractJson(fileNode)
     } catch (e) {
-      notification.error(t('contract.build.notFound'), t('contract.build.notFoundText', {path: fileNode.pathInProject}))
+      notification.error(t('contract.build.notFound'), t('contract.build.notFoundText', { path: fileNode.pathInProject }))
       return
     }
+
+
+
     let constructorAbi
     try {
-      constructorAbi = await this.getConstructorAbi(this.getConstructorAbiArgs(contractObj))
+      if (fileNode.path.endsWith('.json')) {
+        constructorAbi = await this.getConstructorAbi(this.getConstructorAbiArgs(contractObj))
+      }
     } catch (e) {
       notification.error(t('contract.build.fileErr'), e.message)
+      console.error(e)
       return
     }
 
@@ -94,7 +100,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   readContractJson = async fileNode => {
-    console.log('contractJson', this.props.projectManager.readFile)
+    console.log('contractJson', fileNode)
     const contractJson = await this.props.projectManager.readFile(fileNode.path)
     console.log('contractJson', contractJson)
     try {
@@ -132,7 +138,7 @@ export default class DeployerButton extends PureComponent {
     if (this.state.pending) {
       return
     } else if (this.props.skipEstimate) {
-      return 
+      return
     } else if (this.needEstimate()) {
       return [`Estimate ${networkManager.sdk?.txOptions?.title}`]
     } else {
@@ -187,7 +193,7 @@ export default class DeployerButton extends PureComponent {
     this.modal.current.closeModal()
   }
 
-  render () {
+  render() {
     const { signer, readOnly } = this.props
     const { contracts, selected, contractName, pending } = this.state
 
@@ -237,7 +243,7 @@ export default class DeployerButton extends PureComponent {
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>
-        { pending || t('contract.deploy.deploy')}
+        {pending || t('contract.deploy.deploy')}
       </UncontrolledTooltip>
       <Modal
         ref={this.modal}
