@@ -67,7 +67,7 @@ export default class DeployerButton extends PureComponent {
   updateAbi = async fileNode => {
     const contractName = this.props.projectManager.path.parse(fileNode.path).name
 
-    if (fileNode.path.endsWith('.js')) {
+    if(fileNode.path.endsWith('.js')) {
       return
     }
 
