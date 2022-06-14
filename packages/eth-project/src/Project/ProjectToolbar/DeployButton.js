@@ -66,11 +66,11 @@ export default class DeployerButton extends PureComponent {
 
   updateAbi = async fileNode => {
     const contractName = this.props.projectManager.path.parse(fileNode.path).name
-    
-    if(fileNode.path.endsWith('.js')) {
+
+    if(fileNode.path.endsWith('.js') || fileNode.path.endsWith('.abi')) {
       return
     }
-    
+
     let contractObj
     try {
       contractObj = await this.readContractJson(fileNode)
@@ -83,6 +83,7 @@ export default class DeployerButton extends PureComponent {
       constructorAbi = await this.getConstructorAbi(this.getConstructorAbiArgs(contractObj))
     } catch (e) {
       notification.error(t('contract.build.fileErr'), e.message)
+      console.error(e)
       return
     }
 
@@ -94,7 +95,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   readContractJson = async fileNode => {
-    console.log('contractJson', this.props.projectManager.readFile)
+    console.log('contractJson', fileNode)
     const contractJson = await this.props.projectManager.readFile(fileNode.path)
     console.log('contractJson', contractJson)
     try {
