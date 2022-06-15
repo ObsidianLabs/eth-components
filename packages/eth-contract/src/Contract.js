@@ -11,7 +11,6 @@ import { withRouter } from 'react-router-dom'
 import redux, { connect } from '@obsidians/redux'
 import { networkManager } from '@obsidians/eth-network'
 import { t } from '@obsidians/i18n'
-import { utils as networkUtils } from '@obsidians/eth-network'
 
 import ContractPage from './ContractPage'
 
@@ -67,14 +66,12 @@ class Contract extends TabbedExplorer {
 
   init = () => {
     const { history, route, network, contracts, match } = this.props
-    !network && networkUtils.getMetamaskConnect()
-    const value = contracts.getIn([network, 'selected'])?.toLowerCase()
-    const paramsValue = match?.params?.value?.toLowerCase()
-    if (match?.params && value !== paramsValue) {
-      history.push(paramsValue || value ? `/${route}/${paramsValue || value}` : `/${route}`)
+    const value = match?.params?.value?.toLowerCase() || contracts.getIn([network, 'selected'])?.toLowerCase()
+    if (match?.params) {
+      history.push(value ? `/${route}/${value}` : `/${route}`)
     }
     const tabs = contracts.getIn([network, 'tabs'])?.toArray() || []
-    this.initialize({ value: paramsValue || value, tabs, subroute: network })
+    this.initialize({ value, tabs, subroute: network })
   }
 
   checkLocation = () => {
