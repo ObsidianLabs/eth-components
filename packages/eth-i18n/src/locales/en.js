@@ -72,6 +72,7 @@ const translation = {
       networkDisconnect: 'Network disconnect',
       noNetwork: 'No Network',
       noNetworkText: 'No connected network. Please start a local network or switch to a remote network.',
+      webNoNetworkText: 'No connected network. Please switch to a remote network.',
       tools: 'network tools',
       Tools: 'Network Tools',
       disconnect: 'Disconnect',
