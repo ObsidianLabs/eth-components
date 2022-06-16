@@ -72,6 +72,7 @@ const translation = {
       networkDisconnect: '网络断开连接',
       noNetwork: '无网络',
       noNetworkText: '没有连接的网络，请启动本地网络或切换到远程网络。',
+      webNoNetworkText: '没有连接的网络，请切换到远程网络。',
       tools: '网络工具',
       Tools: '网络工具',
       disconnect: '断开连接',
