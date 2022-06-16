@@ -66,8 +66,8 @@ class Contract extends TabbedExplorer {
 
   init = () => {
     const { history, route, network, contracts, match } = this.props
-    const value = contracts.getIn([network, 'selected'])
-    if (match?.params && value !== match?.params?.value) {
+    const value = match?.params?.value?.toLowerCase() || contracts.getIn([network, 'selected'])?.toLowerCase()
+    if (match?.params) {
       history.push(value ? `/${route}/${value}` : `/${route}`)
     }
     const tabs = contracts.getIn([network, 'tabs'])?.toArray() || []

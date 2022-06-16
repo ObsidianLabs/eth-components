@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react'
 
-import { Screen, LoadingScreen } from '@obsidians/ui-components'
+import { Screen, LoadingScreen, ErrorPage } from '@obsidians/ui-components'
 
 import redux from '@obsidians/redux'
-import { networkManager, ErrorPage, utils } from '@obsidians/eth-network'
+import { networkManager, utils } from '@obsidians/eth-network'
 import { t } from '@obsidians/i18n'
 
 import AccountBalance from './AccountBalance'
@@ -125,10 +125,10 @@ export default class AccountPage extends PureComponent {
           <Screen>
             <ErrorPage
               btnText={t('network.network.reconnect')}
-              handleBtn={this.handleReconnectNetwork}
+              btnClick={this.handleReconnectNetwork}
               btnStatus={!utils.isNetworkConnectError(error)}
-              error={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
-              errorDesc={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
+              title={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
+              description={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
             />
           </Screen>
         )
