@@ -16,6 +16,9 @@ export default function NetworkStatus(props) {
   const rpcModal = React.useRef()
   const { networkId, current: network } = networkManager
   const { connected } = props
+  const [dropdownOpen, setDropdownOpen] = React.useState(false)
+
+  const toggle = () => setDropdownOpen(!dropdownOpen)
 
   const handleRefreshNetwork = () => {
     if (!connected) {
@@ -26,14 +29,17 @@ export default function NetworkStatus(props) {
   }
 
   return <>
-    <UncontrolledButtonDropdown direction='up'>
+    <UncontrolledButtonDropdown direction='up' isOpen={dropdownOpen} toggle={toggle}>
       <DropdownToggle size='sm' color='default' id='network-tools' className='rounded-0 px-2 text-muted'>
         <span hidden={networkId == 'dev' || networkId == 'custom'} key={`network-${networkId}`} className={`${classnames(`${networkId != 'dev' && networkId != 'custom' && 'd-inline-block'} mr-1`, connected ? 'color-success' : '')}`}>
           <i className='fas fa-wifi mr-1' />
         </span>{network ? network.name : t('network.network.noNetwork')}
-        <UncontrolledTooltip placement='bottom' target='network-tools'>
-          {t('network.network.Tools')}
-        </UncontrolledTooltip>
+        {
+          !dropdownOpen &&
+          <UncontrolledTooltip placement='bottom' target='network-tools'>
+            {t('network.network.Tools')}
+          </UncontrolledTooltip>
+        }
       </DropdownToggle>
       <DropdownMenu className='dropdown-menu-sm'>
         <DropdownItem header>
