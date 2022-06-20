@@ -18,7 +18,7 @@ export default class ProjectToolbar extends PureComponent {
 
   render () {
     const { signer, noBuild, noDeploy, ExtraButtons = () => null } = this.props
-    const { projectSettings, projectManager } = this.context
+    const { projectSettings, projectManager, hasDeployFile = false } = this.context
     const compilers = projectSettings?.get('compilers') || {}
     const readOnly = !projectManager.userOwnProject && projectManager.remote
 
@@ -39,7 +39,7 @@ export default class ProjectToolbar extends PureComponent {
         <DeployButton
         projectManager={projectManager}
         signer={signer}
-        readOnly={readOnly} />
+        readOnly={readOnly && !hasDeployFile} />
       }
       <ScriptsButton
         projectManager={projectManager}

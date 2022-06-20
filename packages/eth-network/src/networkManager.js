@@ -136,12 +136,16 @@ class NetworkManager {
           await switchChain(hexChainId)
         } catch (e) {
           if (e.code === 4902) {
-            await addChain({
-              chainId: hexChainId,
-              chainName: network.fullName,
-              rpcUrls: [network.url],
-            })
-            await switchChain(hexChainId)
+            try {
+              await addChain({
+                chainId: hexChainId,
+                chainName: network.fullName,
+                rpcUrls: [network.url],
+              })
+              await switchChain(hexChainId)
+            } catch {
+              return notification.error(t('network.network.error'), t('network.network.errorText'))
+            }
           }
         }
       }

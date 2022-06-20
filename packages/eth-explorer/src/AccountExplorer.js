@@ -77,8 +77,8 @@ class AccountExplorer extends TabbedExplorer {
 
   init = () => {
     const { history, route, network, accounts, match } = this.props
-    const value = accounts.getIn([network, 'selected'])
-    if (match?.params && value !== match?.params?.value) {
+    const value = match?.params?.value?.toLowerCase() || accounts.getIn([network, 'selected'])?.toLowerCase()
+    if (match?.params) {
       history.push(value ? `/${route}/${value}` : `/${route}`)
     }
     const tabs = accounts.getIn([network, 'tabs'])?.toArray() || []

@@ -9,9 +9,10 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  ErrorPage,
 } from '@obsidians/ui-components'
 
-import { networkManager, ErrorPage, utils } from '@obsidians/eth-network'
+import { networkManager, utils } from '@obsidians/eth-network'
 import redux from '@obsidians/redux'
 import { BaseProjectManager } from '@obsidians/workspace'
 import { t } from '@obsidians/i18n'
@@ -272,10 +273,10 @@ export default class ContractPage extends PureComponent {
         <Screen>
           <ErrorPage
             btnText={t('network.network.reconnect')}
-            handleBtn={this.handleReconnectNetwork}
+            btnClick={this.handleReconnectNetwork}
             btnStatus={!utils.isNetworkConnectError(error)}
-            error={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
-            errorDesc={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
+            title={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
+            description={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
           />
         </Screen>
       )

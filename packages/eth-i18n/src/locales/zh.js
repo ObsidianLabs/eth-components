@@ -72,6 +72,7 @@ const translation = {
       networkDisconnect: '网络断开连接',
       noNetwork: '无网络',
       noNetworkText: '没有连接的网络，请启动本地网络或切换到远程网络。',
+      webNoNetworkText: '没有连接的网络，请切换到远程网络。',
       tools: '网络工具',
       Tools: '网络工具',
       disconnect: '断开连接',
@@ -87,6 +88,8 @@ const translation = {
       connectedTo: '连接到网络',
       error: '网络连接错误',
       errorDesc: '请刷新此页面或重新连接当前网络。',
+      errorText: '请刷新或稍后再试。',
+      serveBusy: '服务器请求繁忙',
     },
     custom: {
       custom: '自定义网络',
