@@ -59,7 +59,10 @@ class NetworkManager {
   }
 
   newSdk(params) {
-    const networkId = params.id.split('.')[0]
+    let networkId = params.id.split('.')[0]
+    if (process.env.REACT_APP_PROJECT_SHARE_URL) {
+      if (params.group === 'others' || networkId) networkId = 'custom'
+    }
     const Sdk = this.Sdks.get(networkId)
     if (!Sdk) {
       return null
