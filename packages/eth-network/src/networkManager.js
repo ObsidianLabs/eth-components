@@ -45,7 +45,7 @@ class NetworkManager {
   }
 
   addNetworks(networks) {
-    networks.forEach(n => this.Sdks.set(n.id, this.Sdks.get(n.id)))
+    networks.forEach(n => this.Sdks.set(n.id, this.Sdk || this.Sdks.get('custom')))
     this.networks = networks
   }
 
@@ -59,10 +59,7 @@ class NetworkManager {
   }
 
   newSdk(params) {
-    let networkId = params.id.split('.')[0]
-    if (process.env.REACT_APP_PROJECT_SHARE_URL) {
-      if (params.group === 'others' || networkId) networkId = 'custom'
-    }
+    const networkId = params.id.split('.')[0]
     const Sdk = this.Sdks.get(networkId)
     if (!Sdk) {
       return null
