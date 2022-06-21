@@ -64,6 +64,7 @@ export default class Header extends PureComponent {
       }
     })
     if (networkManager?.browserExtension) {
+      if (!networkManager.browserExtension.currentAccount) return []
       result.unshift({
         id: networkManager.browserExtension.currentAccount,
         name:
