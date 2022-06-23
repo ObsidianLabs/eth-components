@@ -21,6 +21,7 @@ import compilerManager from '@obsidians/compiler'
 
 import NewProjectModal from '../../components/NewProjectModal'
 import { t } from '@obsidians/i18n'
+import debounce from 'lodash/debounce'
 
 export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   static contextType = WorkspaceContext
@@ -32,6 +33,8 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   componentWillUnmount () {
     BaseProjectManager.channel.off('settings', this.debouncedUpdate)
   }
+
+  changeChecked = () => this.onChange('formatSolidity')(!this.context.projectSettings?.get('formatSolidity'))
 
   renderLanguageOption = projectSettings => {
     if (!this.props.languages?.length) {
@@ -199,7 +202,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               <div className='ml-4'>
                 <Input type='checkbox' id='format-solidity-check-box'
                   disabled={readOnly}
-                  onChange={event => this.onChange('formatSolidity')(event.target.checked)}
+                  onChange={debounce(this.changeChecked, 200)}
                   checked={projectSettings?.get('formatSolidity')} />
                 <Label check htmlFor='format-solidity-check-box'>{t('project.formatSolidity')}</Label>
               </div>
