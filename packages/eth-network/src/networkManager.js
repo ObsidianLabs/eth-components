@@ -179,7 +179,6 @@ class NetworkManager {
     redux.dispatch('SELECT_NETWORK', network.id)
 
     if (notify) {
-      network.notification && notification.success(t('network.network.network'), network.notification)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
     }
     if (redirect) {
