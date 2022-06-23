@@ -24,6 +24,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
 
   const [active, setActive] = React.useState(true)
   const [showCustomNetworkModal, setShowCustomNetworkModal] = React.useState(false)
+  const [notificaStatus, setNotificaStatus] = React.useState(false)
   const customModal = React.createRef()
 
   
@@ -41,6 +42,12 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
       cacheLifecycles.didRecover(() => setActive(true))
     }
   })
+
+  React.useEffect(() => {
+    networkId && setNotificaStatus(true)
+  }, [networkId])
+
+  const changeNotificaStatus = () => setNotificaStatus(false)
 
   function customNetworkModalBody() {
     return (
@@ -70,7 +77,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   } else {
     const url = networkManager.sdk?.url
     return <>
-      <RemoteNetwork networkId={networkId} url={url} />
+      <RemoteNetwork networkId={networkId} url={url} notificaStatus={notificaStatus} changeStatus={changeNotificaStatus} />
       {customNetworkModalBody()}
     </>
   }
