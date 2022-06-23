@@ -125,6 +125,7 @@ const translation = {
       startedText: '<b>{{name}}</b>正在运行中',
       stopped: '{{name}}实例停止',
       stoppedText: '<b>{{name}}</b>停止运行',
+      successful: '创建网络实例节点成功',
     }
   },
   rpc: {
