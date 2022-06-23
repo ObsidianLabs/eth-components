@@ -11,7 +11,7 @@ export default function AddressParamInput ({ size, value, onChange, disabled, ma
     onChangeValue(value)
   }, [])
 
-  const mataMaskAccount = networkManager.browserExtension.currentAccount || ''
+  const mataMaskAccount = networkManager?.browserExtension?.currentAccount || ''
 
   return (
     <KeypairInputSelector
