@@ -20,8 +20,7 @@ export default class CustomNetworkModal extends PureComponent {
       pending: false,
       status: null,
       modify: false,
-      option: {},
-      originalOption: {},
+      option: {}
     }
     this.modal = React.createRef()
     this.input = React.createRef()
@@ -29,7 +28,7 @@ export default class CustomNetworkModal extends PureComponent {
 
   openModal = (modify = false, option = {}) => {
     this.name = option.name
-    this.setState({ pending: false, status: null, modify, option, originalOption: option })
+    this.setState({ pending: false, status: null, modify, option })
     this.modal.current?.openModal()
     setTimeout(() => this.input.current?.focus(), 100)
   }
@@ -48,10 +47,10 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   onConfirm = async () => {
-    const { modify, status, option, originalOption } = this.state
+    const { modify, status, option } = this.state
     const customNetworkMap = redux.getState().customNetworks.toJS()
-    const customNetworkNames = Object.keys(customNetworkMap);
-    const connected = customNetworkMap[option.name]?.active;
+    const customNetworkNames = Object.keys(customNetworkMap)
+    const connected = customNetworkMap[this.name]?.active
 
     if (customNetworkNames.includes(option.name) && !modify) {
       notification.error(t('network.custom.invalidName'), t('network.custom.invalidNameText', {name: option.name}))
@@ -62,9 +61,7 @@ export default class CustomNetworkModal extends PureComponent {
       } else {
         if (modify) {
           redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
-          if (option.url.trim() !== originalOption.url && connected) {
-            this.connect(option)
-          }
+          if (connected) this.connect(option)
         } else {
           redux.dispatch('ADD_CUSTOM_NETWORK', option)
         }
