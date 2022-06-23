@@ -197,11 +197,11 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
             <h4 className='mt-4'>Solidity</h4>
             <FormGroup className='actionConfirm__checkbox'>
               <div className='ml-4'>
-                <Input type='checkbox' id='formatSolidityCheck'
+                <Input type='checkbox' id='format-solidity-check-box'
                   disabled={readOnly}
-                  onChange={e => this.onChange('formatSolidity')(!projectSettings?.get('formatSolidity'))}
+                  onChange={event => this.onChange('formatSolidity')(event.target.checked)}
                   checked={projectSettings?.get('formatSolidity')} />
-                <Label check htmlFor='formatSolidityCheck'>{t('project.formatSolidity')}</Label>
+                <Label check htmlFor='format-solidity-check-box'>{t('project.formatSolidity')}</Label>
               </div>
             </FormGroup>
             <FormGroup>
