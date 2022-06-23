@@ -26,7 +26,8 @@ export default class ExtendedProjectSettings extends ProjectSettings {
         fontFamily: rawSettings.editor?.fontFamily || 'Hack',
         fontSize: rawSettings.editor?.fontSize || '13px',
         ligatures: Boolean(rawSettings.editor?.ligatures),
-      }
+      },
+      formatSolidity: rawSettings.formatSolidity || false
     }
     if (rawSettings.language) {
       settings.language = rawSettings.language
