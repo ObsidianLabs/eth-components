@@ -45,7 +45,7 @@ class NetworkManager {
   }
 
   addNetworks(networks) {
-    networks.forEach(n => this.Sdks.set(n.id, this.Sdks.get(n.id)))
+    networks.forEach(n => this.Sdks.set(n.id, this.Sdk || this.Sdks.get('custom')))
     this.networks = networks
   }
 
@@ -179,7 +179,6 @@ class NetworkManager {
     redux.dispatch('SELECT_NETWORK', network.id)
 
     if (notify) {
-      network.notification && notification.success(t('network.network.network'), network.notification)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
     }
     if (redirect) {

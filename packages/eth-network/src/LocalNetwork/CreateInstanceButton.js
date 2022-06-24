@@ -77,6 +77,7 @@ export default class CreateInstanceButton extends PureComponent {
       keys,
     })
     this.modal.current.closeModal()
+    notification.success(t('network.dev.successful'))
     this.setState({
       pending: false,
       name: '',

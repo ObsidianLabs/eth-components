@@ -59,6 +59,10 @@ export default class RemoteNetwork extends PureComponent {
       const networkId = this.props.networkId
       const status = await networkManager.sdk?.getStatus()
       if (this.props.networkId === networkId) {
+        if (this.props.notificaStatus) {
+          networkManager.network.notification && notification.success(t('network.network.network'), networkManager.network.notification)
+          this.props.changeStatus()
+        }
         this.setState({ status })
       }
     } catch (error) {

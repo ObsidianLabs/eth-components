@@ -5,6 +5,7 @@ import {
   FormGroup,
   Label,
   CustomInput,
+  Input,
 } from '@obsidians/ui-components'
 
 import {
@@ -20,6 +21,7 @@ import compilerManager from '@obsidians/compiler'
 
 import NewProjectModal from '../../components/NewProjectModal'
 import { t } from '@obsidians/i18n'
+import debounce from 'lodash/debounce'
 
 export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   static contextType = WorkspaceContext
@@ -31,6 +33,8 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
   componentWillUnmount () {
     BaseProjectManager.channel.off('settings', this.debouncedUpdate)
   }
+
+  changeChecked = () => this.onChange('formatSolidity')(!this.context.projectSettings?.get('formatSolidity'))
 
   renderLanguageOption = projectSettings => {
     if (!this.props.languages?.length) {
@@ -193,8 +197,18 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               }}
             />
 
-            <h4 className='mt-4'>Linter</h4>
+            <h4 className='mt-4'>Solidity</h4>
+            <FormGroup className='actionConfirm__checkbox'>
+              <div className='ml-4'>
+                <Input type='checkbox' id='format-solidity-check-box'
+                  disabled={readOnly}
+                  onChange={debounce(this.changeChecked, 200)}
+                  checked={projectSettings?.get('formatSolidity')} />
+                <Label check htmlFor='format-solidity-check-box'>{t('project.formatSolidity')}</Label>
+              </div>
+            </FormGroup>
             <FormGroup>
+              <Label>Linter</Label>
               <CustomInput
                 id='settings-linter'
                 type='select'
