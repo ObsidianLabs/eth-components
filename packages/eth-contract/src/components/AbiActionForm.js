@@ -51,6 +51,7 @@ export default class AbiActionForm extends PureComponent {
   }
 
   selectAction = index => {
+    if (index === this.state.selected) return
     let state = {
       selected: index,
       amount: '',
@@ -150,7 +151,7 @@ export default class AbiActionForm extends PureComponent {
             key={`param-${option.name}`}
             label={option.label}
             icon={option.icon}
-            value={this.state[option.name]}
+            value={this.state[option.name] || ''}
             onChange={value => this.setState({ [option.name]: value })}
             placeholder={option.placeholder}
           />
