@@ -2,8 +2,9 @@ import React from 'react'
 import { networkManager } from '@obsidians/eth-network'
 import { KeypairInputSelector } from '@obsidians/keypair'
 
-export default function AddressParamInput ({ size, value, onChange, disabled, maxLength = 128 }) {
+export default function AddressParamInput ({ size, value, onChange, disabled, maxLength = 128, type }) {
   const onChangeValue = (value = '') => {
+    value && type === 'address' && (value = value.replace(/[^0-9a-zA-Z$]/ig, ""))
     onChange(value, { raw: value, display: value, empty: !value })
   }
 
