@@ -45,6 +45,7 @@ export default function IntegerParamInput ({ size, label, type, value, onChange,
       size={size}
       addon={<b>123</b>}
       value={value}
+      removeValueSpaces={true}
       onChange={onChangeValue}
       placeholder={placeholder}
       disabled={disabled}
