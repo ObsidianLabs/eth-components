@@ -41,6 +41,7 @@ export default function TupleInput ({ size, label, value, onChange, components, 
           label={name ? `${label}.${name}` : `${label}[${index}]`}
           type={type}
           components={components}
+          removeValueSpaces={true}
           value={valueArray[index]}
           onChange={(subvalue, extra) => onChangeValue(subvalue, extra, { name, index })}
           disabled={disabled}
