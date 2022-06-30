@@ -4,12 +4,14 @@ import { WorkspaceContext } from '@obsidians/workspace'
 import { ToolbarButton, DropdownToolbarButton } from '@obsidians/ui-components'
 import { CompilerButton } from '@obsidians/compiler'
 import keypairManager from '@obsidians/keypair'
+import { withRouter } from 'react-router-dom'
 
 import DeployButton from './DeployButton'
 import ScriptsButton from './ScriptsButton'
 import SignRequestModal from './SignRequestModal'
+import ForkButton from './ForkButton'
 
-export default class ProjectToolbar extends PureComponent {
+export default withRouter(class ProjectToolbar extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -21,6 +23,8 @@ export default class ProjectToolbar extends PureComponent {
     const { projectSettings, projectManager, hasDeployFile = false } = this.context
     const compilers = projectSettings?.get('compilers') || {}
     const readOnly = !projectManager.userOwnProject && projectManager.remote
+    const copiedUserProjectPath = projectSettings?.settingFilePath?.split('/')
+    const [ , copiedUserId, copiedProjectId ] = copiedUserProjectPath
 
 
 
@@ -46,6 +50,10 @@ export default class ProjectToolbar extends PureComponent {
         readOnly={readOnly}/>
       { <ExtraButtons projectManager={projectManager} signer={signer} /> }
       <div className='flex-1' />
+      {
+        readOnly &&
+        <ForkButton {...this.props} projectManager={projectManager} copiedUserId={copiedUserId} copiedProjectId={copiedProjectId} />
+      }
       <ToolbarButton
         id='settings'
         icon='fas fa-cog'
@@ -55,4 +63,4 @@ export default class ProjectToolbar extends PureComponent {
       <SignRequestModal ref={keypairManager.signReqModal} />
     </>
   }
-}
+})
