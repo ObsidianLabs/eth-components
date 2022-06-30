@@ -51,7 +51,7 @@ export default withRouter(class ProjectToolbar extends PureComponent {
       { <ExtraButtons projectManager={projectManager} signer={signer} /> }
       <div className='flex-1' />
       {
-        readOnly &&
+        process.env.REACT_APP_PROJECT_SHARE_URL && readOnly &&
         <ForkButton {...this.props} projectManager={projectManager} copiedUserId={copiedUserId} copiedProjectId={copiedProjectId} />
       }
       <ToolbarButton

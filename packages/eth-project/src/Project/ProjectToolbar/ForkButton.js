@@ -12,7 +12,6 @@ import notification from '@obsidians/notification'
 import headerActions from '@obsidians/eth-header'
 
 import { t } from '@obsidians/i18n'
-import forkImg from '../../assets/icon_fork.png'
 import redux from '@obsidians/redux'
 
 export default class ForkButton extends PureComponent {
@@ -65,7 +64,7 @@ export default class ForkButton extends PureComponent {
     const { location } = this.props
     const { pending, projectName, username } = this.state
 
-    let icon = <span key='fork-icon'><img src={forkImg} className='network-icon' /></span>
+    let icon = <span key='fork-icon'><i class="fas fa-code-branch" /></span>
     if (pending) {
       icon = <span key='forking-icon'><i className='fas fa-spinner fa-pulse' /></span>
     }
