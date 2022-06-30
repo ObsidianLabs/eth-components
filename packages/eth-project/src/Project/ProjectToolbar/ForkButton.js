@@ -63,6 +63,7 @@ export default class ForkButton extends PureComponent {
   render () {
     const { location } = this.props
     const { pending, projectName, username } = this.state
+    const pathname = location?.pathname.startsWith('/') ? location?.pathname.substr(1) : location?.pathname
 
     let icon = <span key='fork-icon'><i class="fas fa-code-branch" /></span>
     if (pending) {
@@ -87,7 +88,7 @@ export default class ForkButton extends PureComponent {
         <h5 className='mt-4'>Fork From</h5>
         <Input
           className='bg-black'
-          placeholder={location?.pathname}
+          placeholder={pathname}
           readOnly={true}
         />
         <h5 className='mt-4'>Fork To</h5>
