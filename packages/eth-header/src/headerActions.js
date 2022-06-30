@@ -1,4 +1,5 @@
 import redux from '@obsidians/redux'
+import Auth from '@obsidians/auth'
 
 export class HeaderActions {
   constructor() {
@@ -18,6 +19,10 @@ export class HeaderActions {
     if (this?.history?.location?.pathname?.startsWith('/network') && networkId !== 'custom') {
       this.history.push(`/network/${networkId}`)
     }
+  }
+
+  forkProjectNeedUserLogin (providers) {
+    if (this?.history) Auth.login(this.history, providers[0])   
   }
 }
 
