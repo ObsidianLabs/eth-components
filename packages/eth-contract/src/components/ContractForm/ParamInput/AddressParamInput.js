@@ -11,16 +11,18 @@ export default function AddressParamInput ({ size, value, onChange, disabled, ma
     onChangeValue(value)
   }, [])
 
+  const mataMaskAccount = networkManager?.browserExtension?.currentAccount || ''
+
   return (
     <KeypairInputSelector
       size={size}
       editable
       maxLength={maxLength}
       icon='fas fa-map-marker-alt'
-      extra={networkManager.browserExtension?.isEnabled && [{
+      extra={networkManager.browserExtension?.isEnabled && mataMaskAccount && [{
         group: networkManager.browserExtension.name.toLowerCase(),
         badge: networkManager.browserExtension.name,
-        children: [{ address: networkManager.browserExtension.currentAccount, name: networkManager.browserExtension.name }]
+        children: [{ address: mataMaskAccount, name: networkManager.browserExtension.name }]
       }]}
       value={value}
       onChange={onChangeValue}

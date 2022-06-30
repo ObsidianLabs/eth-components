@@ -125,6 +125,7 @@ const translation = {
       startedText: '<b>{{name}}</b> is running now.',
       stopped: '{{name}} Instance Stopped',
       stoppedText: '<b>{{name}}</b> stops to run.',
+      successful: 'Create Instance Successful',
     }
   },
   rpc: {
