@@ -81,6 +81,7 @@ export default class ContractForm extends PureComponent {
             type={type}
             components={components}
             value={values[i]}
+            removeValueSpaces={true}
             onChange={this.setParamValue(i)}
             disabled={disabled || !!value}
           />

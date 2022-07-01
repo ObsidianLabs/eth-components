@@ -1,5 +1,5 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
+import { withRouter, useParams } from 'react-router-dom'
 import redux, { connect } from '@obsidians/redux'
 
 import networkManager from './networkManager'
@@ -8,7 +8,7 @@ import CustomNetwork from './CustomNetwork'
 import RemoteNetwork from './RemoteNetwork'
 import { default as DefaultCustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
-export default connect(['network', 'customNetworks', 'uiState', 'customNetworkModalStatus'])(withRouter(props => {
+export default connect(['network', 'customNetworks', 'uiState', 'customNetworkModalStatus', 'networkConnect'])(withRouter(props => {
   const {
     network: networkId = 'dev',
     customNetworks,
@@ -20,12 +20,14 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     cacheLifecycles,
     history,
     customNetworkModalStatus,
+    networkConnect,
   } = props
 
   const [active, setActive] = React.useState(true)
   const [showCustomNetworkModal, setShowCustomNetworkModal] = React.useState(false)
   const [notificaStatus, setNotificaStatus] = React.useState(false)
   const customModal = React.createRef()
+  const paramsNetworkValue = useParams()?.network
 
   
   React.useEffect(() => {
@@ -44,7 +46,13 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   })
 
   React.useEffect(() => {
-    networkId && setNotificaStatus(true)
+    if (networkId) {
+      if (paramsNetworkValue && paramsNetworkValue !== networkId) {
+        const paramsNetworkObj = networkManager.networks.find(item => item.id === paramsNetworkValue)
+        paramsNetworkObj && !networkConnect && networkManager.setNetwork(paramsNetworkObj)
+      }
+      setNotificaStatus(true)
+    }
   }, [networkId])
 
   const changeNotificaStatus = () => setNotificaStatus(false)
