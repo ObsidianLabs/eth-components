@@ -57,6 +57,8 @@ export default class SolcjsCompiler {
     let mainFileContent
     try {
       mainFileContent = await projectManager.readFile(projectManager.mainFilePath)
+      // TODO: replace the cdn resource & improve the way of loading remote moudle
+      mainFileContent = mainFileContent.replaceAll('@openzeppelin', 'https://unpkg.com/@openzeppelin')
     } catch (e) {
       console.warn(e)
       throw new Error(`Cannot read the main file <b>${mainFilePath}</b>.`)
