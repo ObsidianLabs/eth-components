@@ -76,6 +76,9 @@ export default class AbiActionForm extends PureComponent {
 
   renderActionSelector = () => {
     const selectedAction = this.selectedAction
+    const isViewAction = ['view', 'pure'].indexOf(selectedAction.stateMutability) > -1
+    const actionName = isViewAction ? selectedAction.name : `${selectedAction.name}(${selectedAction.inputs.map(item => item.type).join(',')})`
+    
     const {
       inModal,
       smDropdown,
@@ -122,7 +125,7 @@ export default class AbiActionForm extends PureComponent {
           key={this.state.executing ? 'action-executing' : 'action-execute'}
           icon={this.state.executing ? 'fas fa-pulse fa-spinner' : 'fas fa-play'}
           tooltip={t('contract.transaction.execute')}
-          onClick={() => this.executeAction(selectedAction.name)}
+          onClick={() => this.executeAction(actionName)}
         />
       </ButtonGroup>
     )
