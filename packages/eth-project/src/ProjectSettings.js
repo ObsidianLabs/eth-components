@@ -27,7 +27,11 @@ export default class ExtendedProjectSettings extends ProjectSettings {
         fontSize: rawSettings.editor?.fontSize || '13px',
         ligatures: Boolean(rawSettings.editor?.ligatures),
       },
-      formatSolidity: rawSettings.formatSolidity || false
+      formatSolidity: rawSettings.formatSolidity || false,
+      openzeppelin: {
+        importOption: rawSettings.openzeppelin?.importOption || 'http_url',
+        version: rawSettings.openzeppelin?.version || '4.7.0'
+      }
     }
     if (rawSettings.language) {
       settings.language = rawSettings.language
