@@ -43,7 +43,8 @@ export default withRouter(class ProjectToolbar extends PureComponent {
         <DeployButton
         projectManager={projectManager}
         signer={signer}
-        readOnly={readOnly && !hasDeployFile} />
+        hasDeployFile={hasDeployFile}
+        readOnly={readOnly} />
       }
       <ScriptsButton
         projectManager={projectManager}
