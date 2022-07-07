@@ -173,6 +173,8 @@ export default class TransferButton extends PureComponent {
       ? `${accountBalance} ${networkManager.symbol}`
       : `${big(token.balance).div(big(10).pow(token.decimals)).toString()} ${token.symbol}`
     
+    const mataMaskAccount = networkManager?.browserExtension?.currentAccount || ''
+
     return <>
       <ToolbarButton
         id='navbar-transfer'
@@ -208,10 +210,10 @@ export default class TransferButton extends PureComponent {
             icon='fas fa-map-marker-alt'
             placeholder='Recipient address'
             maxLength={addressLength}
-            extra={networkManager.browserExtension?.isEnabled && [{
+            extra={networkManager.browserExtension?.isEnabled && mataMaskAccount && [{
               group: networkManager.browserExtension.name.toLowerCase(),
               badge: networkManager.browserExtension.name,
-              children: networkManager.browserExtension?.allAccounts?.map(address => ({ address })) || []
+              children: [{address: mataMaskAccount, name: networkManager.browserExtension.name }]
             }]}
             value={recipient}
             onChange={recipient => this.setState({ recipient })}
