@@ -53,10 +53,14 @@ export default class SolcjsCompiler {
     this.fileCache = new Map()
     this.projectManager = projectManager
     const mainFilePath = projectManager.projectSettings.get('main')
-
+    const openzeppelinVersion = projectManager.projectSettings.get('openzeppelin.version')
+    
     let mainFileContent
     try {
       mainFileContent = await projectManager.readFile(projectManager.mainFilePath)
+      if(openzeppelinVersion) {
+        mainFileContent = mainFileContent.replaceAll('@openzeppelin/contracts', `https://unpkg.com/@openzeppelin/contracts@${openzeppelinVersion}`)
+      }
     } catch (e) {
       console.warn(e)
       throw new Error(`Cannot read the main file <b>${mainFilePath}</b>.`)

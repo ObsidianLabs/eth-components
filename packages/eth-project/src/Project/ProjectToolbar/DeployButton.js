@@ -40,7 +40,7 @@ export default class DeployerButton extends PureComponent {
     if (this.state.pending) {
       return
     }
-    this.props.projectManager.deploy()
+    this.props.projectManager.deploy('', this.props.readOnly)
   }
 
   getDeploymentParameters = async (option, callback, estimate) => {
@@ -185,7 +185,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   render () {
-    const { signer, readOnly } = this.props
+    const { signer, readOnly, hasDeployFile } = this.props
     const { contracts, selected, contractName, pending } = this.state
 
     let icon = <span key='deploy-icon'><i className='fab fa-docker' /></span>
@@ -229,8 +229,7 @@ export default class DeployerButton extends PureComponent {
         key='toolbar-btn-deploy'
         className='rounded-0 border-0 flex-none px-2 w-5 flex-column align-items-center'
         onClick={this.onClick}
-        disabled={readOnly}
-      >
+        disabled={readOnly && !hasDeployFile}>
         {icon}
       </Button>
       <UncontrolledTooltip trigger='hover' delay={0} placement='bottom' target='toolbar-btn-deploy'>

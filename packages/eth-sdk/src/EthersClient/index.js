@@ -21,17 +21,14 @@ export default class EthersClient {
     this.networkId = networkId
     this.chainId = chainId
 
-    if (url) {
-      this.provider = ethers.getDefaultProvider(url)
+    if (window.ethereum) {
+      this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+      this.provider.isMetaMask = true
     } else {
-      if (window.ethereum) {
-        this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
-        this.provider.isMetaMask = true
-      } else {
-        this.provider = new ethers.providers.InfuraProvider(networkId, {
-          projectId: process.env.INFURA_PROJECT_ID
-        })
-      }
+      this.provider = url ? ethers.getDefaultProvider(url)
+        : new ethers.providers.InfuraProvider(networkId, {
+        projectId: process.env.INFURA_PROJECT_ID
+      })
     }
 
     this.explorer = new ExplorerProxy(networkId)

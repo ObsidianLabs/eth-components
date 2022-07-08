@@ -43,7 +43,12 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
     return menus
   }
 
-  if (node.name.endsWith('.json')) {
+  const { prefix, userId, projectId, projectRoot: localProjectRoot  } = modelSessionManager.projectManager
+  const cloudProjectRoot = `${prefix}/${userId}/${projectId}`
+  const buildFolderPath = `${projectManager.remote ? cloudProjectRoot : localProjectRoot}${projectManager.path.sep}build`
+  const fileDeployStatus = node.path.includes(buildFolderPath)
+
+  if (fileDeployStatus && node.name.endsWith('.json')) {
     const { dir, name } = projectManager.path.parse(node.path)
     if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
       const cloned = [...contextMenu]
@@ -53,7 +58,7 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
       }, null)
       return cloned
     }
-  } else if (node.name.endsWith('.sol') && !projectManager.remote) {
+  } else if (node.name.endsWith('.sol')) {// && !projectManager.remote
     const cloned = [...contextMenu]
     cloned.splice(projectManager.remote ? 3: 5, 0, {
       text: 'Compile',

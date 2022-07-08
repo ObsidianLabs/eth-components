@@ -105,12 +105,11 @@ function makeProjectManager(Base) {
       return true
     }
 
-    async deploy(contractFileNode) {
+    async deploy(contractFileNode, sharedProject = false) {
       if (!networkManager.sdk) {
         notification.error(t('contract.deploy.fail'), t('contract.deploy.failText'))
         return true
       }
-
       let contracts
       if (contractFileNode) {
         contractFileNode.pathInProject = this.pathInProject(contractFileNode.path)
@@ -125,7 +124,9 @@ function makeProjectManager(Base) {
       }
 
       if (!contracts.length) {
-        notification.error(t('contract.deploy.connot'), t('contract.deploy.connotTextProject'))
+        sharedProject ? 
+          notification.error(t('contract.deploy.connot'), t('contract.deploy.projectNotFound'))
+          : notification.error(t('contract.deploy.connot'), t('contract.deploy.connotTextProject'))
         return
       }
 
