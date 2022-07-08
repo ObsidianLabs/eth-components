@@ -77,7 +77,7 @@ export default class AbiActionForm extends PureComponent {
   renderActionSelector = () => {
     const selectedAction = this.selectedAction
     const isViewAction = ['view', 'pure'].indexOf(selectedAction.stateMutability) > -1
-    const actionName = isViewAction ? selectedAction.name : `${selectedAction.name}(${selectedAction.inputs.map(item => item.type).join(',')})`
+    const actionName = isViewAction || this.props.toolbarId === 'execute-rpc-method' ? selectedAction.name : `${selectedAction.name}(${selectedAction.inputs.map(item => item.type).join(',')})`
     
     const {
       inModal,
