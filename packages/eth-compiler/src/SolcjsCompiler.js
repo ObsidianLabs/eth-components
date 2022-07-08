@@ -57,7 +57,7 @@ export default class SolcjsCompiler {
     let mainFileContent
     try {
       mainFileContent = await projectManager.readFile(projectManager.mainFilePath)
-      mainFileContent = mainFileContent.replaceAll('@openzeppelin/contracts', 'https://unpkg.com/@openzeppelin/contracts@4.6.0')
+      mainFileContent = mainFileContent.replaceAll('@openzeppelin', 'https://unpkg.com/@openzeppelin')
     } catch (e) {
       console.warn(e)
       throw new Error(`Cannot read the main file <b>${mainFilePath}</b>.`)
