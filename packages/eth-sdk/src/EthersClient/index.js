@@ -6,6 +6,7 @@ import redux from '@obsidians/redux'
 import { format } from 'js-conflux-sdk'
 import notification from '@obsidians/notification'
 import { t } from '@obsidians/i18n'
+import networks from '../networks'
 
 import utils from '../utils'
 import tokenlist from './tokenlist.json'
@@ -17,13 +18,12 @@ const { fromBech32 } = require('@harmony-js/crypto')
 
 export default class EthersClient {
   constructor(option) {
-    const { chainId, url, group = '' } = option
-    let networkId = option.networkId || ''
-    if (networkId === 'moonrivertest' || networkId === 'moonbeamtest') networkId = 'moonbasetest'
+    const { networkId = '', chainId, url, group = '' } = option
     this.networkId = networkId
     this.chainId = chainId
 
-    if (window.ethereum && networkId !== 'custom' && group !== 'others') {
+    const needConnectToMetamask = window.ethereum && networkId !== 'custom' && group !== 'others'
+    if (needConnectToMetamask) {
       this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
       this.provider.isMetaMask = true
     } else {
@@ -81,6 +81,12 @@ export default class EthersClient {
 
   async getTransactions(address, page, size) {
     address = address.toLowerCase()
+    const isSupportedChain = networks.find(item => item.id === this.networkId)
+    if (!isSupportedChain) {
+      notification.error(t('network.custom.unsupportedNetwork'), t('network.custom.unsupportedNetworkText'))
+      return { length: 0, list: [] }
+    }
+
     if (this.networkId.startsWith('dev')) {
       const { queue } = redux.getState()
       const txs = queue.getIn([this.networkId, 'txs'])
@@ -193,6 +199,7 @@ class ExplorerProxy {
   }
 
   async getHistory(address, page = 0, size = 10) {
+    const currentNetworkId = (this.networkId === 'moonrivertest' || this.networkId === 'moonbeamtest') ? 'moonbasetest' : this.networkId
     let query = {
       module: 'account',
       action: 'txlist',
@@ -202,23 +209,23 @@ class ExplorerProxy {
       offset: size,
       sort: 'desc'
     }
-    if (chainsConfluxtName.includes(this.networkId)) {
+    if (chainsConfluxtName.includes(currentNetworkId)) {
       query.accountAddress = address
       query.skip = page * size
     } else {
       query.address = address
     }
 
-    if (chainsHarmonyName.includes(this.networkId)) {
+    if (chainsHarmonyName.includes(currentNetworkId)) {
       query.page -= 1
       if (platform.isDesktop) {
-        const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/harmony/explorer/${this.networkId}?${new URLSearchParams(query)}`,{method: 'POST'})
+        const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/harmony/explorer/${currentNetworkId}?${new URLSearchParams(query)}`,{method: 'POST'})
         return await response.json()
       } else {
-        return await this.channel.invoke('POST', this.networkId, query)
+        return await this.channel.invoke('POST', currentNetworkId, query)
       }
     } else {
-      const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${this.networkId}?${new URLSearchParams(query)}`)
+      const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${currentNetworkId}?${new URLSearchParams(query)}`)
       return await response.json()
     }
     // TODO: confirm with the infrua service

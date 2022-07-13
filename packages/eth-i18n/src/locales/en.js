@@ -113,6 +113,8 @@ const translation = {
       delTwoTips: ' ? Once deleted, ',
       delTipsEnd: 'it will be disconnected immediately and cannot be restored.',
       delConTips: 'it cannot be restored.',
+      unsupportedNetwork: 'Unsupported Network',
+      unsupportedNetworkText: 'Please check on block explorer.',
     },
     dev: {
       newInstance: 'New Instance',
