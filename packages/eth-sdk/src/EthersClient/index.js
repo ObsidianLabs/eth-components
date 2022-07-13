@@ -17,11 +17,13 @@ const { fromBech32 } = require('@harmony-js/crypto')
 
 export default class EthersClient {
   constructor(option) {
-    const { networkId = '', chainId, url } = option
+    const { chainId, url, group = '' } = option
+    let networkId = option.networkId || ''
+    if (networkId === 'moonrivertest' || networkId === 'moonbeamtest') networkId = 'moonbasetest'
     this.networkId = networkId
     this.chainId = chainId
 
-    if (window.ethereum) {
+    if (window.ethereum && networkId !== 'custom' && group !== 'others') {
       this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
       this.provider.isMetaMask = true
     } else {
@@ -104,7 +106,7 @@ export default class EthersClient {
     }
 
     const result = await this.explorer.getHistory(address, page, size)
-    if (utils.isServerError(result.message)) notification.error(t('network.network.serveBusy'), t('network.network.errorText'))
+    if (utils.isServerError(result.message) || result.status === 500) notification.error(t('network.network.serveBusy'), t('network.network.errorText'))
     const isHarmony = chainsHarmonyName.includes(this.networkId)
     const isConflux = chainsConfluxtName.includes(this.networkId)
     let list = result.result ? (isHarmony ? result.result.transactions : result.result) : (result.list || [])

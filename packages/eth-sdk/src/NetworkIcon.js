@@ -18,6 +18,14 @@ import auroramain from './assets/auroramain.png'
 import auroratest from './assets/auroratest.png'
 import evmostest from './assets/evmostest.png'
 import evmosmain from './assets/evmosmain.png'
+import arbitrumtest from './assets/arbitrumtest.png'
+import arbitrummain from './assets/arbitrummain.png'
+import optimismtest from './assets/optimismtest.png'
+import optimismmain from './assets/optimismmain.png'
+import moonrivertest from './assets/moonrivertest.png'
+import moonrivermain from './assets/moonrivermain.png'
+import moonbeamtest from './assets/moonbeamtest.png'
+import moonbeammain from './assets/moonbeammain.png'
 
 export default {
     ethereummain,
@@ -40,4 +48,12 @@ export default {
     auroratest,
     evmostest,
     evmosmain,
+    arbitrumtest,
+    arbitrummain,
+    optimismtest,
+    optimismmain,
+    moonrivertest,
+    moonrivermain,
+    moonbeamtest,
+    moonbeammain,
 }
