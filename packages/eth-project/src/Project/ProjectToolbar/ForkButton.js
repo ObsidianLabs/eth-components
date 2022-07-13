@@ -13,6 +13,7 @@ import headerActions from '@obsidians/eth-header'
 
 import { t } from '@obsidians/i18n'
 import redux from '@obsidians/redux'
+import debounce from 'lodash/debounce'
 
 export default class ForkButton extends PureComponent {
   constructor (props) {
@@ -25,8 +26,19 @@ export default class ForkButton extends PureComponent {
     }
     this.modal = React.createRef()
   }
+
+  projectForkStatus = async () => {
+    const getProjectInfo = await this.props.projectManager.getProjectInfo()
+    if (getProjectInfo?.error) {
+      notification.error(t('project.fork.connot'), t('project.fork.projectNotFound'))
+      return false
+    }
+    return true
+  }
   
-  onClick = () => {
+  onClick = async () => {
+    const status = await this.projectForkStatus()
+    if (!status) return
     const profile = redux.getState().profile?.toJS()
     const username = profile.username
     const providers = process.env.LOGIN_PROVIDERS ? process.env.LOGIN_PROVIDERS.split(',') : ['github']
@@ -41,12 +53,14 @@ export default class ForkButton extends PureComponent {
     const { copiedUserId, copiedProjectId, projectManager } = this.props
     const { projectName, username } =  this.state
 
+    const status = await this.projectForkStatus()
+    if (!status) return this.setState({ pending: false })
+
     try {
       await projectManager.forkToPublic('public', copiedUserId, copiedProjectId, projectName)
     } catch (e) {
       notification.error('Fork Failed', e.message)
-      this.setState({ pending: false })
-      return false
+      return this.setState({ pending: false })
     }
 
     this.setState({ pending: false })
@@ -75,7 +89,7 @@ export default class ForkButton extends PureComponent {
         id='fork-project'
         tooltip='Fork Project'
         iconComponent={icon}
-        onClick={this.onClick}/>
+        onClick={debounce(this.onClick, 200)}/>
       <Modal
         ref={this.modal}
         title={'Fork Project'}
