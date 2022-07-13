@@ -59,18 +59,19 @@ export default class CustomNetworkModal extends PureComponent {
       if (!status) {
         this.tryCreateSdk({ ...option, notify: false })
       } else {
+        const currentChain = networkManager.networks.find(item => item.chainId === status.chainId)
         if (modify) {
-          redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option })
+          redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option: {...option, networkId: currentChain?.id} })
           if (connected) this.connect(option)
         } else {
-          redux.dispatch('ADD_CUSTOM_NETWORK', option)
+          redux.dispatch('ADD_CUSTOM_NETWORK', {...option, networkId: currentChain?.id})
         }
         const customeNetworkMap = redux.getState().customNetworks.toJS()
         const customeNetworkGroup = Object.keys(customeNetworkMap).map(name => ({
           group: 'others',
           icon: 'fas fa-vial',
           id: name,
-          networkId: name,
+          networkId: customeNetworkMap[name]?.networkId || name,
           name: name,
           fullName: name,
           notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
@@ -79,7 +80,7 @@ export default class CustomNetworkModal extends PureComponent {
         const newNetworks = networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
           fullName: 'Custom Network',
           group: 'others',
-          icon: 'fas fa-vial',
+          icon: 'fas fa-edit',
           id: 'custom',
           name: 'Custom',
           notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,

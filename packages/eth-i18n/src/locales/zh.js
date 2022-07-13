@@ -113,6 +113,8 @@ const translation = {
       delTwoTips: '吗？一旦删除，',
       delTipsEnd: '它将被立即断开，无法恢复。',
       delConTips: '它将被销毁。',
+      unsupportedNetwork: '不支持此网络',
+      unsupportedNetworkText: '请在区块链浏览器上查看.',
     },
     dev: {
       newInstance: '新的实例',
