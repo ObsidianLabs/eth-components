@@ -3,8 +3,9 @@ import headerActions from '@obsidians/eth-header'
 import notification from '@obsidians/notification'
 import redux from '@obsidians/redux'
 import { t } from '@obsidians/i18n'
-
+import { utils } from '@obsidians/sdk'
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
+
 
 class NetworkManager {
   constructor() {
@@ -42,6 +43,10 @@ class NetworkManager {
 
   get symbol() {
     return this.current?.symbol
+  }
+
+  get metaMaskConnected() {
+    return this?.browserExtension?.ethereum?.isConnected() || false
   }
 
   addNetworks(networks) {
@@ -97,29 +102,33 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  async reconnectNetwork() {
-    this.setNetwork(this.network)
+  hasDuplicatedNetwork(chainId, rpcUrl) {
+    return !this.networks.every(net => net.chainId !== chainId && net.url !== rpcUrl)
   }
 
-  async setNetwork(network, { force, redirect = true, notify = true } = {}) {
+  async requestMetaMaskRPC(networkInfo) {
+    const metaMaskClient = this.browserExtension.ethereum
+    const currentChainId = this.browserExtension.getChainId
+      ? await this.browserExtension.getChainId()
+      : await metaMaskClient.request({ method: 'eth_chainId' })
+    if (currentChainId === networkInfo.chainId) return
+    if (!networkInfo.chainId) {
+      notification.error(t('network.custom.err'), t('network.custom.lackChainId'))
+      return 
+    }
+    const hexChainId = utils.format.hexValue(+networkInfo.chainId)
 
-    redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
-
-    if (this.browserExtension && this.browserExtension?.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId) {
-      const chainId = this.browserExtension.getChainId ? await this.browserExtension.getChainId()
-        : await this.browserExtension.ethereum.request({ method: 'eth_chainId' })
-      
-        const switchChain = this.browserExtension?.switchChain?.bind(this.browserExtension) || (chainId => {
-        return this.browserExtension.ethereum.request({
+      const switchChain = (chainId) => {
+        return metaMaskClient.request({
           method: 'wallet_switchEthereumChain',
           params: [{
             chainId,
           }]
         })
-      })
+      }
       
-      const addChain = this.browserExtension?.addChain?.bind(this.browserExtension) || (({ chainId, chainName, rpcUrls }) => {
-        return this.browserExtension.ethereum.request({
+    const addChain = ({ chainId, chainName, rpcUrls }) => {
+        return metaMaskClient.request({
           method: 'wallet_addEthereumChain',
           params: [{
             chainId,
@@ -127,38 +136,37 @@ class NetworkManager {
             rpcUrls,
           }],
         })
-      })
-      
-      const hexChainId = `0x${network.chainId.toString(16)}`
-      
-      if (chainId !== hexChainId) {
+    }
+
+    try {
+      await switchChain(hexChainId)
+    } catch (e) {
+      if ([4902, -32603].includes(e.code)) {
         try {
+          await addChain({
+            chainId: hexChainId,
+            chainName: networkInfo.fullName,
+            rpcUrls: [networkInfo.url],
+          })
           await switchChain(hexChainId)
-        } catch (e) {
-          if (e.code === 4902) {
-            try {
-              await addChain({
-                chainId: hexChainId,
-                chainName: network.fullName,
-                rpcUrls: [network.url],
-              })
-              await switchChain(hexChainId)
-            } catch {
-              return notification.error(t('network.network.error'), t('network.network.errorText'))
-            }
-          }
+        } catch {
+          return notification.error(t('network.network.error'), t('network.network.errorText'))
         }
       }
     }
+  } 
 
-    if (!network || network.id === redux.getState().network) {
-      return
-    }
+  async reconnectNetwork() {
+    this.setNetwork(this.network)
+  }
 
+  async setNetwork(network, { force, redirect = true, notify = true } = {}) {
+    redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
+    this.metaMaskConnected && this.requestMetaMaskRPC(network)
+    if (!network || network.id === redux.getState().network) return
     if (process.env.DEPLOY === 'bsn' && network.projectKey) {
       notification.warning(`${network.name}`, `The current network ${network.name} enables a project key, please turn it off in the BSN portal.`, 5)
     }
-
     const cachingKeys = getCachingKeys()
     cachingKeys.filter(key => key.startsWith('contract-') || key.startsWith('account-')).forEach(dropByCacheKey)
 
@@ -186,7 +194,7 @@ class NetworkManager {
     }
   }
 
-  async updateCustomNetwork({ url, option = '{}', notify = true, name }) {
+  async updateCustomNetwork({ url, option = '{}', notify = true, name, chainId ='' }) {
     try {
       if (option) {
         option = JSON.parse(option)

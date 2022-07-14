@@ -29,6 +29,11 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   const customModal = React.createRef()
   const paramsNetworkValue = useParams()?.network
 
+  const getRpcUrl = () => {
+    const { metaMaskConnected, current } = networkManager
+    return metaMaskConnected ? (current?.url || '') : (networkManager.sdk?.url || '')
+  }
+
   
   React.useEffect(() => {
     (history.location.pathname?.startsWith('/network')) && redux.dispatch('LOAD_NETWORK_RESOURCES', true)
@@ -83,9 +88,12 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
       </>
     )
   } else {
-    const url = networkManager.sdk?.url
     return <>
-      <RemoteNetwork networkId={networkId} url={url} notificaStatus={notificaStatus} changeStatus={changeNotificaStatus} />
+      <RemoteNetwork
+        networkId={networkId}
+        url={getRpcUrl()}
+        notificaStatus={notificaStatus}
+        changeStatus={changeNotificaStatus} />
       {customNetworkModalBody()}
     </>
   }
