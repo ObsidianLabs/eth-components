@@ -67,7 +67,7 @@ export default class AbiStorageModal extends PureComponent {
     this.setState({ delBtnStatus: false })
     redux.dispatch('ABI_DELETE', codeHash)
     notification.info(t('abi.del'), t('abi.delText'))
-    setTimeout(() => this.refresh(), 200)
+    this.refresh()
   }
 
   renderTable = () => {
