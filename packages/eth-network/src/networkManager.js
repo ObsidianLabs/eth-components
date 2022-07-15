@@ -102,8 +102,8 @@ class NetworkManager {
     this.onSdkDisposedCallback = callback
   }
 
-  hasDuplicatedNetwork(chainId, rpcUrl) {
-    return !this.networks.every(net => net.chainId !== chainId && net.url !== rpcUrl)
+  hasDuplicatedNetwork(rpcUrl) {
+    return !this.networks.every(net => net.url !== rpcUrl)
   }
 
   async requestMetaMaskRPC(networkInfo) {

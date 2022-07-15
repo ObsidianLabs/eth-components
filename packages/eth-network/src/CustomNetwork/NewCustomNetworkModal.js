@@ -90,7 +90,7 @@ export default class CustomNetworkModal extends PureComponent {
         redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option, networkId: existChain?.id })
         if (connected) this.connect(option)
       } else {
-        hasDuplicated = networkManager.hasDuplicatedNetwork(option.chainId, option.url)
+        hasDuplicated = networkManager.hasDuplicatedNetwork(option.url)
         hasDuplicated ?
           notification.error(t('network.custom.duplicatedTitle'), t('network.custom.duplicatedText', { url: option.url }))
           : redux.dispatch('ADD_CUSTOM_NETWORK', { ...option, networkId: existChain?.id })
