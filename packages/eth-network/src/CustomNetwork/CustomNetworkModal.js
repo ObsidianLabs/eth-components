@@ -81,21 +81,23 @@ export default class CustomNetworkModal extends PureComponent {
 
     if (customNetworks.length) {
       return customNetworks.map(([name, item], i) => {
+        const toolTipId = name.replace(/\s/g, '')
         return (
           <tr key={`custom-network-${i}`} className='hover-flex'>
             <td className='d-flex'>
-              <div className='text-overflow-dots' id={`custom-${name}`}>
+              <div className='text-overflow-dots' id={`custom-${toolTipId}`}>
                 <span >
                   {name}
                 </span>
               </div>
               {
                 name &&
-                <UncontrolledTooltip placement='right' target={`custom-${name}`}>
+                <UncontrolledTooltip placement='right' target={`custom-${toolTipId}`}>
                   {name}
                 </UncontrolledTooltip>
               }
             </td>
+            <td>{item.get('chainId') || ''}</td>
             <td className='text-overflow-dots'>{item.get('url')}</td>
             <td align='right'>
               <div className='d-flex align-items-center justify-content-between'>
@@ -155,8 +157,9 @@ export default class CustomNetworkModal extends PureComponent {
           tableSm
           TableHead={(
             <tr>
-              <th style={{ width: '20%' }}>name</th>
-              <th style={{ width: '55%' }}>rpc url</th>
+              <th style={{ width: '15%' }}>name</th>
+              <th style={{ width: '15%' }}>chainId</th>
+              <th style={{ width: '45%' }}>rpc url</th>
               <th></th>
             </tr>
           )}

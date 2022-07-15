@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Badge,
+  Button
 } from '@obsidians/ui-components'
 
 import { KeypairInputSelector } from '@obsidians/keypair'
@@ -42,6 +43,7 @@ export default class AbiActionForm extends PureComponent {
       actionError: '',
       actionResult: '',
       format: 'pretty',
+      estimating: false
     }
     this.form = React.createRef()
   }
@@ -67,13 +69,37 @@ export default class AbiActionForm extends PureComponent {
     this.setState(state)
   }
 
-  estimate = async actionName => {
-  }
+  estimate = async actionName => {}
 
   executeAction = async actionName => {
     await this.props.executeAction(actionName, this)
   }
 
+  handleEstimate = async (event) => {
+    event.stopPropagation()
+    this.setState({ estimating: true})
+    await this.estimate(this.selectedAction.name)
+    setTimeout(() => {
+      this.setState({ estimating: false })
+    }, 1000)
+  }
+
+  renderEstimateButton = () => {
+    return (
+      <Button color='primary'
+        class="btn btn-secondary"
+        rounded={true}
+        size='sm'
+        onClick={this.handleEstimate}>
+        {
+          this.state.estimating ?
+            <div><i className='fas fa-pulse fa-spinner' /> Estimaing</div>
+            : 'Estimate'
+        }
+      </Button>
+    )
+  }
+  
   renderActionSelector = () => {
     const selectedAction = this.selectedAction
     const isViewAction = ['view', 'pure'].indexOf(selectedAction.stateMutability) > -1
@@ -133,21 +159,10 @@ export default class AbiActionForm extends PureComponent {
 
   renderGasOptions = selectedAction => {
     const { noGasOptions, FormSection } = this.props
-    if (noGasOptions) {
-      return null
-    }
     const txOptions = networkManager.sdk?.txOptions
-    if (!txOptions?.list.length) {
-      return null
-    }
-    const estimate = (
-      <Badge color='primary' onClick={evt => {
-        evt.stopPropagation()
-        this.estimate(selectedAction.name)
-      }}>Estimate</Badge>
-    )
+    if (!txOptions?.list.length || noGasOptions) return null
     return (
-      <FormSection title={txOptions.title} right={estimate}>
+      <FormSection title={txOptions.title} right={this.renderEstimateButton()}>
         {txOptions.list.map(option => (
           <ActionParamFormGroup
             size='sm'

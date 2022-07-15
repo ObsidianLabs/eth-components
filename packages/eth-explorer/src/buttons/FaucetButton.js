@@ -53,6 +53,14 @@ const faucetUrlList = [
     name: 'evmostest',
     url: `https://faucet.evmos.dev/`,
   },
+  {
+    name: 'moonrivertest',
+    url: `https://apps.moonbeam.network/moonbase-alpha/faucet/`,
+  },
+  {
+    name: 'moonbeamtest',
+    url: `https://apps.moonbeam.network/moonbase-alpha/faucet/`,
+  }
 ]
 
 export default class FaucetButton extends PureComponent {

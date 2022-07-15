@@ -4,7 +4,6 @@ import {
   Modal,
   DebouncedFormGroup,
   Input,
-  InputGroup,
   ToolbarButton,
 } from '@obsidians/ui-components'
 
@@ -13,6 +12,7 @@ import headerActions from '@obsidians/eth-header'
 
 import { t } from '@obsidians/i18n'
 import redux from '@obsidians/redux'
+import debounce from 'lodash/debounce'
 
 export default class ForkButton extends PureComponent {
   constructor (props) {
@@ -25,8 +25,19 @@ export default class ForkButton extends PureComponent {
     }
     this.modal = React.createRef()
   }
+
+  projectForkStatus = async () => {
+    const getProjectInfo = await this.props.projectManager.getProjectInfo()
+    if (getProjectInfo?.error) {
+      notification.error(t('project.fork.connot'), t('project.fork.projectNotFound'))
+      return false
+    }
+    return true
+  }
   
-  onClick = () => {
+  onClick = async () => {
+    const status = await this.projectForkStatus()
+    if (!status) return
     const profile = redux.getState().profile?.toJS()
     const username = profile.username
     const providers = process.env.LOGIN_PROVIDERS ? process.env.LOGIN_PROVIDERS.split(',') : ['github']
@@ -41,23 +52,20 @@ export default class ForkButton extends PureComponent {
     const { copiedUserId, copiedProjectId, projectManager } = this.props
     const { projectName, username } =  this.state
 
+    const status = await this.projectForkStatus()
+    if (!status) return this.setState({ pending: false })
+
     try {
       await projectManager.forkToPublic('public', copiedUserId, copiedProjectId, projectName)
     } catch (e) {
       notification.error('Fork Failed', e.message)
-      this.setState({ pending: false })
-      return false
+      return this.setState({ pending: false })
     }
 
     this.setState({ pending: false })
     notification.success('Fork successful', `New project <b>${projectName}</b> is created.`)
     this.modal.current.closeModal()
     this.props.history.push(`/${username}/${projectName}`)
-  }
-
-  onChange = event => {
-    let projectName = event.target.value.replace(/[^0-9a-zA-Z-_$]/ig, "")
-    this.setState({ projectName })
   }
 
   render () {
@@ -75,14 +83,14 @@ export default class ForkButton extends PureComponent {
         id='fork-project'
         tooltip='Fork Project'
         iconComponent={icon}
-        onClick={this.onClick}/>
+        onClick={debounce(this.onClick, 200)}/>
       <Modal
         ref={this.modal}
         title={'Fork Project'}
         textConfirm={!pending && ' Create Fork'}
         pending={pending && 'Creating Fork…'}
         onConfirm={this.confirmFork}
-        confirmDisabled={!projectName}
+        confirmDisabled={!projectName || !/^[0-9a-zA-Z\-_]*$/.test(projectName)}
       >
         <div className='mt-2 small'>{t('project.fork.desc')}</div>
         <h5 className='mt-4'>Fork From</h5>
@@ -92,16 +100,17 @@ export default class ForkButton extends PureComponent {
           readOnly={true}
         />
         <h5 className='mt-4'>Fork To</h5>
-        <InputGroup className="pl-3 input-readonly-bg bg2">
-          <div className='d-inline-block hover-inline text-placeholder'>
-            {username + '/'}
-          </div>
-          <Input
-            className='input-readonly-box-shadow pl-0'
-            value={projectName}
-            onChange={this.onChange}
-          />
-        </InputGroup>
+        <DebouncedFormGroup
+          labelStatus={false}
+          addon={<span key='mode-name'>{username + '/'}</span>}
+          addonClassnames={'pl-1 text-placeholder'}
+          addonBtnClassnames='bg-black pl-1 pr-0'
+          className='bg-black pl-0'
+          formGroupClassName={'small'}
+          value={projectName}
+          onChange={projectName => this.setState({ projectName })}
+          validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Fork project name can only contain letters, digits, dash or underscore.'}
+        />
         <h5 className='mt-4'>Visibility</h5>
         <DebouncedFormGroup
           label={t('project.fork.visibilityDesc')}
@@ -109,7 +118,7 @@ export default class ForkButton extends PureComponent {
           formGroupClassName={'small'}
           placeholder={'Public'}
           readOnly={true}
-        />   
+        />
       </Modal>
     </>
   }

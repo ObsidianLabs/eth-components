@@ -28,6 +28,7 @@ export default class AbiStorageModal extends PureComponent {
       loading: false,
       abis: [],
       showPrivateKeys: false,
+      delBtnStatus: true,
     }
   }
 
@@ -37,7 +38,7 @@ export default class AbiStorageModal extends PureComponent {
   }
 
   refresh () {
-    this.setState({ loading: true })
+    this.setState({ loading: true, delBtnStatus: true })
     const abis = redux.getState().abis.toArray()
     this.setState({ abis, loading: false })
   }
@@ -51,29 +52,21 @@ export default class AbiStorageModal extends PureComponent {
     }
     const { name, codeHash, abi } = await this.abiInputModal.current.openModal(data.name, data.codeHash, formattedAbi)
     redux.dispatch('ABI_UPDATE', [data.codeHash, { name, codeHash, abi }])
-    notification.success(
-      t('abi.update'),
-      t('abi.updateText')
-    )
+    notification.success(t('abi.update'), t('abi.updateText'))
     this.refresh()
   }
 
   newAbi = async (inputName, inputCodeHash) => {
     const { name, codeHash, abi } = await this.abiInputModal.current.openModal(inputName, inputCodeHash)
     redux.dispatch('ABI_ADD', { name, codeHash, abi })
-    notification.success(
-      t('abi.add'),
-      t('abi.addText')
-    )
+    notification.success(t('abi.add'), t('abi.addText'))
     this.refresh()
   }
 
   deleteAbi = async codeHash => {
+    this.setState({ delBtnStatus: false })
     redux.dispatch('ABI_DELETE', codeHash)
-    notification.info(
-      t('abi.del'),
-      t('abi.delText')
-    )
+    notification.info(t('abi.del'), t('abi.delText'))
     this.refresh()
   }
 
@@ -95,8 +88,8 @@ export default class AbiStorageModal extends PureComponent {
 
   renderAbiRow = (item, index) => {
     const [codeHash, obj] = item
-    const abi = obj.get('abi')
-    const name = obj.get('name')
+    const abi = obj?.get('abi')
+    const name = obj?.get('name')
     try {
       abi = JSON.stringify(JSON.parse(abi), null, 2)
     } catch (e) {}
@@ -123,9 +116,12 @@ export default class AbiStorageModal extends PureComponent {
                 Edit
               </UncontrolledTooltip>
             </IconButton>
-            <DeleteButton
-              onConfirm={() => this.deleteAbi(codeHash)}
-            />
+            {
+              this.state.delBtnStatus &&
+              <DeleteButton
+                onConfirm={() => this.deleteAbi(codeHash)}
+              />
+            }
           </div>
         </td>
       </tr>
