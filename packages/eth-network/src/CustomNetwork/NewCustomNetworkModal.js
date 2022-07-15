@@ -46,6 +46,31 @@ export default class CustomNetworkModal extends PureComponent {
     this.setState({ pending: false })
   }
 
+  getNewNetList = () => {
+    const customNetworkMap = redux.getState().customNetworks.toJS()
+    const customNetworkGroup = Object.keys(customNetworkMap).map(name => ({
+      group: 'others',
+      icon: 'fas fa-vial',
+      id: name,
+      networkId: customNetworkMap[name]?.networkId || name,
+      name: name,
+      fullName: name,
+      notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
+      url: customNetworkMap[name].url,
+      chainId: customNetworkMap[name]?.chainId || ''
+    })).sort((a, b) => a.name.localeCompare(b.name))
+    return networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
+      fullName: 'Custom Network',
+      group: 'others',
+      icon: 'fas fa-edit',
+      id: 'custom',
+      name: 'Custom',
+      notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,
+      symbol: 'ETH',
+      url: '',
+    }]).concat(customNetworkGroup)
+  }
+
   onConfirm = async () => {
     const { modify, status, option } = this.state
     const customNetworkMap = redux.getState().customNetworks.toJS()
@@ -55,43 +80,26 @@ export default class CustomNetworkModal extends PureComponent {
     if (customNetworkNames.includes(option.name) && !modify) {
       notification.error(t('network.custom.invalidName'), t('network.custom.invalidNameText', {name: option.name}))
       return
+    }
+    if (!status) {
+      this.tryCreateSdk({ ...option, notify: false })
     } else {
-      if (!status) {
-        this.tryCreateSdk({ ...option, notify: false })
+      let hasDuplicated
+      const existChain = networkManager.networks.find(item => item.chainId === status.chainId)
+      if (modify) {
+        redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option, networkId: existChain?.id })
+        if (connected) this.connect(option)
       } else {
-        const currentChain = networkManager.networks.find(item => item.chainId === status.chainId)
-        if (modify) {
-          redux.dispatch('MODIFY_CUSTOM_NETWORK', { name: this.name, option: {...option, networkId: currentChain?.id} })
-          if (connected) this.connect(option)
-        } else {
-          redux.dispatch('ADD_CUSTOM_NETWORK', {...option, networkId: currentChain?.id})
-        }
-        const customeNetworkMap = redux.getState().customNetworks.toJS()
-        const customeNetworkGroup = Object.keys(customeNetworkMap).map(name => ({
-          group: 'others',
-          icon: 'fas fa-vial',
-          id: name,
-          networkId: customeNetworkMap[name]?.networkId || name,
-          name: name,
-          fullName: name,
-          notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
-          url: customeNetworkMap[name].url,
-        })).sort((a, b) => a.name.localeCompare(b.name))
-        const newNetworks = networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
-          fullName: 'Custom Network',
-          group: 'others',
-          icon: 'fas fa-edit',
-          id: 'custom',
-          name: 'Custom',
-          notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,
-          symbol: 'ETH',
-          url: '',
-        }]).concat(customeNetworkGroup)
-        networkManager.addNetworks(newNetworks)
-
-        this.setState({ pending: false, status: null })
-        this.modal.current.closeModal()
+        hasDuplicated = networkManager.hasDuplicatedNetwork(option.chainId, option.url)
+        hasDuplicated ?
+          notification.error(t('network.custom.duplicatedTitle'), t('network.custom.duplicatedText', { url: option.url }))
+          : redux.dispatch('ADD_CUSTOM_NETWORK', { ...option, networkId: existChain?.id })
       }
+      if (hasDuplicated) return
+      const newNetList = this.getNewNetList()
+      networkManager.addNetworks(newNetList)
+      this.setState({ pending: false, status: null })
+      this.modal.current.closeModal()
     }
   }
 
@@ -111,6 +119,13 @@ export default class CustomNetworkModal extends PureComponent {
     } catch { }
     notification.error(t('network.custom.err'), t('network.custom.errText'))
     redux.dispatch('CHANGE_NETWORK_STATUS', false)
+  }
+
+  renderNetworkInfo() {
+    return JSON.stringify(this.state.modify ? this.state.status : {
+      chainId: this.state.option?.chainId,
+      name: this.state.option?.name
+    }, null, 2)
   }
 
   render() {
@@ -137,6 +152,14 @@ export default class CustomNetworkModal extends PureComponent {
           validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Network name can only contain letters, digits, dash or underscore.'}
         />
         <DebouncedFormGroup
+          label='ChainId'
+          placeholder={'Please enter a chainId'}
+          maxLength='300'
+          value={option.chainId}
+          onChange={chainId => this.setState({ status: null, option: { ...option, chainId } })}
+          validator={v => !/^[0-9]*$/.test(v) && 'ChainId can only contain digits'}
+        />
+        <DebouncedFormGroup
           label='URL of node rpc'
           placeholder={placeholder}
           maxLength='300'
@@ -148,11 +171,12 @@ export default class CustomNetworkModal extends PureComponent {
           <FormGroup>
             <Label>Network info</Label>
             <pre className='text-body pre-wrap break-all small user-select mb-0'>
-              {JSON.stringify(status, null, 2)}
+                {this.renderNetworkInfo()}
             </pre>
           </FormGroup>
         }
       </Modal>
+
     )
   }
 }

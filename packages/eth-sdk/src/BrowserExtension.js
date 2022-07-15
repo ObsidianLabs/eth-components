@@ -53,7 +53,8 @@ export default class BrowserExtension {
     redux.dispatch('SET_CHAIN_LIST', chainList)
   }
 
-  async onChainChanged (chainId) {
+  async onChainChanged(chainId) {
+   
     const state = redux.getState()
     const intChainId = parseInt(chainId)
     const network = networks.find(n => n.chainId === intChainId)
@@ -88,7 +89,7 @@ export default class BrowserExtension {
               redux.dispatch('ACTIVE_CUSTOM_NETWORK', option)
               redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
               redux.dispatch('CHANGE_NETWORK_STATUS', true)
-              this.networkManager.updateCustomNetwork(customConfig)
+              this.networkManager.updateCustomNetwork({ ...customConfig, notify: false})
             }
           }
         }

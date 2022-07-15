@@ -115,6 +115,9 @@ const translation = {
       delConTips: 'it cannot be restored.',
       unsupportedNetwork: 'Unsupported Network',
       unsupportedNetworkText: 'Please check on block explorer.',
+      duplicatedTitle: 'Failed to add network',
+      duplicatedText: 'The RPC url <b>{{url}}</b> alreay exists.',
+      lackChainId: 'ChainId Error, Please check chainId parameter'
     },
     dev: {
       newInstance: 'New Instance',

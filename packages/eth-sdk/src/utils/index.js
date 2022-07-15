@@ -73,6 +73,7 @@ export default {
     bytes: str => ethers.utils.toUtf8Bytes(str),
     utf8,
     bytesFromHex: hex => ethers.utils.arrayify(hex),
+    hexValue: number => ethers.utils.hexValue(number)
   },
   unit: {
     fromValue: ethers.utils.formatEther,
