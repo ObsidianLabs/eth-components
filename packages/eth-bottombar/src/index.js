@@ -8,7 +8,6 @@ import Network, { NetworkStatus, networkManager } from '@obsidians/eth-network'
 import { QueueButton } from '@obsidians/eth-queue'
 import { AbiStorage } from '@obsidians/eth-contract'
 import { CompilerSelectors } from '@obsidians/compiler'
-import { useInterval } from '@obsidians/hooks'
 import redux from '@obsidians/redux'
 import { t } from '@obsidians/i18n'
 import { UncontrolledTooltip } from '@obsidians/ui-components'
@@ -45,16 +44,6 @@ export default connect(['network', 'networkConnect', 'queue', 'projects', 'uiSta
 
   const selectedProject = projects.get('selected')
   const loaded = selectedProject?.get('loaded')
-
-  useInterval(async () => {
-    try {
-      await networkManager.sdk?.networkInfo()
-      redux.dispatch('CHANGE_NETWORK_STATUS', true)
-    } catch (error) {
-      console.log(error)
-      redux.dispatch('CHANGE_NETWORK_STATUS', false)
-    }
-  }, networkConnect ? 10000 : null)
 
   return <>
     <KeypairButton mnemonic={mnemonic} secretName={secretName} chains={chains}>
