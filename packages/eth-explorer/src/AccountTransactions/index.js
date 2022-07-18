@@ -73,9 +73,11 @@ export default class AccountTransactions extends PureComponent {
   }
 
   renderTableBody = () => {
+    const networkId = networkManager.sdk?.txManager?.client?.networkId
+    const explorerUrl = networkManager.networks.find(item => networkId === item.id)?.explorerUrl
     const { TransactionRow } = this.props
     const rows = this.state.txs.map(tx => (
-      <TransactionRow key={`tx-${tx.hash}`} tx={tx} owner={this.props.account.address} />
+      <TransactionRow key={`tx-${tx.hash}`} tx={tx} explorerUrl={explorerUrl} owner={this.props.account.address} />
     ))
 
     if (this.state.loading) {
