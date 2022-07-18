@@ -104,7 +104,7 @@ const translation = {
       connecting: 'Connecting...',
       try: 'Trying to connect',
       err: 'Network Error',
-      errText: 'Failed to connect the network. Make sure you entered a valid url for the node RPC.',
+      errText: 'Failed to connect the network. Make sure you entered a valid RPC url and ChainId.',
       invalidName: 'Invalid network name',
       invalidNameText: '<b>{{name}}</b> alreay exists.',
       del: 'Delete Custom Network',
