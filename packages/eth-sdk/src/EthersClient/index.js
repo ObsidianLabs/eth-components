@@ -21,11 +21,13 @@ export default class EthersClient {
     const { networkId = '', chainId, url, group = '' } = option
     this.networkId = networkId
     this.chainId = chainId
+    const metaMaskGetLogsUnavailable = ['optimismmain', 'moonrivermain', 'moonbeammain']
 
     const needConnectToMetamask = window.ethereum && networkId !== 'custom' && group !== 'others'
     if (needConnectToMetamask) {
       this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
       this.provider.isMetaMask = true
+      if (metaMaskGetLogsUnavailable.includes(networkId)) this.getLogsDefaultProvider = ethers.getDefaultProvider(url)
     } else {
       this.provider = url ? ethers.getDefaultProvider(url)
         : new ethers.providers.InfuraProvider(networkId, {
