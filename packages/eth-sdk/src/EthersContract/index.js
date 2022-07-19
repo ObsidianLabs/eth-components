@@ -6,6 +6,9 @@ export default class EthersContract {
     this.address = address
     this.abi = abi
     this.provider = client.provider
+    if (client.getLogsDefaultProvider) {
+      this.etherDefaultInstance = new ethers.Contract(address, abi, client.getLogsDefaultProvider)
+    }
     this.instance = new ethers.Contract(address, abi, client.provider)
   }
 
@@ -57,7 +60,9 @@ export default class EthersContract {
   async getLogs (event, { from, to }) {
     const filter = this.instance.filters[event.name]()
     try {
-      const logs = await this.instance.queryFilter(filter, from, to)
+      const logs = this.etherDefaultInstance ?
+        await this.etherDefaultInstance.queryFilter(filter, from, to) :
+        await this.instance.queryFilter(filter, from, to)
       return logs
     } catch (e) {
       throw utils.parseError(e)

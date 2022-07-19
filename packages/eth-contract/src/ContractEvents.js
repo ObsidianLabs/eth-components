@@ -197,7 +197,7 @@ class ContractEvents extends PureComponent {
         <td><code><small>{item.blockNumber}</small></code></td>
         {columns.map(({ name, type }, index2) => {
 
-          let content = item.args[index2]
+          let content = item.args && item.args[index2]
           content = content ? (content.toString ? content.toString() : JSON.stringify(content)) : ''
 
           if (type === 'address') {
