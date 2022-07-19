@@ -13,69 +13,44 @@ export default class RemoteNetwork extends PureComponent {
       info: null,
       status: null,
     }
+    this.clearTimeId = this.clearTimeId.bind(this)
   }
 
   componentDidMount () {
-    this.refresh()
-    this.h = setInterval(() => this.refreshBlock(), 5000)
+    this.timeId = setInterval(() => this.refreshBlock(), 5000)
   }
-
-  componentDidUpdate (prevProps) {
-    if (
-      this.props.url !== prevProps.url ||
-      this.props.networkId !== prevProps.networkId
-    ) {
-      this.refresh()
-    }
+  
+  clearTimeId() {
+    this.timeId && clearInterval(this.timeId)
+    this.timeId = undefined
   }
 
   componentWillUnmount () {
-    if (this.h) {
-      clearInterval(this.h)
-    }
-    this.h = undefined
-  }
-
-  async refresh () {
-    this.setState({ info: null, status: null })
-    if (!networkManager.sdk) {
-      return
-    }
-    this.refreshBlock()
-    const networkId = this.props.networkId
-    try {
-      const info = await networkManager.sdk?.networkInfo()
-      if (this.props.networkId === networkId) {
-        this.setState({ info })
-      }
-    } catch {}
+   this.clearTimeId()
   }
 
   async refreshBlock () {
-    if (!networkManager.sdk) {
-      return
-    }
+    if (!networkManager.sdk) return
     try {
       const networkId = this.props.networkId
       const status = await networkManager.sdk?.getStatus()
+      const info = await networkManager.sdk?.networkInfo()
       if (this.props.networkId === networkId) {
         if (this.props.notificaStatus) {
           networkManager.network.notification && notification.success(t('network.network.network'), networkManager.network.notification)
           this.props.changeStatus()
         }
-        this.setState({ status })
+        this.setState({ status, info })
       }
+      redux.dispatch('CHANGE_NETWORK_STATUS', true)
     } catch (error) {
       console.warn(error)
       if (error.message.startsWith('missing response')) {
         notification.error(t('network.network.internetDis'))
-        redux.dispatch('CHANGE_NETWORK_STATUS', false)
-        if (this.h) {
-          clearInterval(this.h)
-        }
-        this.h = undefined
       }
+      this.clearTimeId()
       this.setState({ status: null })
+      redux.dispatch('CHANGE_NETWORK_STATUS', false)
     }
   }
 
