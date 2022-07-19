@@ -14,10 +14,14 @@ export default function Address ({ addr, route, redirect = true, displayText, sh
   const [id] = useState(`tooltip-address-${addr.replace(/\W/g, '')}-${Math.floor(Math.random() * 1000)}`)
   const hash = displayText ? displayText : formatAddress(addr)
   const url = getUrl(addr, route)
+  const handleClick = e => {
+    e.stopPropagation()
+    history.push(url)
+  }
   let text
   if (redirect) {
     text = (
-      <a href="javascript:void(0)" onClick={() => history.push(url)} className='text-body small' id={id}>
+      <a href="javascript:void(0)" onClick={handleClick} className='text-body small' id={id}>
         {hash}
       </a>
     )
