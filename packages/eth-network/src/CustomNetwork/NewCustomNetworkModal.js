@@ -122,19 +122,20 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   renderNetworkInfo() {
-    const networkInfo = JSON.stringify(this.state.modify ? this.state.status : {
+    const networkInfo = this.state.modify ? this.state.status : {
       chainId: this.state.option?.chainId,
       name: this.state.option?.name
-    }, null, 2)
+    }
 
-    const showInfo = Object.keys(JSON.parse(networkInfo)).length !== 0
-    return showInfo ? 
-      <FormGroup>
-        <Label>Network info</Label>
-        <pre className='text-body pre-wrap break-all small user-select mb-0'>
-          { networkInfo }
-        </pre>
-      </FormGroup> : null
+    const showInfo = !networkInfo ? false : Object.keys(networkInfo).length === 0 ? false : true
+  
+    return showInfo ?
+    <FormGroup>
+      <Label>Network info</Label>
+      <pre className='text-body pre-wrap break-all small user-select mb-0'>
+        {JSON.stringify(networkInfo, null, 2)}
+      </pre>
+    </FormGroup> : null
   }
 
   render() {
