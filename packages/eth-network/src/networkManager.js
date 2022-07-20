@@ -46,7 +46,8 @@ class NetworkManager {
   }
 
   get metaMaskConnected() {
-    return this?.browserExtension?.ethereum?.isConnected() || false
+    if (!this?.browserExtension || !this?.browserExtension?.ethereum?.isConnected) return false
+    return this.browserExtension.ethereum.isConnected()
   }
 
   addNetworks(networks) {
