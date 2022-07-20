@@ -138,6 +138,8 @@ const translation = {
     fail: '调用RPC失败',
     result: '结果',
     parameters: '参数',
+    noEventExecuted: '没有执行的事件',
+    noEventExecutedText: '在当前范围内没有执行任何事件，请填写另一个范围或在区块探索器上检查更多数据。',
   },
   abi: {
     storage: 'ABI存储',

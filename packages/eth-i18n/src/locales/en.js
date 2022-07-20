@@ -138,6 +138,8 @@ const translation = {
     fail: 'Call RPC Failed',
     result: 'Result',
     parameters: 'Parameters',
+    noEventExecuted: 'No Event Executed',
+    noEventExecutedText: 'There was no event executed in the current range. Please fill in another range or check more data on the block explorer.',
   },
   abi: {
     storage: 'ABI Storage',

@@ -123,6 +123,7 @@ class ContractEvents extends PureComponent {
       }
     }
 
+    this.state.logs.length === 0 && notification.error(t('rpc.noEventExecuted'), t('rpc.noEventExecutedText'))
     this.setState({ loading: false })
   }
 
