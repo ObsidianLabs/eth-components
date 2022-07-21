@@ -2,35 +2,47 @@ import redux from '@obsidians/redux'
 import networks from './networks'
 
 export default class BrowserExtension {
-  static Init (networkManager) {
-    if (window.ethereum && window.ethereum.isMetaMask) {
+  static Init(networkManager) {
+    if (window.ethereum) {
       return new BrowserExtension(networkManager, window.ethereum)
     }
   }
 
-  constructor (networkManager, ethereum) {
+  static findMetaMaskProvider(ethereum) {
+    let currentProvdier = ethereum
+    if (ethereum.providers?.length) {
+      ethereum.providers.forEach(async (provider) => {
+        currentProvdier = provider.isMetaMask ? provider : currentProvdier
+      })
+    }
+    return currentProvdier
+  }
+
+  constructor(networkManager, ethereum) {
     this.name = 'MetaMask'
     this.networkManager = networkManager
     this._accounts = []
     this._enabled = false
-    if (ethereum && ethereum.isMetaMask) {
+    if (ethereum) {
       this._enabled = true
-      this.ethereum = ethereum
-      this.initialize(ethereum)
+      this.ethereum = BrowserExtension.findMetaMaskProvider(ethereum)
+      this.initialize(this.ethereum)
     }
   }
 
-  get isEnabled () {
+  get isEnabled() {
     return this._enabled
   }
 
-  get currentAccount () {
+  get currentAccount() {
     return this.ethereum.selectedAddress
   }
 
-  get allAccounts () {
+  get allAccounts() {
     return this._accounts
   }
+
+
 
   handleChainChanged() {
     const state = redux.getState()
@@ -39,7 +51,7 @@ export default class BrowserExtension {
     const currentNetwork = networks.find(n => n.id === state.network)
 
     if (!currentNetwork || currentNetwork.chainId !== intChainId) {
-      if (network){
+      if (network) {
         this.networkManager.setNetwork(network, { force: true })
       }
       else {
@@ -53,7 +65,7 @@ export default class BrowserExtension {
               chainId: intChainId,
               name: customChain.name,
             }
-            const customConfig = {url: rpc, option: JSON.stringify(option)}
+            const customConfig = { url: rpc, option: JSON.stringify(option) }
             const currentCustomChain = state.customNetworks.toJS()
             let activeCustomNetworkChainId = null
             Object.values(currentCustomChain).forEach(network => {
@@ -67,7 +79,7 @@ export default class BrowserExtension {
               redux.dispatch('ACTIVE_CUSTOM_NETWORK', option)
               redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
               redux.dispatch('CHANGE_NETWORK_STATUS', true)
-              this.networkManager.updateCustomNetwork({ ...customConfig, notify: false})
+              this.networkManager.updateCustomNetwork({ ...customConfig, notify: false })
             }
           }
         }
@@ -75,7 +87,7 @@ export default class BrowserExtension {
     }
   }
 
-  async initialize (ethereum) {
+  async initialize(ethereum) {
 
     ethereum.on('chainChanged', this.onChainChanged.bind(this))
     const chainId = await ethereum.request({ method: 'eth_chainId' })
@@ -101,13 +113,13 @@ export default class BrowserExtension {
     // this.handleChainChanged(chainId)
   }
 
-  async getAllAccounts () {
+  async getAllAccounts() {
     const result = await this.ethereum.request({ method: 'wallet_getPermissions' })
     const found = result[0].caveats.find(c => c.type === 'filterResponse')
     return found ? found.value : []
   }
 
-  async onAccountsChanged (accounts) {
+  async onAccountsChanged(accounts) {
     redux.dispatch('UPDATE_UI_STATE', { signer: accounts[0] })
   }
 }
