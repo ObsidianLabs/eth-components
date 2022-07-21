@@ -20,7 +20,6 @@ export default class NavGuard {
     }
 
     const [first] = this.parsePathname(pathname)
-    console.log(first)
     if (first === 'contract') {
       this.updateSelectedContract(pathname)
     } else if (first === 'account') {
