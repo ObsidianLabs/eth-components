@@ -104,7 +104,7 @@ const translation = {
       connecting: 'Connecting...',
       try: 'Trying to connect',
       err: 'Network Error',
-      errText: 'Failed to connect the network. Make sure you entered a valid url for the node RPC.',
+      errText: 'Failed to connect the network. Make sure you entered a valid RPC url and ChainId.',
       invalidName: 'Invalid network name',
       invalidNameText: '<b>{{name}}</b> alreay exists.',
       del: 'Delete Custom Network',
@@ -138,6 +138,8 @@ const translation = {
     fail: 'Call RPC Failed',
     result: 'Result',
     parameters: 'Parameters',
+    noEventExecuted: 'No Event Executed',
+    noEventExecutedText: 'There was no event executed in the current range. Please fill in another range or check more data on the block explorer.',
   },
   abi: {
     storage: 'ABI Storage',

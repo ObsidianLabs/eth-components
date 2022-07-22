@@ -104,7 +104,7 @@ const translation = {
       connecting: '连接中...',
       try: '尝试连接',
       err: '网络错误',
-      errText: '连接网络失败。确保你为节点RPC输入了一个有效的网址。',
+      errText: '连接网络失败。确保你为该节点输入了一个有效地址 (RPC url) 和 ChainId。',
       invalidName: '无效的网络名称',
       invalidNameText: '<b>{{name}}</b>已经存在.',
       del: '删除自定义网络',
@@ -138,6 +138,8 @@ const translation = {
     fail: '调用RPC失败',
     result: '结果',
     parameters: '参数',
+    noEventExecuted: '没有执行的事件',
+    noEventExecutedText: '在当前范围内没有执行任何事件，请填写另一个范围或在区块探索器上检查更多数据。',
   },
   abi: {
     storage: 'ABI存储',

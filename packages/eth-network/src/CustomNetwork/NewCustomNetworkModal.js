@@ -122,10 +122,20 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   renderNetworkInfo() {
-    return JSON.stringify(this.state.modify ? this.state.status : {
+    const networkInfo = this.state.modify ? this.state.status : {
       chainId: this.state.option?.chainId,
       name: this.state.option?.name
-    }, null, 2)
+    }
+
+    const showInfo = !networkInfo ? false : Object.keys(networkInfo).length === 0 ? false : true
+  
+    return showInfo ?
+    <FormGroup>
+      <Label>Network info</Label>
+      <pre className='text-body pre-wrap break-all small user-select mb-0'>
+        {JSON.stringify(networkInfo, null, 2)}
+      </pre>
+    </FormGroup> : null
   }
 
   render() {
@@ -141,8 +151,7 @@ export default class CustomNetworkModal extends PureComponent {
         pending={pending && t('network.custom.try')}
         textConfirm={status ? modify ? t('network.custom.update') : t('network.custom.add') : t('network.custom.check')}
         onConfirm={this.onConfirm}
-        confirmDisabled={!option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !option.url}
-      >
+        confirmDisabled={!option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !/^[1-9][0-9]*$/.test(option.chainId) || !/^(http(s)?:\/\/)\w+[^\s]+(\.[^\s]+){1,}$/.test(option.url)}>
         <DebouncedFormGroup
           ref={this.input}
           label='Name'
@@ -157,7 +166,7 @@ export default class CustomNetworkModal extends PureComponent {
           maxLength='300'
           value={option.chainId}
           onChange={chainId => this.setState({ status: null, option: { ...option, chainId } })}
-          validator={v => !/^[0-9]*$/.test(v) && 'ChainId can only contain digits'}
+          validator={v => !/^[1-9][0-9]*$/.test(v) && 'ChainId can only contain digits, and first digits can not start with 0'}
         />
         <DebouncedFormGroup
           label='URL of node rpc'
@@ -165,18 +174,10 @@ export default class CustomNetworkModal extends PureComponent {
           maxLength='300'
           value={option.url}
           onChange={url => this.setState({ status: null, option: { ...option, url } })}
+          validator={v => !/^(http(s)?:\/\/)\w+[^\s]+(\.[^\s]+){1,}$/.test(v) && 'RPC url has to be a network url'}
         />
-        {
-          status &&
-          <FormGroup>
-            <Label>Network info</Label>
-            <pre className='text-body pre-wrap break-all small user-select mb-0'>
-                {this.renderNetworkInfo()}
-            </pre>
-          </FormGroup>
-        }
+        {this.renderNetworkInfo()}
       </Modal>
-
     )
   }
 }

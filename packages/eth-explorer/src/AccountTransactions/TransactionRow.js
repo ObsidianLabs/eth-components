@@ -7,21 +7,24 @@ import moment from 'moment'
 
 import TransactionFee from './TransactionFee'
 import Address from './Address'
+import fileOps from '@obsidians/file-ops'
 
 export default class TransactionRow extends PureComponent {
-  onClick = () => {
-
+  onClick = e => {
+    e.stopPropagation()
+    const { tx, explorerUrl } = this.props
+    explorerUrl && tx.hash && fileOps.current.openLink(`${explorerUrl}/tx/${tx.hash}`)
   }
 
   render () {
-    const { tx, owner } = this.props
+    const { tx, owner, explorerUrl } = this.props
 
     const amount = new Intl.NumberFormat().format(networkManager.sdk?.utils.unit.fromValue(tx.value))
     const gasUsed = tx.gasUsed ? new Intl.NumberFormat().format(tx.gasUsed) : ''
     const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
 
     return (
-      <tr onClick={this.onClick}>
+      <tr onClick={this.onClick} className={explorerUrl && 'cursor-pointer'}>
         <td><small>{moment(tx.timeStamp * 1000).format('MM/DD HH:mm:ss')}</small></td>
         <td><small>{tx.blockNumber}</small></td>
         <td>

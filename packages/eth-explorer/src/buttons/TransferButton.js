@@ -166,7 +166,7 @@ export default class TransferButton extends PureComponent {
   }
 
   render () {
-    const { addressLength = 42 } = this.props
+    const { addressLength = 42, from } = this.props
     const { loading, accountBalance, token, amount, recipient, pushing } = this.state
     const big = networkManager.sdk?.utils.format.big
     const max = token === 'core'
@@ -180,6 +180,7 @@ export default class TransferButton extends PureComponent {
         id='navbar-transfer'
         size='md'
         icon='fas fa-repeat'
+        readOnly={process.env.REACT_APP_PROJECT_SHARE_URL && !networkManager.sdk?.utils?.isValidAddress(from)}
         loading={loading}
         tooltip={t('transfer')}
         onClick={this.openModal}
