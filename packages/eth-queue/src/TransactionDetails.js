@@ -12,6 +12,7 @@ import { ResultContent } from '@obsidians/eth-contract'
 import { withRouter } from 'react-router-dom'
 import Highlight from 'react-highlight'
 import { t } from '@obsidians/i18n'
+import fileOps from '@obsidians/file-ops'
 
 class TransactionDetails extends PureComponent {
   constructor (props) {
@@ -23,8 +24,17 @@ class TransactionDetails extends PureComponent {
     this.modal = React.createRef()
   }
 
+  handleClick = (address, type, explorerUrl) => {
+    this.props.closeModal()
+    if (type === 'explorer' && explorerUrl) {
+      fileOps.current.openLink(`${explorerUrl}${address}`)
+      return
+    }
+    this.props.history.push(address)
+  }
+
   renderContent = () => {
-    const { tx = {}, closeModal, history } = this.props
+    const { tx = {}, closeModal } = this.props
     const { selected, format } = this.state
     const { txHash, status, data = {} } = tx
     const {
@@ -40,6 +50,8 @@ class TransactionDetails extends PureComponent {
       abi,
     } = data
     const contractAddress = receipt?.contractAddress || data.contractAddress
+    const networkId = networkManager.sdk?.txManager?.client?.networkId
+    const explorerUrl = networkManager.networks.find(item => networkId === item.id)?.explorerUrl
 
     if (selected === 'basic') {
       return (
@@ -47,7 +59,14 @@ class TransactionDetails extends PureComponent {
           <TableCardRow
             name={t('contract.transaction.hash')}
             icon='fas fa-hashtag'
-            badge={<code>{txHash}</code>}
+            badge={(
+              <a href='javascript:void(0)'
+                onClick={() => this.handleClick(`/tx/${txHash}`, 'explorer', explorerUrl)}
+                className='text-body'
+              >
+                <code>{txHash}</code>
+              </a>
+            )}
           />
           <TableCardRow
             name={t('contract.transaction.status')}
@@ -63,10 +82,7 @@ class TransactionDetails extends PureComponent {
               icon='fas fa-file-invoice'
               badge={(
                 <a href='javascript:void(0)'
-                  onClick={() => {
-                    history.push(`/contract/${contractAddress}`)
-                    this.props.closeModal()
-                  }}
+                  onClick={() => this.handleClick(`/contract/${contractAddress}`)}
                   className='text-body'
                 >
                   <code>{contractAddress}</code>
@@ -112,9 +128,8 @@ class TransactionDetails extends PureComponent {
             badge={(
               <a
                 href='javascript:void(0)'
-                onClick={() => history.push(`/account/${signer}`)}
+                onClick={() => this.handleClick(`/account/${signer}`)}
                 className='text-body'
-                onClick={() => this.props.closeModal()}
               >
                 <code>{signer}</code>
               </a>
@@ -128,10 +143,7 @@ class TransactionDetails extends PureComponent {
               badge={(
                 <a
                   href='javascript:void(0)'
-                  onClick={() => {
-                    history.push(`/contract/${receipt.contractCreated}`)
-                    this.props.closeModal()
-                  }}
+                  onClick={() => this.handleClick(`/contract/${receipt.contractCreated}`)}
                   className='text-body'
                 >
                   <code>{receipt.contractCreated}</code>
