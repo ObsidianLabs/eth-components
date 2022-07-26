@@ -5,7 +5,7 @@ import redux from '@obsidians/redux'
 import { t } from '@obsidians/i18n'
 import { utils } from '@obsidians/sdk'
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
-
+import extraRpcList from './constants/extraRpcs.json'
 
 class NetworkManager {
   constructor() {
@@ -48,6 +48,10 @@ class NetworkManager {
   get metaMaskConnected() {
     if (!this?.browserExtension || !this?.browserExtension?.ethereum?.isConnected) return false
     return this.browserExtension.ethereum.isConnected()
+  }
+
+  get customNetWorks() {
+    return redux.getState().customNetworks.toJS() || {}
   }
 
   addNetworks(networks) {
@@ -226,6 +230,72 @@ class NetworkManager {
       console.warn(e)
       notification.error('Invalid Node URL', '')
     }
+  }
+
+  fethcPartialList() {
+    return fetch('https://chainid.network/chains.json')
+      .then((response) => response.json())
+      .catch((error) => {
+        console.warn('fetch chains.json failed')
+        throw new Error(error)
+      })
+  }
+
+  removeEndingSlash(rpc) {
+    return rpc.endsWith("/") ? rpc.substr(0, rpc.length - 1) : rpc
+  }
+
+  searchChainList(value, isChainId = false) {
+    const netList = redux.getState().chainList.toJS().networks
+    if (isChainId) return netList.find(net => +net.chainId === +value)
+    let checkResult = undefined
+    netList.forEach(e => {
+      if (e.rpc) {
+        const matched = e.rpc.find(item => item === value)
+        checkResult = matched ? e : checkResult
+      }
+    })
+    return checkResult
+  }
+
+  searchExtraRpcList(value, isChainId) {
+    const keysArr = Object.keys(extraRpcList)
+    if (isChainId) return keysArr.find(net => +net === +value)
+    let checkResult = undefined
+    keysArr.forEach(e => {
+      if (extraRpcList[e].rpcs) {
+        const matched = extraRpcList[e].rpcs.find(item => item === value)
+        checkResult = matched ? e : checkResult
+      }
+    })
+    return checkResult
+  }
+
+  populateChain(value, findFromChainList = false) {
+    const filterArr = (arr) => arr.map(this.removeEndingSlash).filter((rpc) => !rpc.includes("${INFURA_API_KEY}"))
+    if (findFromChainList) {
+      const extraRpcKey = this.searchExtraRpcList(+value.chainId, true)
+      const newArr = [...value.rpc, ...extraRpcList[extraRpcKey].rpcs]
+      value.rpc = Array.from(new Set(filterArr(newArr)))
+      return value
+    } else {
+      const chain = this.searchChainList(value, true)
+      const newArr = [...chain.rpc, ...extraRpcList[+value].rpcs]
+      chain.rpc = Array.from(new Set(filterArr(newArr)))
+      return chain
+    }
+  }
+
+  searchChain(searchValue, isChainId = false) {
+    const firstCheckRes = this.searchChainList(searchValue, isChainId)
+    if (firstCheckRes) return this.populateChain(firstCheckRes, true)
+    const secondCheckRes = this.searchExtraRpcList(searchValue, isChainId)
+    if (secondCheckRes) return this.populateChain(secondCheckRes, false)
+    return false
+  }
+
+  findChain(value) {
+    return this.networks.find(net => net.id === value || net.name === value)
   }
 }
 

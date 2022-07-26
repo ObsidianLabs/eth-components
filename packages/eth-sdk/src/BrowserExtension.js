@@ -42,8 +42,6 @@ export default class BrowserExtension {
     return this._accounts
   }
 
-
-
   handleChainChanged() {
     const state = redux.getState()
     const intChainId = parseInt(chainId)
@@ -102,10 +100,8 @@ export default class BrowserExtension {
     redux.dispatch('UPDATE_UI_STATE', { browserAccounts: allAccounts })
     redux.dispatch('CHANGE_NETWORK_STATUS', true)
 
-    const chainListUrl = `https://chainid.network/chains.json`
-    const chainListRes = await fetch(chainListUrl)
-    const chainList = await chainListRes.json()
-    redux.dispatch('SET_CHAIN_LIST', chainList)
+    const partialList = await this.networkManager.fethcPartialList()
+    redux.dispatch('SET_CHAIN_LIST', partialList)
   }
 
   async onChainChanged(chainId) {
