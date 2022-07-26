@@ -1,10 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { withRouter, useParams } from 'react-router-dom'
 import redux, { connect } from '@obsidians/redux'
-
 import networkManager from './networkManager'
 import LocalNetwork from './LocalNetwork'
-import CustomNetwork from './CustomNetwork'
 import RemoteNetwork from './RemoteNetwork'
 import { default as DefaultCustomNetworkModal } from './CustomNetwork/CustomNetworkModal'
 
@@ -23,10 +21,10 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     networkConnect,
   } = props
 
-  const [active, setActive] = React.useState(true)
-  const [showCustomNetworkModal, setShowCustomNetworkModal] = React.useState(false)
-  const [notificaStatus, setNotificaStatus] = React.useState(false)
-  const customModal = React.createRef()
+  const [active, setActive] = useState(true)
+  const [showCustomNetworkModal, setShowCustomNetworkModal] = useState(false)
+  const [notificaStatus, setNotificaStatus] = useState(false)
+  const customModal = useRef()
   const paramsNetworkValue = useParams()?.network
 
   const getRpcUrl = () => {
@@ -34,8 +32,15 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     return metaMaskConnected ? (current?.url || '') : (networkManager.sdk?.url || '')
   }
 
-  
-  React.useEffect(() => {
+  const updateNetworkByUrlParams = (paramsNetId) => {
+    const allNetworks = [...networkManager.networks, ...(Object.values(customNetworks.toJS))]
+    const matchedNet = allNetworks.find(net => paramsNetId === net.id)
+    if(!matchedNet) return
+    networkManager.setNetwork(matchedNet)
+    setNotificaStatus(true)
+  }
+
+  useEffect(() => {
     (history.location.pathname?.startsWith('/network')) && redux.dispatch('LOAD_NETWORK_RESOURCES', true)
     if (customNetworkModalStatus) {
       setShowCustomNetworkModal(true)
@@ -43,21 +48,16 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     }
   }, [customNetworkModalStatus])
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (cacheLifecycles) {
       cacheLifecycles.didCache(() => setActive(false))
       cacheLifecycles.didRecover(() => setActive(true))
     }
   })
 
-  React.useEffect(() => {
-    if (networkId) {
-      if (paramsNetworkValue && paramsNetworkValue !== networkId) {
-        const paramsNetworkObj = networkManager.networks.find(item => item.id === paramsNetworkValue)
-        paramsNetworkObj && !networkConnect && networkManager.setNetwork(paramsNetworkObj)
-      }
-      setNotificaStatus(true)
-    }
+  useEffect(() => {
+    if (networkId === paramsNetworkValue) return
+    updateNetworkByUrlParams(paramsNetworkValue)
   }, [networkId])
 
   const changeNotificaStatus = () => setNotificaStatus(false)
