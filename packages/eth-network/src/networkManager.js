@@ -199,7 +199,7 @@ class NetworkManager {
     }
   }
 
-  async updateCustomNetwork({ url, option = '{}', notify = true, name, chainId ='' }) {
+  async updateCustomNetwork({ url, option = '{}', notify = true, name, chainId = '' }) {
     try {
       if (option) {
         option = JSON.parse(option)

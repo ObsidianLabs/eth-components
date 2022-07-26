@@ -97,7 +97,6 @@ export default class CustomNetworkModal extends PureComponent {
                 </UncontrolledTooltip>
               }
             </td>
-            <td>{item.get('chainId') || ''}</td>
             <td className='text-overflow-dots'>{item.get('url')}</td>
             <td align='right'>
               <div className='d-flex align-items-center justify-content-between'>
@@ -158,7 +157,6 @@ export default class CustomNetworkModal extends PureComponent {
           TableHead={(
             <tr>
               <th style={{ width: '15%' }}>name</th>
-              <th style={{ width: '15%' }}>chainId</th>
               <th style={{ width: '45%' }}>rpc url</th>
               <th></th>
             </tr>
