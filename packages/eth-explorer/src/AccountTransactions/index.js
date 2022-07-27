@@ -3,23 +3,33 @@ import React, { PureComponent } from 'react'
 import {
   TableCard,
   Badge,
+  Modal,
 } from '@obsidians/ui-components'
 
 import { networkManager } from '@obsidians/eth-network'
 import { t } from '@obsidians/i18n'
 
 import TransactionRow from './TransactionRow'
+import fileOps from '@obsidians/file-ops'
+import { TransactionDetails } from '@obsidians/eth-queue'
 
 export default class AccountTransactions extends PureComponent {
-  state = {
-    hasMore: true,
-    loading: true,
-    txs: [],
-    page: 0,
-    total: -1,
-    size: 10,
-    hide: false,
-    error: '',
+  constructor (props) {
+    super(props)
+    this.state = {
+      hasMore: true,
+      loading: true,
+      txs: [],
+      page: 0,
+      total: -1,
+      size: 10,
+      hide: false,
+      error: '',
+      explorerUrl: '',
+      tx: null,
+    }
+
+    this.txModal = React.createRef()
   }
 
   componentDidMount () {
@@ -76,8 +86,9 @@ export default class AccountTransactions extends PureComponent {
     const networkId = networkManager.sdk?.txManager?.client?.networkId
     const explorerUrl = networkManager.networks.find(item => networkId === item.id)?.explorerUrl
     const { TransactionRow } = this.props
+    this.setState({ explorerUrl })
     const rows = this.state.txs.map(tx => (
-      <TransactionRow key={`tx-${tx.hash}`} tx={tx} explorerUrl={explorerUrl} owner={this.props.account.address} />
+      <TransactionRow key={`tx-${tx.hash}`} tx={tx} getTransferDetails={this.getTransferDetails} explorerUrl={explorerUrl} owner={this.props.account.address} />
     ))
 
     if (this.state.loading) {
@@ -117,6 +128,61 @@ export default class AccountTransactions extends PureComponent {
     return rows
   }
 
+  getTransferDetails = async tx => {
+    const divisor = (Math.pow(10, 18))
+    const parameters = {obj: {hash: {type: 'bytes32', value: tx.hash}}}
+    const method = 'eth_getTransactionByHash'
+    const methodReceipt = 'eth_getTransactionReceipt'
+    let result = null
+    let resultReceipt = null
+    try {
+      result = await networkManager.sdk.callRpc(method, parameters)
+      resultReceipt = await networkManager.sdk.callRpc(methodReceipt, parameters)
+      result = {
+        ...result,
+        data: result.input,
+        gasLimit: tx.gas,
+        gasPrice: tx.gasPrice,
+        maxFeePerGas: result.maxFeePerGas && parseInt(result.maxFeePerGas, 16),
+        maxPriorityFeePerGas: result.maxPriorityFeePerGas && parseInt(result.maxPriorityFeePerGas, 16),
+        nonce: result.nonce && parseInt(result.nonce, 16),
+      }
+      resultReceipt = {
+        ...resultReceipt,
+        blockNumber: parseInt(resultReceipt.blockNumber || 0, 16),
+        cumulativeGasUsed: resultReceipt.cumulativeGasUsed && parseInt(resultReceipt.cumulativeGasUsed, 16),
+        effectiveGasPrice: {type: 'BigNumber', hex: resultReceipt.effectiveGasPrice},
+        gasUsed: parseInt(resultReceipt.gasUsed || 0, 16),
+        status: parseInt(resultReceipt.status || 0, 16),
+        type: parseInt(resultReceipt.type || 0, 16),
+      }
+    } catch (error) {
+
+    }
+
+    tx.ts = tx.timeStamp
+    tx.status = resultReceipt?.status === 1? 'SUCCESS' : 'FAILED'
+    tx.txHash = tx.hash
+    tx.data = {
+      value: { type: 'BigNumber', hex: result?.value || '0'},
+      transaction: result,
+      receipt: resultReceipt,
+      signer: tx.from,
+      params: {
+        from: tx.from,
+        to: tx.to,
+        amount: (tx.value / divisor)
+      }
+    }
+    await this.setState({ tx })
+    this.txModal.current.openModal()
+  }
+
+  openBlockExplorer = () => {
+    const { explorerUrl, tx } = this.state
+    explorerUrl && fileOps.current.openLink(`${explorerUrl}/tx/${tx.hash}`)
+    this.txModal.current.closeModal()
+  }
 
   render () {
     const TransactionHeader = this.props.TransactionHeader
@@ -125,6 +191,7 @@ export default class AccountTransactions extends PureComponent {
     }
     const total = Math.max(0, this.state.total) || ''
     return (
+    <>
       <TableCard
         title={
           <div className='d-flex flex-row align-items-end'>
@@ -137,6 +204,21 @@ export default class AccountTransactions extends PureComponent {
       >
         {this.renderTableBody()}
       </TableCard>
+      <Modal
+        ref={this.txModal}
+        title={'Transaction Detail'}
+        textCancel='Close'
+        textConfirm={'View More on Block Explorer'}
+        onConfirm={this.openBlockExplorer}
+      >
+        <TransactionDetails
+          tx={this.state.tx}
+          explorerUrl={this.state.explorerUrl}
+          transferType={'generalTransfer'}
+          closeModal={() => this.txModal.current.closeModal()}
+        />
+      </Modal>
+    </>
     )
   }
 }

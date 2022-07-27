@@ -16,6 +16,8 @@ export default class TransactionRow extends PureComponent {
     explorerUrl && tx.hash && fileOps.current.openLink(`${explorerUrl}/tx/${tx.hash}`)
   }
 
+  openTransferDetails = () => this.props.getTransferDetails(this.props.tx)
+
   render () {
     const { tx, owner, explorerUrl } = this.props
 
@@ -29,7 +31,7 @@ export default class TransactionRow extends PureComponent {
         <td><small>{tx.blockNumber}</small></td>
         <td>
           <div className='flex-1 overflow-hidden'>
-            <Address addr={tx.hash} redirect={false}/>
+            <Address addr={tx.hash} showTooltip={false} isOpenDetailsModal={true} openTransferDetails={this.openTransferDetails}/>
           </div>
         </td>
         <td>

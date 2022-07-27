@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom'
 const formatAddress = address => <code>{address.substr(0, 12)}...{address.substr(address.length - 6, address.length)}</code>
 const getUrl = (address, route = 'account') => `/${route}/${address}`
 
-export default function Address ({ addr, route, redirect = true, displayText, showTooltip = true }) {
+export default function Address ({ addr, route, redirect = true, displayText, showTooltip = true, isOpenDetailsModal = false, openTransferDetails = () => {} }) {
   if (!addr) {
     return null
   }
@@ -16,7 +16,7 @@ export default function Address ({ addr, route, redirect = true, displayText, sh
   const url = getUrl(addr, route)
   const handleClick = e => {
     e.stopPropagation()
-    history.push(url)
+    !isOpenDetailsModal ? history.push(url) : openTransferDetails()
   }
   let text
   if (redirect) {
