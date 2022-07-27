@@ -31,6 +31,6 @@ export {
   EthersContract,
   EthTxManager,
   utils,
-  rpc,
+  rpc
 }
 export { default as redux } from './redux'
