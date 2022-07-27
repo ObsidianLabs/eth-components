@@ -104,7 +104,7 @@ const translation = {
       connecting: '连接中...',
       try: '尝试连接',
       err: '网络错误',
-      errText: '连接网络失败。确保你为该节点输入了一个有效地址 (RPC url) 和 ChainId。',
+      errText: '连接网络失败。确保你为该节点输入了一个有效地址 (RPC url)',
       invalidName: '无效的网络名称',
       invalidNameText: '<b>{{name}}</b>已经存在.',
       del: '删除自定义网络',

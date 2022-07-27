@@ -93,7 +93,11 @@ export default class CustomNetworkModal extends PureComponent {
         hasDuplicated = networkManager.hasDuplicatedNetwork(option.url)
         hasDuplicated ?
           notification.error(t('network.custom.duplicatedTitle'), t('network.custom.duplicatedText', { url: option.url }))
-          : redux.dispatch('ADD_CUSTOM_NETWORK', { ...option, networkId: existChain?.id })
+          : redux.dispatch('ADD_CUSTOM_NETWORK', {
+            ...option,
+            networkId: existChain?.id,
+            chainId: this.state.status?.chainId
+          })
       }
       if (hasDuplicated) return
       const newNetList = this.getNewNetList()
@@ -123,7 +127,7 @@ export default class CustomNetworkModal extends PureComponent {
 
   renderNetworkInfo() {
     const networkInfo = this.state.modify ? this.state.status : {
-      chainId: this.state.option?.chainId,
+      chainId: this.state.status?.chainId,
       name: this.state.option?.name
     }
 
@@ -151,7 +155,7 @@ export default class CustomNetworkModal extends PureComponent {
         pending={pending && t('network.custom.try')}
         textConfirm={status ? modify ? t('network.custom.update') : t('network.custom.add') : t('network.custom.check')}
         onConfirm={this.onConfirm}
-        confirmDisabled={!option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !/^[1-9][0-9]*$/.test(option.chainId) || !/^(http(s)?:\/\/)\w+[^\s]+(\.[^\s]+){1,}$/.test(option.url)}>
+        confirmDisabled={!option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !/^(http(s)?:\/\/)\w+[^\s]+(\.[^\s]+){1,}$/.test(option.url)}>
         <DebouncedFormGroup
           ref={this.input}
           label='Name'
@@ -160,14 +164,14 @@ export default class CustomNetworkModal extends PureComponent {
           onChange={name => this.setState({ option: { ...option, name } })}
           validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Network name can only contain letters, digits, dash or underscore.'}
         />
-        <DebouncedFormGroup
+        {/* <DebouncedFormGroup
           label='ChainId'
           placeholder={'Please enter a chainId'}
           maxLength='300'
           value={option.chainId}
           onChange={chainId => this.setState({ status: null, option: { ...option, chainId } })}
           validator={v => !/^[1-9][0-9]*$/.test(v) && 'ChainId can only contain digits, and first digits can not start with 0'}
-        />
+        /> */}
         <DebouncedFormGroup
           label='URL of node rpc'
           placeholder={placeholder}
