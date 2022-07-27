@@ -32,9 +32,8 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     return metaMaskConnected ? (current?.url || '') : (networkManager.sdk?.url || '')
   }
 
-  const updateNetworkByUrlParams = (paramsNetId) => {
-    const allNetworks = [...networkManager.networks, ...(Object.values(customNetworks.toJS))]
-    const matchedNet = allNetworks.find(net => paramsNetId === net.id)
+  const updateNetworkPage = (id) => {
+    const matchedNet = networkManager.findChainById(id)
     if(!matchedNet) return
     networkManager.setNetwork(matchedNet)
     setNotificaStatus(true)
@@ -56,8 +55,8 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   })
 
   useEffect(() => {
-    if (networkId === paramsNetworkValue) return
-    updateNetworkByUrlParams(paramsNetworkValue)
+    if (!networkId || networkId === 'dev') return
+    updateNetworkPage(networkId)
   }, [networkId])
 
   const changeNotificaStatus = () => setNotificaStatus(false)

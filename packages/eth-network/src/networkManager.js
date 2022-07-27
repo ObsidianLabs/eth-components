@@ -51,7 +51,7 @@ class NetworkManager {
   }
 
   get customNetWorks() {
-    return redux.getState().customNetworks.toJS() || {}
+    return redux.getState().customNetworks.toJS()
   }
 
   addNetworks(networks) {
@@ -113,17 +113,17 @@ class NetworkManager {
 
   async requestMetaMaskRPC(networkInfo) {
     const metaMaskClient = this.browserExtension.ethereum
-    const currentChainId = this.browserExtension.getChainId
-      ? await this.browserExtension.getChainId()
-      : await metaMaskClient.request({ method: 'eth_chainId' })
-    if (currentChainId === networkInfo.chainId) return
+    /** it might be useful if we need to check the currentChainId  */
+    // const currentChainId = this.browserExtension.getChainId
+    //   ? await this.browserExtension.getChainId()
+    //   : await metaMaskClient.request({ method: 'eth_chainId' })
+    // if (currentChainId === networkInfo.chainId) return
     if (!networkInfo.chainId) {
       notification.error(t('network.custom.err'), t('network.custom.lackChainId'))
       return 
     }
     const hexChainId = utils.format.hexValue(+networkInfo.chainId)
-
-      const switchChain = (chainId) => {
+    const switchChain = (chainId) => {
         return metaMaskClient.request({
           method: 'wallet_switchEthereumChain',
           params: [{
@@ -168,7 +168,7 @@ class NetworkManager {
   async setNetwork(network, { force, redirect = true, notify = true } = {}) {
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
     this.metaMaskConnected && this.requestMetaMaskRPC(network)
-    if (!network || network.id === redux.getState().network) return
+    if (!network) return
     if (process.env.DEPLOY === 'bsn' && network.projectKey) {
       notification.warning(`${network.name}`, `The current network ${network.name} enables a project key, please turn it off in the BSN portal.`, 5)
     }
@@ -214,7 +214,6 @@ class NetworkManager {
       redux.dispatch('SELECT_NETWORK', `custom`)
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
       notification.success(t('network.network.connected'), `${t('network.network.connectedTo')} <b>${name || url}</b>`)
-      
     }
 
     return info
@@ -231,6 +230,32 @@ class NetworkManager {
       notification.error('Invalid Node URL', '')
     }
   }
+
+  getNewNetList () {
+    const customNetworkGroup = Object.keys(this.customNetWorks).map(name => ({
+      group: 'others',
+      icon: 'fas fa-vial',
+      id: name,
+      networkId: this.customNetWorks[name]?.networkId || name,
+      name: name,
+      fullName: name,
+      notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
+      url: this.customNetWorks[name].url,
+      chainId: this.customNetWorks[name]?.chainId || ''
+    })).sort((a, b) => a.name.localeCompare(b.name))
+    
+    return this.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
+      fullName: 'Custom Network',
+      group: 'others',
+      icon: 'fas fa-edit',
+      id: 'custom',
+      name: 'Custom',
+      notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,
+      symbol: 'ETH',
+      url: '',
+    }]).concat(customNetworkGroup)
+  }
+
 
   fethcPartialList() {
     return fetch('https://chainid.network/chains.json')
@@ -294,8 +319,12 @@ class NetworkManager {
     return false
   }
 
-  findChain(value) {
+  findChainById(value) {
     return this.networks.find(net => net.id === value || net.name === value)
+  }
+
+  findChainByChainId(value) {
+    return this.networks.find(net => net.chainId === value)
   }
 }
 
