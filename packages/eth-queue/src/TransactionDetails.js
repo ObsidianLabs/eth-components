@@ -101,7 +101,7 @@ class TransactionDetails extends PureComponent {
         <TableCardRow
           name={`Type`}
           icon='fas fa-file-spreadsheet'
-          badge={receipt?.type === 2 ? '2 (EIP-1559)' : receipt?.type}
+          badge={receipt?.type === 2 ? '2 (EIP-1559)' : '0'}
         /> 
       </Table>
     )
@@ -154,7 +154,7 @@ class TransactionDetails extends PureComponent {
           />
         }
         {
-          tx.ts &&
+          tx?.ts &&
           <TableCardRow
             name={'Time'}
             icon='fas fa-clock'
@@ -175,7 +175,7 @@ class TransactionDetails extends PureComponent {
           )}
         />
         {
-          receipt.to &&
+          receipt?.to &&
           <TableCardRow
             name={`To`}
             icon='fas fa-map-marker-alt'
@@ -207,7 +207,7 @@ class TransactionDetails extends PureComponent {
           /> 
         }
         {
-          transaction.nonce &&
+          transaction?.nonce &&
           <TableCardRow
             name='Nonce'
             icon='fas fa-hashtag'

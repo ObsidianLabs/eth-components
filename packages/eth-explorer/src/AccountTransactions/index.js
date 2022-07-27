@@ -129,15 +129,13 @@ export default class AccountTransactions extends PureComponent {
   }
 
   getTransferDetails = async tx => {
-    const divisor = (Math.pow(10, 18))
+    const divisor = Math.pow(10, 18)
     const parameters = {obj: {hash: {type: 'bytes32', value: tx.hash}}}
-    const method = 'eth_getTransactionByHash'
-    const methodReceipt = 'eth_getTransactionReceipt'
     let result = null
     let resultReceipt = null
     try {
-      result = await networkManager.sdk.callRpc(method, parameters)
-      resultReceipt = await networkManager.sdk.callRpc(methodReceipt, parameters)
+      result = await networkManager.sdk.callRpc('eth_getTransactionByHash', parameters)
+      resultReceipt = await networkManager.sdk.callRpc('eth_getTransactionReceipt', parameters)
       result = {
         ...result,
         data: result.input,
@@ -157,14 +155,14 @@ export default class AccountTransactions extends PureComponent {
         type: parseInt(resultReceipt.type || 0, 16),
       }
     } catch (error) {
-
+      console.warn(error)
     }
 
     tx.ts = tx.timeStamp
     tx.status = resultReceipt?.status === 1? 'SUCCESS' : 'FAILED'
     tx.txHash = tx.hash
     tx.data = {
-      value: { type: 'BigNumber', hex: result?.value || '0'},
+      value: { type: 'BigNumber', hex: result?.value || '0x0'},
       transaction: result,
       receipt: resultReceipt,
       signer: tx.from,
