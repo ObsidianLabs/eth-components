@@ -1,5 +1,4 @@
 import redux from '@obsidians/redux'
-import networks from './networks'
 
 export default class BrowserExtension {
   static Init(networkManager) {
@@ -42,57 +41,47 @@ export default class BrowserExtension {
     return this._accounts
   }
 
-  handleChainChanged() {
-    const state = redux.getState()
-    const intChainId = parseInt(chainId)
-    const network = networks.find(n => n.chainId === intChainId)
-    const currentNetwork = networks.find(n => n.id === state.network)
+  async onChainChanged(chainId) {
+    const newChainId = parseInt(chainId)
+    const matchedNet = this.networkManager.findChainById(redux.getState().network)
+    if (matchedNet && matchedNet.chainId === newChainId) return
+    const includeNet = this.networkManager.findChainByChainId(newChainId)
+    if (includeNet) { // 
+      this.networkManager.setNetwork(includeNet)
+    } else { // add a new chain if we could not find newChainId in our network list
+      const newChain = this.networkManager.searchChain(chainId, true)
+      const validRPrc = !!newChain && newChain.rpc.length !== 0
+      if (!validRPrc) return
 
-    if (!currentNetwork || currentNetwork.chainId !== intChainId) {
-      if (network) {
-        this.networkManager.setNetwork(network, { force: true })
+      const name = newChain.name.replace(/\s+/g, "").toLowerCase()
+      const option = {
+        url: newChain.rpc[0],
+        chainId: newChainId,
+        name: name,
+        id: name
       }
-      else {
-        const chainList = state.chainList.toJS().networks
-        const customChain = chainList.find(chain => chain.chainId === intChainId)
-        if (customChain) {
-          const rpc = customChain.rpc.find(rpc => rpc.indexOf("${INFURA_API_KEY}") === -1)
-          if (rpc) {
-            const option = {
-              url: rpc,
-              chainId: intChainId,
-              name: customChain.name,
-            }
-            const customConfig = { url: rpc, option: JSON.stringify(option) }
-            const currentCustomChain = state.customNetworks.toJS()
-            let activeCustomNetworkChainId = null
-            Object.values(currentCustomChain).forEach(network => {
-              if (network && network.active) activeCustomNetworkChainId = network.chainId
-            })
-            if (activeCustomNetworkChainId !== intChainId) {
-              redux.dispatch('MODIFY_CUSTOM_NETWORK', {
-                name: customChain.name,
-                option,
-              })
-              redux.dispatch('ACTIVE_CUSTOM_NETWORK', option)
-              redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
-              redux.dispatch('CHANGE_NETWORK_STATUS', true)
-              this.networkManager.updateCustomNetwork({ ...customConfig, notify: false })
-            }
-          }
-        }
-      }
+      await redux.dispatch('ADD_CUSTOM_NETWORK', option)
+      
+      const newNetList = this.networkManager.getNewNetList()
+      this.networkManager.addNetworks(newNetList)
+      this.networkManager.setNetwork(option)
     }
   }
 
+  initNetWork() {
+    const { network } = redux.getState()
+    if (!network) return
+    const matchedNet = this.networkManager.findChainById(network)
+    if (!matchedNet) return
+    this.networkManager.setNetwork(matchedNet)
+  }
+
   async initialize(ethereum) {
-
     ethereum.on('chainChanged', this.onChainChanged.bind(this))
-    const chainId = await ethereum.request({ method: 'eth_chainId' })
-    this.onChainChanged(chainId)
-
+    this.initNetWork(this.getEthChaind())
+ 
     ethereum.on('accountsChanged', this.onAccountsChanged.bind(this))
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+    const accounts = await this.getAccounts()
     this.onAccountsChanged(accounts)
 
     const allAccounts = await this.getAllAccounts()
@@ -104,9 +93,24 @@ export default class BrowserExtension {
     redux.dispatch('SET_CHAIN_LIST', partialList)
   }
 
-  async onChainChanged(chainId) {
-    // disable callback function after changing network. reason: procedure already done in setNetwork
-    // this.handleChainChanged(chainId)
+
+  async getEthChaind() {
+    try {
+      const hexChainId = await ethereum.request({ method: 'eth_chainId' })
+      return parseInt(hexChainId)
+    } catch (error) {
+      console.warn('getEthChaind failed', error)
+      throw new Error(error)
+    }
+  }
+
+  async getAccounts() {
+    try {
+      return ethereum.request({ method: 'eth_requestAccounts' })
+    } catch (error) {
+      console.warn('getAccounts failed', error)
+      throw new Error(error)
+    }
   }
 
   async getAllAccounts() {

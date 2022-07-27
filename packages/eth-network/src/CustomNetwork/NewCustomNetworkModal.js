@@ -46,31 +46,6 @@ export default class CustomNetworkModal extends PureComponent {
     this.setState({ pending: false })
   }
 
-  getNewNetList = () => {
-    const customNetworkMap = redux.getState().customNetworks.toJS()
-    const customNetworkGroup = Object.keys(customNetworkMap).map(name => ({
-      group: 'others',
-      icon: 'fas fa-vial',
-      id: name,
-      networkId: customNetworkMap[name]?.networkId || name,
-      name: name,
-      fullName: name,
-      notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
-      url: customNetworkMap[name].url,
-      chainId: customNetworkMap[name]?.chainId || ''
-    })).sort((a, b) => a.name.localeCompare(b.name))
-    return networkManager.networks.filter(item => item.group !== 'others' || item.id === 'others').concat([{
-      fullName: 'Custom Network',
-      group: 'others',
-      icon: 'fas fa-edit',
-      id: 'custom',
-      name: 'Custom',
-      notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,
-      symbol: 'ETH',
-      url: '',
-    }]).concat(customNetworkGroup)
-  }
-
   onConfirm = async () => {
     const { modify, status, option } = this.state
     const customNetworkMap = redux.getState().customNetworks.toJS()
@@ -100,7 +75,7 @@ export default class CustomNetworkModal extends PureComponent {
           })
       }
       if (hasDuplicated) return
-      const newNetList = this.getNewNetList()
+      const newNetList = networkManager.getNewNetList()
       networkManager.addNetworks(newNetList)
       this.setState({ pending: false, status: null })
       this.modal.current.closeModal()
