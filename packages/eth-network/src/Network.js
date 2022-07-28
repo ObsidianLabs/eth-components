@@ -34,7 +34,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
 
   const updateNetworkPage = (id) => {
     const matchedNet = networkManager.findChainById(id)
-    if(!matchedNet) return
+    if(!matchedNet || id === 'custom') return
     networkManager.setNetwork(matchedNet)
     setNotificaStatus(true)
   }
