@@ -96,7 +96,7 @@ export default class BrowserExtension {
 
   async getEthChaind() {
     try {
-      const hexChainId = await ethereum.request({ method: 'eth_chainId' })
+      const hexChainId = await this.ethereum.request({ method: 'eth_chainId' })
       return parseInt(hexChainId)
     } catch (error) {
       console.warn('getEthChaind failed', error)
@@ -106,7 +106,7 @@ export default class BrowserExtension {
 
   async getAccounts() {
     try {
-      return ethereum.request({ method: 'eth_requestAccounts' })
+      return this.ethereum.request({ method: 'eth_requestAccounts' })
     } catch (error) {
       console.warn('getAccounts failed', error)
       throw new Error(error)
