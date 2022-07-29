@@ -63,6 +63,7 @@ export default class CompilerTerminal extends PureComponent {
         size='sm'
         headerClassName='nav-tabs-dark-active'
         noCloseTab
+        tabContextMenu={[]}
         initialSelected='terminal'
         initialTabs={this.initialTabs}
         onSelectTab={tab => this.setState({ activeTab: tab.key })}

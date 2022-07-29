@@ -125,6 +125,7 @@ export default class NodeTerminal extends PureComponent {
         headerClassName='nav-tabs-dark-active'
         noCloseTab
         initialSelected='node'
+        tabContextMenu={[]}
         initialTabs={initialTabs}
         onSelectTab={tab => this.setState({ activeTab: tab.key })}
         ToolButtons={[{ icon: 'far fa-trash-alt', tooltip: 'Clear', onClick: this.clearTerminal }]}

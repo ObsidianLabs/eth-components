@@ -93,5 +93,5 @@ export default {
   },
   parseObject,
   parseValue,
-  isServerError: error =>  (/Server Error/g).test(error),
+  isServerError: error => (/Server Error/g).test(error)
 }

@@ -20,6 +20,7 @@
     "@obsidians/eth-network": "^0.3.0",
     "@obsidians/notification": "^0.3.0",
     "@obsidians/queue": "^0.3.0",
+    "@obsidians/file-ops": "^0.3.0",
     "@obsidians/redux": "^0.3.0",
     "@obsidians/i18n": "^0.3.0",
     "@obsidians/ui-components": "^0.3.0",

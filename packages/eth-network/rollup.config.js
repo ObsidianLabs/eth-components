@@ -5,8 +5,8 @@ import postcss from 'rollup-plugin-postcss'
 import resolve from '@rollup/plugin-node-resolve'
 import url from '@rollup/plugin-url'
 import svgr from '@svgr/rollup'
-
 import pkg from './package.json'
+import json from '@rollup/plugin-json'
 
 export default {
   input: pkg.source,
@@ -29,7 +29,8 @@ export default {
     svgr(),
     babel({ exclude: 'node_modules/**' }),
     resolve(),
-    commonjs()
+    commonjs(),
+    json()
   ],
   watch: {
     include: 'src/**',
