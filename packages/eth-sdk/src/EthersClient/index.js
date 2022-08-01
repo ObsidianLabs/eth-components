@@ -1,5 +1,5 @@
-import { ethers } from 'ethers'
-
+import { ethers, providers, BigNumber } from 'ethers'
+import getCeloProvider from './compatible-celo'
 import platform from '@obsidians/platform'
 import { IpcChannel } from '@obsidians/ipc'
 import redux from '@obsidians/redux'
@@ -7,7 +7,6 @@ import { format } from 'js-conflux-sdk'
 import notification from '@obsidians/notification'
 import { t } from '@obsidians/i18n'
 import networks from '../networks'
-
 import utils from '../utils'
 import tokenlist from './tokenlist.json'
 
@@ -21,10 +20,10 @@ export default class EthersClient {
     const { networkId = '', chainId, url, group = '' } = option
     this.networkId = networkId
     this.chainId = chainId
+    this.rpcUrl = url
     const metaMaskGetLogsUnavailable = ['optimismmain', 'moonrivermain', 'moonbeammain']
 
-    const needConnectToMetamask = window.ethereum && networkId !== 'custom' && group !== 'others'
-    if (needConnectToMetamask) {
+    if (window.ethereum) {
       this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
       this.provider.isMetaMask = true
       if (metaMaskGetLogsUnavailable.includes(networkId)) this.getLogsDefaultProvider = ethers.getDefaultProvider(url)
@@ -60,12 +59,23 @@ export default class EthersClient {
   }
 
   async getStatus() {
-    return await this.provider.getBlock('latest')
+    // check if it's Celo ChainId, Celo chain needs to modify the provide
+    const provider = this.chainId === 42220 ? getCeloProvider(this.rpcUrl, providers, BigNumber) : this.provider
+    if (!provider) throw error('PRC address is not included in Celo')
+    try {
+      return await provider.getBlock('latest')
+    } catch (error) {
+      throw error('fetch network status failed', error)
+    }
   }
 
   async latest() {
-    const status = await this.getStatus()
-    return status.number
+    try {
+      const { number } = await this.getStatus()
+      return number
+    } catch (error) {
+      throw error('fetch latest block failed', error)
+    }
   }
 
   async getAccount(address) {

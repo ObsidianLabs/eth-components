@@ -89,10 +89,7 @@ export default class BrowserExtension {
     redux.dispatch('UPDATE_UI_STATE', { browserAccounts: allAccounts })
     redux.dispatch('CHANGE_NETWORK_STATUS', true)
 
-    const partialList = await this.networkManager.fethcPartialList()
-    redux.dispatch('SET_CHAIN_LIST', partialList)
   }
-
 
   async getEthChaind() {
     try {
