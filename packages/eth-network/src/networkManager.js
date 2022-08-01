@@ -13,6 +13,12 @@ class NetworkManager {
     this._sdk = null
     this.network = undefined
     this.Sdks = new Map()
+    this.initChainList()
+  }
+
+  async initChainList() {
+    const partialList = await this.fethcPartialList()
+    redux.dispatch('SET_CHAIN_LIST', partialList)
   }
 
   addSdk(Sdk, networks) {
@@ -255,7 +261,6 @@ class NetworkManager {
       url: '',
     }]).concat(customNetworkGroup)
   }
-
 
   fethcPartialList() {
     return fetch('https://chainid.network/chains.json')
