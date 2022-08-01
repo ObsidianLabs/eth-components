@@ -153,10 +153,12 @@ export default class AccountTransactions extends PureComponent {
         gasUsed: tx?.gasUsed || parseInt(resultReceipt?.gasUsed || 0, 16),
         status: resultReceipt?.status && parseInt(resultReceipt?.status, 16),
         type: resultReceipt?.type && parseInt(resultReceipt?.type, 16),
-        l1Fee: resultReceipt?.l1Fee && (parseInt(resultReceipt?.l1Fee, 16) / divisor),
         l1GasPrice: resultReceipt?.l1GasPrice && parseInt(resultReceipt?.l1GasPrice, 16),
         l1GasUsed: resultReceipt?.l1GasUsed && parseInt(resultReceipt?.l1GasUsed, 16),
       }
+      let transactionFee = (tx?.gasPrice * resultReceipt?.gasUsed) / divisor || 0
+      if (resultReceipt?.l1Fee) transactionFee += parseInt(resultReceipt?.l1Fee, 16) / divisor || 0
+      resultReceipt.transactionFee = transactionFee
     } catch (error) {
       console.warn(error)
     }
