@@ -138,28 +138,31 @@ export default class AccountTransactions extends PureComponent {
       resultReceipt = await networkManager.sdk.callRpc('eth_getTransactionReceipt', parameters)
       result = {
         ...result,
-        data: result.input,
+        data: result?.input,
         gasLimit: tx.gas,
         gasPrice: tx.gasPrice,
-        maxFeePerGas: result.maxFeePerGas && parseInt(result.maxFeePerGas, 16),
-        maxPriorityFeePerGas: result.maxPriorityFeePerGas && parseInt(result.maxPriorityFeePerGas, 16),
-        nonce: result.nonce && parseInt(result.nonce, 16),
+        maxFeePerGas: result?.maxFeePerGas && parseInt(result.maxFeePerGas, 16),
+        maxPriorityFeePerGas: result?.maxPriorityFeePerGas && parseInt(result.maxPriorityFeePerGas, 16),
+        nonce: tx.nonce || result?.nonce && parseInt(result.nonce, 16),
       }
       resultReceipt = {
         ...resultReceipt,
-        blockNumber: parseInt(resultReceipt.blockNumber || 0, 16),
-        cumulativeGasUsed: resultReceipt.cumulativeGasUsed && parseInt(resultReceipt.cumulativeGasUsed, 16),
-        effectiveGasPrice: {type: 'BigNumber', hex: resultReceipt.effectiveGasPrice},
-        gasUsed: parseInt(resultReceipt.gasUsed || 0, 16),
-        status: parseInt(resultReceipt.status || 0, 16),
-        type: parseInt(resultReceipt.type || 0, 16),
+        blockNumber: tx.blockNumber || parseInt(resultReceipt?.blockNumber || 0, 16),
+        cumulativeGasUsed: tx.cumulativeGasUsed || resultReceipt?.cumulativeGasUsed && parseInt(resultReceipt?.cumulativeGasUsed, 16),
+        effectiveGasPrice: {type: 'BigNumber', hex: resultReceipt?.effectiveGasPrice},
+        gasUsed: tx?.gasUsed || parseInt(resultReceipt?.gasUsed || 0, 16),
+        status: resultReceipt?.status && parseInt(resultReceipt?.status, 16),
+        type: resultReceipt?.type && parseInt(resultReceipt?.type, 16),
+        l1Fee: resultReceipt?.l1Fee && (parseInt(resultReceipt?.l1Fee, 16) / divisor),
+        l1GasPrice: resultReceipt?.l1GasPrice && parseInt(resultReceipt?.l1GasPrice, 16),
+        l1GasUsed: resultReceipt?.l1GasUsed && parseInt(resultReceipt?.l1GasUsed, 16),
       }
     } catch (error) {
       console.warn(error)
     }
 
     tx.ts = tx.timeStamp
-    tx.status = resultReceipt?.status === 1? 'SUCCESS' : 'FAILED'
+    tx.status = resultReceipt?.status ? (resultReceipt?.status === 1? 'SUCCESS' : 'FAILED') : ''
     tx.txHash = tx.hash
     tx.data = {
       value: { type: 'BigNumber', hex: result?.value || '0x0'},
@@ -179,7 +182,6 @@ export default class AccountTransactions extends PureComponent {
   openBlockExplorer = () => {
     const { explorerUrl, tx } = this.state
     explorerUrl && fileOps.current.openLink(`${explorerUrl}/tx/${tx.hash}`)
-    this.txModal.current.closeModal()
   }
 
   render () {
