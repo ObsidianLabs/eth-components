@@ -26,11 +26,11 @@ class TransactionDetails extends PureComponent {
   }
 
   handleClick = (address, type, explorerUrl) => {
-    this.props.closeModal()
     if (type === 'explorer' && explorerUrl) {
       fileOps.current.openLink(`${explorerUrl}${address}`)
       return
     }
+    this.props.closeModal()
     this.props.history.push(address)
   }
 
@@ -40,69 +40,32 @@ class TransactionDetails extends PureComponent {
       transaction,
     } = data || {}
 
+    const cardRows = [
+      {name: 'Gas Limit', value: transaction?.gasLimit},
+      {name: 'Gas Used', value: (receipt?.gasUsed || transaction?.gasUsed)},
+      {name: 'Gas Price', value: transaction?.gasPrice},
+      {name: 'L1 Gas Used', value: receipt?.l1GasUsed, hidden: !receipt?.l1GasUsed},
+      {name: 'L1 Gas Price', value: receipt?.l1GasPrice, hidden: !receipt?.l1GasPrice},
+      {name: 'Max Fee Per Gas', value: transaction?.maxFeePerGas},
+      {name: 'Max Priority Fee Per Gas', value: transaction?.maxPriorityFeePerGas && `Max Priority: ${transaction?.maxPriorityFeePerGas}`},
+      {name: 'Effective Gas Price', valueList: receipt?.effectiveGasPrice?.hex && [`Type: ${receipt?.effectiveGasPrice?.type || 'BigNumber'}`, `Hex: ${receipt?.effectiveGasPrice?.hex}`]},
+      {name: 'Cumulative Gas Used', value: receipt?.cumulativeGasUsed},
+      {name: 'Type', value: (receipt?.type === 2 ? '2 (EIP-1559)' : '0'), icon: 'fas fa-file-spreadsheet'},
+    ]
+
     return (
       <Table>
         {
-          transaction?.gasLimit &&
-          <TableCardRow
-            name={`Gas Limit`}
-            icon='fas fa-coins'
-            badge={transaction.gasLimit}
-          />
+          cardRows.map(({name, icon, value, valueList, hidden = false}) => (
+            !hidden &&
+            <TableCardRow
+              name={name}
+              icon={icon || 'fas fa-coins'}
+              badge={value}
+              badgeList={valueList}
+            />
+          ))
         }
-        {
-          receipt?.gasUsed &&
-          <TableCardRow
-            name={`Gas Used`}
-            icon='fas fa-coins'
-            badge={receipt.gasUsed}
-          /> 
-        }
-        {
-          transaction?.gasPrice &&
-          <TableCardRow
-            name={`Gas Price`}
-            icon='fas fa-coins'
-            badge={transaction.gasPrice}
-          /> 
-        }
-        {
-          transaction?.maxFeePerGas &&
-          <TableCardRow
-            name={`Max Fee Per Gas`}
-            icon='fas fa-coins'
-            badge={transaction.maxFeePerGas}
-          /> 
-        }
-        {
-          transaction?.maxPriorityFeePerGas &&
-          <TableCardRow
-            name={`Max Priority Fee Per Gas`}
-            icon='fas fa-coins'
-            badge={`Max Priority: ${transaction.maxPriorityFeePerGas}`}
-          /> 
-        }
-        {
-          receipt?.effectiveGasPrice?.type && receipt?.effectiveGasPrice?.hex &&
-          <TableCardRow
-            name={`Effective Gas Price`}
-            icon='fas fa-coins'
-            badgeList={[`Type: ${receipt?.effectiveGasPrice?.type}`, `Hex: ${receipt?.effectiveGasPrice?.hex}`]}
-          /> 
-        }
-        {
-          receipt?.cumulativeGasUsed &&
-          <TableCardRow
-            name={`Cumulative Gas Used`}
-            icon='fas fa-coins'
-            badge={receipt.cumulativeGasUsed}
-          />  
-        }
-        <TableCardRow
-          name={`Type`}
-          icon='fas fa-file-spreadsheet'
-          badge={receipt?.type === 2 ? '2 (EIP-1559)' : '0'}
-        /> 
       </Table>
     )
   }
@@ -122,8 +85,9 @@ class TransactionDetails extends PureComponent {
     } = data
     transferType = transferType === 'generalTransfer' ? true : false
     const contractAddress = receipt?.contractAddress || data.contractAddress
-    const transactionFee = transaction?.gasPrice && receipt?.gasUsed && ((transaction.gasPrice * receipt.gasUsed) / (Math.pow(10, 18)))
+    const transactionFee = receipt?.l1Fee || transaction?.gasPrice && receipt?.gasUsed && ((transaction.gasPrice * receipt.gasUsed) / (Math.pow(10, 18)))
     const signerCodeName = transferType ? `From (${t('contract.deploy.signer')})` : t('contract.deploy.signer')
+    const networkSymbol = networkManager.symbol || networkManager?.networks.find(item => item.id === networkManager?.network.networkId)?.symbol || ''
 
     return (
       <Table>
@@ -145,14 +109,11 @@ class TransactionDetails extends PureComponent {
           badge={status === 'FAILED-TIMEOUT' ? 'TIMEOUT' : status}
           badgeColor={statusBadgeColor}
         />
-        {
-          receipt?.blockNumber &&
-          <TableCardRow
-            name={'Block'}
-            icon='fas fa-cube'
-            badge={receipt.blockNumber}
-          />
-        }
+        <TableCardRow
+          name={'Block'}
+          icon='fas fa-cube'
+          badge={receipt?.blockNumber}
+        />
         {
           tx?.ts &&
           <TableCardRow
@@ -193,27 +154,21 @@ class TransactionDetails extends PureComponent {
         {
           value &&
           <TableCardRow
-            name={transferType ? `Value` : `${networkManager.symbol} Sent`}
+            name={transferType ? `Value` : `${networkSymbol} Sent`}
             icon='fas fa-coins'
-            badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkManager.symbol}`}
+            badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkSymbol}`}
           />
         }
-        {
-          transactionFee &&
-          <TableCardRow
-            name={`Transaction Fee`}
-            icon='fas fa-coins'
-            badge={`${transactionFee} ${networkManager.symbol}`}
-          /> 
-        }
-        {
-          transaction?.nonce &&
-          <TableCardRow
-            name='Nonce'
-            icon='fas fa-hashtag'
-            badge={transaction.nonce}
-          />
-        }
+        <TableCardRow
+          name={`Transaction Fee`}
+          icon='fas fa-coins'
+          badge={transactionFee && `${transactionFee} ${networkSymbol}`}
+        />
+        <TableCardRow
+          name='Nonce'
+          icon='fas fa-hashtag'
+          badge={transaction?.nonce}
+        />        
 
         { this.renderError(error) }
         {
