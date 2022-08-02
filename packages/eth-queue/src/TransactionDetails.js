@@ -85,7 +85,7 @@ class TransactionDetails extends PureComponent {
     } = data
     transferType = transferType === 'generalTransfer' ? true : false
     const contractAddress = receipt?.contractAddress || data.contractAddress
-    const transactionFee = receipt?.l1Fee || transaction?.gasPrice && receipt?.gasUsed && ((transaction.gasPrice * receipt.gasUsed) / (Math.pow(10, 18)))
+    const transactionFee = receipt?.transactionFee || transaction?.gasPrice && receipt?.gasUsed && ((transaction.gasPrice * receipt.gasUsed) / (Math.pow(10, 18)))
     const signerCodeName = transferType ? `From (${t('contract.deploy.signer')})` : t('contract.deploy.signer')
     const networkSymbol = networkManager.symbol || networkManager?.networks.find(item => item.id === networkManager?.network.networkId)?.symbol || ''
 
