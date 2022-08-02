@@ -1,6 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
-
+import platform from '@obsidians/platform'
 import {
   FormGroup,
   Label,
@@ -246,7 +246,7 @@ const templates = [
   { id: 'empty', display: 'Empty Project' },
   { id: 'coin', display: 'Coin' },
   { id: 'erc20', display: 'ERC20 Token' },
-  { id: 'erc721', display: 'ERC721' },
+  ...(platform.isWeb ? [{ id: 'erc721', display: 'ERC721' }] : []),
   {
     group: 'open zeppelin',
     badge: 'Open Zeppelin',
