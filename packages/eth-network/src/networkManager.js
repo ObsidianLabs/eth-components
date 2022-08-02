@@ -119,6 +119,7 @@ class NetworkManager {
 
   async requestMetaMaskRPC(networkInfo) {
     const metaMaskClient = this.browserExtension.ethereum
+    this._sdk = this.newSdk(networkInfo)
     /** it might be useful if we need to check the currentChainId  */
     // const currentChainId = this.browserExtension.getChainId
     //   ? await this.browserExtension.getChainId()
