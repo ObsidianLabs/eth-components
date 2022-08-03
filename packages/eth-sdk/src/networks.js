@@ -5,7 +5,7 @@ import NetworkAllLogoImg from './NetworkIcon'
 const networks = [
   {
     id: 'homestead',
-    group: 'ethereum',
+    group: 'Ethereum',
     name: 'Mainnet',
     fullName: 'Ethereum Mainnet',
     icon: 'fas fa-globe',
@@ -18,7 +18,7 @@ const networks = [
   },
   {
     id: 'ropsten',
-    group: 'ethereum',
+    group: 'Ethereum',
     name: 'Ropsten',
     fullName: 'Ropsten Testnet',
     icon: 'fas fa-vial',
@@ -27,11 +27,11 @@ const networks = [
     explorerUrl: 'https://ropsten.etherscan.io',
     chainId: 3,
     symbol: 'ETH',
-    logoIcon: NetworkAllLogoImg.ethereumtest,
+    logoIcon: NetworkAllLogoImg.ethereummain,
   },
   {
     id: 'rinkeby',
-    group: 'ethereum',
+    group: 'Ethereum',
     name: 'Rinkeby',
     fullName: 'Rinkeby Testnet',
     icon: 'fas fa-vial',
@@ -40,11 +40,11 @@ const networks = [
     explorerUrl: 'https://rinkeby.etherscan.io',
     chainId: 4,
     symbol: 'ETH',
-    logoIcon: NetworkAllLogoImg.ethereumtest,
+    logoIcon: NetworkAllLogoImg.ethereummain,
   },
   {
     id: 'goerli',
-    group: 'ethereum',
+    group: 'Ethereum',
     name: 'Goerli',
     fullName: 'Goerli Testnet',
     icon: 'fas fa-vial',
@@ -53,11 +53,11 @@ const networks = [
     explorerUrl: 'https://goerli.etherscan.io',
     chainId: 5,
     symbol: 'ETH',
-    logoIcon: NetworkAllLogoImg.ethereumtest,
+    logoIcon: NetworkAllLogoImg.ethereummain,
   },
   {
     id: 'kovan',
-    group: 'ethereum',
+    group: 'Ethereum',
     name: 'Kovan',
     fullName: 'Kovan Testnet',
     icon: 'fas fa-vial',
@@ -66,13 +66,13 @@ const networks = [
     explorerUrl: 'https://kovan.etherscan.io',
     chainId: 42,
     symbol: 'ETH',
-    logoIcon: NetworkAllLogoImg.ethereumtest,
+    logoIcon: NetworkAllLogoImg.ethereummain,
   },
   {
     id: 'bnbmain',
     group: 'BNB chain',
     name: 'Mainnet',
-    fullName: 'BNB Chain',
+    fullName: 'BNB Chain Mainnet',
     icon: 'fas fa-globe',
     notification: `${t('network.network.switchedTo')} <b>BNB Chain</b>.`,
     url: 'https://bsc-dataseed.binance.org/',
@@ -92,11 +92,11 @@ const networks = [
     explorerUrl: 'https://testnet.bscscan.com',
     chainId: 97,
     symbol: 'BNB',
-    logoIcon: NetworkAllLogoImg.bnbtest,
+    logoIcon: NetworkAllLogoImg.bnbmain,
   },
   {
     id: 'avalanchemain',
-    group: 'Avalanche c-chain',
+    group: 'Avalanche C-Chain',
     name: 'Mainnet',
     fullName: 'Avalanche C-Chain Mainnet',
     icon: 'fas fa-globe',
@@ -109,7 +109,7 @@ const networks = [
   },
   {
     id: 'avalanchetest',
-    group: 'Avalanche c-chain',
+    group: 'Avalanche C-Chain',
     name: 'Testnet',
     fullName: 'Avalanche C-Chain Testnet',
     icon: 'fas fa-vial',
@@ -118,7 +118,7 @@ const networks = [
     explorerUrl: 'https://testnet.snowtrace.io',
     chainId: 43113,
     symbol: 'AVAX',
-    logoIcon: NetworkAllLogoImg.avalanchetest,
+    logoIcon: NetworkAllLogoImg.avalanchemain,
   },
   {
     id: 'polygonmain',
@@ -144,7 +144,7 @@ const networks = [
     explorerUrl: 'https://mumbai.polygonscan.com',
     chainId: 80001,
     symbol: 'MATIC',
-    logoIcon: NetworkAllLogoImg.polygontest,
+    logoIcon: NetworkAllLogoImg.polygonmain,
   },
   {
     id: 'fantommain',
@@ -170,7 +170,7 @@ const networks = [
     explorerUrl: 'https://testnet.ftmscan.com',
     chainId: 4002,
     symbol: 'FTM',
-    logoIcon: NetworkAllLogoImg.fantomtest,
+    logoIcon: NetworkAllLogoImg.fantommain,
   },
   {
     id: 'harmonymain',
@@ -196,11 +196,11 @@ const networks = [
     explorerUrl: 'https://explorer.pops.one',
     chainId: 1666700000,
     symbol: 'ONE',
-    logoIcon: NetworkAllLogoImg.harmonytest,
+    logoIcon: NetworkAllLogoImg.harmonymain,
   },
   {
     id: 'confluxmain',
-    group: 'Conflux espace',
+    group: 'Conflux Espace',
     name: 'Mainnet',
     fullName: 'Conflux eSpace Mainnet',
     icon: 'fas fa-globe',
@@ -213,7 +213,7 @@ const networks = [
   },
   {
     id: 'confluxtest',
-    group: 'Conflux espace',
+    group: 'Conflux Espace',
     name: 'Testnet',
     fullName: 'Conflux eSpace Testnet',
     icon: 'fas fa-vial',
@@ -222,13 +222,13 @@ const networks = [
     explorerUrl: 'https://evmtestnet.confluxscan.io',
     chainId: 71,
     symbol: 'CFX',
-    logoIcon: NetworkAllLogoImg.confluxtest,
+    logoIcon: NetworkAllLogoImg.confluxmain,
   },
   {
     id: 'gnosismain',
     group: 'Gnosis (xDai)',
     name: 'Mainnet',
-    fullName: 'xDAI Chain',
+    fullName: 'xDAI Chain Mainnet',
     icon: 'fas fa-globe',
     notification: `${t('network.network.switchedTo')} <b>xDAI Chain</b>.`,
     url: 'https://rpc.gnosischain.com/',
@@ -261,7 +261,7 @@ const networks = [
     explorerUrl: 'https://explorer.testnet.aurora.dev',
     chainId: 1313161555,
     symbol: 'AOA',
-    logoIcon: NetworkAllLogoImg.auroratest,
+    logoIcon: NetworkAllLogoImg.auroramain,
   },
   {
     id: 'evmosmain',
@@ -287,7 +287,7 @@ const networks = [
     explorerUrl: 'https://evm.evmos.dev',
     chainId: 9000,
     symbol: 'EVMOS',
-    logoIcon: NetworkAllLogoImg.evmostest,
+    logoIcon: NetworkAllLogoImg.evmosmain,
   },
   {
     id: 'arbitrummain',
@@ -313,7 +313,7 @@ const networks = [
     explorerUrl: 'https://testnet.arbiscan.io',
     chainId: 421611,
     symbol: 'ETH',
-    logoIcon: NetworkAllLogoImg.arbitrumtest,
+    logoIcon: NetworkAllLogoImg.arbitrummain,
   },
   {
     id: 'optimismmain',
@@ -339,7 +339,7 @@ const networks = [
     explorerUrl: 'https://kovan-optimistic.etherscan.io',
     chainId: 69,
     symbol: 'ETH',
-    logoIcon: NetworkAllLogoImg.optimismtest,
+    logoIcon: NetworkAllLogoImg.optimismmain,
   },
   {
     id: 'moonrivermain',
@@ -365,7 +365,7 @@ const networks = [
     explorerUrl: 'https://moonbase.moonscan.io',
     chainId: 1287,
     symbol: 'DEV',
-    logoIcon: NetworkAllLogoImg.moonrivertest,
+    logoIcon: NetworkAllLogoImg.moonrivermain,
   },
   {
     id: 'moonbeammain',
@@ -391,7 +391,7 @@ const networks = [
     explorerUrl: 'https://moonbase.moonscan.io',
     chainId: 1287,
     symbol: 'DEV',
-    logoIcon: NetworkAllLogoImg.moonbeamtest,
+    logoIcon: NetworkAllLogoImg.moonbeammain,
   }
 ]
 
