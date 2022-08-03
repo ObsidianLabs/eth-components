@@ -4,7 +4,6 @@
  * */ 
 
 const getCeloProvider = (rpc, providers, BigNumber) => {
-  if (!['https://rpc.ankr.com/celo', 'https://forno.celo.org'].includes(rpc)) return 
   const provider = new providers.JsonRpcProvider(rpc)
   const originalBlockFormatter = provider.formatter._block;
   provider.formatter._block = (value, format) => {
