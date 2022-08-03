@@ -98,12 +98,20 @@ export default function makeSdk({
     }
 
     async getStatus() {
-      return await this.client.getStatus()
+      try {
+        return await this.client.getStatus()
+      } catch (error) {
+        console.warn("getStatus failed", error)
+      }
     }
 
     async updateEIP1559Support() {
-      const latestInfo = await this.client.getStatus()
-      this.supportEIP1559 = latestInfo.baseFeePerGas !== undefined
+      try {
+        const latestInfo = await this.client.getStatus()
+        this.supportEIP1559 = latestInfo.baseFeePerGas !== undefined
+      } catch (error) {
+        console.warn("updateEIP1559Support failed", error)
+      }
     }
 
     async latest() {

@@ -22,8 +22,9 @@ export default class EthersClient {
     this.chainId = chainId
     this.rpcUrl = url
     const metaMaskGetLogsUnavailable = ['optimismmain', 'moonrivermain', 'moonbeammain']
-
-    if (window.ethereum) {
+    const useWeb3Provider = window.ethereum && networkId !== 'custom'
+  
+    if (useWeb3Provider) {
       this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
       this.provider.isMetaMask = true
       if (metaMaskGetLogsUnavailable.includes(networkId)) this.getLogsDefaultProvider = ethers.getDefaultProvider(url)
@@ -59,9 +60,11 @@ export default class EthersClient {
   }
 
   async getStatus() {
+    let provider = this.provider
     // check if it's Celo ChainId, Celo chain needs to modify the provide
-    const provider = this.chainId === 42220 ? getCeloProvider(this.rpcUrl, providers, BigNumber) : this.provider
-    if (!provider) throw error('PRC address is not included in Celo')
+    if (this.rpcUrl && ['https://rpc.ankr.com/celo', 'https://forno.celo.org'].includes(this.rpcUrl)) {
+      provider = getCeloProvider(this.rpcUrl, providers, BigNumber)
+    }
     try {
       return await provider.getBlock('latest')
     } catch (error) {
