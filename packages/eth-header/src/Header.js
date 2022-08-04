@@ -192,7 +192,7 @@ export default class Header extends PureComponent {
       },
     }
 
-    const networkReplaceName = Object.assign({}, network, { name: network.fullName })
+    const networkReplaceName = Object.assign({}, network, { name: (network.name || network.fullName) })
   
     const networkNavbarItem = {
       route: 'network',
