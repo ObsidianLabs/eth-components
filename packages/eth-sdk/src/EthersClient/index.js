@@ -127,15 +127,17 @@ export default class EthersClient {
     }
 
     const result = await this.explorer.getHistory(address, page, size)
-    if (utils.isServerError(result.message) || result.status === 500) notification.error(t('network.network.serveBusy'), t('network.network.errorText'))
+    if (utils.isServerError(result?.message) || result?.status === 500) notification.error(t('network.network.serveBusy'), t('network.network.errorText'))
     const isHarmony = chainsHarmonyName.includes(this.networkId)
     const isConflux = chainsConfluxtName.includes(this.networkId)
-    let list = result.result ? (isHarmony ? result.result.transactions : result.result) : (result.list || [])
+    let list = result?.result ?
+      (isHarmony ? result.result.transactions : (isConflux ? result.result.list : result.result))
+     : (result?.list || [])
     if (isHarmony || isConflux) {
       list.map(elem => {
         if (isConflux) {
-          elem.from && (elem.from = format.hexAddress(elem.from))
-          elem.to && (elem.to = format.hexAddress(elem.to))
+          elem.from && elem.from.startsWith('net') && (elem.from = format.hexAddress(elem.from))
+          elem.to && elem.to.startsWith('net') && (elem.to = format.hexAddress(elem.to))
           elem.contractCreated && (elem.contractAddress = format.hexAddress(elem.contractCreated))
           elem.blockNumber = elem.epochNumber
           elem.methodString = elem.method
@@ -143,8 +145,8 @@ export default class EthersClient {
           elem.method = ''
         }
         if (isHarmony) {
-          elem.from && (elem.from = fromBech32(elem.from))
-          elem.to && (elem.to = fromBech32(elem.to))
+          elem.from && elem.from.startsWith('one') && (elem.from = fromBech32(elem.from))
+          elem.to && elem.to.startsWith('one') && (elem.to = fromBech32(elem.to))
           elem.timeStamp = elem.timestamp
           elem.hash = elem.ethHash
           elem.value = elem.value + ""
@@ -241,7 +243,22 @@ class ExplorerProxy {
       }
     } else {
       const response = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${currentNetworkId}?${new URLSearchParams(query)}`)
-      return await response.json()
+      let result = null
+      try {
+        result = await response.json()
+        if (result.name === 'ResponseTimeoutError' && currentNetworkId.startsWith('evmos')) {
+          let queryAccount = {
+            module: 'account',
+            action: 'txlist',
+            address
+          }
+          const resTxlist = await fetch(`${REACT_APP_SERVER_URL}/api/v1/explorer/${currentNetworkId}?${new URLSearchParams(queryAccount)}`) 
+          return await resTxlist.json()
+        }
+      } catch (error) {
+        console.warn('get transaction list failed', error);
+      }
+      return result
     }
     // TODO: confirm with the infrua service
     // return await this.channel.invoke('GET', this.networkId, query)

@@ -158,13 +158,14 @@ export default class AccountTransactions extends PureComponent {
       }
       let transactionFee = (tx?.gasPrice * resultReceipt?.gasUsed) / divisor || 0
       if (resultReceipt?.l1Fee) transactionFee += parseInt(resultReceipt?.l1Fee, 16) / divisor || 0
+      transactionFee = '0' + String(Number(transactionFee) + 1).substring(1)
       resultReceipt.transactionFee = transactionFee
     } catch (error) {
       console.warn(error)
     }
 
     tx.ts = tx.timeStamp
-    tx.status = resultReceipt?.status ? (resultReceipt?.status === 1? 'SUCCESS' : 'FAILED') : ''
+    tx.status = resultReceipt?.status === 1 ? 'SUCCESS' : (resultReceipt?.status === 0 && 'FAILED') || ''
     tx.txHash = tx.hash
     tx.data = {
       value: { type: 'BigNumber', hex: result?.value || '0x0'},
