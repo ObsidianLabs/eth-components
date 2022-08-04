@@ -96,7 +96,7 @@ class Contract extends TabbedExplorer {
     }
 
     const starred = contracts.getIn([network, 'starred'])?.toArray() || []
-    const projectRoot = projects.getIn(['selected', 'path'])
+    const projectRoot = projects.getIn(['selected', 'pathname'])
     const props = {
       starred,
       subroute: network,
