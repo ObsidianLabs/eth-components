@@ -71,7 +71,6 @@ export default class EthTxManager {
       const tip = BigInt(feeData.maxFeePerGas) - BigInt(feeData.maxPriorityFeePerGas)
       feeData.maxPriorityFeePerGas = '0x' + BigInt(gasPrice).toString(16)
       feeData.maxFeePerGas = '0x' + (BigInt(gasPrice) + tip).toString(16)
-      feeData.gasPrice = gasPrice
     }
     if (!supportsEIP1559) {
       return {
