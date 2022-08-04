@@ -246,7 +246,7 @@ class ExplorerProxy {
       let result = null
       try {
         result = await response.json()
-        if (result.name === 'ResponseTimeoutError' && currentNetworkId.startsWith('evmos')) {
+        if (currentNetworkId.startsWith('evmos') && !result?.result) {
           let queryAccount = {
             module: 'account',
             action: 'txlist',
