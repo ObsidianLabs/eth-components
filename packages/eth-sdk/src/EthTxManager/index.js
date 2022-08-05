@@ -40,6 +40,7 @@ export default class EthTxManager {
   }
 
   async getDeployTx({ abi, bytecode, amount, parameters }, override) {
+    const gasPrice = await this.client.callRpc('eth_gasPrice', [])
     const factory = new ethers.ContractFactory(abi, bytecode)
     let value
     try {
@@ -48,6 +49,7 @@ export default class EthTxManager {
       throw new Error('The entered amount is invalid.')
     }
     const tx = await factory.getDeployTransaction(...parameters, { value })
+    tx.gasPrice = gasPrice
     const voidSigner = new ethers.VoidSigner(override.from, this.provider)
     const populated = await voidSigner.populateTransaction(tx)
     const nonce = await this.provider.getTransactionCount(override.from)
@@ -61,11 +63,15 @@ export default class EthTxManager {
 
    
   async estimate({ tx }) {
-    // const gasPrice = await this.client.callRpc('eth_gasPrice', [])
+    const gasPrice = await this.client.callRpc('eth_gasPrice', [])
     const supportsEIP1559 = await this.provider.getBlock("latest").baseFeePerGas !== undefined
     const result = await this.provider.estimateGas(tx)
     const feeData = await this.provider.getFeeData()
-
+    if (BigInt(feeData.maxPriorityFeePerGas) < BigInt(gasPrice)) {
+      const tip = BigInt(feeData.maxFeePerGas) - BigInt(feeData.maxPriorityFeePerGas)
+      feeData.maxPriorityFeePerGas = '0x' + BigInt(gasPrice).toString(16)
+      feeData.maxFeePerGas = '0x' + (BigInt(gasPrice) + tip).toString(16)
+    }
     if (!supportsEIP1559) {
       return {
         gasLimit: result.toString(),
