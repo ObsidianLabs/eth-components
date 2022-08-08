@@ -13,7 +13,8 @@ class NodeManager {
     this.network = null
   }
 
-  set terminal (v) {
+  set terminal(v) {
+    if(!v) return
     this._terminal = v
   }
 
