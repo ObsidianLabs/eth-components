@@ -6,6 +6,8 @@ import keypairManager from '@obsidians/keypair'
 import { withRouter } from 'react-router-dom'
 import ReactJson from 'react-json-view'
 import Highlight from 'react-highlight'
+import { utils } from '@obsidians/sdk'
+import { t } from '@obsidians/i18n'
 
 export default withRouter(({ format, actionResult, actionError, history, onNavigate }) => {
   const [_, forceUpdate] = React.useState({})
@@ -15,6 +17,9 @@ export default withRouter(({ format, actionResult, actionError, history, onNavig
   }, [])
 
   if (actionError) {
+    if (utils.isContractReadDataError(actionError)) {
+      return <div><span>{t('rpc.missingRevertDataText')}</span></div>
+    }
     return <div><span>{actionError}</span></div>
   }
 
