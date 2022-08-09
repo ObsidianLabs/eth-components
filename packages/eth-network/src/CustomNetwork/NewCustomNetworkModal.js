@@ -100,8 +100,17 @@ export default class CustomNetworkModal extends PureComponent {
     redux.dispatch('CHANGE_NETWORK_STATUS', false)
   }
 
+  filterStatus = (status) => {
+    if (status && typeof status === 'object') {
+      for (let i in status) {
+        status[i] === 'unknown' && delete status[i]
+      }
+    }
+    return status
+  }
+
   renderNetworkInfo() {
-    const networkInfo = this.state.modify ? this.state.status : {
+    const networkInfo = this.state.modify ? this.filterStatus(this.state.status) : {
       chainId: this.state.status?.chainId,
       name: this.state.option?.name
     }
