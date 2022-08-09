@@ -29,20 +29,13 @@ export default class RemoteNetwork extends PureComponent {
    this.clearTimeId()
   }
 
+
   async refreshBlock() {
     if (!networkManager.sdk) return
     try {
-      const networkId = this.props.networkId
-      const info = await networkManager.sdk?.networkInfo()
-      const status = await networkManager.sdk?.getStatus()
-      if(!status || !info) return
-      if (this.props.networkId === networkId) {
-        if (this.props.notificaStatus) {
-          networkManager.network.notification && notification.success(t('network.network.network'), networkManager.network.notification)
-          this.props.changeStatus()
-        }
-        this.setState({ status, info })
-      }
+      const networkInfo = await networkManager.fetchNetworkInfo()
+      if(!networkInfo) return
+      this.setState({ status: networkInfo.status, info: networkInfo.info })
       redux.dispatch('CHANGE_NETWORK_STATUS', true)
     } catch (error) {
       console.warn(error)
