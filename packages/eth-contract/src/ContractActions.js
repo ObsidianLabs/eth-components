@@ -40,6 +40,11 @@ export default class ContractActions extends AbiActionForm {
       return
     }
 
+    if (parameters.array?.some(el => el === '' || el === '0')) {
+      notification.error(t('contract.estimate.fail'), 'Please fill in valid “Parameter” and “Authorization” information in input field.')
+      return
+    }
+
     let result
     try {
       const tx = await this.props.contract.execute(actionName, parameters, {
