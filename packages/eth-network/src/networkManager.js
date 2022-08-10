@@ -225,7 +225,7 @@ class NetworkManager {
       const [info, status] = await Promise.all(promises)
       return { info, status }
     } catch (err) {
-      console.error('fetchNetworkInfo', error)
+      console.error('fetchNetworkInfo', err)
       return null
     }
   }

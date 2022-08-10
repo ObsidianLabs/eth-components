@@ -53,7 +53,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   })
 
   useEffect(() => {
-    if (!networkId) return
+    if (!networkId || networkManager.network && networkId === networkManager.network.id) return
     updateNetworkPage(networkId)
   }, [networkId, networkManager.networks])
 
