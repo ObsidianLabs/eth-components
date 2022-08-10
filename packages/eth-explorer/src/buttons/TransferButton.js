@@ -41,7 +41,7 @@ export default class TransferButton extends PureComponent {
     }
     const { account, tokens } = this.props.explorer.currentPage?.state
     this.setState({
-      accountBalance: account.balance,
+      accountBalance: account?.balance,
       token: 'core',
       tokens: tokens?.length ? tokens : null
     })
@@ -105,7 +105,7 @@ export default class TransferButton extends PureComponent {
         ).catch(reject)
       })
     } catch (e) {
-      console.warn(e)
+      console.warn('transfer failed', e)
       notification.error(t('explorer.transactions.transferFailed'), e.reason || e.message)
       this.setState({ pushing: false })
       return
@@ -170,7 +170,7 @@ export default class TransferButton extends PureComponent {
     const { loading, accountBalance, token, amount, recipient, pushing } = this.state
     const big = networkManager.sdk?.utils.format.big
     const max = token === 'core'
-      ? `${accountBalance} ${networkManager.symbol}`
+      ? `${accountBalance || 0} ${networkManager.symbol}`
       : `${big(token.balance).div(big(10).pow(token.decimals)).toString()} ${token.symbol}`
     
     const mataMaskAccount = networkManager?.browserExtension?.currentAccount || ''

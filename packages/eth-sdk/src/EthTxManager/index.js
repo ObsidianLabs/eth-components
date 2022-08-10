@@ -11,6 +11,24 @@ export default class EthTxManager {
     return this.client.provider
   }
 
+  recombineErrorMsg (e) {
+    const recombineMsg = [
+      {originalMsg: 'transaction underpriced', message: 'Please increase transfer amount.'},
+      {originalMsg: 'header not found', message: 'Please try again.'},
+      {originalMsg: 'insufficient funds for transfer', message: 'Insufficient balance.'}
+    ]
+    let errMsg = null
+    if (e?.message.startsWith('[ethjs-query]')) {
+      try {
+        errMsg = JSON.parse(e.message.substring(e.message.indexOf('{'), e.message.lastIndexOf('}') + 1))
+      } catch {}
+    }
+    const message = recombineMsg.find(el => (
+      el.originalMsg === errMsg?.value?.data?.message || el.originalMsg === e?.error?.data?.message
+    ))?.message
+    return (message && {message}) || (e?.error?.data?.message && e.error.data)
+  }
+
   async getTransferTx(Contract, { from, to, token, amount }, override) {
     let value
     try {
@@ -25,13 +43,13 @@ export default class EthTxManager {
 
     if (token === 'core' || !token) {
       const voidSigner = new ethers.VoidSigner(from, this.provider)
-      const populated = await voidSigner.populateTransaction({ to, value })
-      const nonce = await this.provider.getTransactionCount(from)
-      populated.nonce = nonce
       try {
+        const populated = await voidSigner.populateTransaction({ to, value })
+        const nonce = await this.provider.getTransactionCount(from)
+        populated.nonce = nonce
         return { tx: populated }
       } catch (e) {
-        throw utils.parseError(e)
+        throw this.recombineErrorMsg(e) || utils.parseError(e)
       }
     } else {
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.client)
@@ -48,13 +66,14 @@ export default class EthTxManager {
     } catch {
       throw new Error('The entered amount is invalid.')
     }
-    const tx = await factory.getDeployTransaction(...parameters, { value })
-    tx.gasPrice = gasPrice
-    const voidSigner = new ethers.VoidSigner(override.from, this.provider)
-    const populated = await voidSigner.populateTransaction(tx)
-    const nonce = await this.provider.getTransactionCount(override.from)
-    populated.nonce = nonce
+
     try {
+      const tx = await factory.getDeployTransaction(...parameters, { value })
+      tx.gasPrice = gasPrice
+      const voidSigner = new ethers.VoidSigner(override.from, this.provider)
+      const populated = await voidSigner.populateTransaction(tx)
+      const nonce = await this.provider.getTransactionCount(override.from)
+      populated.nonce = nonce
       return { tx: populated }
     } catch (e) {
       throw utils.parseError(e)
