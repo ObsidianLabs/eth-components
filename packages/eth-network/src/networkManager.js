@@ -50,7 +50,14 @@ class NetworkManager {
   }
 
   get symbol() {
-    return this.current?.symbol
+    return this.current?.symbol || this.getCustomCounterpartNetwork()?.symbol || ''
+  }
+
+  get getExplorerUrl() {
+    if (this.current?.group === 'others') {
+     return this.getCustomCounterpartNetwork()?.explorerUrl
+    }
+    return this.current?.explorerUrl || ''
   }
 
   get metaMaskConnected() {
@@ -60,6 +67,10 @@ class NetworkManager {
 
   get customNetWorks() {
     return redux.getState().customNetworks.toJS()
+  }
+
+  getCustomCounterpartNetwork () {
+    return this.networks?.find(el => !(['default', 'others'].includes(el.group)) && el.id === this.current?.networkId)
   }
 
   removeEndingSlash(rpc) {

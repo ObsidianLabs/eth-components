@@ -83,8 +83,7 @@ export default class AccountTransactions extends PureComponent {
   }
 
   renderTableBody = () => {
-    const networkId = networkManager.sdk?.txManager?.client?.networkId
-    const explorerUrl = networkManager.networks.find(item => networkId === item.id)?.explorerUrl
+    const explorerUrl = networkManager.getExplorerUrl
     const { TransactionRow } = this.props
     this.setState({ explorerUrl })
     const rows = this.state.txs.map(tx => (
@@ -189,17 +188,15 @@ export default class AccountTransactions extends PureComponent {
 
   render () {
     const TransactionHeader = this.props.TransactionHeader
-    if (this.state.hide) {
-      return null
-    }
-    const total = Math.max(0, this.state.total) || ''
+    const { hide, total, tx, explorerUrl } = this.state
+    if (hide) return null
     return (
     <>
       <TableCard
         title={
           <div className='d-flex flex-row align-items-end'>
             <h4 className='mb-0'>{t('explorer.transactions.transactions')}</h4>
-            <Badge pill className='ml-1 mb-1'>{total}</Badge>
+            <Badge pill className='ml-1 mb-1'>{Math.max(0, total) || ''}</Badge>
           </div>
         }
         tableSm
@@ -211,12 +208,12 @@ export default class AccountTransactions extends PureComponent {
         ref={this.txModal}
         title={'Transaction Detail'}
         textCancel='Close'
-        textConfirm={'View More on Block Explorer'}
-        onConfirm={this.openBlockExplorer}
+        textConfirm={explorerUrl && 'View More on Block Explorer'}
+        onConfirm={explorerUrl && this.openBlockExplorer}
       >
         <TransactionDetails
-          tx={this.state.tx}
-          explorerUrl={this.state.explorerUrl}
+          tx={tx}
+          explorerUrl={explorerUrl}
           transferType={'generalTransfer'}
           closeModal={() => this.txModal.current.closeModal()}
         />

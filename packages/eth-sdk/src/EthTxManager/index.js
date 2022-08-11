@@ -18,13 +18,14 @@ export default class EthTxManager {
       {originalMsg: 'insufficient funds for transfer', message: 'Insufficient balance.'}
     ]
     let errMsg = null
-    if (e?.message.startsWith('[ethjs-query]')) {
+    if (e?.message.includes('[ethjs-query]')) {
       try {
         errMsg = JSON.parse(e.message.substring(e.message.indexOf('{'), e.message.lastIndexOf('}') + 1))
       } catch {}
     }
     const message = recombineMsg.find(el => (
-      el.originalMsg === errMsg?.value?.data?.message || el.originalMsg === e?.error?.data?.message
+      e?.error?.message.startsWith(el.originalMsg) || errMsg?.value?.data?.message.startsWith(el.originalMsg)
+      || e?.error?.data?.message.startsWith(el.originalMsg)
     ))?.message
     return (message && {message}) || (e?.error?.data?.message && e.error.data)
   }
@@ -76,7 +77,7 @@ export default class EthTxManager {
       populated.nonce = nonce
       return { tx: populated }
     } catch (e) {
-      throw utils.parseError(e)
+      throw this.recombineErrorMsg(e) || utils.parseError(e)
     }
   }
 
@@ -116,7 +117,7 @@ export default class EthTxManager {
     }
 
     const promise = pendingTx.then(res => res.hash).catch(e => {
-      throw utils.parseError(e)
+      throw this.recombineErrorMsg(e) || utils.parseError(e)
     })
 
     promise.mined = async () => {
@@ -160,7 +161,7 @@ export default class EthTxManager {
           res.result = await getResult(transaction, height)
         } catch (e) {
           res.error = e.reason
-          const parsed = utils.parseError(e)
+          const parsed = this.recombineErrorMsg(e) || utils.parseError(e)
           if (parsed.reason) {
             res.error = parsed.reason
           }

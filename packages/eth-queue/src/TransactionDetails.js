@@ -87,7 +87,6 @@ class TransactionDetails extends PureComponent {
     const contractAddress = receipt?.contractAddress || data.contractAddress
     const transactionFee = receipt?.transactionFee || transaction?.gasPrice && receipt?.gasUsed && ((transaction.gasPrice * receipt.gasUsed) / (Math.pow(10, 18)))
     const signerCodeName = transferType ? `From (${t('contract.deploy.signer')})` : t('contract.deploy.signer')
-    const networkSymbol = networkManager.symbol || networkManager?.networks.find(item => item.id === networkManager?.network.networkId)?.symbol || ''
 
     return (
       <Table>
@@ -95,12 +94,14 @@ class TransactionDetails extends PureComponent {
           name='Tx Hash'
           icon='fas fa-hashtag'
           badge={(
+            explorerUrl ?
             <a href='javascript:void(0)'
               onClick={() => this.handleClick(`/tx/${txHash}`, 'explorer', explorerUrl)}
               className='text-body'
             >
               <code>{txHash}</code>
             </a>
+            : <code>{txHash}</code>
           )}
         />
         <TableCardRow
@@ -154,15 +155,15 @@ class TransactionDetails extends PureComponent {
         {
           value &&
           <TableCardRow
-            name={transferType ? `Value` : `${networkSymbol} Sent`}
+            name={transferType ? `Value` : `${networkManager.symbol} Sent`}
             icon='fas fa-coins'
-            badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkSymbol}`}
+            badge={`${networkManager.sdk?.utils.unit.fromValue(value)} ${networkManager.symbol}`}
           />
         }
         <TableCardRow
           name={`Transaction Fee`}
           icon='fas fa-coins'
-          badge={transactionFee && `${transactionFee} ${networkSymbol}`}
+          badge={transactionFee && `${transactionFee} ${networkManager.symbol}`}
         />
         <TableCardRow
           name='Nonce'
