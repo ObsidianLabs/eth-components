@@ -246,6 +246,7 @@ const templates = [
   { id: 'empty', display: 'Empty Project' },
   { id: 'coin', display: 'Coin' },
   { id: 'erc20', display: 'ERC20 Token' },
+  { id: 'erc1155', display: 'ERC1155 Token'},
   ...(platform.isWeb ? [{ id: 'erc721', display: 'ERC721' }] : []),
   {
     group: 'open zeppelin',
