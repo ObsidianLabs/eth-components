@@ -86,8 +86,8 @@ export default class EthTxManager {
     const supportsEIP1559 = await this.provider.getBlock("latest").baseFeePerGas !== undefined
     const result = await this.provider.estimateGas(tx)
     const feeData = await this.provider.getFeeData()
-    if (BigInt(feeData.maxPriorityFeePerGas) < BigInt(gasPrice)) {
-      const tip = BigInt(feeData.maxFeePerGas) - BigInt(feeData.maxPriorityFeePerGas)
+    if (BigInt(feeData.maxPriorityFeePerGas || 0) < BigInt(gasPrice)) {
+      const tip = BigInt(feeData.maxFeePerGas || 0) - BigInt(feeData.maxPriorityFeePerGas || 0)
       feeData.maxPriorityFeePerGas = '0x' + BigInt(gasPrice).toString(16)
       feeData.maxFeePerGas = '0x' + (BigInt(gasPrice) + tip).toString(16)
     }
@@ -101,7 +101,7 @@ export default class EthTxManager {
     return {
       gasLimit: result.toString(),
       maxFeePerGas: BigInt(feeData.maxFeePerGas).toString(10),
-      maxPriorityFeePerGas: BigInt(feeData.maxPriorityFeePerGas).toString(10),
+      maxPriorityFeePerGas: BigInt(feeData.maxPriorityFeePerGas || 0).toString(10),
     }
   }
 
