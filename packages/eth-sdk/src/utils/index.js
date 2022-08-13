@@ -93,5 +93,6 @@ export default {
   },
   parseObject,
   parseValue,
-  isServerError: error => (/Server Error/g).test(error)
+  isServerError: error => (/Server Error/g).test(error),
+  isContractReadDataError: error => (/^(missing revert data in call exception|VM Exception while processing transaction: revert)/).test(error),
 }

@@ -23,7 +23,6 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
 
   const [active, setActive] = useState(true)
   const [showCustomNetworkModal, setShowCustomNetworkModal] = useState(false)
-  const [notificaStatus, setNotificaStatus] = useState(false)
   const customModal = useRef()
   const paramsNetworkValue = useParams()?.network
 
@@ -34,9 +33,8 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
 
   const updateNetworkPage = (id) => {
     const matchedNet = networkManager.findChainById(id)
-    if(!matchedNet || id === 'custom') return
+    if (!matchedNet || id === 'custom') return
     networkManager.setNetwork(matchedNet)
-    setNotificaStatus(true)
   }
 
   useEffect(() => {
@@ -55,11 +53,9 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   })
 
   useEffect(() => {
-    if (!networkId) return
+    if (!networkId || networkManager.network && networkId === networkManager.network.id) return
     updateNetworkPage(networkId)
-  }, [networkId])
-
-  const changeNotificaStatus = () => setNotificaStatus(false)
+  }, [networkId, networkManager.networks])
 
   function customNetworkModalBody() {
     return (
@@ -90,9 +86,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
     return <>
       <RemoteNetwork
         networkId={networkId}
-        url={getRpcUrl()}
-        notificaStatus={notificaStatus}
-        changeStatus={changeNotificaStatus} />
+        url={getRpcUrl()} />
       {customNetworkModalBody()}
     </>
   }

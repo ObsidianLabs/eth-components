@@ -6,6 +6,7 @@ import { t } from '@obsidians/i18n'
 import { utils } from '@obsidians/sdk'
 import { getCachingKeys, dropByCacheKey } from 'react-router-cache-route'
 import extraRpcList from './constants/extraRpcs.json'
+import debounce from 'lodash/debounce'
 
 class NetworkManager {
   constructor() {
@@ -13,6 +14,7 @@ class NetworkManager {
     this._sdk = null
     this.network = undefined
     this.Sdks = new Map()
+    this.debounceNotice = debounce(this.sendConnectedNotice, 300)
     this.initChainList()
   }
 
@@ -48,7 +50,14 @@ class NetworkManager {
   }
 
   get symbol() {
-    return this.current?.symbol
+    return this.current?.symbol || this.getCustomCounterpartNetwork()?.symbol || ''
+  }
+
+  get getExplorerUrl() {
+    if (this.current?.group === 'others') {
+     return this.getCustomCounterpartNetwork()?.explorerUrl
+    }
+    return this.current?.explorerUrl || ''
   }
 
   get metaMaskConnected() {
@@ -58,6 +67,14 @@ class NetworkManager {
 
   get customNetWorks() {
     return redux.getState().customNetworks.toJS()
+  }
+
+  getCustomCounterpartNetwork () {
+    return this.networks?.find(el => !(['default', 'others'].includes(el.group)) && el.id === this.current?.networkId)
+  }
+
+  removeEndingSlash(rpc) {
+    return rpc.endsWith("/") ? rpc.substr(0, rpc.length - 1) : rpc
   }
 
   addNetworks(networks) {
@@ -131,16 +148,18 @@ class NetworkManager {
     }
     const hexChainId = utils.format.hexValue(+networkInfo.chainId)
     const switchChain = (chainId) => {
-        return metaMaskClient.request({
+      return metaMaskClient.request({
           method: 'wallet_switchEthereumChain',
           params: [{
             chainId,
           }]
+        }).then(async() => {
+          await this.finalCheck()
         })
       }
       
     const addChain = ({ chainId, chainName, rpcUrls }) => {
-        return metaMaskClient.request({
+      return metaMaskClient.request({
           method: 'wallet_addEthereumChain',
           params: [{
             chainId,
@@ -162,7 +181,7 @@ class NetworkManager {
           })
           await switchChain(hexChainId)
         } catch {
-          return notification.error(t('network.network.error'), t('network.network.errorText'))
+          console.error('switchChain failed', e)
         }
       }
     }
@@ -197,13 +216,36 @@ class NetworkManager {
     }
 
     redux.dispatch('SELECT_NETWORK', network.id)
+    notify && redux.dispatch('CHANGE_NETWORK_STATUS', true)
+    redirect && headerActions.updateNetwork(network.id)
+    
+    platform.isDesktop && await this.finalCheck()
+  }
 
-    if (notify) {
-      redux.dispatch('CHANGE_NETWORK_STATUS', true)
+  sendConnectedNotice() {
+    notification.success(t('network.network.network'), this.network.notification)
+  }
+
+  
+  async fetchNetworkInfo() {
+    try {
+      const promises = [
+        this.sdk?.networkInfo(),
+        this.sdk?.getStatus()
+      ]
+      const [info, status] = await Promise.all(promises)
+      return { info, status }
+    } catch (err) {
+      console.error('fetchNetworkInfo', err)
+      return null
     }
-    if (redirect) {
-      headerActions.updateNetwork(network.id)
-    }
+  }
+
+  async finalCheck() {
+    if (this.network.id === 'dev') return
+    const networkInfo = await this.fetchNetworkInfo()
+    if (!networkInfo) return
+    this.debounceNotice()
   }
 
   async updateCustomNetwork({ url, option = '{}', notify = true, name, chainId = '' }) {
@@ -270,10 +312,6 @@ class NetworkManager {
         console.warn('fetch chains.json failed')
         throw new Error(error)
       })
-  }
-
-  removeEndingSlash(rpc) {
-    return rpc.endsWith("/") ? rpc.substr(0, rpc.length - 1) : rpc
   }
 
   searchChainList(value, isChainId = false) {

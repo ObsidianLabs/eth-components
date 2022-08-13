@@ -11,6 +11,25 @@ export default class EthTxManager {
     return this.client.provider
   }
 
+  recombineErrorMsg (e) {
+    const recombineMsg = [
+      {originalMsg: 'transaction underpriced', message: 'Please increase transfer amount.'},
+      {originalMsg: 'header not found', message: 'Please try again.'},
+      {originalMsg: 'insufficient funds for transfer', message: 'Insufficient balance.'}
+    ]
+    let errMsg = null
+    if (e?.message.includes('[ethjs-query]')) {
+      try {
+        errMsg = JSON.parse(e.message.substring(e.message.indexOf('{'), e.message.lastIndexOf('}') + 1))
+      } catch {}
+    }
+    const message = recombineMsg.find(el => (
+      e?.error?.message.startsWith(el.originalMsg) || errMsg?.value?.data?.message.startsWith(el.originalMsg)
+      || e?.error?.data?.message.startsWith(el.originalMsg)
+    ))?.message
+    return (message && {message}) || (e?.error?.data?.message && e.error.data)
+  }
+
   async getTransferTx(Contract, { from, to, token, amount }, override) {
     let value
     try {
@@ -25,13 +44,13 @@ export default class EthTxManager {
 
     if (token === 'core' || !token) {
       const voidSigner = new ethers.VoidSigner(from, this.provider)
-      const populated = await voidSigner.populateTransaction({ to, value })
-      const nonce = await this.provider.getTransactionCount(from)
-      populated.nonce = nonce
       try {
+        const populated = await voidSigner.populateTransaction({ to, value })
+        const nonce = await this.provider.getTransactionCount(from)
+        populated.nonce = nonce
         return { tx: populated }
       } catch (e) {
-        throw utils.parseError(e)
+        throw this.recombineErrorMsg(e) || utils.parseError(e)
       }
     } else {
       const contract = new Contract({ address: token.address, abi: ERC20 }, this.client)
@@ -48,16 +67,17 @@ export default class EthTxManager {
     } catch {
       throw new Error('The entered amount is invalid.')
     }
-    const tx = await factory.getDeployTransaction(...parameters, { value })
-    tx.gasPrice = gasPrice
-    const voidSigner = new ethers.VoidSigner(override.from, this.provider)
-    const populated = await voidSigner.populateTransaction(tx)
-    const nonce = await this.provider.getTransactionCount(override.from)
-    populated.nonce = nonce
+
     try {
+      const tx = await factory.getDeployTransaction(...parameters, { value })
+      tx.gasPrice = gasPrice
+      const voidSigner = new ethers.VoidSigner(override.from, this.provider)
+      const populated = await voidSigner.populateTransaction(tx)
+      const nonce = await this.provider.getTransactionCount(override.from)
+      populated.nonce = nonce
       return { tx: populated }
     } catch (e) {
-      throw utils.parseError(e)
+      throw this.recombineErrorMsg(e) || utils.parseError(e)
     }
   }
 
@@ -67,8 +87,8 @@ export default class EthTxManager {
     const supportsEIP1559 = await this.provider.getBlock("latest").baseFeePerGas !== undefined
     const result = await this.provider.estimateGas(tx)
     const feeData = await this.provider.getFeeData()
-    if (BigInt(feeData.maxPriorityFeePerGas) < BigInt(gasPrice)) {
-      const tip = BigInt(feeData.maxFeePerGas) - BigInt(feeData.maxPriorityFeePerGas)
+    if (BigInt(feeData.maxPriorityFeePerGas || 0) < BigInt(gasPrice)) {
+      const tip = BigInt(feeData.maxFeePerGas || 0) - BigInt(feeData.maxPriorityFeePerGas || 0)
       feeData.maxPriorityFeePerGas = '0x' + BigInt(gasPrice).toString(16)
       feeData.maxFeePerGas = '0x' + (BigInt(gasPrice) + tip).toString(16)
     }
@@ -82,7 +102,7 @@ export default class EthTxManager {
     return {
       gasLimit: result.toString(),
       maxFeePerGas: BigInt(feeData.maxFeePerGas).toString(10),
-      maxPriorityFeePerGas: BigInt(feeData.maxPriorityFeePerGas).toString(10),
+      maxPriorityFeePerGas: BigInt(feeData.maxPriorityFeePerGas || 0).toString(10),
     }
   }
 
@@ -97,7 +117,7 @@ export default class EthTxManager {
     }
 
     const promise = pendingTx.then(res => res.hash).catch(e => {
-      throw utils.parseError(e)
+      throw this.recombineErrorMsg(e) || utils.parseError(e)
     })
 
     promise.mined = async () => {
@@ -141,7 +161,7 @@ export default class EthTxManager {
           res.result = await getResult(transaction, height)
         } catch (e) {
           res.error = e.reason
-          const parsed = utils.parseError(e)
+          const parsed = this.recombineErrorMsg(e) || utils.parseError(e)
           if (parsed.reason) {
             res.error = parsed.reason
           }

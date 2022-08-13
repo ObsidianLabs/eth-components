@@ -46,7 +46,7 @@ export default class BrowserExtension {
     const matchedNet = this.networkManager.findChainById(redux.getState().network)
     if (matchedNet && matchedNet.chainId === newChainId) return
     const includeNet = this.networkManager.findChainByChainId(newChainId)
-    if (includeNet) { // 
+    if (includeNet) {
       this.networkManager.setNetwork(includeNet)
     } else { // add a new chain if we could not find newChainId in our network list
       const newChain = this.networkManager.searchChain(chainId, true)
@@ -67,18 +67,9 @@ export default class BrowserExtension {
       this.networkManager.setNetwork(option)
     }
   }
-
-  initNetWork() {
-    const { network } = redux.getState()
-    if (!network) return
-    const matchedNet = this.networkManager.findChainById(network)
-    if (!matchedNet) return
-    this.networkManager.setNetwork(matchedNet)
-  }
-
+  
   async initialize(ethereum) {
     ethereum.on('chainChanged', this.onChainChanged.bind(this))
-    this.initNetWork(this.getEthChaind())
  
     ethereum.on('accountsChanged', this.onAccountsChanged.bind(this))
     const accounts = await this.getAccounts()

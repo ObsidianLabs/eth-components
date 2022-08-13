@@ -127,7 +127,9 @@ export default class EthersClient {
     }
 
     const result = await this.explorer.getHistory(address, page, size)
-    if (utils.isServerError(result?.message) || result?.status === 500) notification.error(t('network.network.serveBusy'), t('network.network.errorText'))
+    if (utils.isServerError(result?.message) || result?.status === 500) {
+      notification.error(t('explorer.transactions.connectionUnstable'), t('explorer.transactions.connectionUnstableText'))
+    }
     const isHarmony = chainsHarmonyName.includes(this.networkId)
     const isConflux = chainsConfluxtName.includes(this.networkId)
     let list = result?.result ?

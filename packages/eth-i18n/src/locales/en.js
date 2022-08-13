@@ -63,6 +63,8 @@ const translation = {
       fee: 'fee',
       transferFailed: 'Transfer Failed',
       transferFailedText: 'The amount is empty.',
+      connectionUnstable: 'Block Explorer Connection Unstable',
+      connectionUnstableText: 'Please try again later.',
     }
   },
   network: {
@@ -140,6 +142,7 @@ const translation = {
     parameters: 'Parameters',
     noEventExecuted: 'No Event Executed',
     noEventExecutedText: 'There was no event executed in the current range. Please fill in another range or check more data on the block explorer.',
+    missingRevertDataText: 'Missing revert data in call exception. Transaction reverted without a reason string.',
   },
   abi: {
     storage: 'ABI Storage',

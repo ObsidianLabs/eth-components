@@ -63,6 +63,8 @@ const translation = {
       fee: 'Gas 费',
       transferFailed: '转账失败',
       transferFailedText: '金额是空的',
+      connectionUnstable: '区块浏览器资源管理器连接不稳定',
+      connectionUnstableText: '请稍后再试。',
     }
   },
   network: {
@@ -140,6 +142,7 @@ const translation = {
     parameters: '参数',
     noEventExecuted: '没有执行的事件',
     noEventExecutedText: '在当前范围内没有执行任何事件，请填写另一个范围或在区块探索器上检查更多数据。',
+    missingRevertDataText: '调用合约缺少返回的数据导致读取数据异常，合约数据无法读取。',
   },
   abi: {
     storage: 'ABI存储',
