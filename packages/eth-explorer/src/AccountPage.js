@@ -10,26 +10,47 @@ import AccountBalance from './AccountBalance'
 import AccountInfo from './AccountInfo'
 import AccountTransactions from './AccountTransactions'
 
+let currentNetId = null
 export default class AccountPage extends PureComponent {
   state = {
     error: null,
     account: null,
     tokens: [],
     tokenInfo: null,
-    loading: true,
+    loading: true
   }
 
   constructor (props) {
     super(props)
     this.accountTransactions = React.createRef()
     props.cacheLifecycles.didRecover(this.componentDidRecover)
+
+    this.delayUpdate = this.delayUpdate.bind(this)
   }
 
-  componentDidMount () {
-    this.props.onDisplay(this)
+  async componentDidMount() {
     this.refresh()
   }
 
+  delayUpdate() {
+    let updateCount = 5
+    const delayFunc = async (func = delayFunc, delayTime = 500 * (6 - updateCount) ) => {
+      if (updateCount === 0) return
+      updateCount--
+      const account = await networkManager.sdk.accountFrom(this.props.value)
+      this.setState({ account })
+      setTimeout(func, delayTime)
+    }
+
+    delayFunc()
+  }
+
+  componentDidUpdate(newProps) {
+    if (newProps.network && newProps.network !== currentNetId) {
+      currentNetId = newProps.network
+      this.delayUpdate()
+    }
+  }
 
   componentDidRecover = () => {
     this.props.onDisplay(this)
@@ -60,7 +81,6 @@ export default class AccountPage extends PureComponent {
     } catch (e) {
       console.error(e)
       this.setState({ loading: false, error: e.message, account: null })
-      return
     }
   }
 
