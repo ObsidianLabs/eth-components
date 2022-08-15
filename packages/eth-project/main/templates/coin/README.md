@@ -1,1 +1,2 @@
 # Coin
+Coin is a simple solidity smart contract that issues a token with basic mint and transfer functionalities. It includes a MINT method which create a predefined fungible token and a SEND method which allows movement of the token from one account to another.

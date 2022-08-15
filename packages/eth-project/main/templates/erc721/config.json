@@ -1,0 +1,8 @@
+{
+  "main": "./contracts/GameItem.sol",
+  "deploy": "./build/contracts/GameItem.json",
+  "framework": "#framework",
+  "compilers": {
+    "solc": "0.8.0"
+  }
+}
