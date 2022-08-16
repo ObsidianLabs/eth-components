@@ -29,6 +29,7 @@ export default class AccountPage extends PureComponent {
   }
 
   async componentDidMount() {
+    this.props.onDisplay(this)
     this.refresh()
   }
 
@@ -38,7 +39,7 @@ export default class AccountPage extends PureComponent {
       if (updateCount === 0) return
       updateCount--
       const account = await networkManager.sdk.accountFrom(this.props.value)
-      const needUpdate = this.state?.account?.balance !== account?.balance
+      const needUpdate = !!account && this.state?.account?.balance !== account?.balance
       needUpdate && this.setState({ account })
       setTimeout(func, delayTime)
     }
