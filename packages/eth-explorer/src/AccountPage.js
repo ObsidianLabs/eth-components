@@ -143,14 +143,21 @@ export default class AccountPage extends PureComponent {
 
     if (error) {
       if (typeof error === 'string') {
+        let errorTit = 'Error'
+        if (utils.isNetworkConnectError(error)) errorTit = t('network.network.error')
+        if (utils.isJsonRPCError(error)) errorTit = 'Network Unstable'
+        let description = error
+        if (utils.isNetworkConnectError(error)) description = t('network.network.errorDesc')
+        if (utils.isJsonRPCError(error)) description = 'Please reconnect this network in Black IDE.'
         return (
           <Screen>
             <ErrorPage
               btnText={t('network.network.reconnect')}
               btnClick={this.handleReconnectNetwork}
-              btnStatus={!utils.isNetworkConnectError(error)}
-              title={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
-              description={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
+              btnStatus={!(utils.isNetworkConnectError(error) || utils.isJsonRPCError(error))}
+              title={errorTit}
+              divider={utils.isJsonRPCError(error) && false}
+              description={description}
             />
           </Screen>
         )
