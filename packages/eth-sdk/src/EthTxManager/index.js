@@ -13,9 +13,9 @@ export default class EthTxManager {
 
   recombineErrorMsg (e) {
     const recombineMsg = [
-      {originalMsg: 'transaction underpriced', message: 'Please increase transfer amount.'},
-      {originalMsg: 'header not found', message: 'Please try again.'},
-      {originalMsg: 'insufficient funds for transfer', message: 'Insufficient balance.'}
+      {originalMsg: ['transaction underpriced'], message: 'Please increase transfer amount.'},
+      {originalMsg: ['header not found'], message: 'Please try again.'},
+      {originalMsg: ['insufficient funds', 'insufficient balance', 'NotEnoughCash'], message: 'Insufficient balance.'}
     ]
     let errMsg = null
     if (e?.message.includes('[ethjs-query]')) {
@@ -23,9 +23,11 @@ export default class EthTxManager {
         errMsg = JSON.parse(e.message.substring(e.message.indexOf('{'), e.message.lastIndexOf('}') + 1))
       } catch {}
     }
-    const message = recombineMsg.find(el => (
-      e?.error?.message.startsWith(el.originalMsg) || errMsg?.value?.data?.message.startsWith(el.originalMsg)
-      || e?.error?.data?.message.startsWith(el.originalMsg)
+    const message = recombineMsg.find(({ originalMsg }) => (
+      originalMsg.some(msg =>
+        e?.error?.message.includes(msg) || errMsg?.value?.data?.message.includes(msg)
+        || e?.error?.data?.message.includes(msg) || e?.data?.message.includes(msg) || e?.message.includes(msg)
+      )
     ))?.message
     return (message && {message}) || (e?.error?.data?.message && e.error.data)
   }
@@ -87,6 +89,7 @@ export default class EthTxManager {
     const supportsEIP1559 = await this.provider.getBlock("latest").baseFeePerGas !== undefined
     const result = await this.provider.estimateGas(tx)
     const feeData = await this.provider.getFeeData()
+    const balance = await this.provider.getBalance(tx.from)
     if (BigInt(feeData.maxPriorityFeePerGas || 0) < BigInt(gasPrice)) {
       const tip = BigInt(feeData.maxFeePerGas || 0) - BigInt(feeData.maxPriorityFeePerGas || 0)
       feeData.maxPriorityFeePerGas = '0x' + BigInt(gasPrice).toString(16)
@@ -97,12 +100,14 @@ export default class EthTxManager {
         gasLimit: result.toString(),
         maxFeePerGas: null,
         maxPriorityFeePerGas: null,
+        balance: balance?.toString(),
       }
     }
     return {
       gasLimit: result.toString(),
       maxFeePerGas: BigInt(feeData.maxFeePerGas).toString(10),
       maxPriorityFeePerGas: BigInt(feeData.maxPriorityFeePerGas || 0).toString(10),
+      balance: balance?.toString(),
     }
   }
 

@@ -247,11 +247,12 @@ function makeProjectManager(Base) {
         })
         result = await networkManager.sdk.estimate(tx)
       } catch (e) {
-        console.warn(e)
+        console.warn('estimate failed', e)
         notification.error(t('contract.estimate.fail'), e.reason || e.message)
         this.deployButton.setState({ pending: false })
         return
       }
+      if (result?.balance === '0') notification.error('Insufficient Balance', 'Cannot deploy.')
 
       this.deployButton.setState({ pending: false })
 
