@@ -15,7 +15,16 @@ export default class EthTxManager {
     const recombineMsg = [
       {originalMsg: ['transaction underpriced'], message: 'Please increase transfer amount.'},
       {originalMsg: ['header not found'], message: 'Please try again.'},
-      {originalMsg: ['insufficient funds', 'insufficient balance', 'NotEnoughCash'], message: 'Insufficient balance.'}
+      {
+        originalMsg: [
+          'insufficient funds',
+          'insufficient balance',
+          'NotEnoughCash',
+          'kind: GasPayment(OutOfFund), gas_used: 0',
+          'gas required exceeds allowance',
+        ],
+        message: 'Insufficient balance.'
+      }
     ]
     let errMsg = null
     if (e?.message.includes('[ethjs-query]')) {
