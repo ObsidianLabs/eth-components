@@ -283,6 +283,11 @@ export default class ContractPage extends PureComponent {
     }
 
     const contractInstance = networkManager.sdk.contractFrom({ ...abi, address: value })
+    const txs = redux.getState().queue?.getIn([networkManager.networkId, 'txs'])?.toJS() || []
+    const contractSigner = txs.find(el =>
+      el.data?.name === 'Deploy' &&
+      (el.data?.receipt?.contractAddress || el.data?.contractAddress)?.toLocaleLowerCase() === contractInstance?.address?.toLocaleLowerCase()
+    )
     const { actions, views, events } = this.separateAbi(abi)
 
     return (
@@ -298,6 +303,7 @@ export default class ContractPage extends PureComponent {
             actions={actions}
             contract={contractInstance}
             signer={signer}
+            contractSigner={contractSigner}
             // history={contractCalls.getIn(['action', 'history'])}
             // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
           />
