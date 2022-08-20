@@ -248,14 +248,19 @@ const templates = [
   { id: 'erc20', display: 'ERC20 Token' },
   ...(platform.isWeb ? [
     { id: 'erc721', display: 'ERC721' },
-    { id: 'erc1155', display: 'ERC1155 Token' }
+    { id: 'erc1155', display: 'ERC1155 Token' },
   ] : []),
+  // { id: 'erc721', remote: true, display: 'ERC721' },
+  // { id: 'erc1155', remote: true, display: 'ERC1155 Token' },
   {
     group: 'open zeppelin',
     badge: 'Open Zeppelin',
     local: true,
     children: [
       { id: 'openzeppelin', display: 'Basics - ERC20, ERC721 & ERC1155 (v3.1+)' },
+      ...(platform.isDesktop ? [
+        { id: 'erc721', display: 'ERC721' }
+      ] : []),
     ],
   },
   {

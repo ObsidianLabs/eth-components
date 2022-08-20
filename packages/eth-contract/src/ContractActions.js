@@ -80,6 +80,11 @@ export default class ContractActions extends AbiActionForm {
       return
     }
 
+    if (parameters.array?.some(el => el === '' || el === '0')) {
+      notification.error(t('contract.transaction.executeFail'), 'Please fill in valid “Parameter” and “Authorization” information in input field.')
+      return
+    }
+
     if (parameters.empty && parameters.array.length && !this.confirming) {
       this.confirming = true
       setTimeout(() => { this.confirming = false }, 3000)
@@ -101,6 +106,12 @@ export default class ContractActions extends AbiActionForm {
       value = networkManager.sdk.utils.unit.toValue(this.state.amount || '0')
     } catch {
       notification.error(t('contract.transaction.executeFail'), t('contract.transaction.executeFailText', {symbol: networkManager.symbol}))
+      this.setState({ executing: false })
+      return
+    }
+
+    if (this.props.contractSigner && signer.toLocaleLowerCase() !== this.props.contractSigner?.data?.signer?.toLocaleLowerCase()) {
+      notification.error(t('contract.transaction.executeFail'), 'The address does not match the "Deploy" step.')
       this.setState({ executing: false })
       return
     }

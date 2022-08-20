@@ -10,26 +10,49 @@ import AccountBalance from './AccountBalance'
 import AccountInfo from './AccountInfo'
 import AccountTransactions from './AccountTransactions'
 
+let currentNetId = null
 export default class AccountPage extends PureComponent {
   state = {
     error: null,
     account: null,
     tokens: [],
     tokenInfo: null,
-    loading: true,
+    loading: true
   }
 
   constructor (props) {
     super(props)
     this.accountTransactions = React.createRef()
     props.cacheLifecycles.didRecover(this.componentDidRecover)
+
+    this.delayUpdate = this.delayUpdate.bind(this)
   }
 
-  componentDidMount () {
+  async componentDidMount() {
     this.props.onDisplay(this)
     this.refresh()
   }
 
+  delayUpdate() {
+    let updateCount = 5
+    const delayFunc = async (func = delayFunc, delayTime = 500 * (6 - updateCount) ) => {
+      if (updateCount === 0) return
+      updateCount--
+      const account = await networkManager.sdk.accountFrom(this.props.value)
+      const needUpdate = !!account && this.state?.account?.balance !== account?.balance
+      needUpdate && this.setState({ account })
+      setTimeout(func, delayTime)
+    }
+
+    delayFunc()
+  }
+
+  componentDidUpdate(newProps) {
+    if (newProps.network && newProps.network !== currentNetId) {
+      currentNetId = newProps.network
+      this.delayUpdate()
+    }
+  }
 
   componentDidRecover = () => {
     this.props.onDisplay(this)
@@ -60,7 +83,6 @@ export default class AccountPage extends PureComponent {
     } catch (e) {
       console.error(e)
       this.setState({ loading: false, error: e.message, account: null })
-      return
     }
   }
 
@@ -121,14 +143,21 @@ export default class AccountPage extends PureComponent {
 
     if (error) {
       if (typeof error === 'string') {
+        let errorTit = 'Error'
+        if (utils.isNetworkConnectError(error)) errorTit = t('network.network.error')
+        if (utils.isJsonRPCError(error)) errorTit = 'Network Unstable'
+        let description = error
+        if (utils.isNetworkConnectError(error)) description = t('network.network.errorDesc')
+        if (utils.isJsonRPCError(error)) description = 'Please reconnect this network in Black IDE.'
         return (
           <Screen>
             <ErrorPage
               btnText={t('network.network.reconnect')}
               btnClick={this.handleReconnectNetwork}
-              btnStatus={!utils.isNetworkConnectError(error)}
-              title={utils.isNetworkConnectError(error) ? t('network.network.error') : 'Error'}
-              description={utils.isNetworkConnectError(error) ? t('network.network.errorDesc') : error}
+              btnStatus={!(utils.isNetworkConnectError(error) || utils.isJsonRPCError(error))}
+              title={errorTit}
+              divider={utils.isJsonRPCError(error) && false}
+              description={description}
             />
           </Screen>
         )
