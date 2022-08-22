@@ -87,7 +87,7 @@ export default class ArrayParamInput extends PureComponent {
     const { type } = this.props
     const { item, index } = this.state
     this.onResolve(optionItemFromValue(item, type.replace(/\[\d*\]/, ''), index))
-    this.setState({ item: {} })
+    // this.setState({ item: {} })
     this.modal.current.closeModal()
   }
 

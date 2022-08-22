@@ -110,7 +110,7 @@ export default class ContractActions extends AbiActionForm {
       return
     }
 
-    if (this.props.contractSigner && signer.toLocaleLowerCase() !== this.props.contractSigner?.data?.signer?.toLocaleLowerCase()) {
+    if (this.props.contractSigner && signer.toLocaleLowerCase() !== this.props.contractSigner?.toLocaleLowerCase()) {
       notification.error(t('contract.transaction.executeFail'), 'The address does not match the "Deploy" step.')
       this.setState({ executing: false })
       return
