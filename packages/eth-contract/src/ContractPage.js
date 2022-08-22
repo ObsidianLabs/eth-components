@@ -37,6 +37,7 @@ export default class ContractPage extends PureComponent {
       selectedAbi: null,
       account: null,
       loading: true,
+      contractSigner: null,
     }
     props.cacheLifecycles.didRecover(this.componentDidRecover)
   }
@@ -213,9 +214,22 @@ export default class ContractPage extends PureComponent {
     this.props.onRefresh()
   }
 
+  getContractSigner = async (contractInstance) => {
+    const address = contractInstance?.address
+    if (address) {
+      let result = null
+      try {
+        result = await networkManager.sdk?.client?.explorer?.getHistory(address, 0, 10, 'asc')
+        result = result?.result?.transactions || result?.result?.list || result?.result || result?.list || []
+        const contractSigner = result.find(el => el.contractAddress === address && !el.to)?.from
+        contractSigner && await this.setState({ contractSigner })
+      } catch (e) { console.warn('get contract signer failed ', e)}
+    }
+  }
+
   render () {
     const { subroute: network, value, signer } = this.props
-    const { error, abi, account, errorType } = this.state
+    const { error, abi, account, errorType, contractSigner } = this.state
 
     if (!networkManager.sdk) {
       return null
@@ -284,10 +298,11 @@ export default class ContractPage extends PureComponent {
 
     const contractInstance = networkManager.sdk.contractFrom({ ...abi, address: value })
     const txs = redux.getState().queue?.getIn([networkManager.networkId, 'txs'])?.toJS() || []
-    const contractSigner = txs.find(el =>
+    const txsContractSigner = txs.find(el =>
       el.data?.name === 'Deploy' &&
       (el.data?.receipt?.contractAddress || el.data?.contractAddress)?.toLocaleLowerCase() === contractInstance?.address?.toLocaleLowerCase()
-    )
+    )?.data?.signer
+    !txsContractSigner && this.getContractSigner(contractInstance)
     const { actions, views, events } = this.separateAbi(abi)
 
     return (
@@ -303,7 +318,7 @@ export default class ContractPage extends PureComponent {
             actions={actions}
             contract={contractInstance}
             signer={signer}
-            contractSigner={contractSigner}
+            contractSigner={txsContractSigner || contractSigner}
             // history={contractCalls.getIn(['action', 'history'])}
             // bookmarks={contractCalls.getIn(['action', 'bookmarks'])}
           />

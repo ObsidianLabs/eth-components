@@ -217,7 +217,7 @@ class ExplorerProxy {
     this.channel = new IpcChannel('explorer')
   }
 
-  async getHistory(address, page = 0, size = 10) {
+  async getHistory(address, page = 0, size = 10, sort = 'desc') {
     const currentNetworkId = (this.networkId === 'moonrivertest' || this.networkId === 'moonbeamtest') ? 'moonbasetest' : this.networkId
     let query = {
       module: 'account',
@@ -226,7 +226,7 @@ class ExplorerProxy {
       endblock: 99999999,
       page: page + 1,
       offset: size,
-      sort: 'desc'
+      sort
     }
     if (chainsConfluxtName.includes(currentNetworkId)) {
       query.accountAddress = address
