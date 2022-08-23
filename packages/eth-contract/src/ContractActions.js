@@ -53,7 +53,9 @@ export default class ContractActions extends AbiActionForm {
       })
       result = await networkManager.sdk.estimate(tx)
     } catch (e) {
-      notification.error(t('contract.estimate.fail'), e.reason || e.message)
+      const { reason, message, error } = e
+      console.warn('estimate failed', error?.reason || error?.message || reason || message)
+      notification.error(t('contract.estimate.fail'), error?.reason || error?.message || reason || message)
       return
     }
 
