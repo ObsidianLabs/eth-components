@@ -60,14 +60,15 @@ export default class EthersClient {
   }
 
   async getStatus() {
-    let provider = this.provider
     // check if it's Celo ChainId, Celo chain needs to modify the provide
-    if (this.rpcUrl && ['https://rpc.ankr.com/celo', 'https://forno.celo.org'].includes(this.rpcUrl)) {
-      provider = getCeloProvider(this.rpcUrl, providers, BigNumber)
-    }
+    const celoNet = this.rpcUrl && ['https://rpc.ankr.com/celo', 'https://forno.celo.org'].includes(this.rpcUrl)
+    const provider = celoNet ? getCeloProvider(this.rpcUrl, providers, BigNumber)
+      : this.provider
+
     try {
       return await provider.getBlock('latest')
     } catch (error) {
+      console.warn('current provider', provider)
       throw error('fetch network status failed', error)
     }
   }
