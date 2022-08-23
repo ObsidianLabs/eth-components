@@ -146,7 +146,6 @@ function makeProjectManager(Base) {
       }
       const filePath = this.pathForProjectFile(settings.deploy)
       const pathInProject = this.pathInProject(filePath)
-      console.log(filePath, pathInProject)
 
       return { path: filePath, pathInProject }
     }
@@ -187,7 +186,6 @@ function makeProjectManager(Base) {
     }
 
     checkSdkAndSigner(allParameters) {
-      console.log(networkManager)
       if (!networkManager.sdk) {
         notification.error(t('network.network.noNetwork'), t('network.network.noNetworkText'))
         return true
@@ -200,7 +198,6 @@ function makeProjectManager(Base) {
     }
 
     validateDeployment(contractObj) {
-      console.log('contractObj', contractObj)
       let bytecode = contractObj.bytecode || contractObj.evm?.bytecode?.object
       let deployedBytecode = contractObj.deployedBytecode || contractObj.evm?.deployedBytecode?.object
 
@@ -263,13 +260,10 @@ function makeProjectManager(Base) {
     }
 
     async pushDeployment(contractObj, allParameters) {
-      console.log(allParameters, 'allParameters')
-      console.log(contractObj, 'contractObj')
       if (this.checkSdkAndSigner(allParameters)) {
         return
       }
       const deploy = this.validateDeployment(contractObj)
-      console.log(deploy, 'deploy')
       if (!deploy) {
         return
       }
@@ -284,15 +278,18 @@ function makeProjectManager(Base) {
       let result
       try {
         const tx = await networkManager.sdk.getDeployTransaction({
+          ...deploy,
           abi: deploy.abi,
           bytecode: deploy.bytecode,
-          options: deploy.options,
+          options: {
+            ...deploy.options,
+            args: allParameters.args,
+          },
           parameters: parameters.array,
           amount,
-          ...deploy
         }, {
           from: allParameters.signer,
-          ...override
+          ...override,
         })
 
         result = await new Promise((resolve, reject) => {
@@ -336,8 +333,6 @@ function makeProjectManager(Base) {
 
       this.deployButton.setState({ pending: false })
       notification.success(t('contract.deploy.success'))
-      console.log(result, '123123123')
-      console.log(deploy, '12312====4123')
       redux.dispatch('ABI_ADD', {
         ...deploy.options,
         name: contractName,

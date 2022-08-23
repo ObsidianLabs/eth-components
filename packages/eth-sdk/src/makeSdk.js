@@ -112,7 +112,6 @@ export default function makeSdk({
     }
 
     async accountFrom (address) {
-      console.log(address, 'accountFrom')
       return await this.client.getAccount(address)
     }
 

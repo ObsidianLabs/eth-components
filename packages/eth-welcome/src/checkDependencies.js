@@ -12,7 +12,6 @@ export default async function checkDependencies (extras = []) {
         return item.channel.installed()
       }),
     ])
-    console.log(results, 'result')
     return results.every(x => !!x)
   } catch (e) {
     return false

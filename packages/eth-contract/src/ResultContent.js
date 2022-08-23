@@ -19,7 +19,6 @@ export default withRouter(({ format, actionResult, actionError, history, onNavig
   }
 
   if (actionResult) {
-    console.log(actionResult, 'actionResult')
     // if (format === 'pretty') {
     //   return (
     //     <ReactJson

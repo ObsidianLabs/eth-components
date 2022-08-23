@@ -14,6 +14,7 @@ import { KeypairInputSelector } from '@obsidians/keypair'
 import { networkManager } from '@obsidians/eth-network'
 import { ContractForm, ActionParamFormGroup } from '@obsidians/eth-contract'
 import { t } from '@obsidians/i18n'
+import Args from './Args'
 
 export default class DeployerButton extends PureComponent {
   constructor(props) {
@@ -27,20 +28,26 @@ export default class DeployerButton extends PureComponent {
       amount: '',
       signer: '',
       pending: false,
+      settings: {},
     }
     this.modal = React.createRef()
     this.form = React.createRef()
+    this.args = React.createRef()
   }
 
   componentDidMount() {
     this.props.projectManager.deployButton = this
   }
 
-  onClick = () => {
+  onClick = async () => {
     if (this.state.pending) {
       return
     }
     this.props.projectManager.deploy()
+    const settings = await this.props.projectManager.checkSettings()
+    this.setState({
+      settings
+    })
   }
 
   getDeploymentParameters = async (option, callback, estimate) => {
@@ -79,8 +86,6 @@ export default class DeployerButton extends PureComponent {
       return
     }
 
-
-
     let constructorAbi
     try {
       if (fileNode.path.endsWith('.json')) {
@@ -100,9 +105,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   readContractJson = async fileNode => {
-    console.log('contractJson', fileNode)
     const contractJson = await this.props.projectManager.readFile(fileNode.path)
-    console.log('contractJson', contractJson)
     try {
       return JSON.parse(contractJson)
     } catch (e) {
@@ -147,6 +150,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   prepare = () => {
+    const args = this.args.current?.getArgs()
     let parameters = { array: [], obj: {} }
     if (this.state.constructorAbi) {
       try {
@@ -160,7 +164,7 @@ export default class DeployerButton extends PureComponent {
     const { contractName, contractObj, amount, signer } = this.state
     const options = {}
     networkManager.sdk?.txOptions?.list.forEach(opt => options[opt.name] = this.state[opt.name] || opt.default)
-
+    options.args = args
     return [contractObj, { parameters, amount, contractName, signer, ...options }]
   }
 
@@ -226,6 +230,13 @@ export default class DeployerButton extends PureComponent {
         />
         <div className='mb-2' />
       </>
+    }  else if (['cpp', 'javascript'].indexOf(this.state.settings.language) > -1) {
+      constructorParameters = (
+        <div className='mb-2'>
+          <Label>初始化参数</Label>
+          <Args ref={this.args} initial={{ '': '' }} />
+        </div>
+      )
     }
 
     const needEstimate = this.needEstimate()

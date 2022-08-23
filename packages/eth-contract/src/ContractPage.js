@@ -56,7 +56,6 @@ export default class ContractPage extends PureComponent {
   }
 
   refresh = async () => {
-    console.log('refresh')
     this.setState({ loading: true, error: null, abi: {}, abis: [], selectedAbi: null, account: null, errorType: null })
 
     await new Promise(resolve => setTimeout(resolve, 10))
@@ -105,7 +104,6 @@ export default class ContractPage extends PureComponent {
     }
 
     this.loadProjectAbis()
-    console.log(account, '11111111123123123')
     this.setState({
       loading: false,
       error: <span>No ABI for code hash <code>{account.codeHash}</code>.</span>,
@@ -207,7 +205,6 @@ export default class ContractPage extends PureComponent {
     const events = abi.filter(item => item.type === 'event')
     const actions = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) === -1)
     const views = functions.filter(item => ['view', 'pure'].indexOf(item.stateMutability) > -1)
-    console.log(actions, views, events)
     return { actions, views, events }
   }
 
@@ -232,7 +229,6 @@ export default class ContractPage extends PureComponent {
     }
 
     if (error) {
-      console.log(account, 'contractPage')
       if (account && errorType && errorType === 'ABI_NOT_FOUND') {
         return (
           <Screen>

@@ -66,7 +66,6 @@ export default class EthersClient {
   }
 
   async getAccount(address) {
-    console.log(address, 111)
     const balance = await this.provider.getBalance(address)
     const code = await this.provider.getCode(address)
     const nonce = await this.provider.getTransactionCount(address)

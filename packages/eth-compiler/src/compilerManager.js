@@ -155,7 +155,6 @@ export class CompilerManager {
     if (projectManager.remote) {
       return await this.buildBySolcjs(projectManager)
     }
-    console.log(settings)
     const { framework, compilers = {} } = settings
 
     const projectRoot = this.projectRoot
@@ -196,7 +195,6 @@ export class CompilerManager {
     }
     const cmd = this.generateBuildCmd({ projectRoot, settings, sourceFile })
     const result = await CompilerManager.terminal.exec(cmd)
-    console.log(result)
   
 
     CompilerManager.button.setState({ building: false })
