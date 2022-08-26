@@ -321,13 +321,15 @@ function makeProjectManager(Base) {
         })
       } catch (e) {
         console.warn(e)
+        notification.clearAll()
         notification.error(t('contract.deploy.fail'), e.reason || e.message)
         this.deployButton.setState({ pending: false })
         return
       }
 
       this.deployButton.setState({ pending: false })
-      notification.success(t('contract.deploy.success'))
+      notification.clearAll()
+      notification.success(t('contract.deploy.success'), '', 3)
 
       redux.dispatch('ABI_ADD', {
         ...deploy.options,

@@ -6,7 +6,7 @@ class Queue extends BaseQueueManager {
   async process (pendingTransaction, txHash, data, callbacks) {
     this.updateStatus(txHash, 'PUSHING', data, callbacks)
     if (data.contractName) {
-      notification.info(t('contract.deploy.deploying'), t('contract.deploy.deployingText', {name: data.contractName}))
+      notification.info(t('contract.deploy.deploying'), t('contract.deploy.deployingText', {name: data.contractName}), 0)
     } else {
       notification.info(t('contract.deploy.pushTrans'), t('contract.deploy.pushTransText', {txHash}))
     }

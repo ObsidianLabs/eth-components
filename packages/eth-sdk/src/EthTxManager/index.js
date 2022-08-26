@@ -22,6 +22,8 @@ export default class EthTxManager {
           'NotEnoughCash',
           'kind: GasPayment(OutOfFund), gas_used: 0',
           'gas required exceeds allowance',
+          'NotEnoughBaseGas',
+          'out of gas',
         ],
         message: 'Insufficient balance.'
       }
@@ -34,8 +36,8 @@ export default class EthTxManager {
     }
     const message = recombineMsg.find(({ originalMsg }) => (
       originalMsg.some(msg =>
-        e?.error?.message.includes(msg) || errMsg?.value?.data?.message.includes(msg)
-        || e?.error?.data?.message.includes(msg) || e?.data?.message.includes(msg) || e?.message.includes(msg)
+        e?.error?.message?.includes(msg) || e?.error?.reason?.includes(msg) || errMsg?.value?.data?.message?.includes(msg)
+        || e?.error?.data?.message?.includes(msg) || e?.data?.message?.includes(msg) || e?.message?.includes(msg)
       )
     ))?.message
     return (message && {message}) || (e?.error?.data?.message && e.error.data)

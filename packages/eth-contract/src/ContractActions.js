@@ -53,7 +53,9 @@ export default class ContractActions extends AbiActionForm {
       })
       result = await networkManager.sdk.estimate(tx)
     } catch (e) {
-      notification.error(t('contract.estimate.fail'), e.reason || e.message)
+      const { reason, message, error } = e
+      console.warn('estimate failed', error?.reason || error?.message || reason || message)
+      notification.error(t('contract.estimate.fail'), error?.reason || error?.message || reason || message)
       return
     }
 
@@ -110,7 +112,7 @@ export default class ContractActions extends AbiActionForm {
       return
     }
 
-    if (this.props.contractSigner && signer.toLocaleLowerCase() !== this.props.contractSigner?.data?.signer?.toLocaleLowerCase()) {
+    if (this.props.contractSigner && signer.toLocaleLowerCase() !== this.props.contractSigner?.toLocaleLowerCase()) {
       notification.error(t('contract.transaction.executeFail'), 'The address does not match the "Deploy" step.')
       this.setState({ executing: false })
       return

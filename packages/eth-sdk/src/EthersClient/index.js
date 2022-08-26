@@ -60,14 +60,15 @@ export default class EthersClient {
   }
 
   async getStatus() {
-    let provider = this.provider
     // check if it's Celo ChainId, Celo chain needs to modify the provide
-    if (this.rpcUrl && ['https://rpc.ankr.com/celo', 'https://forno.celo.org'].includes(this.rpcUrl)) {
-      provider = getCeloProvider(this.rpcUrl, providers, BigNumber)
-    }
+    const celoNet = this.rpcUrl && ['https://rpc.ankr.com/celo', 'https://forno.celo.org'].includes(this.rpcUrl)
+    const provider = celoNet ? getCeloProvider(this.rpcUrl, providers, BigNumber)
+      : this.provider
+
     try {
       return await provider.getBlock('latest')
     } catch (error) {
+      console.warn('current provider', provider)
       throw error('fetch network status failed', error)
     }
   }
@@ -217,7 +218,7 @@ class ExplorerProxy {
     this.channel = new IpcChannel('explorer')
   }
 
-  async getHistory(address, page = 0, size = 10) {
+  async getHistory(address, page = 0, size = 10, sort = 'desc') {
     const currentNetworkId = (this.networkId === 'moonrivertest' || this.networkId === 'moonbeamtest') ? 'moonbasetest' : this.networkId
     let query = {
       module: 'account',
@@ -226,7 +227,7 @@ class ExplorerProxy {
       endblock: 99999999,
       page: page + 1,
       offset: size,
-      sort: 'desc'
+      sort
     }
     if (chainsConfluxtName.includes(currentNetworkId)) {
       query.accountAddress = address
