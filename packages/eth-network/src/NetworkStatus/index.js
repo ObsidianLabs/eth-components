@@ -31,9 +31,14 @@ export default function NetworkStatus(props) {
   return <>
     <UncontrolledButtonDropdown direction='up' isOpen={dropdownOpen} toggle={toggle}>
       <DropdownToggle size='sm' color='default' id='network-tools' className='rounded-0 px-2 text-muted'>
-        <span hidden={!network || !connected || networkId === 'dev' || networkId === 'custom'} key={`network-${networkId}`} className={`${classnames(`${networkId != 'dev' && networkId != 'custom' && 'd-inline-block'} mr-1`, connected ? 'color-success' : '')}`}>
-          <i className='fas fa-wifi mr-1' />
-        </span>{network ? network.name : t('network.network.noNetwork')}
+        <div className='text-overflow-dots' style={{width: '7.5rem'}}>
+          <span hidden={!network || !connected || networkId === 'dev' || networkId === 'custom'} 
+            key={`network-${networkId}`} 
+            className={`${classnames(`${networkId != 'dev' && networkId != 'custom' && 'd-inline-block'} mr-1`, connected ? 'color-success' : '')}`}
+          >
+            <i className='fas fa-wifi mr-1' />
+          </span>{network ? network.name : t('network.network.noNetwork')}
+        </div>
         {
           !dropdownOpen &&
           <UncontrolledTooltip placement='bottom' target='network-tools'>
