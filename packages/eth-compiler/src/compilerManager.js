@@ -238,14 +238,14 @@ export class CompilerManager {
 
   parseSolcJSBuild(error) {
     const { prefix: projectPrefix, userId, projectId } = modelSessionManager.projectManager
-    const [prefix] = error.formattedMessage.match(/(?<=:).+(?=:)/g)
-    const filePath =  error.sourceLocation.file
-    const [row, column] = prefix.split(':')
-    const lines = error.formattedMessage.split('\n')
-    const length = lines[lines.length - 1].trim().length
+    const [prefix] = error.formattedMessage?.match(/(?<=:).+(?=:)/g) || []
+    const filePath =  error.sourceLocation?.file
+    const [row, column] = prefix?.split(':') || [ 0, 0 ]
+    const lines = error.formattedMessage?.split('\n')
+    const length = lines[lines.length - 1]?.trim().length
 
     return {
-      filePath: `${projectPrefix}/${userId}/${projectId}/${filePath.replace('./', '')}`,
+      filePath: `${projectPrefix}/${userId}/${projectId}/${filePath?.replace('./', '')}`,
       text: `[Solcjs Compiler]: ${error.message}`,
       row: Number(row),
       length,
