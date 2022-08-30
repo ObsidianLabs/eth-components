@@ -31,7 +31,7 @@ export default function NetworkStatus(props) {
   return <>
     <UncontrolledButtonDropdown direction='up' isOpen={dropdownOpen} toggle={toggle}>
       <DropdownToggle size='sm' color='default' id='network-tools' className='rounded-0 px-2 text-muted'>
-        <div className='text-overflow-dots' style={{width: '7.5rem'}}>
+        <div className='text-overflow-dots' style={{maxWidth: '7.5rem'}}>
           <span hidden={!network || !connected || networkId === 'dev' || networkId === 'custom'} 
             key={`network-${networkId}`} 
             className={`${classnames(`${networkId != 'dev' && networkId != 'custom' && 'd-inline-block'} mr-1`, connected ? 'color-success' : '')}`}
