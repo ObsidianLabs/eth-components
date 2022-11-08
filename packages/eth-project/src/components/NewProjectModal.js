@@ -77,10 +77,10 @@ export default class ExtendedNewProjectModal extends NewProjectModal {
       version: compilerVersion,
     } = this.framework.current.getNameAndVersion(framework, remote)
 
-    if (!this.props.noCompilerOption && !compilerVersion) {
-      notification.error(t('project.cannotCreate'), t(('project.cannotCreateTextOne'),{ name: compilerName}))
-      return false
-    }
+    // if (!this.props.noCompilerOption && !compilerVersion) {
+    //   notification.error(t('project.cannotCreate'), t(('project.cannotCreateTextOne'),{ name: compilerName}))
+    //   return false
+    // }
 
     if (group === process.env.COMPILER_NAME) {
       this.setState({ showTerminal: true })
