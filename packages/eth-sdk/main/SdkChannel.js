@@ -21,7 +21,7 @@ module.exports = class SdkChannel extends IpcChannel {
 class ExplorerChannel extends IpcChannel {
   constructor () {
     super('explorer')
-    this.baseUrl = `${process.env.SERVER_URL}/api/v1`
+    this.baseUrl = `${window.process.env.REACT_APP_SERVER_URL}/api/v1`
   }
 
   async GET (networkId, query) {

@@ -7,8 +7,7 @@ import { format } from 'js-conflux-sdk'
 
 import utils from '../utils'
 import tokenlist from './tokenlist.json'
-
-const { REACT_APP_SERVER_URL } = process.env
+const { REACT_APP_SERVER_URL } = window.process.env
 const chainsConfluxtName = ['confluxtest', 'confluxmain']
 const chainsHarmonyName = ['harmonytest', 'harmonymain']
 const { fromBech32 } = require('@harmony-js/crypto')
