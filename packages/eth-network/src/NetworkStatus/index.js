@@ -31,19 +31,21 @@ export default function NetworkStatus(props) {
           <i className='fas fa-wifi mr-1' />
         </span>{network ? network.name : t('network.network.noNetwork')}
       </DropdownToggle>
-      <DropdownMenu className='dropdown-menu-sm'>
-        <DropdownItem header>
-          <i className='fas fa-hammer mr-1' /> {t('network.network.tools')}
-        </DropdownItem>
-        {/* <DropdownItem onClick={() => rpcModal.current?.openModal()}>
-          {t('rpc.client')}
-        </DropdownItem> */}
-        {
-          (networkId !== 'dev' && networkId !== 'custom' && network) && <DropdownItem onClick={handleRefreshNetwork}>
-            {connected ? t('network.network.disconnect') : t('network.network.reconnect')}
+      {
+        !connected && <DropdownMenu className='dropdown-menu-sm'>
+          <DropdownItem header>
+            <i className='fas fa-hammer mr-1' /> {t('network.network.tools')}
           </DropdownItem>
-        }
-      </DropdownMenu>
+          {/* <DropdownItem onClick={() => rpcModal.current?.openModal()}>
+            {t('rpc.client')}
+          </DropdownItem> */}
+          {
+            (networkId !== 'dev' && networkId !== 'custom' && network) && <DropdownItem onClick={handleRefreshNetwork}>
+              t('network.network.reconnect')
+            </DropdownItem>
+          }
+        </DropdownMenu>
+      }
     </UncontrolledButtonDropdown>
     <RpcClientModal ref={rpcModal} />
   </>

@@ -21,7 +21,6 @@ module.exports = class SdkChannel extends IpcChannel {
 class ExplorerChannel extends IpcChannel {
   constructor () {
     super('explorer')
-    this.baseUrl = `${window.process.env.REACT_APP_SERVER_URL}/api/v1`
   }
 
   async GET (networkId, query) {
@@ -29,9 +28,8 @@ class ExplorerChannel extends IpcChannel {
       return { result: [] }
     }
 
-    const result = await this.fetch(`${this.baseUrl}/explorer/${networkId}`, query)
     try {
-      return JSON.parse(result)
+      return JSON.parse([])
     } catch {
       return { result: [] }
     }

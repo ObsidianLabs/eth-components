@@ -44,15 +44,15 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
   }
 
   if (node.name.endsWith('.json')) {
-    const { dir, name } = projectManager.path.parse(node.path)
-    if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
-      const cloned = [...contextMenu]
-      cloned.splice(projectManager.remote ? 3 : 5, 0, {
-        text: 'Deploy',
-        onClick: () => projectManager.deploy(node),
-      }, null)
-      return cloned
-    }
+    // const { dir, name } = projectManager.path.parse(node.path)
+    // if (!name.endsWith('.abi')) { // && dir.endsWith(path.join('build', 'contracts'))
+    //   const cloned = [...contextMenu]
+    //   cloned.splice(projectManager.remote ? 3 : 5, 0, {
+    //     text: 'Deploy',
+    //     onClick: () => projectManager.deploy(node),
+    //   }, null)
+    //   return cloned
+    // }
   } else if (node.name.endsWith('.sol') && !projectManager.remote) {
     const cloned = [...contextMenu]
     cloned.splice(projectManager.remote ? 3: 5, 0, {

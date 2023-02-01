@@ -14,7 +14,7 @@ export default ({ txHash, data, status, ts }) => {
     statusComponent = <Badge color='warning' className='ml-1'>PUSHING</Badge>
   } else if (status === 'MINED') {
     iconClassName = 'fad fa-spinner fa-pulse mr-1'
-    statusComponent = <Badge color='warning' className='ml-1'>MINED</Badge>
+    statusComponent = <Badge color='warning' className='ml-1'>PENDING</Badge>
   } else if (status === 'EXECUTED') {
     iconClassName = 'fas fa-spinner fa-pulse mr-1'
     statusComponent = <Badge color='warning' className='ml-1'>EXECUTED</Badge>
