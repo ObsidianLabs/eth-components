@@ -13,7 +13,7 @@ export default class TransactionRow extends PureComponent {
 
   }
 
-  render () {
+  render() {
     const { tx, owner } = this.props
 
     const amount = networkManager.sdk?.utils.unit.fromValue(tx.value)
@@ -26,11 +26,11 @@ export default class TransactionRow extends PureComponent {
         <td><small>{tx.blockNumber}</small></td>
         <td>
           <div className='flex-1 overflow-hidden'>
-            <Address addr={tx.hash} redirect={false}/>
+            <Address addr={tx.hash} redirect={false} />
           </div>
         </td>
         <td>
-          <Address addr={tx.from} showTooltip={false}/>
+          <Address addr={tx.from} showTooltip={false} />
         </td>
         <td>
           <Badge color='success' className='mr-1'>{tx.contractAddress && 'contract creation'}</Badge>
@@ -41,16 +41,16 @@ export default class TransactionRow extends PureComponent {
           />
           <Badge color='secondary'>{tx.method}</Badge>
         </td>
-        <td align='right'>
-          <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'danger' : 'success'}>
-            {amount} {networkManager.symbol}
+        <td align='left'>
+          <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'warning' : 'success'}>
+            {tx.from === owner ? '-' : '+'} {amount} {networkManager.symbol}
           </Badge>
         </td>
         {/* <td align='right'>
           <Badge pill>{gasUsed}</Badge>
         </td> */}
         <td align='right'>
-          <TransactionFee value={gasFee}/>
+          <TransactionFee value={gasFee} />
         </td>
       </tr>
     )

@@ -48,7 +48,7 @@ export default class ProjectToolbar extends PureComponent {
       <ToolbarButton
         id='settings'
         icon='fas fa-cog'
-        tooltip='Project Settings'
+        tooltip='设置'
         onClick={() => {
           projectManager.openProjectSettings()
         }}

@@ -68,7 +68,7 @@ class Header extends PureComponent {
     if (!dropdownKeypairs.length) {
       dropdownKeypairs.push({ none: true })
     }
-    dropdownKeypairs.unshift({ header: 'keypair manager' })
+    dropdownKeypairs.unshift({ header: '密钥列表' })
 
     const dropdownBrowserAccounts = browserAccounts.map(item => {
       const name = keypairManager.getName(item)
@@ -102,9 +102,9 @@ class Header extends PureComponent {
       }
     })
 
-    let dropdownStarredInContract = [{ header: 'starred' }, ...dropdownStarredContracts.map(item => ({ ...item, icon: contractIcon }))]
+    let dropdownStarredInContract = [{ header: '已收藏' }, ...dropdownStarredContracts.map(item => ({ ...item, icon: contractIcon }))]
     if (dropdownStarred.length) {
-      dropdownStarred.unshift({ header: 'starred' })
+      dropdownStarred.unshift({ header: '已收藏' })
       dropdownStarred.unshift({ divider: true })
     }
     if (!starredContracts.length) {
