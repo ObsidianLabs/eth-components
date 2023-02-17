@@ -105,7 +105,7 @@ export default class TransferButton extends PureComponent {
         ).catch(reject)
       })
     } catch (e) {
-      console.warn(e)
+      console.warn(e, 111)
       notification.error(t('explorer.transactions.transferFailed'), e.reason || e.message)
       this.setState({ pushing: false })
       return
