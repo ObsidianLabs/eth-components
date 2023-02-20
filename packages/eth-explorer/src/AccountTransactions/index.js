@@ -147,8 +147,8 @@ const TransactionHeader = () => (
     <th style={{ width: '17%' }}>{t('explorer.transactions.from')}</th>
     <th style={{ width: '17%' }}>{t('explorer.transactions.to')}</th>
     <th style={{ width: '10%', textAlign: 'left' }}>{t('explorer.transactions.value')}</th>
-    {/* <th style={{ width: '8%', textAlign: 'right' }}>{t('explorer.transactions.gasUsed')}</th> */}
-    <th style={{ width: '15%', textAlign: 'right' }}>{t('explorer.transactions.fee')}</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>交易费用</th>
+    <th style={{ width: '8%', textAlign: 'right' }}>状态</th>
   </tr>
 )
 

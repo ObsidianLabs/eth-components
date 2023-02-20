@@ -15,7 +15,6 @@ export default class TransactionRow extends PureComponent {
 
   render() {
     const { tx, owner } = this.props
-
     const amount = networkManager.sdk?.utils.unit.fromValue(tx.value)
     const gasUsed = tx.gasUsed ? new Intl.NumberFormat().format(tx.gasUsed) : ''
     const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
@@ -46,11 +45,11 @@ export default class TransactionRow extends PureComponent {
             {tx.from === owner ? '-' : '+'} {amount} {networkManager.symbol}
           </Badge>
         </td>
-        {/* <td align='right'>
-          <Badge pill>{gasUsed}</Badge>
-        </td> */}
         <td align='right'>
           <TransactionFee value={gasFee} />
+        </td>
+        <td align='right'>
+          <Badge pill><span className={tx.txStatus === 0 ? 'text-success' : 'text-danger'}>{tx.txStatus === 0 ? '成功' : '失败'}</span></Badge>
         </td>
       </tr>
     )
