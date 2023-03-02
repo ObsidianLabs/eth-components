@@ -42,8 +42,8 @@ const translation = {
   },
   explorer: {
     page: {
-      newPage: '新页面',
-      newPageText: '请输入一个{{chainName}}的地址',
+      newPage: '新标签',
+      newPageText: '请输入合法的星火链地址',
       invalidAddress: '无效地址',
       account: '账户',
       information: '信息',
