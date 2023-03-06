@@ -109,7 +109,7 @@ export class CompilerManager {
       this.notification.dismiss()
       notification.error(t('contract.build.fail'), ``)
       CompilerManager.button.setState({ building: false })
-      throw new Error('Build Failed.')
+      throw new Error('编译失败')
     }
 
     if (output.contracts) {
