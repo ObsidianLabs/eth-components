@@ -58,7 +58,7 @@ export default class AccountPage extends PureComponent {
 
     let account
     try {
-      account = await networkManager.sdk.accountFrom(value)
+      account = await networkManager.sdk.client.getAccount(value)
       this.getTokenInfo(account)
       this.setState({ loading: false, error: null, account })
     } catch (e) {
@@ -105,7 +105,7 @@ export default class AccountPage extends PureComponent {
   render () {
     const { AccountInfo, history } = this.props
     const { error, account, tokens, tokenInfo } = this.state
-
+    console.log(error)
     if (!networkManager.sdk) {
       return null
     }

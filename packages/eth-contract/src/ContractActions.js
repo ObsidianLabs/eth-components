@@ -105,14 +105,16 @@ export default class ContractActions extends AbiActionForm {
         value,
         ...options,
       })
-      if(tx.txHash) {
+      if(!tx.error_desc) {
         notification.success('Execute Success')
         this.setState({ executing: false, actionResult: {
-          raw: {
-            txHash: tx.txHash
-          }
+          raw: tx
         }})
         return
+      } else {
+        notification.error('Execute Failed')
+        this.setState({ executing: false, actionError: tx.error_desc })
+        return 
       }
 
       await queue.add(

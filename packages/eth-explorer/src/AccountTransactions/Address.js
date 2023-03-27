@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { UncontrolledTooltip } from '@obsidians/ui-components'
+import fileOps from '@obsidians/file-ops'
 
 import { useHistory } from 'react-router-dom'
 
 const formatAddress = address => <code>{address.substr(0, 12)}...{address.substr(address.length - 6, address.length)}</code>
 const getUrl = (address, route = 'account') => `/${route}/${address}`
 
-export default function Address ({ addr, route, redirect = true, displayText, showTooltip = true }) {
+export default function Address ({ href, addr, route, redirect = true, displayText, showTooltip = true }) {
   if (!addr) {
     return null
   }
@@ -15,7 +16,14 @@ export default function Address ({ addr, route, redirect = true, displayText, sh
   const hash = displayText ? displayText : formatAddress(addr)
   const url = getUrl(addr, route)
   let text
-  if (redirect) {
+  
+  if (href) {
+    text = (
+      <a href="javascript:void(0)" onClick={() => fileOps.current.openLink(href)} className='text-body small' id={id}>
+        {hash}
+      </a>
+    )
+  } else if (redirect) {
     text = (
       <a href="javascript:void(0)" onClick={() => history.push(url)} className='text-body small' id={id}>
         {hash}

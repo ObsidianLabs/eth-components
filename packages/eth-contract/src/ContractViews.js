@@ -17,6 +17,7 @@ export default class ContractViews extends AbiActionForm {
   }
 
   executeAction = async actionName => {
+    console.log(this.props.actions)
     if (this.state.executing) {
       return
     }
@@ -34,7 +35,8 @@ export default class ContractViews extends AbiActionForm {
     let result
     try {
       result = await this.props.contract.query(actionName, parameters, {
-        from: this.state.signer
+        from: this.state.signer,
+        abis: this.props.actions
       })
     } catch (e) {
       console.warn(e)

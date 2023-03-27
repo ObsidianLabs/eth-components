@@ -18,6 +18,7 @@ export default class TransactionRow extends PureComponent {
     const amount = networkManager.sdk?.utils.unit.fromValue(tx.value)
     const gasUsed = tx.gasUsed ? new Intl.NumberFormat().format(tx.gasUsed) : ''
     const gasFee = tx.gasFee || (BigInt(tx.gasPrice || 0) * BigInt(tx.gasUsed || 0))
+    const explorer = networkManager.sdk.client.explorer
 
     return (
       <tr onClick={this.onClick}>
@@ -25,7 +26,7 @@ export default class TransactionRow extends PureComponent {
         <td><small>{tx.blockNumber}</small></td>
         <td>
           <div className='flex-1 overflow-hidden'>
-            <Address addr={tx.hash} redirect={false} />
+            <Address href={`${explorer}/tx/${tx.hash}`} addr={tx.hash} redirect={false} />
           </div>
         </td>
         <td>

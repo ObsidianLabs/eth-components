@@ -93,7 +93,7 @@ export class CompilerManager {
     }
 
     CompilerManager.terminal.writeCmdToTerminal(`solcjs --bin ${projectManager.projectSettings.get('main')}`, `[${solcFileName}]`)
-    this.notification = notification.info(t('contract.build.start'), `${t('contract.build.building')}...`, 0)
+    this.notification = notification.info('编译项目', `项目合约正在编译...`, 0)
 
     let output
     try {
@@ -189,7 +189,7 @@ export class CompilerManager {
     CompilerManager.button.setState({ building: true })
     CompilerManager.switchCompilerConsole('terminal')
     if (!sourceFile) {
-      this.notification = notification.info(t('contract.build.start'), t('contract.build.building'), 0)
+      this.notification = notification.info('项目编译', '项目合约编译中...', 0)
     } else {
       this.notification = notification.info(t('contract.build.contractFile'), `Building <b>${sourceFile}</b>...`, 0)
     }

@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react'
 import {
   Modal,
   DropdownInput,
+  DebouncedInput,
   Button,
   UncontrolledTooltip,
   Label,
@@ -29,6 +30,8 @@ export default class DeployerButton extends PureComponent {
       signer: '',
       pending: false,
       settings: {},
+      invalidInputMsg: '',
+      rawArgs: null
     }
     this.modal = React.createRef()
     this.form = React.createRef()
@@ -150,7 +153,8 @@ export default class DeployerButton extends PureComponent {
   }
 
   prepare = () => {
-    const args = this.args.current?.getArgs()
+    // const args = this.args.current?.getArgs()
+    const args = this.state.rawArgs
     let parameters = { array: [], obj: {} }
     if (this.state.constructorAbi) {
       try {
@@ -197,6 +201,28 @@ export default class DeployerButton extends PureComponent {
     this.modal.current.closeModal()
   }
 
+  onBlur = (e) => {
+    const raw = e.target.value
+    
+    try {
+      const obj = JSON.parse(raw || `{}`)
+      if (obj && typeof obj === 'object' || obj === '') {
+        this.setState({
+          invalidInputMsg: '',
+          rawArgs: obj
+        })
+      } else {
+        this.setState({
+          invalidInputMsg: '格式错误：初始化参数应为 JSON 格式'
+        })
+      }
+    } catch {
+      this.setState({
+        invalidInputMsg: '格式错误：初始化参数应为 JSON 格式'
+      })
+    }
+  }
+
   render() {
     const { signer, readOnly } = this.props
     const { contracts, selected, contractName, pending } = this.state
@@ -230,11 +256,20 @@ export default class DeployerButton extends PureComponent {
         />
         <div className='mb-2' />
       </>
-    }  else if (['cpp', 'javascript'].indexOf(this.state.settings.language) > -1) {
+    }  else if (['cpp'].indexOf(this.state.settings.language) > -1) {
       constructorParameters = (
         <div className='mb-2'>
           <Label>初始化参数</Label>
           <Args ref={this.args} initial={{ '': '' }} />
+        </div>
+      )
+    } else if (['javascript'].indexOf(this.state.settings.language) > -1) {
+      constructorParameters = (
+        <div className='mb-2'>
+          <Label>初始化参数 <span className='text-danger' style={{ fontSize: '12px'}}>{ this.state.invalidInputMsg }</span></Label>
+          <div>
+            <DebouncedInput invalid={this.state.invalidInputMsg.length !== 0} onBlur={this.onBlur} rows={6} type='textarea' placeholder='请输入 JOSN 格式的参数'></DebouncedInput>
+          </div>
         </div>
       )
     }
