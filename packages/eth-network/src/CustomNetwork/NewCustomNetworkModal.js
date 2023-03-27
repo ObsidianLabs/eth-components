@@ -42,9 +42,10 @@ export default class CustomNetworkModal extends PureComponent {
         this.setState({ pending: false, status })
         return
       }
-    } catch { }
-    notification.error(t('network.custom.err'), t('network.custom.errText'))
-    this.setState({ pending: false })
+    } catch {
+      this.setState({ pending: false })
+      notification.error(t('network.custom.err'), t('network.custom.errText'))
+    }
   }
 
   onConfirm = async () => {
@@ -89,6 +90,7 @@ export default class CustomNetworkModal extends PureComponent {
           symbol: 'ETH',
           url: '',
         }]).concat(customeNetworkGroup)
+        console.log('add', newNetworks)
         networkManager.addNetworks(newNetworks)
 
         this.setState({ pending: false, status: null })
@@ -100,6 +102,7 @@ export default class CustomNetworkModal extends PureComponent {
   connect = async option => {
     try {
       const status = await networkManager.updateCustomNetwork(option)
+      console.log('connect')
       if (status) {
         redux.dispatch('UPDATE_UI_STATE', { customNetworkOption: option })
         redux.dispatch('CHANGE_NETWORK_STATUS', true)
@@ -110,14 +113,16 @@ export default class CustomNetworkModal extends PureComponent {
         })
         return
       }
-    } catch { }
-    notification.error(t('network.custom.err'), t('network.custom.errText'))
-    redux.dispatch('CHANGE_NETWORK_STATUS', false)
+    } catch (e) {
+      console.log(e)
+      redux.dispatch('CHANGE_NETWORK_STATUS', false)
+      notification.error(t('network.custom.err'), t('network.custom.errText'))
+    }
   }
 
   render() {
     const {
-      placeholder = 'http(s)://...',
+      placeholder = 'http(s)://127.0.0.1:7001',
     } = this.props
     const { modify, pending, status, option } = this.state
 
@@ -132,14 +137,14 @@ export default class CustomNetworkModal extends PureComponent {
       >
         <DebouncedFormGroup
           ref={this.input}
-          label='Name'
+          label='名称'
           maxLength='50'
           value={option.name}
           onChange={name => this.setState({ option: { ...option, name } })}
           validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Network name can only contain letters, digits, dash or underscore.'}
         />
         <DebouncedFormGroup
-          label='URL of node rpc'
+          label='URL 地址'
           placeholder={placeholder}
           maxLength='300'
           value={option.url}

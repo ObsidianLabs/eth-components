@@ -18,7 +18,7 @@ import { t } from '@obsidians/i18n'
 export default class CustomNetworkModal extends PureComponent {
   constructor(props) {
     super(props)
-    this.state = { connecting: '', customNetworkItem: null }
+    this.state = { connecting: '', open: false, customNetworkItem: null }
     this.modal = React.createRef()
     this.newConnectionModal = React.createRef()
     this.deleteModal = React.createRef()
@@ -57,6 +57,7 @@ export default class CustomNetworkModal extends PureComponent {
   }
 
   connect = async option => {
+    console.log(option)
     try {
       this.setState({ connecting: option.name })
       const status = await networkManager.updateCustomNetwork({...option, notify: false})
@@ -69,9 +70,10 @@ export default class CustomNetworkModal extends PureComponent {
         networkManager.setNetwork(connectCustomeNetwork)
         return
       }
-    } catch { }
-    notification.error(t('network.custom.err'), t('network.custom.errText'))
-    this.setState({ connecting: '' })
+    } catch (e) {
+      notification.error(t('network.custom.err'), t('network.custom.errText'))
+      this.setState({ connecting: '' })
+    }
   }
 
   renderTableBody = () => {
@@ -157,8 +159,8 @@ export default class CustomNetworkModal extends PureComponent {
           tableSm
           TableHead={(
             <tr>
-              <th style={{ width: '20%' }}>name</th>
-              <th style={{ width: '55%' }}>rpc url</th>
+              <th style={{ width: '20%' }}>名称</th>
+              <th style={{ width: '55%' }}>URL地址</th>
               <th></th>
             </tr>
           )}
@@ -176,9 +178,7 @@ export default class CustomNetworkModal extends PureComponent {
       >
         <div>
           {t('network.custom.delTips')}
-          <kbd className='color-danger'>{this.state.customNetworkItem?.name} </kbd>
-          {t('network.custom.delTwoTips')}
-          {connected ? networkConnectingText : networkNotConnectedText}
+          <kbd className='color-danger'>{this.state.customNetworkItem?.name}</kbd> ？
         </div>
       </Modal>
       <NewCustomNetworkModal ref={this.newConnectionModal} />

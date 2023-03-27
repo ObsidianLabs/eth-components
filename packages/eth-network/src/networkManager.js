@@ -111,7 +111,6 @@ class NetworkManager {
   }
 
   async setNetwork(network, { force, redirect = true, notify = true } = {}) {
-
     redux.dispatch('ACTIVE_CUSTOM_NETWORK', network)
 
     if (this.browserExtension && this.browserExtension?.ethereum && this.browserExtension.ethereum.isConnected() && network.chainId) {
@@ -155,7 +154,6 @@ class NetworkManager {
         }
       }
     }
-
     if (!network || network.id === redux.getState().network) {
       return
     }
@@ -173,11 +171,11 @@ class NetworkManager {
         this._sdk = this.newSdk(network)
         this._sdk.updateEIP1559Support()
       } catch (error) {
-        this._sdk && this._sdk.dispose()
+        // this._sdk && this._sdk.dispose()
         this._sdk = null
       }
     } else {
-      this._sdk && this._sdk.dispose()
+      // this._sdk && this._sdk.dispose()
       this._sdk = null
     }
 

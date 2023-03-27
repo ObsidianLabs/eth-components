@@ -26,7 +26,7 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
   const [showCustomNetworkModal, setShowCustomNetworkModal] = React.useState(false)
   const customModal = React.createRef()
 
-  
+
   React.useEffect(() => {
     (history.location.pathname?.startsWith('/network')) && redux.dispatch('LOAD_NETWORK_RESOURCES', true)
     if (customNetworkModalStatus) {
@@ -41,9 +41,21 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
       cacheLifecycles.didRecover(() => setActive(true))
     }
   })
+  const url = networkManager.sdk?.url
 
-  function customNetworkModalBody() {
-    return (
+  return (
+    <>
+      {
+        networkId === 'dev' ? (
+          <LocalNetwork
+            networkId={networkId}
+            active={active}
+            configButton={configButton}
+            tabs={tabs}
+            minerKey={minerKey}
+          />
+        ) : <RemoteNetwork networkId={networkId} url={url} />
+      }
       <CustomNetworkModal
         ref={customModal}
         networkId={networkId}
@@ -51,27 +63,6 @@ export default connect(['network', 'customNetworks', 'uiState', 'customNetworkMo
         option={uiState.get('customNetworkOption')}
         openModal={showCustomNetworkModal}
       />
-    )
-  }
-
-  if (networkId === 'dev') {
-    return (
-      <>
-        <LocalNetwork
-          networkId={networkId}
-          active={active}
-          configButton={configButton}
-          tabs={tabs}
-          minerKey={minerKey}
-        />
-        {customNetworkModalBody()}
-      </>
-    )
-  } else {
-    const url = networkManager.sdk?.url
-    return <>
-      <RemoteNetwork networkId={networkId} url={url} />
-      {customNetworkModalBody()}
     </>
-  }
+  )
 }))
