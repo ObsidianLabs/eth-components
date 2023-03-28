@@ -53,7 +53,7 @@ class TransactionDetails extends PureComponent {
             name={t('contract.transaction.status')}
             icon='fad fa-spinner-third'
             badge={status === 'FAILED-TIMEOUT' ? 'TIMEOUT' : status}
-            badgeColor={status.startsWith('FAILED') ? 'danger' : status === 'CONFIRMED' ? 'success' : 'warning'}
+            badgeColor={status?.startsWith('FAILED') ? 'danger' : status === 'CONFIRMED' ? 'success' : 'warning'}
           />
           { this.renderError(error) }
           {
