@@ -51,7 +51,7 @@ class ProjectChannel extends FileTreeChannel {
     }
 
     if (await isDirectoryNotEmpty(projectRoot)) {
-      throw new Error(`<b>${projectRoot}</b> is not an empty directory.`)
+      throw new Error(`<b>${projectRoot}</b> 不是空的文件夹`)
     }
 
     const templateFolder = path.join(__dirname, 'templates', template)
