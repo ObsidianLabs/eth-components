@@ -77,6 +77,7 @@ export default class CustomNetworkModal extends PureComponent {
           networkId: name,
           name: name,
           fullName: name,
+          symbol: '星火令',
           notification: `${t('network.network.switchedTo')} <b>${name}</b>.`,
           url: customeNetworkMap[name].url,
         })).sort((a, b) => a.name.localeCompare(b.name))
@@ -87,7 +88,7 @@ export default class CustomNetworkModal extends PureComponent {
           id: 'custom',
           name: 'Custom',
           notification: `${t('network.network.switchedTo')} <b>Custom</b> ${t('network.network.networkLow')}.`,
-          symbol: 'ETH',
+          symbol: '星火令',
           url: '',
         }]).concat(customeNetworkGroup)
         console.log('add', newNetworks)
