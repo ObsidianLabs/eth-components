@@ -268,7 +268,7 @@ export default class DeployerButton extends PureComponent {
         <div className='mb-2'>
           <Label>初始化参数 <span className='text-danger' style={{ fontSize: '12px'}}>{ this.state.invalidInputMsg }</span></Label>
           <div>
-            <DebouncedInput invalid={this.state.invalidInputMsg.length !== 0} onBlur={this.onBlur} rows={6} type='textarea' placeholder='请输入 JOSN 格式的参数'></DebouncedInput>
+            <DebouncedInput invalid={this.state.invalidInputMsg.length !== 0} onBlur={this.onBlur} rows={6} type='textarea' placeholder='请输入 JSON 格式的参数'></DebouncedInput>
           </div>
         </div>
       )
