@@ -33,7 +33,7 @@ export default class CompilerTerminal extends PureComponent {
     } else {
       this.initialTabs.push({ 
         key: 'terminal', 
-        text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />Project</span>,
+        text: <span key='compiler-terminal'><i className='fas fa-folder-open mr-1' />终端</span>,
         clickCallback: () => {
           CompilerManager.terminal.inputRef.current.focus()
         },
