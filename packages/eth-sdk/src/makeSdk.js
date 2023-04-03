@@ -64,7 +64,7 @@ export default function makeSdk({
               className: 'col-4',
               label: 'Gas Limit',
               icon: 'fas fa-burn',
-              placeholder: 'Default: 1,000,000',
+              placeholder: '默认: 1,000,000',
               default: '1000000'
             },
             ...(!this.supportEIP1559 ? [] : [{

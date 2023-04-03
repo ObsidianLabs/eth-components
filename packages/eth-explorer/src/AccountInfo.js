@@ -29,7 +29,7 @@ export default function AccountInfo ({ account, tokenInfo }) {
     <TableCard title={t('explorer.page.information')}>
       {tokenInfoRows}
       <TableCardRow
-        name={account.codeHash ? 'Code Hash' : 'Code'}
+        name={account.codeHash ? '代码哈希' : '代码'}
         icon='fas fa-code'
         badge={account.codeHash ? account.codeHash : `(${t('header.title.none')})`}
       />

@@ -125,7 +125,7 @@ class TransactionDetails extends PureComponent {
           {
             receipt && receipt.contractCreated &&
             <TableCardRow
-              name='Contract Created'
+              name='合约地址'
               icon='fas fa-file-invoice'
               badge={(
                 <a

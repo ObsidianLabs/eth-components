@@ -46,7 +46,7 @@ module.exports = class RpcServer {
           }
           const kp = await this.keypairManager.get(tx.from)
           if (!kp) {
-            throw new Error(`No keypair for ${tx.from}`)
+            throw new Error(`未找到${tx.from}的密钥对`)
           }
           // const signed = await this.client.sign(tx, kp.secret)
           delete req.params[0].direct

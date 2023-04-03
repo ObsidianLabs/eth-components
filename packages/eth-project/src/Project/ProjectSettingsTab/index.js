@@ -178,7 +178,7 @@ export default class ProjectSettingsTab extends AbstractProjectSettingsTab {
               <DebouncedFormGroup
                 label='Optimizer runs'
                 className='bg-black'
-                placeholder='Default: 0 (disabled)'
+                placeholder='默认: 0 (disabled)'
                 value={projectSettings?.get('compilers.optimizer.runs') || ''}
                 readOnly={readOnly}
                 onChange={value => {

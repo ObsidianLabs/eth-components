@@ -43,7 +43,9 @@ export default class TransactionRow extends PureComponent {
         </td>
         <td align='left'>
           <Badge pill color={tx.value === '0' ? 'secondary' : tx.from === owner ? 'warning' : 'success'}>
-            {tx.from === owner ? '-' : '+'} {amount} {networkManager.symbol}
+            {
+              tx.value === '0' ? `${amount} ${networkManager.symbol}` : `${tx.from === owner ? '-' : '+'} ${amount} ${networkManager.symbol}`
+            }
           </Badge>
         </td>
         <td align='right'>

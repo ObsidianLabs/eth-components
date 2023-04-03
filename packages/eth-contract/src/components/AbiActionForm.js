@@ -263,7 +263,7 @@ export default class AbiActionForm extends PureComponent {
                 icon='fas fa-coins'
                 value={this.state.amount}
                 onChange={amount => this.setState({ amount })}
-                placeholder='Default: 0'
+                placeholder='默认: 0'
               /> : null
             }
             <ContractForm

@@ -63,7 +63,7 @@ export default class InstanceConfigModal extends PureComponent {
           className='h-100 code'
           inputGroupClassName='flex-grow-1'
           disabled={this.state.loading}
-          placeholder={this.state.loading ? 'Loading...' : ''}
+          placeholder={this.state.loading ? '加载中...' : ''}
           value={this.state.value}
           onChange={this.onChange}
         />

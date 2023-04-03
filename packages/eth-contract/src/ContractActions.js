@@ -12,7 +12,7 @@ export default class ContractActions extends AbiActionForm {
   static defaultProps = {
     toolbarId: 'contract-execute-write',
     FormSection: AbiActionForm.MarginlessFormSection,
-    selectorHeader: 'write functions',
+    selectorHeader: '合约调用',
     selectorIcon: 'fas fa-function',
     signerSelector: true,
     showResult: true,

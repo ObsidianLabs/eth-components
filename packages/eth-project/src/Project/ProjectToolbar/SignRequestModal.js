@@ -116,7 +116,7 @@ export default class SignRequestModal extends PureComponent {
           value={this.state.value}
           onChange={value => this.setState({ value })}
           disabled
-          placeholder='Default: 0'
+          placeholder='默认: 0'
         />
         <div className='row'>
         {

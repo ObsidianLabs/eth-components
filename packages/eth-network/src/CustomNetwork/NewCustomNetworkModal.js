@@ -154,7 +154,7 @@ export default class CustomNetworkModal extends PureComponent {
         {
           status &&
           <FormGroup>
-            <Label>Network info</Label>
+            <Label>网络信息</Label>
             <pre className='text-body pre-wrap break-all small user-select mb-0'>
               {JSON.stringify(status, null, 2)}
             </pre>

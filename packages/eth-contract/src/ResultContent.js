@@ -45,5 +45,5 @@ export default withRouter(({ format, actionResult, actionError, history, onNavig
     // }
   }
 
-  return <div className='small'>(None)</div>
+  return <div className='small'>(无)</div>
 })
