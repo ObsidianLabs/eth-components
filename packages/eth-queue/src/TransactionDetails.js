@@ -41,19 +41,32 @@ class TransactionDetails extends PureComponent {
     } = data
     const contractAddress = receipt?.contractAddress || data.contractAddress
 
+    let badge = ''
+    if (status === 'FAILED-TIMEOUT') {
+      badge = '超时'
+    } else {
+      if (status === 'FAILED') {
+        badge = '失败'
+      } if (status === 'SUCCESS' || status == 'CONFIRMED') {
+        badge = '成功'
+      }
+    }
+
     if (selected === 'basic') {
       return (
         <Table>
-          <TableCardRow
+          {
+            txHash && <TableCardRow
             name={t('contract.transaction.hash')}
             icon='fas fa-hashtag'
             badge={<code>{txHash}</code>}
           />
+          }
           <TableCardRow
             name={t('contract.transaction.status')}
             icon='fad fa-spinner-third'
-            badge={status === 'FAILED-TIMEOUT' ? 'TIMEOUT' : status}
-            badgeColor={status?.startsWith('FAILED') ? 'danger' : status === 'CONFIRMED' ? 'success' : 'warning'}
+            badge={badge}
+            badgeColor={status?.startsWith('FAILED') ? 'danger' : (status === 'SUCCESS' || status === 'CONFIRMED') ? 'success' : 'warning'}
           />
           { this.renderError(error) }
           {

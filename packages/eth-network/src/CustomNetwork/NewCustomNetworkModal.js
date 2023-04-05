@@ -14,7 +14,7 @@ import networkManager from '../networkManager'
 import { t } from '@obsidians/i18n'
 
 export default class CustomNetworkModal extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       pending: false,
@@ -38,8 +38,13 @@ export default class CustomNetworkModal extends PureComponent {
     this.setState({ pending: true })
     try {
       const status = await networkManager.updateCustomNetwork(option)
-      if (status) {
+
+      if (status.header) {
         this.setState({ pending: false, status })
+        return
+      } else if (status.errorCode) {
+        this.setState({ pending: false, status })
+        notification.error(t('network.custom.err'), t('network.custom.errText'))
         return
       }
     } catch {
@@ -55,7 +60,7 @@ export default class CustomNetworkModal extends PureComponent {
     const connected = customNetworkMap[option.name]?.active;
 
     if (customNetworkNames.includes(option.name) && !modify) {
-      notification.error(t('network.custom.invalidName'), t('network.custom.invalidNameText', {name: option.name}))
+      notification.error(t('network.custom.invalidName'), t('network.custom.invalidNameText', { name: option.name }))
       return
     } else {
       if (!status) {
@@ -134,7 +139,7 @@ export default class CustomNetworkModal extends PureComponent {
         pending={pending && t('network.custom.try')}
         textConfirm={status ? modify ? t('network.custom.update') : t('network.custom.add') : t('network.custom.check')}
         onConfirm={this.onConfirm}
-        confirmDisabled={!option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !option.url}
+        confirmDisabled={status?.errorCode || !option.name || !/^[0-9a-zA-Z\-_]*$/.test(option.name) || !option.url}
       >
         <DebouncedFormGroup
           ref={this.input}
@@ -142,7 +147,7 @@ export default class CustomNetworkModal extends PureComponent {
           maxLength='50'
           value={option.name}
           onChange={name => this.setState({ option: { ...option, name } })}
-          validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && 'Network name can only contain letters, digits, dash or underscore.'}
+          validator={v => !/^[0-9a-zA-Z\-_]*$/.test(v) && '网络名称只能包含字母、数据、下划线、破折号'}
         />
         <DebouncedFormGroup
           label='URL 地址'
