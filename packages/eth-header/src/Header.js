@@ -144,7 +144,7 @@ class Header extends PureComponent {
       route: 'account',
       title: t('header.title.explorer'),
       icon: 'fas fa-map-marker-alt',
-      noneIcon: 'fas fa-map-marker-times',
+      noneIcon: 'fas fa-globe',
       selected: { id: selectedAccount, name: accountName },
       dropdown: [...dropdownKeypairs, ...dropdownBrowserAccounts, ...dropdownStarred],
       onClickItem: selected => headerActions.selectAccount(network.id, selected),

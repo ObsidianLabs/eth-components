@@ -91,7 +91,7 @@ class TransactionDetails extends PureComponent {
             functionName &&
             <TableCardRow
               name={t('contract.transaction.function')}
-              icon='fas fa-function'
+              icon='fas fa-circle-nodes'
               badge={functionName}
             />
           }
