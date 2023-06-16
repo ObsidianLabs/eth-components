@@ -190,6 +190,11 @@ export default class DeployerButton extends PureComponent {
   }
 
   confirmDeployment = async () => {
+    if (this.state.invalidInputMsg) {
+      notification.error('格式错误', '初始化参数应为 JSON 格式')
+      return
+    }
+
     if (this.needEstimate()) {
       this.estimate()
       return
@@ -203,7 +208,7 @@ export default class DeployerButton extends PureComponent {
   }
 
   closeModal = () => {
-    this.setState({ amount: '' })
+    this.setState({ amount: '', invalidInputMsg: '' })
     this.modal.current.closeModal()
   }
 
