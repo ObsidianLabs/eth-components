@@ -124,7 +124,7 @@ class AccountExplorer extends TabbedExplorer {
         if (name) {
           tabText = (
             <div key={`addr-${address}`} className='d-flex flex-row align-items-center'>
-              <i className='fas fa-map-marker-alt text-muted mr-1' />{name}
+              <i className='fas fa-location-pin text-muted mr-1' />{name}
             </div>
           )
         } else if (tokenInfo) {

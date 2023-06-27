@@ -205,7 +205,7 @@ export default class TransferButton extends PureComponent {
           <KeypairInputSelector
             ref={this.keypairInput}
             editable
-            icon='fas fa-map-marker-alt'
+            icon='fas fa-location-pin'
             placeholder='Recipient address'
             maxLength={addressLength}
             extra={networkManager.browserExtension?.isEnabled && [{

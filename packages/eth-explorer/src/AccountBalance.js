@@ -19,7 +19,7 @@ export default function AccountBalance ({ account, tokens, history }) {
     <TableCard title={t('explorer.page.account')} tableScroll>
       <TableCardRow
         name={t('explorer.page.balance')}
-        icon='far fa-wallet'
+        icon='fas fa-wallet'
         badge={`${account.balance} ${networkManager.symbol || ''}`}
         badgeColor='success'
       />

@@ -24,7 +24,7 @@ const optionItemFromValue = (item, type, index) => {
   label = label.length > 10 ? `${label.substr(0, 8)}...` : label
 
   if (type === 'address') {
-    icon = <i className='fas fa-map-marker-alt mr-1' />
+    icon = <i className='fas fa-location-pin mr-1' />
     label = keypairManager.getName(item.display) || label
   }
 

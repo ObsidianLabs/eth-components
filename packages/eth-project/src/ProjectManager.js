@@ -339,6 +339,7 @@ function makeProjectManager(Base) {
         // use address instead
         codeHash: result.receipt.contractCreated,
         abi: JSON.stringify(deploy.abi),
+        value: result.receipt.value || 0
       })
 
       const deployResultPath = this.path.join(this.projectRoot, 'deploys', `${result.network}_${moment().format('YYYYMMDD_HHmmss')}.json`)

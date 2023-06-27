@@ -17,7 +17,7 @@ export default function AddressParamInput ({ size, value, onChange, disabled, ma
       size={size}
       editable
       maxLength={maxLength}
-      icon='fas fa-map-marker-alt'
+      icon='fas fa-location-pin'
       extra={networkManager.browserExtension?.isEnabled && [{
         group: networkManager.browserExtension.name.toLowerCase(),
         badge: networkManager.browserExtension.name,

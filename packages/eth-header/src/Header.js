@@ -52,7 +52,7 @@ class Header extends PureComponent {
     ]
 
     const contractIcon = isSelected => isSelected ? 'fas fa-file-invoice' : 'far fa-file'
-    const addressIcon = isSelected => isSelected ? 'fas fa-map-marker-alt' : 'far fa-map-marker'
+    const addressIcon = isSelected => isSelected ? 'fas fa-location-pin' : 'fas fa-location-dot'
 
     let dropdownKeypairs = this.state.keypairs.map(k => {
       const address = k.address
@@ -143,7 +143,7 @@ class Header extends PureComponent {
     const explorerNavbarItem = {
       route: 'account',
       title: t('header.title.explorer'),
-      icon: 'fas fa-map-marker-alt',
+      icon: 'fas fa-globe',
       noneIcon: 'fas fa-globe',
       selected: { id: selectedAccount, name: accountName },
       dropdown: [...dropdownKeypairs, ...dropdownBrowserAccounts, ...dropdownStarred],
