@@ -60,7 +60,7 @@ class Queue extends BaseQueueManager {
       return
     }
     notification.success(t('contract.deploy.confirmed'), result?.message || '')
-    this.updateStatus(txHash, 'CONFIRMED', { confirmed: result?.message }, callbacks)
+    this.updateStatus(txHash, 'CONFIRMED', { ...receipt }, callbacks)
   }
 }
 
