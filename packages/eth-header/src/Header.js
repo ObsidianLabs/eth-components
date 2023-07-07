@@ -8,7 +8,7 @@ import { NewProjectModal } from '@obsidians/eth-project'
 import { networkManager } from '@obsidians/eth-network'
 import { utils } from '@obsidians/sdk'
 import { t } from '@obsidians/i18n'
-
+import { withRouter } from 'react-router-dom'
 import headerActions from './headerActions'
 
 class Header extends PureComponent {
@@ -169,7 +169,12 @@ class Header extends PureComponent {
       selected: networkReplaceName,
       dropdown: networkList,
       onClickItem: (_, network) => {
-        if (network.id === 'custom') redux.dispatch('CUSTOM_MODAL_STATUS', true)
+        if (network.id === 'custom') {
+          this.props.history.push('/network/custom')
+          setTimeout(() => {
+            redux.dispatch('CUSTOM_MODAL_STATUS', true)
+          }, 500)
+        }
         if (network.id !== 'custom') networkManager.setNetwork(network)
       },
     }
@@ -199,4 +204,4 @@ Header.defaultProps = {
   noUser: false
 }
 
-export default Header
+export default withRouter(Header)

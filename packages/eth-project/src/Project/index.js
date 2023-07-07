@@ -57,6 +57,7 @@ const makeContextMenu = (contextMenu, projectManager) => node => {
     const cloned = [...contextMenu]
     cloned.splice(projectManager.remote ? 3: 5, 0, {
       text: 'Compile',
+      bilingualText: '编译',
       onClick: () => projectManager.compile(node.path),
     }, null)
     return cloned
