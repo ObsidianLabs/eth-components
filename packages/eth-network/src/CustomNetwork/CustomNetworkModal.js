@@ -152,6 +152,7 @@ export default class CustomNetworkModal extends PureComponent {
         ref={this.modal}
         title={t('network.custom.custom')}
         textActions={[t('network.custom.create')]}
+        textCancel='关闭'
         onClosed={this.onClosed}
         onActions={[() => this.openNewConnectionModal()]}
       >
